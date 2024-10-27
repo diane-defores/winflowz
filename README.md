@@ -1,22 +1,9 @@
-# Versatile Landing, Blog & Docs Template for a Simplified Web Presence
-
-![ScrewFast](https://github.com/mearashadowfax/ScrewFast/assets/125820963/cdf299bd-414a-4a2d-baf0-d188bb4709c7)
-
-ScrewFast is an open-source template designed for quick and efficient web project setup, blending minimalism with functionality. Whether you're showcasing a portfolio, launching a company landing page, or running a blog, ScrewFast provides everything you need. By combining the power of the [Astro](https://astro.build/), [Tailwind CSS](https://tailwindcss.com/), and [Preline UI](https://preline.co/), this template offers a functional and aesthetically pleasing solution for your web presence.
-
-**[View Live Demo](https://screwfast.uk)**
 
 ## Table of Contents
 
-* [Why Choose ScrewFast?](#why-choose-screwfast)
-* [Features](#features)
-* [What's New](#whats-new)
 * [Getting Started](#getting-started)
   * [Installation](#installation)
   * [Development Commands](#development-commands)
-* [Deployment](#deployment)
-  * [Building Your Site](#building-your-site)
-  * [Deploying to Vercel](#deploying-to-vercel)
 * [Project Structure](#project-structure)
 * [Static Assets and Public Resources](#static-assets-and-public-resources)
 * [Customization](#customization)
@@ -43,56 +30,9 @@ ScrewFast is an open-source template designed for quick and efficient web projec
     * [Image Integration](#image-integration)
   * [Astro Integrations](#astro-integrations)
   * [Flexibility with Integrations](#flexibility-with-integrations)
-* [Tools and Technologies](#tools-and-technologies)
-  * [Preline UI](#preline-ui)
-  * [Tailwind CSS](#tailwind-css)
-  * [Deployment and Security](#deployment-and-security)
   * [HTML Minification](#html-minification)
-* [Contributing](#contributing)
-* [License](#license)
 
-## Why Choose ScrewFast?
 
-* **Efficient Architecture:** Deploy faster with a template that's simple to set up and navigate.
-* **Optimized for Small Projects:** Perfect for crisp, professional web personas without excess complexity.
-* **Highly Customizable:** Flexibly adapt and style your site using Astro and Tailwind CSS.
-
-## Features
-
-* **Astro-Powered:** Utilize a modern static-site generation framework.
-* **Tailwind CSS:** Enjoy rapid UI development with a utility-first CSS framework.
-* **Preline UI:** Implement prebuilt UI components for added elegance.
-* **GSAP Integration:** Impress with professional and polished animations.
-* **Markdown Content Collections:** Organize and manage your content seamlessly.
-* **Starlight Documentation:** A sleek, user-friendly, full-featured documentation theme.
-* **Internationalization (i18n):** Integrates Astro’s internationalization features.
-* **SEO and Responsiveness:** Ensure your site is discoverable and accessible on any device.
-
-## What's New
-
-### Added Features
-
-* [x] **Social Share Component**:
-  * Enables users to share blog posts on social media platforms.
-  * Provides easy sharing of a blog post's title and URL.
-  * Integrates Clipboard.js for link URL copy functionality.
-
-* [x] **Bookmark Button Component**:
-  * Allows users to bookmark blog posts for later reference.
-  * Provides a visual indication of whether a post is bookmarked.
-  * Utilizes `localStorage` to store bookmarks locally in the browser.
-  * For SSR, replace `localStorage` with cookies to persist bookmarked posts.
-    * This setup opens up the possibility for the server to dynamically render content based on user-specific bookmarks, should you choose to implement this feature.
-
-* [x] **Post Feedback Component**:
-  * Collects user feedback at the end of each blog post.
-  * Serves as a UI demonstration with no live back-end integration.
-  
-* [x] **Starlight Documentation Theme Integration**:
-  * A sleek, user-friendly, full-featured documentation theme, which enhances the readability and usability of documentation.
-  * Offers a range of features such as site navigation, built-in search functionality, dark mode, syntax highlighting for code, and improved SEO.
-  * Seamlessly integrates internationalization (i18n) to provide support for documentation in multiple languages, catering to a global audience.
-  * Designed to facilitate ease of use while offering a modern aesthetic in both light and dark themes to accommodate user preferences.
 
 * [x] **Icon Set Component**:
   * Convenient and reusable Icon component that allows adding icons simply by providing a name prop.
@@ -338,27 +278,6 @@ export const socialLinks: SocialLinks = {
 
 We also have `Navbar.astro` and `NavbarMegaMenu.astro` components located in `src/components/sections/navbar&footer`. Ensure to update these components if additional customization or specific configurations are required for the navigation bar or mega menu.
 
-## Integrations and Enhancements
-
-ScrewFast leverages the power of Astro — a modern, cutting-edge site building framework — and integrates it seamlessly with the utility-first CSS framework TailwindCSS, to deliver exceptional site performance and a seamless user experience. Here are some notable integrations and enhancements included in the project:
-
-### Starlight Documentation
-
-ScrewFast is now equipped with Starlight, designed to elevate the user experience with documentation. This modern and elegant theme includes a suite of features to make content more accessible and enjoyable to navigate.
-
-Key Features:
-
-* **Site Navigation and Search**: Navigate effortlessly using the intuitive sidebar and built-in search functionality.
-* **Internationalization**: Reach a global audience with language-switching capabilities, making the documentation accessible worldwide.
-* **SEO Friendly**: Optimized for search engines, helping users quickly find the information they need.
-* **Code Highlighting and Dark Mode**: Improves code readability with syntax highlighting, and offers a dark mode to reduce eye strain.
-* **Mobile Responsive Design**: Adapts to any screen size, whether you're on a phone, tablet, or desktop, for optimal readability.
-
-With Starlight, you gain access to powerful features and integrations, as well as extensive customization options to suit your needs.
-
-> [!NOTE]
-> Dive into the Starlight's comprehensive feature list and learn how it can streamline your development process by visiting the theme's [documentation site](https://starlight.astro.build/).
-
 
 > [!IMPORTANT]  
 > If the sidebar in your Starlight site is not scrolling, and you have to manually drag the scrollbar, remove the script tag related to the Lenis smooth scroll library from `src/components/ui/starlight/Head.astro`.
@@ -463,7 +382,7 @@ To customize SEO settings, modify the values in the `constants.ts` file. Key con
 // constants.ts
 
 export const SITE = {
-  title: "ScrewFast",
+  title: "dddt",
   // Other SITE properties...
 };
 
@@ -530,7 +449,7 @@ Structured data in JSON-LD format can be managed by the `Meta.astro` component, 
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "ScrewFast",
+    "name": "Winflowz",
     "url": "https://screwfast.uk",
     "description": "Discover top-quality hardware tools and services"
   }}
@@ -612,50 +531,6 @@ Configure the compressor in `astro.config.mjs` file:
 
 * [Bag of Tricks for Astro's View Tran­si­tions](https://github.com/martrapp/astro-vtbot#readme): is a collection of extensions and support aimed at enhancing Astro's view transitions. Whether you're looking to add flair to your website or streamline user experience, this toolkit offers various techniques to elevate your projects. In the template, it was used to add View Transitions to a Starlight docs.
 
-### Flexibility with Integrations
-
-The great thing about Astro is its rich ecosystem of integrations, allowing you to tailor project functionalities to your exact needs. Feel free to explore [Astro integrations page](https://astro.build/integrations/) and add additional capabilities as you see fit.
-
-## Tools and Technologies
-
-This project is built using a variety of tools and technologies that enhance its performance, maintainability, and developer experience. Below is a list of the key tools and their roles in the project:
-
-### Preline UI
-
-Interactive components like navbars, modals, and accordions are built using [Preline UI](https://preline.co), a comprehensive open-source component library.
-
-### Tailwind CSS
-
-Styling across our project leverages the utility-first classes offered by [Tailwind CSS](https://tailwindcss.com). This methodology allows us to create custom layouts and components with speed and efficiency.
-
-To ensure consistent code formatting, particularly for class sorting, we have integrated the `prettier-plugin-tailwindcss` [plugin](https://github.com/tailwindlabs/prettier-plugin-tailwindcss). The following configuration is set in the `.prettierrc` file at the root of the project:
-
-```json
-{
-  "plugins": ["prettier-plugin-tailwindcss"]
-}
-```
-
-### Deployment and Security
-
-We deploy our project on [Vercel](https://vercel.com), capitalizing on their robust platform for seamless CI/CD workflows. Using `vercel.json`, we set stringent security headers and caching policies, ensuring adherence to security and performance best practices:
-
-```json
-{
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; [other-directives]"
-        },
-        "Additional security headers..."
-      ]
-    }
-  ]
-}
-```
 
 ### HTML Minification
 
@@ -673,22 +548,5 @@ await Promise.all(
   })
 );
 ```
-
-We encourage you to refer to the detailed documentation for each tool to fully understand their capabilities and how they contribute to the project:
-
-* [Preline UI Documentation](https://preline.co/docs)
-* [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-* [Vercel Documentation](https://vercel.com/docs)
 * [html-minifier-terser Documentation](https://github.com/terser/html-minifier-terser)
 
-## Contributing
-
-If you're interested in helping, you can contribute in several ways:
-
-1. Reporting Issues: Feel free to use the issue tracker to report bugs or request features.
-2. Submitting Pull Requests: If you've fixed a bug or added a new feature, submit a pull request with a clear description of your changes.
-3. Providing Feedback: Share your thoughts on the project's current features and suggest improvements.
-
-## License
-
-This project is released under the MIT License. Please read the [LICENSE](https://github.com/mearashadowfax/ScrewFast/blob/main/LICENSE) file for more details.
