@@ -12,15 +12,17 @@ import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import { SITE } from "@data/constants";
 
+export const prerender = true;
+
 // Update getStaticPaths for English posts
 export async function getStaticPaths() {
-  const blogPosts = await getCollection("blog", ({ id }) =>
-    id.startsWith("en/")
-  );
-  return blogPosts.map((post) => {
-    const slugWithoutLang = post.slug.replace(/^en\//, ""); // Remove the "en/" prefix
+  const blogPosts = await getCollection("blog");
+  const englishPosts = blogPosts.filter(post => post.id.startsWith("en/"));
+  
+  return englishPosts.map((post) => {
+    const slug = post.id.replace(/^en\//, '').replace(/\.md$/, '');
     return {
-      params: { slug: slugWithoutLang },
+      params: { slug },
       props: { post },
     };
   });

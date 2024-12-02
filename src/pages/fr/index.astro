@@ -9,7 +9,6 @@ import FeaturesNavs from "@components/sections/features/FeaturesNavs.astro";
 import TestimonialsSection from "@components/sections/testimonials/TestimonialsSection.astro";
 import PricingSection from "@components/sections/pricing/PricingSection.astro";
 import FAQ from "@components/sections/misc/FAQ.astro";
-import AnnouncementBanner from "@components/ui/banners/AnnouncementBanner.astro";
 import heroImage from "@images/hero-image.avif";
 import faqs from "@data/fr/faqs.json";
 import features from "@data/fr/features.json";
@@ -29,12 +28,6 @@ const avatarSrcs: Array<string> = [
 ---
 
 <MainLayout lang="fr">
-<!--   <AnnouncementBanner
-    btnId="dismiss-button"
-    btnTitle="Découvrez ScrewFast sur GitHub"
-    url="https://github.com/mearashadowfax/ScrewFast"
-  /> -->
-
   <HeroSection
     title=`Équipez vos projets avec <span class="text-yellow-500 dark:text-yellow-400">ScrewFast</span>`
     subTitle="Outils matériels de haute qualité et services de construction experts pour tous les besoins en projet."

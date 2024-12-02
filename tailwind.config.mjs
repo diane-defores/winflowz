@@ -41,7 +41,7 @@ export default {
     require("tailwindcss/nesting"),
     require("preline/plugin"),
     require("@tailwindcss/forms"),
-    function({ addBase, theme }) {
+    function({ addBase }) {
       addBase({
         'a': { 
           position: 'relative',
