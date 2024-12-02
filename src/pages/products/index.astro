@@ -29,35 +29,61 @@ const subTitle: string =
 
 // Testimonial data that will be rendered in the component
 const testimonials = [
-  // First testimonial data
   {
-    content:
-      " \"Since switching to ScrewFast's hardware tools, the efficiency on our construction sites has skyrocketed. The durability of the hex bolts and precision of the machine screws are simply unmatched. It's refreshing to work with a company that truly understands the daily demands of the industry.\" ",
-    author: "Jason Clark",
-    role: "Site Foreman | TopBuild",
-    avatarSrc:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80",
+    content: `"Actionable Advice and Profound Market Research.
+
+This product contains lots of useful information, obviously the authors are experts in productivity tools. I like the idea of working smarter, not harder, and one can achieve this by applying right tools for the job.
+
+I will definitely try incorporating advice into daily routines. Nice, they even covered how to stay focused. What tools to use to eliminate distractions and not to procrastinate!"`,
+    author: "Alexander Vushkan",
+    role: "Managing Director | Dynpictures",
+    avatarSrc: "https://dynapictures.com/images/team/AlexDesktop.png",
+    avatarAlt: "Alexander Vushkan",
+    footerLink: "https://dynapictures.com",
+  },
+  {
+    content: `"I thought I was being productive and that my setup was good and adapted for speed but I guess I was wrong.
+
+I knew surprisingly very little, compared with what I found inside. Having so many products at our company, it's becoming increasingly hard to focus and keep track of all the knowledge. Plus, I need things yesterday.
+
+I'm sure that I will finally be able to adapt to speed using everything inside. There's a lot to go through and it's so well organized. I feel like l've discovered a hidden treasure."`,
+    author: "Florin Muresan",
+    role: "CEO and Co-Founder | Squirrly",
+    avatarSrc: "https://i.pinimg.com/280x280_RS/cc/50/8a/cc508a8695c6264be42cdcd698181397.jpg",
+    avatarAlt: "Florin Muresan",
+  },
+  {
+    content: `"Best ROI ever!!!
+  
+  This list of useful apps and websites will optimize the crap out of your life literally.
+  
+  Thank you for putting this together!"`,
+    author: "Gary Quigley",
+    role: "IT Project Manager at Control Risks Group Limited",
+    avatarSrc: "https://scontent-bru2-1.xx.fbcdn.net/v/t39.30808-6/312756938_10166656812600273_3062535304759938084_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=h5Lcpmuo0qQQ7kNvgGfLH3M&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&_nc_gid=A5-p3ty9r11yA9iSyFYjwIV&oh=00_AYBvFj08NNdfqJNysp7x-Um96T6InXb7vnpVKS_BUwAg6g&oe=674A4AAB",
     avatarAlt: "Image Description",
   },
-  // Second testimonial data
   {
-    content:
-      " \"As an interior designer, I'm always looking for high-quality materials and tools that help bring my visions to life. ScrewFast's mixed screws assortment has been a game-changer for my projects, providing the perfect blend of quality and variety. The outstanding customer support was just the cherry on top!\" ",
-    author: "Maria Gonzalez",
-    role: "Interior Designer | Creative Spaces",
-    avatarSrc:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1376&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D8&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80",
-    avatarAlt: "Image Description",
+    content: `"Must have for windows user.
+    
+    Even if one is a windows geek, one will find golden nuggets on hacks and shortcuts which save time and fasten your work.
+    
+    Very neatly organized in sections. Already got my money's worth, as the name of the product will definitely enhance the way one will use their windows OS."`,
+    author: "Phan Vũ Hoàng",
+    role: "Tax Professional at Deloitte Vietnam Tax Co., Ltd",
+    avatarSrc: "https://scontent-bru2-1.xx.fbcdn.net/v/t1.6435-9/124014345_5321012004579314_8484534110376059575_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=kw7olnfMpUgQ7kNvgEY7HKf&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&_nc_gid=AoOfqWaaTHTucyAndNgHEE-&oh=00_AYAsLURrdyDbnGZ8buTrNjldQqUmDhbOX2AgXu8Z8Ex1Sw&oe=676BED7C",
+    avatarAlt: "Phan Vũ Hoàng",
   },
-  // Third testimonial data
   {
-    content:
-      " \"I’ve been a professional carpenter for over 15 years, and I can sincerely say that ScrewFast’s tap bolts and nuts are some of the best I've used. They grip like no other, and I have full confidence in every joint and fixture. Plus, the service is impeccable – they truly care about my project's success.\" ",
-    author: "Richard Kim",
-    role: "Master Carpenter | WoodWright",
-    avatarSrc:
-      "https://images.unsplash.com/photo-1474176857210-7287d38d27c6?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D8&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80",
-    avatarAlt: "Image Description",
+    content: `Love it! I was skeptical at first but it contains numerous information about various 'handy hacks' to make me much more productive without having to search too much.
+
+For example, 'Play Video Better' section highlights quite a few extensions and apps that really extend my Youtube experiences. For a book addict like me, the 'Read better' section is really a gold mine. Some sources I have known, but most I have not been aware.
+
+There are many more and I am still exploring - But I feel lucky that I pulled the trigger - WinFlowz already more than paid off my investment."`,
+    author: "Digital_Nomad",
+    role: "AppSumo Customer with 128 deals bought",
+    avatarSrc: "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='4296.892 371.592 25 18.932'%3e %3cg id='Group_431' data-name='Group 431' transform='translate(4296.892 371.592)'%3e %3cpath id='Path_914' data-name='Path 914' fill='%23ffbc00' d='M22.729%2c28.781%2c4%2c30.84a1.51%2c1.51%2c0%2c0%2c1-1.13-2.511C6.308%2c24.412%2c13.489%2c15.9%2c20.143%2c15.9a7.263%2c7.263%2c0%2c0%2c1%2c3.892%2c1.13c4.118%2c2.586%2c2.837%2c7.231%2c1.657%2c9.817A3.3%2c3.3%2c0%2c0%2c1%2c22.729%2c28.781Z' transform='translate(-1.853 -11.908)'/%3e %3cpath id='Path_915' data-name='Path 915' fill='%23ffbc00' d='M18.221%2c1.984h0C11.14%2c1.984%2c4.135%2c9.742.193%2c14.237a1.485%2c1.485%2c0%2c0%2c1%2c.151-1.808C3.783%2c8.512%2c10.964%2c0%2c17.618%2c0A7.263%2c7.263%2c0%2c0%2c1%2c21.51%2c1.13a5.982%2c5.982%2c0%2c0%2c1%2c2.41%2c2.787%2c7.11%2c7.11%2c0%2c0%2c0-.7-.5%2c9.377%2c9.377%2c0%2c0%2c0-5-1.431' transform='translate(0.045)'/%3e %3c/g%3e%3c/svg%3e",
+    avatarAlt: "AppSumo Customer",
   },
 ];
 

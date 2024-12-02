@@ -13,7 +13,7 @@ interface Props {
 }
 ---
 
-<div class="mt-6 lg:mt-10">
+<a href="/products#testimonials" class="mt-6 lg:mt-10 no-hover-animation">
   <div class="py-5">
     <div class="text-center sm:flex sm:items-center sm:text-start">
       <div class="flex-shrink-0 pb-5 sm:flex sm:pb-0 sm:pe-5">
@@ -43,8 +43,6 @@ interface Props {
                 .fill(0)
                 .map((_, i) => <FullStar key={i} />)
             }
-            <!-- Adding additional half-star -->
-            <HalfStar />
           </div>
           <p class="text-neutral-800 dark:text-neutral-200">
             <Fragment set:html={rating} />
@@ -58,4 +56,4 @@ interface Props {
       </div>
     </div>
   </div>
-</div>
+</a>

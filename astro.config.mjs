@@ -3,8 +3,8 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import compressor from "astro-compressor";
 import starlight from "@astrojs/starlight";
-
-// https://astro.build/config
+import clerk from "@clerk/astro";
+import vercel from "@astrojs/vercel/serverless";
 export default defineConfig({
   // https://docs.astro.build/en/guides/images/#authorizing-remote-images
   site: "https://screwfast.uk",
@@ -15,14 +15,17 @@ export default defineConfig({
   //   defaultLocale: "en",
   //   locales: ["en", "fr"],
   //   fallback: {
-  //     fr: "en",
-  //   },
-  //   routing: {
-  //     prefixDefaultLocale: false,
-  //   },
+    //     fr: "en",
+    //   },
+    //   routing: {
+      //     prefixDefaultLocale: false,
+      //   },
   // },
   prefetch: true,
+  adapter: vercel(),
+  output: "server",
   integrations: [
+    clerk(),
     tailwind(),
     sitemap({
       i18n: {
@@ -117,7 +120,6 @@ export default defineConfig({
       brotli: true,
     }),
   ],
-  output: "static",
   experimental: {
     clientPrerender: true,
     directRenderScript: true,

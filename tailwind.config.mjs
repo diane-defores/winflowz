@@ -70,11 +70,17 @@ export default {
             opacity: 1,
           },
         },
+        '.no-hover-animation': {
+          '&::before, &::after': {
+            display: 'none',
+          },
+          textDecoration: 'none',
+        },
         '@keyframes gradient-animation': {
           '0%': { backgroundPosition: '0% 100%' },
           '100%': { backgroundPosition: '200% 100%' },
         },
-      })
+      });
     }
   ],
 };
