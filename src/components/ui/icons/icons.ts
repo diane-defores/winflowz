@@ -523,4 +523,57 @@ export const Icons = {
     strokeLinejoin: "round",
     stroke: "currentColor",
   },
+  code: {
+    paths: [
+      {
+        d: "M10 20H6v-2l8-8V4h2v4.343a4 4 0 1 1-5.657 5.657L10 20zm-1.28-4.72a4 4 0 0 1 5.657-5.657l-5.657 5.657z",
+      },
+    ],
+    class: "h-4 w-4",
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+  },
+  calendar: {
+    paths: [
+      {
+        d: "M19 4h-2V3a1 1 0 0 0-2 0v1H9V3a1 1 0 0 0-2 0v1H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm1 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7h16v7zm0-9H4V7a1 1 0 0 1 1-1h2v1a1 1 0 0 0 2 0V6h6v1a1 1 0 0 0 2 0V6h2a1 1 0 0 1 1 1v3z",
+      },
+    ],
+    class: "h-4 w-4",
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+  },
+  light: {
+    paths: [
+      {
+        d: "M12 3a9 9 0 1 0 9 9 10 10 0 0 0-9-9zm0 16a7 7 0 1 1 7-7 8 8 0 0 1-7 7zm0-11a4 4 0 1 0 4 4 4 4 0 0 0-4-4zm0 6a2 2 0 1 1 2-2 2 2 0 0 1-2 2z",
+      },
+    ],
+    class: "h-4 w-4",
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+  },
+  "check-circle": {
+    paths: [
+      {
+        d: "M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z",
+      },
+      {
+        d: "M9.999 13.587 7.7 11.292l-1.412 1.416 3.713 3.705 6.706-6.706-1.414-1.414z",
+      },
+    ],
+    class: "h-4 w-4",
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+  },
+  "arrow-up": {
+    paths: [
+      {
+        d: "M12.001 3.5L6 9.5l1.4 1.4 3.6-3.6V21h2V7.3l3.6 3.6L18 9.5l-6-6z",
+      },
+    ],
+    class: "h-4 w-4",
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+  },
 };
