@@ -11,7 +11,12 @@ const { title = SITE.title, meta, structuredData, lang = "en" } = Astro.props;
 // Interface to type-check the properties
 interface Props {
   title?: string;
-  meta?: string;
+  meta?: {
+    title?: string;
+    description?: string;
+    image?: string;
+    canonicalURL?: string;
+  };
   structuredData?: object;
   lang?: string;
 }
@@ -44,7 +49,7 @@ We set the language of the page to English and add classes for scrollbar and scr
     </script>
   </head>
   <body
-    class="dark:bg-neutral-800"
+    class="dark:bg-neutral-900"
   >
     <!--
     Setting up the main structure of the page.
