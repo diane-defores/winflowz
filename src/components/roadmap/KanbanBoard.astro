@@ -1,0 +1,61 @@
+---
+import type { Feature } from "../../types/roadmap";
+import FeatureCard from "./FeatureCard.astro";
+
+interface Props {
+  features: Feature[];
+  showProjectName?: boolean;
+}
+
+const { features, showProjectName = false } = Astro.props;
+
+function groupFeaturesByStatus(features: Feature[]) {
+  return features.reduce((acc, feature) => {
+    const status = feature.status;
+    if (!acc[status]) {
+      acc[status] = [];
+    }
+    acc[status].push(feature);
+    return acc;
+  }, {} as Record<Feature["status"], Feature[]>);
+}
+
+const groupedFeatures = groupFeaturesByStatus(features);
+const statuses: Feature["status"][] = ["considering", "planned", "in-development", "completed"];
+
+function getStatusTitle(status: Feature["status"]) {
+  switch (status) {
+    case "in-development":
+      return "En développement";
+    case "planned":
+      return "Planifié";
+    case "considering":
+      return "À l'étude";
+    case "completed":
+      return "Terminé";
+    default:
+      return status;
+  }
+}
+---
+
+<div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-4">
+  {statuses.map(status => (
+    <div class="flex flex-col rounded-lg border border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-900">
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">
+          {getStatusTitle(status)}
+          <span class="ml-2 text-sm font-normal text-neutral-500">
+            ({groupedFeatures[status]?.length || 0})
+          </span>
+        </h2>
+      </div>
+      
+      <div class="flex-1 space-y-4">
+        {groupedFeatures[status]?.map(feature => (
+          <FeatureCard feature={feature} showProjectName={showProjectName} />
+        ))}
+      </div>
+    </div>
+  ))}
+</div> 
