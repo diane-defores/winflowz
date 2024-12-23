@@ -30,8 +30,8 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2(astro@4.16.18(rollup@4.28.1)(terser@5.37.0)(typescript@5.7.2))(react@18.3.1)(rollup@4.28.1)
       '@clerk/astro':
-        specifier: ^1.5.6
-        version: 1.5.6(astro@4.16.18(rollup@4.28.1)(terser@5.37.0)(typescript@5.7.2))(react@18.3.1)
+        specifier: ^2.1.4
+        version: 2.1.4(astro@4.16.18(rollup@4.28.1)(terser@5.37.0)(typescript@5.7.2))(react@18.3.1)
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@18.3.1)
@@ -296,30 +296,30 @@ packages:
   '@canvas/image-data@1.0.0':
     resolution: {integrity: sha512-BxOqI5LgsIQP1odU5KMwV9yoijleOPzHL18/YvNqF9KFSGF2K/DLlYAbDQsWqd/1nbaFuSkYD/191dpMtNh4vw==}
 
-  '@clerk/astro@1.5.6':
-    resolution: {integrity: sha512-7pazTq0jIG8gHGv1BA5Vri2WCg9vf3+MTf1tCvIjI+d5mhBlLd3r7VMfiMnnex23IVRlo6Nd/7L7WlkT+U7eng==}
+  '@clerk/astro@2.1.4':
+    resolution: {integrity: sha512-BGhm8za6PRJs+efVHEfDT5kkoTUAS7Vo1pG1wdaduxqTsWw2PK5OghQCCNxGk9ubjY27IQJoXOVqMeh86WMBHQ==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
-      astro: ^3.2.0 || ^4.0.0
+      astro: ^4.15.0 || ^5.0.0
 
-  '@clerk/backend@1.20.1':
-    resolution: {integrity: sha512-uHyASZmPzx4IL1OtMAdIQlKB6ITefIwodjt83qXf40y9O/xJhtvZNTm1zk+V0aHxDnzBbl937blH5hoNWutIAw==}
+  '@clerk/backend@1.21.4':
+    resolution: {integrity: sha512-PHJzBJrTxBAvHwscXwUwpippT7nHhphgycVcFb3655Dq6q0nRdKfo5GlkDHscEKxLOdmppB/168nXsVwSWf86w==}
     engines: {node: '>=18.17.0'}
 
-  '@clerk/shared@2.19.2':
-    resolution: {integrity: sha512-xxItdH5Rbo3zAn1h5X+pGzqNk+A0vAlPg0vivft72RqSK9Y/IIUqx1Vd4MixFSVZgWrkg/f0IKzcEeEoJtm2kA==}
+  '@clerk/shared@2.20.4':
+    resolution: {integrity: sha512-1ndGEO+NejIMFkl47DCeSpVv3nmKh9BHD6wt2Sl3X1wv7sj3eWzSVC14Exkag7D8Og2VcN4LXOFLErsCXHS+YQ==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
-      react: ^18 || ^19.0.0-0
-      react-dom: ^18 || ^19.0.0-0
+      react: ^18.0.0 || ^19.0.0 || ^19.0.0-0
+      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-0
     peerDependenciesMeta:
       react:
         optional: true
       react-dom:
         optional: true
 
-  '@clerk/types@4.39.0':
-    resolution: {integrity: sha512-WWEoXmcob6X80cZZZGobN8aKjHAjAoL0cgVyLX8UeQ+JW4kl1IfUmZQgDBFOafGEm2yUoKlKAP22bWPDqmbTJw==}
+  '@clerk/types@4.40.0':
+    resolution: {integrity: sha512-9QdllXYujsjYLbvPg9Kq1rWOemX5FB0r6Ijy8HOxwjKN+TPlxUnGcs+t7IwU+M5gdmZ2KV6aA6d1a2q2FlSoiA==}
     engines: {node: '>=18.17.0'}
 
   '@ctrl/tinycolor@4.1.0':
@@ -2291,8 +2291,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.0.7:
-    resolution: {integrity: sha512-oLxFY2gd2IqnjcYyOXD8XGCftpGtZP2AbHbOkthDkvRywH5ayNtPVy9YlOPcHckXzbLTCHpkb7FB+yuxKV13pQ==}
+  nanoid@5.0.9:
+    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -3696,22 +3696,22 @@ snapshots:
 
   '@canvas/image-data@1.0.0': {}
 
-  '@clerk/astro@1.5.6(astro@4.16.18(rollup@4.28.1)(terser@5.37.0)(typescript@5.7.2))(react@18.3.1)':
+  '@clerk/astro@2.1.4(astro@4.16.18(rollup@4.28.1)(terser@5.37.0)(typescript@5.7.2))(react@18.3.1)':
     dependencies:
-      '@clerk/backend': 1.20.1(react@18.3.1)
-      '@clerk/shared': 2.19.2(react@18.3.1)
-      '@clerk/types': 4.39.0
+      '@clerk/backend': 1.21.4(react@18.3.1)
+      '@clerk/shared': 2.20.4(react@18.3.1)
+      '@clerk/types': 4.40.0
       astro: 4.16.18(rollup@4.28.1)(terser@5.37.0)(typescript@5.7.2)
-      nanoid: 5.0.7
+      nanoid: 5.0.9
       nanostores: 0.11.3
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@clerk/backend@1.20.1(react@18.3.1)':
+  '@clerk/backend@1.21.4(react@18.3.1)':
     dependencies:
-      '@clerk/shared': 2.19.2(react@18.3.1)
-      '@clerk/types': 4.39.0
+      '@clerk/shared': 2.20.4(react@18.3.1)
+      '@clerk/types': 4.40.0
       cookie: 0.7.0
       snakecase-keys: 5.4.4
       tslib: 2.4.1
@@ -3719,9 +3719,9 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/shared@2.19.2(react@18.3.1)':
+  '@clerk/shared@2.20.4(react@18.3.1)':
     dependencies:
-      '@clerk/types': 4.39.0
+      '@clerk/types': 4.40.0
       dequal: 2.0.3
       glob-to-regexp: 0.4.1
       js-cookie: 3.0.5
@@ -3730,7 +3730,7 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  '@clerk/types@4.39.0':
+  '@clerk/types@4.40.0':
     dependencies:
       csstype: 3.1.1
 
@@ -6099,7 +6099,7 @@ snapshots:
 
   nanoid@3.3.8: {}
 
-  nanoid@5.0.7: {}
+  nanoid@5.0.9: {}
 
   nanostores@0.11.3: {}
 
@@ -6728,7 +6728,7 @@ snapshots:
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.4.1
+      tslib: 2.8.1
 
   snakecase-keys@5.4.4:
     dependencies:
