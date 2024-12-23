@@ -31,6 +31,21 @@ export default defineConfig({
           en: "en",
           fr: "fr",
         },
+        routing: {
+          prefixDefaultLocale: false,
+          redirectDefaultLocale: true,
+          strategy: "pathname",
+          paths: {
+            fr: {
+              "products": "produits",
+              "contact": "contact",
+              "blog": "blog",
+              "insights": "perspectives",
+              "services": "services",
+              "roadmap": "roadmap"
+            }
+          }
+        }
       },
     }),
     starlight({

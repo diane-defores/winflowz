@@ -85,3 +85,28 @@ select {
     transform: translateX(0.25rem);
     transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Styles pour la barre de défilement */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sl-color-gray-6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sl-color-accent);
+  border: 3px solid var(--sl-color-gray-6);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sl-color-accent-low);
+}
+
+/* Pour Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sl-color-accent) var(--sl-color-gray-6);
+}

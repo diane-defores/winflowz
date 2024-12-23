@@ -1,0 +1,52 @@
+/* Styles globaux pour tout le site */
+
+/* Styles pour la barre de défilement - WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Mode clair par défaut */
+html::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: var(--sl-color-accent, #ffcfaa);
+  border: 3px solid #ffffff;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: var(--sl-color-accent-high, #562800);
+}
+
+/* Mode sombre */
+html.dark::-webkit-scrollbar-track {
+  background: var(--sl-color-gray-6, #272727);
+}
+
+html.dark::-webkit-scrollbar-thumb {
+  background: var(--sl-color-accent, #ffcfaa);
+  border: 3px solid var(--sl-color-gray-6, #272727);
+  border-radius: 9999px;
+}
+
+html.dark::-webkit-scrollbar-thumb:hover {
+  background: var(--sl-color-accent-low, #562800);
+}
+
+/* Pour Firefox - Mode clair par défaut */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sl-color-accent, #ffcfaa) #ffffff;
+}
+
+/* Firefox - Mode sombre */
+html.dark {
+  scrollbar-color: var(--sl-color-accent, #ffcfaa) var(--sl-color-gray-6, #272727);
+}
+
+/* Style global pour assurer que le défilement est fluide */
+html {
+  scroll-behavior: smooth;
+} 
