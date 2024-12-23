@@ -25,6 +25,7 @@
     "@preline/overlay": "^2.6.0",
     "@preline/tabs": "^2.6.0",
     "@vercel/nft": "^0.27.10",
+    "astro": "^4.16.18",
     "astro-compressor": "^0.4.1",
     "astro-icon": "^1.1.4",
     "astro-vtbot": "^1.10.7",
