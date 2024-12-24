@@ -19,10 +19,13 @@ const footerLinks = [
   {
     section: "Société",
     links: [
-      { name: "À propos de nous", url: "#" },
+      { name: "À propos de nous", url: "/fr/a-propos" },
       { name: "Blog", url: "/fr/blog" },
-      { name: "Carrières", url: "#" },
-      { name: "Clients", url: "#" },
+      { name: "Droits d'auteur", url: "/fr/droits" },
+      { name: "Clause de non-responsabilité", url: "/fr/non-responsabilite" },
+      { name: "Mentions légales", url: "/fr/mentions-legales" },
+      { name: "Politique de confidentialité", url: "/fr/confidentialite" },
+      { name: "CGU", url: "/fr/cgu" },
     ],
   },
 ];

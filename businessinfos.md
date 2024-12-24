@@ -1,3 +1,23 @@
+In France (FR) and the United States (US), websites are required to have certain legal pages to inform users about their rights and obligations. Here are the mandatory legal pages for websites in both countries:
+
+**France (FR):**
+1. **Mentions Légales:** This is the "Legal Notice" page that must include information about the website owner, contact details, company registration number, VAT number (if applicable), etc.
+2. **Conditions Générales d'Utilisation (CGU):** These are the "Terms and Conditions" that outline the rules and terms governing the use of the website.
+3. **Politique de Confidentialité:** This is the "Privacy Policy" that explains how user data is collected, stored, and used on the website.
+4. **Cookies:** Websites must inform users about the use of cookies and obtain their consent for non-essential cookies.
+
+**United States (US):**
+1. **Terms of Use:** Similar to CGU, the Terms of Use outline the terms and conditions of using the website.
+2. **Privacy Policy:** This document explains how user data is collected, used, and protected by the website.
+3. **Disclaimer:** A disclaimer page limits the website owner's liability for the accuracy of information provided on the site.
+4. **Copyright Policy:** Websites should have a page outlining the copyright policy and procedures for reporting copyright infringement.
+5. **DMCA Notice:** In the US, websites that allow user-generated content should have a Digital Millennium Copyright Act (DMCA) notice for handling copyright complaints.
+
+These legal pages help protect both the website owner and users by setting clear expectations and guidelines for the use of the website.
+
+
+
+
 Informations personnelles/professionnelles :
 Votre nom/marque
    marque : Winflowz

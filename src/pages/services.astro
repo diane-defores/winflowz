@@ -36,58 +36,57 @@ interface Article {
 const articles: Article[] = [
   {
     isRightSection: true,
-    title: "Delivering Expert Guidance",
+    title: "Custom Development",
     subTitle:
-      "Embarking on a construction project can be overwhelming. With our professional consultation services, we guide you through every stage, ensuring you make informed decisions. Whether you are a DIY enthusiast or a skilled contractor, our experts are on hand to offer tailored advice on product selection, project scope, and compliance with local regulations.",
+      "As a neurodivergent developer specialized in productivity tools and passionate about UX/UI, I create custom solutions that enhance your digital workflow. From Obsidian plugins to Chrome extensions, each project is meticulously crafted to meet your specific needs while ensuring optimal performance and an intuitive user experience.",
     single: false,
     imgOne: blueprints,
-    imgOneAlt: "Blueprints and digital tablet with construction plans.",
+    imgOneAlt: "Development workflow illustration",
     imgTwo: personWorking,
-    imgTwoAlt: "Person working in the office",
+    imgTwoAlt: "Person working with digital tools",
   },
   {
     isRightSection: false,
-    title: "Transforming Designs into Reality",
+    title: "Productivity Training",
     subTitle:
-      "Our skilled craftsmen bring precision and excellence to every construction project. From minor installations to substantial structural work, ScrewFast offers reliable construction services to turn your plans into tangible outcomes. We ensure the highest standards of safety and workmanship, utilizing top-quality tools and materials from our extensive inventory.",
+      "Transform your digital workflow with expert guidance. I offer personalized training sessions focused on productivity optimization, tool mastery, and workflow enhancement. Whether you're a beginner or advanced user, my approach adapts to your learning style and objectives.",
     img: beforeAfter,
-    imgAlt: "Construction site before and after",
+    imgAlt: "Productivity training session",
     btnExists: true,
     btnTitle: "Learn More",
     btnURL: "#",
   },
   {
     isRightSection: true,
-    title: "Navigating Projects with Professional Oversight",
+    title: "WordPress Expertise",
     subTitle:
-      "Effective project management is at the heart of any successful build. ScrewFast provides thorough planning and robust management services that keep your project on time and within budget. Let us handle the complexities of workflow coordination, resource allocation, and stakeholder communication while you focus on your vision.",
+      "Master WordPress with comprehensive training from basics to advanced features. I provide hands-on guidance for website creation, customization, and optimization. Learn to manage your content effectively while implementing best practices for performance and SEO.",
     single: false,
     imgOne: constructionWorkers,
-    imgOneAlt: "Construction workers orchestrating a project",
+    imgOneAlt: "WordPress development illustration",
     imgTwo: aerialView,
-    imgTwoAlt: "Aerial view of managed construction",
+    imgTwoAlt: "Website management overview",
   },
   {
     isRightSection: false,
-    title: "Ensuring Long-lasting Performance",
+    title: "Software Implementation",
     subTitle:
-      "Our commitment to your project doesn't end at completion. ScrewFast offers ongoing maintenance and support services to ensure your construction's longevity and performance. From regular check-ups to emergency assistance, our responsive team is there to provide seamless support.",
+      "Get personalized support for implementing and mastering essential software tools. From Obsidian to productivity apps, I help you optimize your digital workspace and establish efficient workflows tailored to your needs.",
     img: usingTools,
-    imgAlt:
-      "Man in orange and black vest wearing white helmet holding yellow and black power tool",
+    imgAlt: "Software implementation demonstration",
   },
   {
     isRightSection: true,
-    title: "Crafting Bespoke Strategies for Unique Challenges",
+    title: "Custom Solutions & Integration",
     subTitle:
-      "For our larger enterprise clients, ScrewFast offers custom solutions designed to meet specific industry challenges. By understanding your unique needs, we engineer tailored strategies aimed at optimizing your operations, enhancing efficiency, and driving your business forward.",
+      "Need a specific tool or workflow enhancement? I develop custom solutions that integrate seamlessly with your existing systems. From automation scripts to specialized plugins, I create tools that boost your productivity and streamline your work processes, always with a focus on exceptional user experience and interface design.",
     single: false,
     imgOne: progressBuilding,
-    imgOneAlt: "In progress building structure",
+    imgOneAlt: "Custom development process",
     imgTwo: underConstruction,
-    imgTwoAlt: "Brown and gray building under construction",
+    imgTwoAlt: "Integration workflow",
     btnExists: true,
-    btnTitle: "Read more",
+    btnTitle: "Explore Solutions",
     btnURL: "#",
   },
 ];
@@ -100,35 +99,26 @@ const pageTitle: string = `Services | ${SITE.title}`;
   structuredData={{
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": "https://screwfast.uk/services",
-    "url": "https://screwfast.uk/services",
-    "name": "Expert Consultation Services | ScrewFast",
-    "description": "Uniting expertise with your vision, ScrewFast provides exceptional service and comprehensive solutions in the hardware and construction industry, from consultation to project completion.",
+    "@id": "https://winflowz.com/services",
+    "url": "https://winflowz.com/services",
+    "name": "Digital Productivity Services & Training | WinFlowz",
+    "description": "Expert development and training services for digital productivity enhancement. Custom plugins, extensions, and personalized coaching to optimize your workflow.",
     "isPartOf": {
         "@type": "WebSite",
-        "url": "https://screwfast.uk",
-        "name": "ScrewFast",
-        "description": "ScrewFast offers top-tier hardware tools and expert construction services to meet all your project needs."
+        "url": "https://winflowz.com",
+        "name": "WinFlowz",
+        "description": "Digital productivity tools and training by a neurodivergent expert."
     },
     "inLanguage": "en-US"
   }}
 >
-  <!--MainSection is the introductory section of the page, it also contains a CTA button-->
   <MainSection
-    title="Uniting Expertise with Your Vision"
-    subTitle="At ScrewFast, we take pride in providing comprehensive solutions and exceptional service in the hardware and construction industry. Our experienced team is dedicated to supporting your project from inception to completion with a range of specialized services."
+    title="Empowering Your Digital Productivity"
+    subTitle="Transform your workflow with custom development and expert training. As a neurodivergent developer, UX/UI enthusiast, and productivity specialist, I offer tailored solutions and guidance to help you achieve peak efficiency in your digital workspace."
     btnExists={true}
     btnTitle="Schedule a Consultation"
     btnURL="#"
   />
-  <!-- RightSection and LeftSection contain details about various services along with pertinent imagery.
-  They alternate for variety in design.
-  The 'btnExists' property is used to toggle the display of a button in these sections.
-  When btnExists={true}, a button is displayed.
-  This can be used to link to more detailed information or related resources.
-  RightSection can also conditionally render one or two images based on the 'single' property.
-  If 'single' is true, it displays one image, otherwise it displays two.
-  -->
   {
     articles.map(article => {
       return article.isRightSection ? (
@@ -157,24 +147,23 @@ const pageTitle: string = `Services | ${SITE.title}`;
       );
     })
   }
-  <!--FeaturesStats section showcases essential stats valuable to users-->
   <FeaturesStats
-    title="By the Numbers"
-    subTitle="Our commitment to quality and reliability is evident in every project we undertake. At ScrewFast, we are dedicated to delivering industry-leading services that ensure your construction projects are built to last."
+    title="Impact & Results"
+    subTitle="My commitment to enhancing digital productivity is reflected in the success of my clients and the effectiveness of my solutions."
     mainStatTitle="96%"
-    mainStatSubTitle="of our clients rate their experience with ScrewFast as exceptional"
+    mainStatSubTitle="of clients report significant productivity improvements after implementation"
     stats={[
       {
-        stat: "99.8%",
-        description: "project completion rate",
+        stat: "50+",
+        description: "custom solutions delivered",
       },
       {
-        stat: "5,000+",
-        description: "successful installations",
+        stat: "200+",
+        description: "productivity tips and techniques",
       },
       {
         stat: "85%",
-        description: "client growth year-over-year",
+        description: "time saved on repetitive tasks",
       },
     ]}
   />

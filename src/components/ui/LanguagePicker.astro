@@ -1,6 +1,36 @@
 ---
 import { languages } from "@utils//ui";
 import Icon from "./icons/Icon.astro";
+
+// Définir les mappings de routes
+const routeMappings = {
+  en: {
+    'terms': 'terms',
+    'cgu': 'terms',
+    'privacy': 'privacy',
+    'confidentialite': 'privacy',
+    'disclaimer': 'disclaimer',
+    'non-responsabilite': 'disclaimer',
+    'avertissement': 'disclaimer',
+    'legal': 'legal',
+    'mentions-legales': 'legal',
+    'copyright': 'copyright',
+    'droits': 'copyright'
+  },
+  fr: {
+    'terms': 'cgu',
+    'cgu': 'cgu',
+    'privacy': 'confidentialite',
+    'confidentialite': 'confidentialite',
+    'disclaimer': 'non-responsabilite',
+    'non-responsabilite': 'non-responsabilite',
+    'avertissement': 'non-responsabilite',
+    'legal': 'mentions-legales',
+    'mentions-legales': 'mentions-legales',
+    'copyright': 'droits',
+    'droits': 'droits'
+  }
+};
 ---
 
 <div class="hs-dropdown relative inline-flex">
@@ -29,7 +59,6 @@ import Icon from "./icons/Icon.astro";
     aria-labelledby="hs-dropdown-hover-event"
   >
     {
-      // Map through the list of languages, creating a link for each language
       Object.entries(languages).map(([lang, label]) => (
         <a
           class="flex items-center gap-x-3.5 rounded-lg px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
@@ -60,39 +89,79 @@ import Icon from "./icons/Icon.astro";
       const link = element as HTMLAnchorElement;
       const lang = link
         .getAttribute("href")
-        ?.replace("/", "")
-        .replace("/", "") as TLanguage;
+        ?.replace(/^\/+/, '') // Supprime tous les slashes au début
+        .replace(/\/+$/, '') as TLanguage; // Supprime tous les slashes à la fin
 
       link.addEventListener("click", function (event) {
         event.preventDefault();
 
         const url = new URL(window.location.href);
-        const pathParts = url.pathname
-          .split("/")
-          .filter((part) => part && !languages.includes(part as TLanguage));
+        const cleanPath = url.pathname.replace(/^\/+/, '').replace(/\/+$/, ''); // Nettoie les slashes multiples
+        const pathParts = cleanPath
+          .split('/')
+          .filter(Boolean) // Supprime les parties vides
+          .filter((part) => !languages.includes(part as TLanguage));
 
         // Disable the selection of the same language
-        if (lang === url.pathname.split("/")[1]) return;
+        const currentLang = url.pathname.split('/').filter(Boolean)[0];
+        if (lang === currentLang) return;
 
-        // Determine if the current URL already has a language prefix
-        const currentLang = languages.includes(pathParts[0] as TLanguage) ? pathParts[0] : "en";
+        // Get the current page name
+        const currentPage = pathParts[0] || '';
 
-        // Remove current language prefix from pathParts
-        if (languages.includes(pathParts[0] as TLanguage)) {
-          pathParts.shift();
+        // Get the route mappings for the target language
+        const routeMap = (window as any).routeMappings?.[lang] || {};
+        
+        // Get the translated page name
+        const translatedPage = routeMap[currentPage] || currentPage;
+
+        // Build the new URL
+        let newPath = lang === 'en' ? '/' : `/${lang}/`;
+        if (translatedPage) {
+          newPath += translatedPage;
         }
 
-        // Determine if we are switching to a different language
-        if (lang !== currentLang) {
-          if (lang !== "en") {
-            // Add the new language prefix for non-English
-            pathParts.unshift(lang);
-          }
+        // Add any remaining path parts
+        if (pathParts.length > 1) {
+          newPath += '/' + pathParts.slice(1).join('/');
         }
 
-        url.pathname = pathParts.join("/");
-        window.location.href = url.toString();
+        // Ensure no double slashes and add trailing slash if needed
+        newPath = newPath.replace(/\/+/g, '/');
+        
+        // Update URL and navigate
+        window.location.href = `${url.origin}${newPath}${url.search}`;
       });
     });
   });
+
+  // Make route mappings available globally
+  (window as any).routeMappings = {
+    en: {
+      'terms': 'terms',
+      'cgu': 'terms',
+      'privacy': 'privacy',
+      'confidentialite': 'privacy',
+      'disclaimer': 'disclaimer',
+      'non-responsabilite': 'disclaimer',
+      'avertissement': 'disclaimer',
+      'legal': 'legal',
+      'mentions-legales': 'legal',
+      'copyright': 'copyright',
+      'droits': 'copyright'
+    },
+    fr: {
+      'terms': 'cgu',
+      'cgu': 'cgu',
+      'privacy': 'confidentialite',
+      'confidentialite': 'confidentialite',
+      'disclaimer': 'non-responsabilite',
+      'non-responsabilite': 'non-responsabilite',
+      'avertissement': 'non-responsabilite',
+      'legal': 'mentions-legales',
+      'mentions-legales': 'mentions-legales',
+      'copyright': 'droits',
+      'droits': 'droits'
+    }
+  };
 </script>
