@@ -48,7 +48,7 @@ const config = {
 
           <div class="mt-5">
             <!-- The form for password recovery -->
-            <form>
+            <form id="recover-form" method="POST">
               <div class="grid gap-y-4">
                 <!-- Email input field imported from EmailInput component -->
                 <EmailInput id="recover-email" errorId="recover-email-error"/>
@@ -62,3 +62,41 @@ const config = {
     </div>
   </div>
 </div>
+
+<script is:inline type="module" define:vars={{ resetUrl: "/auth/reset-password" }}>
+  import { resetPasswordForEmail } from "/src/scripts/supabase-client";
+
+  const recoverForm = document.getElementById('recover-form');
+  const errorElement = document.getElementById('recover-email-error');
+
+  if (recoverForm instanceof HTMLFormElement) {
+    recoverForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(recoverForm);
+      const email = formData.get('email');
+
+      if (!(email && typeof email === 'string')) {
+        return;
+      }
+
+      try {
+        const { error } = await resetPasswordForEmail(email, resetUrl);
+
+        if (error) throw error;
+        
+        if (errorElement instanceof HTMLElement) {
+          errorElement.textContent = "Vérifiez votre email pour réinitialiser votre mot de passe";
+          errorElement.style.display = 'block';
+          errorElement.style.color = 'green';
+        }
+      } catch (error) {
+        if (error instanceof Error && errorElement instanceof HTMLElement) {
+          console.error('Erreur de récupération:', error.message);
+          errorElement.textContent = error.message;
+          errorElement.style.display = 'block';
+        }
+      }
+    });
+  }
+</script>

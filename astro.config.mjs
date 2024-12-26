@@ -3,12 +3,11 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import compressor from "astro-compressor";
 import starlight from "@astrojs/starlight";
-import clerk from "@clerk/astro";
 import vercel from "@astrojs/vercel/serverless";
 import icon from "astro-icon";
 
 export default defineConfig({
-  site: "https://screwfast.uk",
+  site: "https://winflowz.com",
   image: {
     domains: ["images.unsplash.com"],
   },
@@ -22,7 +21,6 @@ export default defineConfig({
         "phosphor-icons": ["*"]
       }
     }),
-    clerk(),
     tailwind(),
     sitemap({
       i18n: {
@@ -38,18 +36,30 @@ export default defineConfig({
           paths: {
             fr: {
               "products": "produits",
+              "produits": "products",
               "contact": "contact",
               "blog": "blog",
               "insights": "perspectives",
+              "perspectives": "insights",
               "services": "services",
-              "roadmap": "roadmap"
+              "roadmap": "roadmap",
+              "disclaimer": "non-responsabilite",
+              "non-responsabilite": "disclaimer",
+              "privacy": "confidentialite",
+              "confidentialite": "privacy",
+              "copyright": "droits",
+              "droits": "copyright",
+              "terms": "cgu",
+              "cgu": "terms",
+              "legal": "mentions-legales",
+              "mentions-legales": "legal"
             }
           }
         }
       },
     }),
     starlight({
-      title: "Winflowz",
+      title: "WinFlowz",
       defaultLocale: "root",
       locales: {
         root: {
@@ -91,7 +101,7 @@ export default defineConfig({
         },
       ],
       social: {
-        github: "https://github.com/mearashadowfax/ScrewFast",
+        github: "https://github.com/dianedef",
       },
       disable404Route: true,
       customCss: ["./src/assets/styles/starlight.css"],
