@@ -120,7 +120,10 @@ const config = {
 	if (registerForm) {
 		registerForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
-			console.log('Formulaire soumis');
+
+			// Désactiver le formulaire pendant la soumission
+			const submitButton = registerForm.querySelector('button[type="submit"]');
+			if (submitButton) submitButton.disabled = true;
 
 			const formData = new FormData(registerForm);
 			const email = formData.get('email');
@@ -130,40 +133,51 @@ const config = {
 
 			if (!email || !password || !confirmPassword) {
 				showError("Veuillez remplir tous les champs");
+				if (submitButton) submitButton.disabled = false;
 				return;
 			}
 
 			if (password.length < 8) {
 				showError("Le mot de passe doit contenir au moins 8 caractères");
+				if (submitButton) submitButton.disabled = false;
 				return;
 			}
 
 			if (password !== confirmPassword) {
 				showError("Les mots de passe ne correspondent pas");
+				if (submitButton) submitButton.disabled = false;
 				return;
 			}
 
 			if (!termsAgree) {
 				showError("Veuillez accepter les conditions d'utilisation");
+				if (submitButton) submitButton.disabled = false;
 				return;
 			}
 
 			try {
-				const { error } = await signUpWithEmail(email, password);
+				const { data, error } = await signUpWithEmail(email, password);
 				
-				if (error) throw error;
+				if (error) {
+					showError(error.message);
+					return;
+				}
 				
 				showError("Un email de confirmation vous a été envoyé. Veuillez vérifier votre boîte de réception.", true);
 				registerForm.reset();
 				
-				// Fermer la modal après 2 secondes
+				// Fermer la modal après 2 secondes uniquement en cas de succès
 				setTimeout(() => {
 					if (modal && typeof modal.click === 'function') {
-						modal.click(); // Cela fermera la modal
+						modal.click();
 					}
 				}, 2000);
 			} catch (error) {
-				showError(error.message);
+				console.error('Erreur complète:', error);
+				showError("Une erreur est survenue lors de l'inscription");
+			} finally {
+				// Réactiver le bouton dans tous les cas
+				if (submitButton) submitButton.disabled = false;
 			}
 		});
 	}
