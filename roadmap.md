@@ -297,3 +297,48 @@ Maintenant, lorsque vous confirmez votre email :
 Le design est responsive et utilise le thème sombre/clair de votre site.
 
 Voulez-vous que nous ajoutions d'autres fonctionnalités au dashboard ?
+
+
+
+
+Parfait ! Je vais nettoyer et adapter le code pour cette approche.
+
+1. D'abord, supprimons les fichiers inutiles :
+- `src/components/ui/forms/GenerateApiKeyModal.astro`
+- `src/components/ui/Modal.astro`
+
+2. Simplifions le composant `ApiKeys.astro` :
+
+```:src/components/ui/dashboard/ApiKeys.astro
+
+```
+
+
+3. Créons un service pour gérer les clés API :
+
+```:src/lib/api-keys.ts
+
+```
+
+
+Cette nouvelle structure est beaucoup plus propre et logique :
+
+1. Les clés API sont automatiquement générées à l'achat d'un produit
+2. Chaque clé est liée à un produit spécifique
+3. Le dashboard montre simplement les produits achetés et leurs clés associées
+4. La validation et le suivi d'utilisation sont intégrés
+
+Pour utiliser ce système, il suffit d'appeler `createApiKeyForPurchase` lors de l'achat d'un produit :
+
+```typescript
+// Dans le processus d'achat
+const { apiKey, keyData } = await createApiKeyForPurchase(userId, productId);
+
+// Envoyer la clé par email
+await sendEmail(userId, {
+  subject: 'Votre clé API',
+  body: `Voici votre clé API pour ${keyData.products.name}: ${apiKey}`
+});
+```
+
+Voulez-vous que je crée aussi le composant pour afficher la clé API juste après l'achat ?

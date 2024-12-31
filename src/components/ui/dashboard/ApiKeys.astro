@@ -1,0 +1,97 @@
+---
+interface Props {
+  apiKeys: Array<{
+    id: string;
+    key_hash: string;
+    product: {
+      name: string;
+      description: string;
+    };
+    status: 'active' | 'suspended' | 'expired';
+    last_used_at?: string;
+    expires_at?: string;
+  }>;
+}
+
+const { apiKeys } = Astro.props;
+---
+
+<div class="overflow-hidden rounded-lg bg-white shadow dark:bg-neutral-800">
+  <div class="p-6">
+    <div class="sm:flex sm:items-center">
+      <div class="sm:flex-auto">
+        <h3 class="text-lg font-medium leading-6 text-neutral-900 dark:text-neutral-100">
+          Vos clés API
+        </h3>
+        <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+          Clés d'accès pour vos produits achetés
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 flow-root">
+      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          {apiKeys.length === 0 ? (
+            <div class="text-center py-4">
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                Vous n'avez pas encore de produit avec accès API
+              </p>
+            </div>
+          ) : (
+            <table class="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+              <thead>
+                <tr>
+                  <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-neutral-900 dark:text-neutral-100 sm:pl-0">
+                    Produit
+                  </th>
+                  <th class="px-3 py-3.5 text-left text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                    Statut
+                  </th>
+                  <th class="px-3 py-3.5 text-left text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                    Dernière utilisation
+                  </th>
+                  <th class="px-3 py-3.5 text-left text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                    Expire le
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+                {apiKeys.map((key) => (
+                  <tr>
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-neutral-900 dark:text-neutral-100 sm:pl-0">
+                      <div>
+                        <div class="font-medium">{key.product.name}</div>
+                        <div class="text-neutral-500 dark:text-neutral-400">{key.product.description}</div>
+                      </div>
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm">
+                      <span
+                        class:list={[
+                          "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                          key.status === 'active'
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                            : key.status === 'suspended'
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                        ]}
+                      >
+                        {key.status === 'active' ? 'Active' : key.status === 'suspended' ? 'Suspendue' : 'Expirée'}
+                      </span>
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-neutral-500 dark:text-neutral-400">
+                      {key.last_used_at ? new Date(key.last_used_at).toLocaleDateString() : 'Jamais'}
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-neutral-500 dark:text-neutral-400">
+                      {key.expires_at ? new Date(key.expires_at).toLocaleDateString() : 'Jamais'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
