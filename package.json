@@ -26,7 +26,7 @@
     "@supabase/supabase-js": "^2.47.10",
     "@vercel/nft": "^0.27.10",
     "astro": "^4.16.18",
-    "astro-compressor": "^0.4.1",
+    "astro-compressor": "^1.0.0",
     "astro-icon": "^1.1.5",
     "astro-vtbot": "^1.10.7",
     "clipboard": "^2.0.11",

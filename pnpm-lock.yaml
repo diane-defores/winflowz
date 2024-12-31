@@ -57,8 +57,8 @@ importers:
         specifier: ^4.16.18
         version: 4.16.18(@types/node@22.10.2)(rollup@4.29.1)(terser@5.37.0)(typescript@5.7.2)
       astro-compressor:
-        specifier: ^0.4.1
-        version: 0.4.1
+        specifier: ^1.0.0
+        version: 1.0.0
       astro-icon:
         specifier: ^1.1.5
         version: 1.1.5
@@ -1071,8 +1071,8 @@ packages:
     resolution: {integrity: sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg==}
     hasBin: true
 
-  astro-compressor@0.4.1:
-    resolution: {integrity: sha512-IAgYAlxYRMolaptsFB9quH7RxX4eUeC4UfULCPhT+ILcg7m1kbaxuyUKqGg9Hh+KZ+FNPPDAz7DqUfl+HDWhQg==}
+  astro-compressor@1.0.0:
+    resolution: {integrity: sha512-MNGRmjIsb73BIJivbU/HnTbPu5CEFvXp1NCev0bpsuK/cp4cCPX6C1omUPXzw2oQbtKv0phTTTtEk+h20SrF1Q==}
 
   astro-expressive-code@0.35.6:
     resolution: {integrity: sha512-1U4KrvFuodaCV3z4I1bIR16SdhQlPkolGsYTtiANxPZUVv/KitGSCTjzksrkPonn1XuwVqvnwmUUVzTLWngnBA==}
@@ -4514,7 +4514,7 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-compressor@0.4.1: {}
+  astro-compressor@1.0.0: {}
 
   astro-expressive-code@0.35.6(astro@4.16.18(@types/node@22.10.2)(rollup@4.29.1)(terser@5.37.0)(typescript@5.7.2)):
     dependencies:
