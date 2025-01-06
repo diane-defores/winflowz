@@ -112,8 +112,8 @@ importers:
         specifier: ^0.6.9
         version: 0.6.9(prettier-plugin-astro@0.14.1)(prettier@3.4.2)
       supabase:
-        specifier: ^2.1.1
-        version: 2.1.1
+        specifier: ^2.2.1
+        version: 2.2.1
       typescript:
         specifier: ^5.7.2
         version: 5.7.2
@@ -3017,8 +3017,8 @@ packages:
   suf-log@2.5.3:
     resolution: {integrity: sha512-KvC8OPjzdNOe+xQ4XWJV2whQA0aM1kGVczMQ8+dStAO6KfEB140JEVQ9dE76ONZ0/Ylf67ni4tILPJB41U0eow==}
 
-  supabase@2.1.1:
-    resolution: {integrity: sha512-KPP4LrvMmu6IWIcqSOcPbepTGT2Fv05TMiYwbcEaKgCVUznDNtlyXQTImJhjP+8FhNuJ+tF9SLoQgMQqDei+jA==}
+  supabase@2.2.1:
+    resolution: {integrity: sha512-uTu8f4kT9wE3EEQTAJAWFlHyu8ymauFxWEz2FDGIQ2MzlD1Xb1NCHtsj/xvmJWqrGI1jnBYcPuatZVTHj1jR1g==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -7005,7 +7005,7 @@ snapshots:
     dependencies:
       s.color: 0.0.15
 
-  supabase@2.1.1:
+  supabase@2.2.1:
     dependencies:
       bin-links: 5.0.0
       https-proxy-agent: 7.0.6
