@@ -1,0 +1,33 @@
+{
+  "title": "Roadmap",
+  "subtitle": "Discover our projects and vote for the features you'd like to see implemented",
+  "sections": {
+    "allFeatures": "All Features",
+    "allProjects": "All Projects"
+  },
+  "projects": {
+    "tubeflowz": {
+      "name": "TubeFlowz",
+      "description": "YouTube management and automation platform"
+    },
+    "mediaflowz": {
+      "name": "MediaFlowz",
+      "description": "Media content management solution"
+    }
+  },
+  "status": {
+    "planned": "Planned",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "considering": "Considering",
+    "inDevelopment": "In Development"
+  },
+  "feature": {
+    "votes": "votes",
+    "vote": "Vote"
+  },
+  "nav": {
+    "projectsLabel": "Projects navigation",
+    "backToAll": "Back to all projects"
+  }
+} 

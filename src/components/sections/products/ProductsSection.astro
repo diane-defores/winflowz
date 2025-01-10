@@ -1,0 +1,118 @@
+---
+import { Icons } from "@/components/ui/icons/icons";
+import { getLangFromUrl, useTranslatedPath } from "@/utils/i18n";
+
+interface ProductItem {
+	title: string;
+	description: string;
+	features: string[];
+	price: string;
+	link: string;
+}
+
+interface ProductsData {
+	[key: string]: ProductItem;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslatedPath(lang);
+
+// Import dynamique du fichier JSON en fonction de la langue
+const productsData = await import(`@/content/i18n/${lang}/products.json`);
+const products = Object.entries(productsData.default).map(([key, value]) => ({
+	id: key,
+	title: value.title,
+	description: value.description,
+	features: value.features,
+	price: value.price,
+	link: value.link,
+	svg: key,
+}));
+---
+
+<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+		{
+			products.map((product) => (
+				<div class="group flex h-full flex-col rounded-xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800">
+					<div class="p-4 md:p-6">
+						<div class="flex items-center gap-x-4">
+							<div class="dark:bg-orange-900 inline-flex size-12 items-center justify-center rounded-lg bg-orange-100">
+								<svg
+									class={Icons[product.svg].class}
+									width={Icons[product.svg].width}
+									height={Icons[product.svg].height}
+									viewBox={Icons[product.svg].viewBox}
+									fill={Icons[product.svg].fill}
+									stroke={Icons[product.svg].stroke}
+									strokeWidth={Icons[product.svg].strokeWidth}
+									strokeLinecap={Icons[product.svg].strokeLinecap}
+									strokeLinejoin={Icons[product.svg].strokeLinejoin}
+								>
+									{Icons[product.svg].paths.map((path) => (
+										<path {...path} />
+									))}
+								</svg>
+							</div>
+							<div class="flex flex-col">
+								<h3 class="text-lg font-bold text-neutral-800 dark:text-neutral-200">
+									{product.title}
+								</h3>
+								<p class="text-sm text-orange-500 dark:text-orange-400">
+									{product.price} €
+								</p>
+							</div>
+						</div>
+						<p class="mt-3 text-neutral-600 dark:text-neutral-400">
+							{product.description}
+						</p>
+						<ul class="mt-4 space-y-2">
+							{product.features.map((feature) => (
+								<li class="flex items-center gap-x-2 text-sm text-neutral-600 dark:text-neutral-400">
+									<svg
+										class="size-4 flex-shrink-0 text-orange-500 dark:text-orange-400"
+										xmlns="http://www.w3.org/2000/svg"
+										width="24"
+										height="24"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									>
+										<path d="M20 6 9 17l-5-5" />
+									</svg>
+									{feature}
+								</li>
+							))}
+						</ul>
+					</div>
+					<div class="mt-auto flex border-t border-neutral-200 p-4 dark:border-neutral-700 md:p-6">
+						<a
+							class="text-orange-800 dark:bg-orange-900 dark:hover:bg-orange-800 inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-transparent bg-orange-100 px-4 py-3 text-sm font-semibold hover:bg-orange-200 disabled:pointer-events-none disabled:opacity-50 dark:text-orange-200 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600"
+							href={t(product.link)}
+						>
+							{lang === "fr" ? "En savoir plus" : "Learn more"}
+							<svg
+								class="size-4 flex-shrink-0"
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path d="m9 18 6-6-6-6" />
+							</svg>
+						</a>
+					</div>
+				</div>
+			))
+		}
+	</div>
+</section>
+

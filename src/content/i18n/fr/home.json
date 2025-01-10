@@ -1,0 +1,75 @@
+{
+  "title": "WinFlowz - Outils et Formation pour la Productivité",
+  "meta": {
+    "description": "Transformez votre flux de travail numérique avec des outils puissants et des formations conçues par une experte neurodivergente passionnée par la productivité."
+  },
+  "hero": {
+    "title": "Devenez un <span class='relative inline-flex sm:inline'><span class='relative text-orange-400 text-6xl dark:text-pink-400'>Maître</span><span class='absolute inset-0 h-full w-full bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] opacity-30 blur-lg filter'></span></span> <span class='text-yellow-500 text-7xl dark:text-yellow-400'>Productif</span>",
+    "subtitle": "Transformez votre workflow numérique avec des outils puissants et des formations conçues pour votre productivité par une experte neurodivergente.",
+    "primaryBtn": "Témoignages",
+    "primaryBtnURL": "/fr/produits#testimonials",
+    "secondaryBtn": "Acheter",
+    "review": {
+      "rating": "<span class='font-bold'>5</span> / 5",
+      "starCount": 5,
+      "text": "Sur <span class='font-bold'>6</span> Avis"
+    }
+  },
+  "clients": {
+    "title": "Approuvé par les Leaders",
+    "subtitle": "Rejoignez les entrepreneurs, freelances et professionnels qui ont transformé leur productivité avec WinFlowz"
+  },
+  "features": {
+    "title": "Redéfinir la Productivité Numérique",
+    "subtitle": "En tant que personne avec TDAH et autisme, j'ai beaucoup lutté pour être consciente de moi-même et disciplinée. J'ai donc créé des outils qui rendent déraisonnable et impossible de ne pas atteindre nos objectifs👌"
+  },
+  "workflow": {
+    "title": "Personnalisez <span class='text-yellow-500 dark:text-yellow-400'>Vos Workflowz</span> pour correspondre parfaitement à votre personnalité et construire votre meilleure vie",
+    "tabs": [
+      {
+        "heading": "ObsiFlowz",
+        "content": "J'utilise actuellement Obsidian comme application de notes, alors je conçois des plugins incroyables pour booster votre expérience Obsidian. Transformez votre curation de contenu avec RSSFlowz et optimisez votre gestion de recherche de plugins avec PluginFlowz."
+      },
+      {
+        "heading": "TubeFlowz",
+        "content": "Révolutionnez votre recherche YouTube avec une puissante extension Chrome d'annotation et de marque-pages. Ne perdez plus jamais de contenu précieux."
+      },
+      {
+        "heading": "Windows Mastery",
+        "content": "Débloquez tout le potentiel de Windows avec plus de 200 astuces et outils de productivité testés et approuvés. Travaillez plus intelligemment, pas plus dur."
+      }
+    ]
+  },
+  "testimonials": {
+    "title": "Accélérez vos Projets",
+    "subtitle": "Nous vous assurons d'obtenir le maximum de valeur avec un minimum d'investissement et d'effort.",
+    "main": {
+      "content": "Félicitations, Diane ! Je viens de passer 20 minutes dessus et je me demande déjà ce que j'ai fait de ma vie jusqu'à maintenant :)) Plein de bonnes choses pour améliorer mon travail. J'adore !",
+      "author": "Florin Muresan",
+      "role": "PDG et Co-Fondateur | Squirrly"
+    },
+    "stats": [
+      {
+        "count": "70k+",
+        "description": "clients équipés — des particuliers aux grandes entreprises"
+      },
+      {
+        "count": "35%",
+        "description": "augmentation de l'efficacité avec les outils WinFlowz"
+      },
+      {
+        "count": "15,3%",
+        "description": "réduction des coûts rapportée par nos clients fidèles"
+      },
+      {
+        "count": "2x",
+        "description": "plus rapide grâce à nos solutions innovantes"
+      }
+    ]
+  },
+  "cta": {
+    "title": "Construisons Ensemble",
+    "subtitle": "WinFlowz est un écosystème de productivité, méticuleusement conçu par Diane Defores.",
+    "url": "https://winflowz.com/fr/courses"
+  }
+} 

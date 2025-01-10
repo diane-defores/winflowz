@@ -5,20 +5,29 @@ import StatusIcon from "./StatusIcon.astro";
 interface Props {
   feature: Feature;
   showProjectName?: boolean;
+  translations: {
+    planned: string;
+    inProgress: string;
+    completed: string;
+    considering: string;
+    inDevelopment: string;
+    vote: string;
+    votes: string;
+  };
 }
 
-const { feature, showProjectName = false } = Astro.props;
+const { feature, showProjectName = false, translations } = Astro.props;
 
 function getStatusLabel(status: Feature["status"]) {
   switch (status) {
     case "in-development":
-      return "En développement";
+      return translations.inDevelopment;
     case "planned":
-      return "Planifié";
+      return translations.planned;
     case "considering":
-      return "À l'étude";
+      return translations.considering;
     case "completed":
-      return "Terminé";
+      return translations.completed;
     default:
       return status;
   }
@@ -40,11 +49,14 @@ function getStatusLabel(status: Feature["status"]) {
   </h3>
   <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">{feature.description}</p>
   <div class="mt-4">
-    <button class="group flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-700 dark:hover:bg-neutral-800/50">
+    <button 
+      class="group flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-700 dark:hover:bg-neutral-800/50"
+      title={translations.vote}
+    >
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4 text-neutral-400 transition-colors group-hover:text-neutral-500 dark:text-neutral-500 dark:group-hover:text-neutral-400">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
       </svg>
-      <span>{feature.votes}</span>
+      <span>{feature.votes} {translations.votes}</span>
     </button>
   </div>
 </div> 

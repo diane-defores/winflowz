@@ -1,0 +1,147 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined, legal: "legal" } },
+    { params: { lang: "fr", legal: "mentions-legales" } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = await useTranslations(lang, "legal");
+---
+
+<MainLayout
+  title={t.title}
+  lang={lang}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `https://winflowz.com/${lang === 'fr' ? 'fr/mentions-legales' : 'legal'}`,
+    "url": `https://winflowz.com/${lang === 'fr' ? 'fr/mentions-legales' : 'legal'}`,
+    "name": `${t.title} | WinFlowz`,
+    "description": t.sections.legalInfo.intro,
+    "inLanguage": lang
+  }}
+>
+  <div class="max-w-4xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold mb-8 text-neutral-900 dark:text-white">
+      {t.title}
+    </h1>
+
+    <p class="text-sm mb-4 text-neutral-500 dark:text-neutral-400">
+      {t.lastUpdated}
+    </p>
+
+    <div class="space-y-6 text-neutral-600 dark:text-neutral-400">
+      {/* Section Informations Légales */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.legalInfo.title}
+      </h2>
+      <p>{t.sections.legalInfo.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.legalInfo.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Activité Professionnelle */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.activity.title}
+      </h2>
+      <p>{t.sections.activity.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.activity.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Hébergement */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.hosting.title}
+      </h2>
+      <p>{t.sections.hosting.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.hosting.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Services d'Authentification */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.auth.title}
+      </h2>
+      <p>{t.sections.auth.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.auth.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Propriété Intellectuelle */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.ip.title}
+      </h2>
+      <p>{t.sections.ip.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.ip.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Protection des Données */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.dataProtection.title}
+      </h2>
+      <p>{t.sections.dataProtection.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.dataProtection.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Assurance */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.insurance.title}
+      </h2>
+      <p>{t.sections.insurance.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.insurance.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Litiges */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.disputes.title}
+      </h2>
+      <p>{t.sections.disputes.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.disputes.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      {/* Section Immatriculation */}
+      <h2 class="text-xl font-semibold mt-8 mb-4 text-neutral-800 dark:text-neutral-200">
+        {t.sections.registration.title}
+      </h2>
+      <p>{t.sections.registration.intro}</p>
+      <ul class="list-disc pl-6 space-y-2">
+        {t.sections.registration.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+
+      <p class="mt-8">
+        {t.footer.updates}
+      </p>
+    </div>
+
+    <p class="mt-8 text-sm text-neutral-500 dark:text-neutral-400">
+      {t.footer.contact}
+    </p>
+  </div>
+</MainLayout> 

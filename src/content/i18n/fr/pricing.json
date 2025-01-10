@@ -1,0 +1,52 @@
+{
+  "title": "Tarification Simple et Transparente",
+  "subtitle": "Choisissez le plan qui correspond le mieux à vos besoins",
+  "plans": [
+    {
+      "name": "Débutant",
+      "description": "Parfait pour débuter avec les outils de productivité",
+      "price": "Gratuit",
+      "period": "",
+      "features": [
+        "Plugins Obsidian de base",
+        "Guide d'optimisation Windows",
+        "Support communautaire",
+        "Documentation de base"
+      ],
+      "cta": "Commencer",
+      "popular": false
+    },
+    {
+      "name": "Pro",
+      "description": "Tout ce dont vous avez besoin pour une productivité maximale",
+      "price": "9,99 €",
+      "period": "/mois",
+      "features": [
+        "Tous les plugins Obsidian",
+        "Extensions Chrome",
+        "Support prioritaire",
+        "Formation avancée",
+        "Mises à jour régulières",
+        "Documentation premium"
+      ],
+      "cta": "Démarrer Pro",
+      "popular": true
+    },
+    {
+      "name": "Entreprise",
+      "description": "Solutions personnalisées pour les équipes et organisations",
+      "price": "Sur mesure",
+      "period": "",
+      "features": [
+        "Développement personnalisé",
+        "Formation d'équipe",
+        "Support dédié",
+        "Intégrations sur mesure",
+        "Garantie SLA",
+        "Assistance au démarrage"
+      ],
+      "cta": "Nous Contacter",
+      "popular": false
+    }
+  ]
+} 

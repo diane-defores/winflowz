@@ -1,0 +1,81 @@
+---
+interface Props {
+  name: string;
+  description: string;
+  price: string;
+  period: string;
+  features: string[];
+  cta: string;
+  popular?: boolean;
+}
+
+const { name, description, price, period, features, cta, popular = false } = Astro.props;
+---
+
+<div class:list={[
+  "relative flex flex-col rounded-xl p-8 shadow-sm",
+  popular ? "bg-orange-500 dark:bg-orange-600" : "bg-white dark:bg-neutral-800"
+]}>
+  {popular && (
+    <span class="absolute top-0 right-0 rounded-tr-xl rounded-bl-xl bg-orange-600 px-3 py-1.5 text-xs font-medium text-white dark:bg-orange-700">
+      Populaire
+    </span>
+  )}
+
+  <div class="mb-6">
+    <h3 class:list={[
+      "text-xl font-bold lg:text-2xl",
+      popular ? "text-white" : "text-neutral-800 dark:text-neutral-200"
+    ]}>
+      {name}
+    </h3>
+    <p class:list={[
+      "mt-2 text-base",
+      popular ? "text-white/90" : "text-neutral-600 dark:text-neutral-400"
+    ]}>
+      {description}
+    </p>
+  </div>
+
+  <div class="mb-6">
+    <span class:list={[
+      "text-4xl font-bold lg:text-5xl",
+      popular ? "text-white" : "text-neutral-800 dark:text-neutral-200"
+    ]}>
+      {price}
+    </span>
+    {period && (
+      <span class:list={[
+        "text-base",
+        popular ? "text-white/90" : "text-neutral-600 dark:text-neutral-400"
+      ]}>
+        {period}
+      </span>
+    )}
+  </div>
+
+  <ul class="mb-6 space-y-2">
+    {features.map((feature) => (
+      <li class:list={[
+        "flex items-center gap-x-2",
+        popular ? "text-white" : "text-neutral-600 dark:text-neutral-400"
+      ]}>
+        <svg class="flex-shrink-0 w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        {feature}
+      </li>
+    ))}
+  </ul>
+
+  <div class="mt-auto">
+    <button type="button" class:list={[
+      "w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border transition-all",
+      popular 
+        ? "border-white text-orange-500 bg-white hover:bg-neutral-50 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600"
+        : "border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white disabled:opacity-50 disabled:pointer-events-none dark:border-orange-500 dark:text-orange-500 dark:hover:text-white dark:hover:bg-orange-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600"
+    ]}>
+      {cta}
+    </button>
+  </div>
+</div> 

@@ -1,0 +1,33 @@
+{
+  "title": "Feuille de Route",
+  "subtitle": "Découvrez nos projets et votez pour les fonctionnalités que vous souhaitez voir implémentées",
+  "sections": {
+    "allFeatures": "Toutes les fonctionnalités",
+    "allProjects": "Tous les projets"
+  },
+  "projects": {
+    "tubeflowz": {
+      "name": "TubeFlowz",
+      "description": "Plateforme de gestion et d'automatisation pour YouTube"
+    },
+    "mediaflowz": {
+      "name": "MediaFlowz",
+      "description": "Solution de gestion de contenu multimédia"
+    }
+  },
+  "status": {
+    "planned": "Planifié",
+    "inProgress": "En cours",
+    "completed": "Terminé",
+    "considering": "À l'étude",
+    "inDevelopment": "En développement"
+  },
+  "feature": {
+    "votes": "votes",
+    "vote": "Voter"
+  },
+  "nav": {
+    "projectsLabel": "Navigation des projets",
+    "backToAll": "Retour à tous les projets"
+  }
+} 

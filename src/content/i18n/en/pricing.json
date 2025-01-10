@@ -1,0 +1,52 @@
+{
+  "title": "Simple, Transparent Pricing",
+  "subtitle": "Choose the plan that best fits your needs",
+  "plans": [
+    {
+      "name": "Starter",
+      "description": "Perfect for getting started with productivity tools",
+      "price": "Free",
+      "period": "",
+      "features": [
+        "Basic Obsidian plugins",
+        "Windows optimization guide",
+        "Community support",
+        "Basic documentation"
+      ],
+      "cta": "Get Started",
+      "popular": false
+    },
+    {
+      "name": "Pro",
+      "description": "Everything you need for maximum productivity",
+      "price": "$9.99",
+      "period": "/month",
+      "features": [
+        "All Obsidian plugins",
+        "Chrome extensions",
+        "Priority support",
+        "Advanced training",
+        "Regular updates",
+        "Premium documentation"
+      ],
+      "cta": "Start Pro",
+      "popular": true
+    },
+    {
+      "name": "Enterprise",
+      "description": "Custom solutions for teams and organizations",
+      "price": "Custom",
+      "period": "",
+      "features": [
+        "Custom development",
+        "Team training",
+        "Dedicated support",
+        "Custom integrations",
+        "SLA guarantee",
+        "Onboarding assistance"
+      ],
+      "cta": "Contact Us",
+      "popular": false
+    }
+  ]
+} 

@@ -1,4 +1,4 @@
-import "@styles/lenis.css";
+import "../styles/lenis.css";
 
 import Lenis from "lenis";
 

@@ -35,7 +35,7 @@ export async function getLocalizedPath(lang: Language, path: string): Promise<st
     return routes[segment] || segment;
   });
 
-  return lang === 'en' 
+  return lang === '' 
     ? `/${localizedSegments.join('/')}` 
     : `/fr/${localizedSegments.join('/')}`;
 }

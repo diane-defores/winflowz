@@ -1,0 +1,31 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+import ContactSection from "@/components/sections/ContactSection.astro";
+import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined, contact: "contact" } },
+    { params: { lang: "fr", contact: "contact" } },
+  ];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = await useTranslations(lang, "contact");
+---
+
+<MainLayout
+  title={t.title}
+  lang={lang}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `https://winflowz.com/${lang === 'fr' ? 'fr/contact' : 'contact'}`,
+    "url": `https://winflowz.com/${lang === 'fr' ? 'fr/contact' : 'contact'}`,
+    "name": t.title,
+    "description": t.meta.description,
+    "inLanguage": lang
+  }}
+>
+  <ContactSection t={t} />
+</MainLayout> 
