@@ -1,9 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Database } from '../types/supabase'
 
-const supabaseUrl = import.meta.env.SUPABASE_URL
-const supabaseKey = import.meta.env.SUPABASE_KEY
-
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient<Database>(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      persistSession: false
+    }
+  }
+)
 
 // Helper pour vérifier si l'utilisateur est connecté
 export async function isUserLoggedIn() {

@@ -8,20 +8,57 @@ import icon from "astro-icon";
 
 export default defineConfig({
   site: "https://winflowz.com",
+  output: "hybrid",
+  build: {
+    inlineStylesheets: "auto",
+    split: true,
+  },
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+    speedInsights: {
+      enabled: true,
+    },
+    imageService: true,
+    imagesConfig: {
+      sizes: [640, 750, 828, 1080, 1200],
+      formats: ["image/webp"],
+    },
+  }),
   image: {
     domains: ["images.unsplash.com"],
+    service: {
+      entrypoint: "astro/assets/services/sharp",
+    },
   },
-  prefetch: true,
-  adapter: vercel(),
-  output: "server",
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: "hover",
+  },
   integrations: [
     icon({
       include: {
         heroicons: ["*"],
         "phosphor-icons": ["*"]
-      }
+      },
+      svgoOptions: {
+        multipass: true,
+        plugins: [
+          {
+            name: "preset-default",
+            params: {
+              overrides: {
+                removeViewBox: false,
+              },
+            },
+          },
+        ],
+      },
     }),
-    tailwind(),
+    tailwind({
+      applyBaseStyles: false,
+    }),
     sitemap({
       i18n: {
         defaultLocale: "en",
@@ -75,28 +112,44 @@ export default defineConfig({
         {
           label: "Quick Start Guides",
           translations: {
-            de: "Schnellstartanleitungen",
-            es: "Guías de Inicio Rápido",
-            fa: "راهنمای شروع سریع",
             fr: "Guides de Démarrage Rapide",
-            ja: "クイックスタートガイド",
-            "zh-cn": "快速入门指南",
           },
           autogenerate: { directory: "guides" },
         },
         {
           label: "Tools & Equipment",
+          translations: {
+            fr: "Outils & Équipements",
+          },
           items: [
-            { label: "Tool Guides", link: "tools/tool-guides/" },
-            { label: "Equipment Care", link: "tools/equipment-care/" },
+            { 
+              label: "Tool Guides", 
+              link: "tools/tool-guides/",
+              translations: {
+                fr: "Guides d'Outils",
+              },
+            },
+            { 
+              label: "Equipment Care", 
+              link: "tools/equipment-care/",
+              translations: {
+                fr: "Entretien du Matériel",
+              },
+            },
           ],
         },
         {
           label: "Construction Services",
+          translations: {
+            fr: "Services de Construction",
+          },
           autogenerate: { directory: "construction" },
         },
         {
           label: "Advanced Topics",
+          translations: {
+            fr: "Sujets Avancés",
+          },
           autogenerate: { directory: "advanced" },
         },
       ],
@@ -117,14 +170,14 @@ export default defineConfig({
           tag: "meta",
           attrs: {
             property: "og:image",
-            content: "https://screwfast.uk" + "/social.webp",
+            content: "https://winflowz.com/social.webp",
           },
         },
         {
           tag: "meta",
           attrs: {
             property: "twitter:image",
-            content: "https://screwfast.uk" + "/social.webp",
+            content: "https://winflowz.com/social.webp",
           },
         },
       ],
@@ -134,8 +187,4 @@ export default defineConfig({
       brotli: true,
     }),
   ],
-  experimental: {
-    clientPrerender: true,
-    directRenderScript: true,
-  },
 });

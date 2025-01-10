@@ -1,11 +1,17 @@
 {
-  "name": "",
+  "name": "winflowz",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && node process-html.mjs",
+    "clean": "rimraf dist .vercel/output node_modules/.vite",
+    "typecheck": "set NODE_OPTIONS=\"--max-old-space-size=4096\" && astro check --tsconfig ./tsconfig.json",
+    "build:check": "astro check --tsconfig ./tsconfig.json",
+    "build:analyze": "set NODE_OPTIONS=\"--max-old-space-size=4096\" && astro build --analyze",
+    "build:astro": "set NODE_OPTIONS=\"--max-old-space-size=4096\" && astro build",
+    "build:debug": "set NODE_OPTIONS=\"--inspect --inspect-brk\" && astro build",
+    "build": "set NODE_OPTIONS=\"--max-old-space-size=4096\" && astro build --force",
     "preview": "astro preview",
     "astro": "astro"
   },

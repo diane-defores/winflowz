@@ -55,12 +55,12 @@ const footerLinks = [
   },
 ];
 
-const socialLinks = {
+export const socialLinks: SocialLinks = {
   facebook: "#",
-  x: "#",
-  github: "https://github.com/mearashadowfax/ScrewFast",
-  google: "#",
-  slack: "#",
+  twitter: "#",
+  github: "https://github.com/dianedef/winflowz",
+  linkedin: "#",
+  instagram: "#",
 };
 
 export function getNavigation() {

@@ -1,6 +1,8 @@
 ---
+export const prerender = false;
+
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getCurrentUser } from "../../lib/supabase";
+import { supabase, getCurrentUser } from "../../lib/supabase";
 import Header from "../../components/ui/dashboard/Header.astro";
 import Sidebar from "../../components/ui/dashboard/Sidebar.astro";
 import Stats from "../../components/ui/dashboard/Stats.astro";
@@ -10,16 +12,23 @@ import GenerateApiKeyModal from "../../components/ui/forms/GenerateApiKeyModal.a
 // Récupérer l'utilisateur actuel
 const user = await getCurrentUser();
 
+if (!user) {
+	return Astro.redirect('/auth/login');
+}
+
 // Vérifier si l'utilisateur vient de confirmer son email
-const isNewlyConfirmed =
-	Astro.url.searchParams.get("newly_confirmed") === "true";
+const isNewlyConfirmed = Astro.url.searchParams.get("newly_confirmed") === "true";
 
 // Récupérer les clés API de l'utilisateur
-const { data: apiKeys } = await supabase
+const { data: apiKeys, error } = await supabase
 	.from("api_keys")
 	.select("*")
-	.eq("user_id", user?.id)
+	.eq("user_id", user.id)
 	.order("created_at", { ascending: false });
+
+if (error) {
+	console.error('Erreur lors de la récupération des clés API:', error);
+}
 ---
 
 <MainLayout title="Dashboard">

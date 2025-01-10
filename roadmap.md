@@ -342,3 +342,39 @@ await sendEmail(userId, {
 ```
 
 Voulez-vous que je crée aussi le composant pour afficher la clé API juste après l'achat ?
+
+
+Oui, toutes les routes liées à l'authentification doivent aussi être en mode serveur. Je vais vous montrer comment les configurer :
+
+1. Pour les pages d'authentification :
+
+```:src/pages/auth/callback.astro
+
+```
+
+
+En résumé, voici toutes les pages qui doivent avoir `export const prerender = false;` :
+
+1. Routes d'authentification :
+   - `/auth/callback.astro`
+   - `/auth/login.astro`
+   - `/auth/register.astro`
+   - `/auth/reset-password.astro`
+
+2. Routes du dashboard :
+   - `/dashboard/index.astro`
+   - `/dashboard/parametres.astro`
+   - `/dashboard/taches.astro`
+
+3. Routes d'administration :
+   - `/admin/index.astro`
+   - Toutes les autres pages admin
+
+4. Routes API :
+   - `/api/keys/generate.ts`
+   - `/api/keys/revoke.ts`
+   - Toutes les autres routes API
+
+Les autres pages (accueil, blog, pages statiques) peuvent rester en mode statique pour de meilleures performances.
+
+Voulez-vous que j'ajoute `prerender = false` à toutes ces pages maintenant ?

@@ -1,0 +1,68 @@
+---
+interface Props {
+  id: string;
+  title: string;
+}
+
+const { id, title } = Astro.props;
+---
+
+<div
+  id={id}
+  class="fixed inset-0 z-50 hidden h-full w-full overflow-y-auto overflow-x-hidden bg-neutral-900/50 p-4 backdrop-blur-sm"
+  aria-labelledby={`${id}-title`}
+  aria-hidden="true"
+  tabindex="-1"
+>
+  <div
+    class="relative top-7 mx-auto w-full max-w-md rounded-xl bg-white p-6 shadow-lg dark:bg-neutral-900 sm:p-7"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="flex items-center justify-between">
+      <h3
+        id={`${id}-title`}
+        class="text-xl font-semibold text-neutral-800 dark:text-white"
+      >
+        {title}
+      </h3>
+      <button
+        type="button"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+        data-modal-close={id}
+      >
+        <span class="sr-only">Fermer</span>
+        <svg
+          class="h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="mt-4">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const modals = document.querySelectorAll("[id^='generate-api-key-modal']");
+    modals.forEach((modal) => {
+      const closeButtons = modal.querySelectorAll("[data-modal-close]");
+      closeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          modal.classList.add("hidden");
+        });
+      });
+    });
+  });
+</script> 

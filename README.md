@@ -450,7 +450,7 @@ Structured data in JSON-LD format can be managed by the `Meta.astro` component, 
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Winflowz",
-    "url": "https://screwfast.uk",
+    "url": "https://winflowz.com",
     "description": "Discover top-quality hardware tools and services"
   }}
 >

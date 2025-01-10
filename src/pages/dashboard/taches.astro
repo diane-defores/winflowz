@@ -3,6 +3,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 import { getCurrentUser } from "../../lib/supabase";
 import Header from "../../components/ui/dashboard/Header.astro";
 import Sidebar from "../../components/ui/dashboard/Sidebar.astro";
+export const prerender = false;
 
 const user = await getCurrentUser();
 ---
