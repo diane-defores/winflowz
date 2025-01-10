@@ -3,13 +3,13 @@
 import ThemeIcon from "@/components/ThemeIcon.astro";
 import NavLink from "@/components/ui/links/NavLink.astro";
 import Authentication from "../misc/Authentication.astro";
-import enStrings from "@/utils/navigation";
-import frStrings from "@/utils/fr/navigation";
+import { getLangFromUrl, useTranslations } from "@/utils/i18n";
 import BrandLogo from "@/components/BrandLogo.astro";
 import LanguagePicker from "@/components/ui/LanguagePicker.astro";
 
 // Select the correct translation based on the page's lang prop:
-const strings = Astro.currentLocale === "fr" ? frStrings : enStrings;
+const lang = getLangFromUrl(Astro.url);
+const t = await useTranslations(lang, "navigation");
 const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 ---
 
@@ -91,7 +91,7 @@ const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 			>
 				<!-- Navigation links and Authentication component -->
 				{
-					strings.navBarLinks.map((link) => (
+					t.navBarLinks.map((link) => (
 						<NavLink url={link.url} name={link.name} />
 					))
 				}

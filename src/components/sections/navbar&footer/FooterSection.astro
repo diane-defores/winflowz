@@ -2,24 +2,15 @@
 // Import the necessary dependencies
 import FooterSocialLink from "@/components/ui/links/FooterSocialLink.astro";
 import EmailFooterInput from "@/components/ui/forms/input/EmailFooterInput.astro";
-import enStrings from "@/utils/navigation";
-import frStrings from "@/utils/fr/navigation";
 import Icon from "@/components/ui/icons/Icon.astro";
 import BrandLogo from "@/components/BrandLogo.astro";
 import { SITE } from "@/constants";
+import { getLangFromUrl, useTranslations } from "@/utils/i18n";
 
 // Select the correct translation based on the page's lang prop:
-const strings = Astro.currentLocale === "fr" ? frStrings : enStrings;
-
-// Define the variables that will be used in this component
-const sectionThreeTitle: string =
-	Astro.currentLocale === "fr" ? "Rester à jour" : "Stay up to date";
-const sectionThreeContent: string =
-	Astro.currentLocale === "fr"
-		? "Restez informé des derniers outils et des offres exclusives."
-		: "Stay updated with the latest tools and exclusive deals.";
-const crafted: string =
-	Astro.currentLocale === "fr" ? "Fabriqué par" : "Crafted by";
+const lang = getLangFromUrl(Astro.url);
+const t = await useTranslations(lang, "navigation");
+const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 ---
 
 <footer class="w-full dark:bg-neutral-900">
@@ -33,7 +24,7 @@ const crafted: string =
 			</div>
 			<!-- An array of links for Product and Company sections -->
 			{
-				strings.footerLinks.map((section) => (
+				t.footerLinks.map((section) => (
 					<div class="col-span-1">
 						<h3 class="font-bold text-neutral-800 dark:text-neutral-200">
 							{section.section}
@@ -61,13 +52,13 @@ const crafted: string =
 
 			<div class="col-span-2">
 				<h3 class="font-bold text-neutral-800 dark:text-neutral-200">
-					{sectionThreeTitle}
+					{t.footer.newsletter.title}
 				</h3>
 
 				<form>
 					<EmailFooterInput />
 					<p class="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-						{sectionThreeContent}
+						{t.footer.newsletter.content}
 					</p>
 				</form>
 			</div>
@@ -79,23 +70,25 @@ const crafted: string =
 			<div class="flex items-center justify-between">
 				<p class="text-sm text-neutral-600 dark:text-neutral-400">
 					© <span id="current-year"></span>
-					{SITE.title}. {crafted}
+					{SITE.title}. {t.footer.crafted}
 					<a
 						class="rounded-lg font-medium underline underline-offset-2 outline-none ring-zinc-500 transition duration-300 hover:text-neutral-700 hover:decoration-dashed focus:outline-none focus-visible:ring dark:ring-zinc-200 dark:hover:text-neutral-300"
 						href="https://www.winflowz.com/"
 						target="_blank"
-						rel="noopener noreferrer">WinFlowz</a
-					>.
+						rel="noopener noreferrer"
+					>
+						WinFlowz
+					</a>.
 				</p>
 			</div>
 
 			<!-- Social Brands -->
 			<div>
-				<FooterSocialLink url={strings.socialLinks.facebook}
+				<FooterSocialLink url={t.socialLinks.facebook}
 					><Icon name="facebookFooter" />
 				</FooterSocialLink>
 
-				<FooterSocialLink url={strings.socialLinks.x}
+				<FooterSocialLink url={t.socialLinks.x}
 					><Icon name="xFooter" /></FooterSocialLink
 				>
 			</div>

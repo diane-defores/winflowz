@@ -11,43 +11,86 @@ import { capitalize, formatDate } from "@/utils/utils";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import { SITE } from "@/constants";
+import { useTranslations } from "@/utils/i18n";
+import type { Language } from "@/types";
 
 export const prerender = true;
 
-// Update getStaticPaths for English posts
+// This gets the static paths for all the unique blog posts
 export async function getStaticPaths() {
-	const blogPosts = await getCollection("blog");
-	const englishPosts = blogPosts.filter((post) => post.id.startsWith("en/"));
+	const blogEntries = await getCollection("blog");
+	const posts = blogEntries.filter((post) =>
+		post.id.startsWith("fr/") || post.id.startsWith("en/"),
+	);
 
-	return englishPosts.map((post) => {
-		const slug = post.id.replace(/^en\//, "").replace(/\.md$/, "");
+	return posts.flatMap((post) => {
+		const isEnglish = post.id.startsWith("en/");
+		const isFrench = post.id.startsWith("fr/");
+		const lang = isFrench ? "fr" : undefined;
+		const slug = post.id
+			.replace(isEnglish ? /^en\// : /^fr\//, "")
+			.replace(/\.md$/, "");
+
 		return {
-			params: { slug },
+			params: { lang, slug },
 			props: { post },
 		};
 	});
 }
 
-// Get the current post's data
 const { post } = Astro.props;
+const { lang } = Astro.params;
+// Ensure lang is a valid Language type
+const currentLang = (lang || 'en') as Language;
+const t = await useTranslations(currentLang, 'blog');
 
+if (!t) {
+    throw new Error(`Missing translations for ${currentLang}`);
+}
+
+// Fetch related posts based on language
 const blogPosts: CollectionEntry<"blog">[] = await getCollection(
 	"blog",
-	({ id }) => id.startsWith("en/"),
+	({ id }) => id.startsWith(currentLang + "/"),
 );
-
-// Filter out the current post to get related posts
-// Note: This is a very basic way of choosing related posts, just for the purpose of the example.
-// In a production site, you might want to implement a more robust algorithm, choosing related posts based on tags, categories, dates, authors, or keywords.
-// See example: https://blog.codybrunner.com/2024/adding-related-articles-with-astro-content-collections/
 const relatedPosts: CollectionEntry<"blog">[] = blogPosts.filter(
-	(blogEntry) => blogEntry.slug !== post.slug,
+	(blogEntry) => blogEntry.id !== post.id,
 );
 
 const pageTitle: string = `${post.data.title} | ${SITE.title}`;
+
+const baseUrl = currentLang === "fr" ? "https://winflowz.com/fr" : "https://winflowz.com";
+
+// Ensure we have the translations before using them
+const description = t?.meta?.description || "";
+const siteDescription = t?.meta?.siteDescription || "";
 ---
 
-<MainLayout title={pageTitle}>
+<MainLayout 
+	lang={currentLang} 
+	title={pageTitle}
+	structuredData={{
+		"@context": "https://schema.org",
+		"@type": "BlogPosting",
+		"@id": `${baseUrl}/blog/${post.slug}`,
+		url: `${baseUrl}/blog/${post.slug}`,
+		headline: post.data.title,
+		description: post.data.description || description,
+		author: {
+			"@type": "Person",
+			name: post.data.author
+		},
+		datePublished: post.data.pubDate,
+		image: post.data.cardImage,
+		isPartOf: {
+			"@type": "WebSite",
+			url: baseUrl,
+			name: "ScrewFast",
+			description: siteDescription,
+		},
+		inLanguage: currentLang === "fr" ? "fr" : "en",
+	}}
+>
 	<section class="mx-auto max-w-3xl px-4 pb-12 pt-6 sm:px-6 lg:px-8 lg:pt-10">
 		<div class="max-w-2xl">
 			<div class="mb-6 flex items-center justify-between">
@@ -56,12 +99,16 @@ const pageTitle: string = `${post.data.title} | ${SITE.title}`;
 					<div class="grow">
 						<div class="flex items-center justify-between gap-x-2">
 							<div>
-								<!--Post metadata and author info-->
-								<span
-									class="font-bold text-neutral-700 dark:text-neutral-300"
+								<div
+									class="hs-tooltip inline-block [--placement:bottom] [--trigger:hover]"
 								>
-									{post.data.author}
-								</span>
+									<!--Post metadata and author info-->
+									<span
+										class="font-bold text-neutral-700 dark:text-neutral-300"
+									>
+										{post.data.author}
+									</span>
+								</div>
 								<ul class="text-xs text-neutral-500">
 									<li
 										class="relative inline-block pe-6 before:absolute before:end-2 before:top-1/2 before:size-1 before:-translate-y-1/2 before:rounded-full before:bg-neutral-300 last:pe-0 last-of-type:before:hidden dark:text-neutral-400 dark:before:bg-neutral-600"
@@ -71,7 +118,7 @@ const pageTitle: string = `${post.data.title} | ${SITE.title}`;
 									<li
 										class="relative inline-block pe-6 before:absolute before:end-2 before:top-1/2 before:size-1 before:-translate-y-1/2 before:rounded-full before:bg-neutral-300 last:pe-0 last-of-type:before:hidden dark:text-neutral-400 dark:before:bg-neutral-600"
 									>
-										{post.data.readTime} min read
+										{post.data.readTime} {t.readTime}
 									</li>
 								</ul>
 							</div>
@@ -139,9 +186,9 @@ const pageTitle: string = `${post.data.title} | ${SITE.title}`;
 			</div>
 		</div>
 		<PostFeedback
-			title="Was this post helpful?"
-			firstChoice="Yes"
-			secondChoice="No"
+			title={t.feedback.title}
+			firstChoice={t.feedback.yes}
+			secondChoice={t.feedback.no}
 		/>
 	</section>
 
@@ -151,12 +198,16 @@ const pageTitle: string = `${post.data.title} | ${SITE.title}`;
 			<h2
 				class="text-balance text-2xl font-bold text-neutral-800 dark:text-neutral-200 md:text-4xl md:leading-tight"
 			>
-				Related articles
+				{t.relatedArticles}
 			</h2>
 		</div>
 
 		<div class="grid grid-cols-2 gap-6">
-			{relatedPosts.map((entry) => <CardRelated blogEntry={entry} />)}
+			{
+				relatedPosts.map((entry) => (
+					<CardRelated blogEntry={entry} recentBlogLocale={currentLang} />
+				))
+			}
 		</div>
 	</section>
 </MainLayout>

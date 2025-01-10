@@ -1,64 +1,81 @@
 ---
 // Import necessary components, modules and types
 import MainLayout from "@/layouts/MainLayout.astro";
-import CardBlog from "@components/ui/cards/CardBlog.astro";
-import CardBlogRecent from "@components/ui/cards/CardBlogRecent.astro";
-import CardInsight from "@components/ui/cards/CardInsight.astro";
+import CardBlog from "@/components/ui/cards/CardBlog.astro";
+import CardBlogRecent from "@/components/ui/cards/CardBlogRecent.astro";
+import CardInsight from "@/components/ui/cards/CardInsight.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import { SITE } from "@/constants";
+import { useTranslations } from "@/utils/i18n";
+import type { Language } from "@/types";
 
-// Get all blogs post in French and sort them based on publish date
+export const prerender = true;
 
-const frenchBlogEntries = await getCollection("blog", ({ id }) => {
-	return id.startsWith("fr/");
+// This gets the static paths for the blog index page
+export function getStaticPaths() {
+	return [
+		{ params: { lang: undefined } },
+		{ params: { lang: "fr" } }
+	];
+}
+
+const { lang } = Astro.params;
+// Ensure lang is a valid Language type
+const currentLang = (lang || 'en') as Language;
+const t = await useTranslations(currentLang, 'blog');
+
+if (!t) {
+    throw new Error(`Missing translations for ${currentLang}`);
+}
+
+// Get all blogs post in current language and sort them based on publish date
+const blogEntries = await getCollection("blog", ({ id }) => {
+	return id.startsWith(currentLang + "/");
 });
 
-const frenchInsightsEntries = await getCollection("insights", ({ id }) => {
-	return id.startsWith("fr/");
+const insightsEntries = await getCollection("insights", ({ id }) => {
+	return id.startsWith(currentLang + "/");
 });
 
-const blogPosts: CollectionEntry<"blog">[] = frenchBlogEntries.sort(
+const blogPosts: CollectionEntry<"blog">[] = blogEntries.sort(
 	(a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
 		b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
 // Get all insights posts
-const insightPosts: CollectionEntry<"insights">[] = frenchInsightsEntries;
+const insightPosts: CollectionEntry<"insights">[] = insightsEntries;
 
 // Separate the most recent post from others
 const mostRecentPost: CollectionEntry<"blog"> = blogPosts[0];
 const otherPosts: CollectionEntry<"blog">[] = blogPosts.slice(1);
 
-// Define variables for page content
-const title: string = "Votre Passerelle vers l'Excellence en Construction";
-const subTitle: string =
-	"Explorez les dernières actualités, astuces et analyses de ScrewFast pour améliorer vos projets de construction. Des mises en avant de produits aux stratégies de gestion de projet, notre blog est votre ressource incontournable pour tout ce qui concerne les outils et la construction.";
-const secondTitle: string = "Perspectives";
-const secondSubTitle: string =
-	"Restez à jour avec les dernières tendances et évolutions de l'industrie de la construction grâce aux analyses de l'équipe d'experts de ScrewFast.";
-
 const pageTitle: string = `Blog | ${SITE.title}`;
+
+const baseUrl = currentLang === "fr" ? "https://winflowz.com/fr" : "https://winflowz.com";
+
+// Ensure we have the translations before using them
+const description = t?.meta?.description || "";
+const siteDescription = t?.meta?.siteDescription || "";
 ---
 
 <MainLayout
-	lang="fr"
+	lang={currentLang}
 	title={pageTitle}
 	structuredData={{
 		"@context": "https://schema.org",
 		"@type": "WebPage",
-		"@id": "https://winflowz.com/fr/blog",
-		url: "https://winflowz.com/fr/blog",
+		"@id": `${baseUrl}/blog`,
+		url: `${baseUrl}/blog`,
 		name: "Blog | ScrewFast",
-		description:
-			"Restez informé des dernières tendances et évolutions dans le secteur de la construction avec les analyses de l'équipe d'experts de ScrewFast.",
+		description: description,
 		isPartOf: {
 			"@type": "WebSite",
-			url: "https://winflowz.com/fr",
+			url: baseUrl,
 			name: "ScrewFast",
-			description:
-				"ScrewFast propose des outils matériels de premier ordre et des services de construction experts pour répondre à tous vos besoins de projet.",
+			description: siteDescription,
 		},
-		inLanguage: "fr",
+		inLanguage: currentLang === "fr" ? "fr" : "en",
 	}}
 >
 	<section
@@ -69,13 +86,13 @@ const pageTitle: string = `Blog | ${SITE.title}`;
 			<h1
 				class="block text-balance text-4xl font-bold tracking-tight text-neutral-800 dark:text-neutral-200 md:text-5xl lg:text-6xl"
 			>
-				{title}
+				{t.title}
 			</h1>
 
 			<p
 				class="mt-4 text-pretty text-lg text-neutral-600 dark:text-neutral-400"
 			>
-				{subTitle}
+				{t.subtitle}
 			</p>
 		</div>
 	</section>
@@ -87,7 +104,7 @@ const pageTitle: string = `Blog | ${SITE.title}`;
 		<div class="grid gap-6 lg:grid-cols-2">
 			{
 				otherPosts.map((blogEntry) => (
-					<CardBlog blogEntry={blogEntry} blogLocale="fr" />
+					<CardBlog blogEntry={blogEntry} blogLocale={currentLang} />
 				))
 			}
 		</div>
@@ -96,7 +113,7 @@ const pageTitle: string = `Blog | ${SITE.title}`;
 	<section
 		class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full"
 	>
-		<CardBlogRecent blogEntry={mostRecentPost} recentBlogLocale="fr" />
+		<CardBlogRecent blogEntry={mostRecentPost} recentBlogLocale={currentLang} />
 	</section>
 	<!--Insights section-->
 	<section
@@ -106,16 +123,16 @@ const pageTitle: string = `Blog | ${SITE.title}`;
 			<h2
 				class="text-2xl font-bold text-neutral-800 dark:text-neutral-200 md:text-4xl md:leading-tight"
 			>
-				{secondTitle}
+				{t.insights.title}
 			</h2>
 			<p class="mt-1 text-pretty text-neutral-600 dark:text-neutral-400">
-				{secondSubTitle}
+				{t.insights.subtitle}
 			</p>
 		</div>
 		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 			{
 				insightPosts.map((insightEntry) => (
-					<CardInsight insightEntry={insightEntry} insightLocale="fr" />
+					<CardInsight insightEntry={insightEntry} insightLocale={currentLang} />
 				))
 			}
 		</div>
