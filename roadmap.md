@@ -13,62 +13,7 @@ By combining these tools and practices, you can create a robust API key manageme
 
 
 
-
- Je vais examiner votre projet pour comprendre sa structure actuelle et vous guider dans la migration vers le SSR avec Astro sur Vercel.
-
-Search files...
-
-
-Bonne nouvelle ! Je vois que votre projet est déjà configuré pour le SSR avec Vercel. En effet, dans votre `astro.config.mjs`, je peux voir les configurations suivantes :
-
-```javascript
-adapter: vercel(),
-output: "server",
-```
-
-Ces configurations indiquent que votre projet est déjà configuré pour le SSR (Server-Side Rendering) avec l'adaptateur Vercel. De plus, vous avez déjà installé les dépendances nécessaires comme je peux le voir dans votre `package.json` :
-
-```javascript
-"@astrojs/vercel": "^7.8.2",
-"@clerk/astro": "^1.5.6",
-```
-
-Je vois également que vous avez déjà Clerk configuré pour l'authentification.
-
-Pour vous assurer que tout fonctionne correctement en SSR sur Vercel, voici les points à vérifier :
-
-1. Vérifiez que votre fichier `astro.config.mjs` contient bien ces configurations (c'est déjà le cas) :
-   - `adapter: vercel()`
-   - `output: "server"`
-
-2. Pour le déploiement sur Vercel :
-   - Assurez-vous que votre projet est connecté à Vercel
-   - Lors du déploiement, Vercel détectera automatiquement qu'il s'agit d'un projet Astro
-   - Les variables d'environnement nécessaires (comme les clés Clerk) doivent être configurées dans votre tableau de bord Vercel
-
-3. Pour l'authentification avec Clerk :
-   - Je vois que vous avez déjà l'intégration configurée (`clerk()` dans les intégrations)
-   - Assurez-vous d'avoir configuré vos variables d'environnement Clerk dans votre fichier `.env` local et dans les paramètres de votre projet Vercel
-
-Votre projet est donc déjà prêt pour le SSR ! Vous pouvez maintenant :
-- Utiliser les fonctionnalités d'authentification de Clerk
-- Créer des endpoints API dans le dossier `src/pages/api`
-- Utiliser des routes dynamiques avec `[param].astro`
-- Accéder aux cookies et aux en-têtes de requête
-- Effectuer des requêtes côté serveur
-
-Voulez-vous que je vous montre comment implémenter une fonctionnalité spécifique en SSR ?
-
-
-
-Bien sûr, vous avez raison. Analysons d'abord la structure existante pour comprendre la logique d'authentification et le dashboard s'ils existent déjà.
-
-Commençons par chercher les fichiers liés à l'authentification et au dashboard :
-
-Search files...
-
-
-Je vois que le projet a déjà une structure d'authentification bien établie avec :
+ Je vois que le projet a déjà une structure d'authentification bien établie avec :
 
 1. Un système de modales pour :
    - Login (`LoginModal.astro`)
@@ -298,11 +243,6 @@ Le design est responsive et utilise le thème sombre/clair de votre site.
 
 Voulez-vous que nous ajoutions d'autres fonctionnalités au dashboard ?
 
-
-
-
-Parfait ! Je vais nettoyer et adapter le code pour cette approche.
-
 1. D'abord, supprimons les fichiers inutiles :
 - `src/components/ui/forms/GenerateApiKeyModal.astro`
 - `src/components/ui/Modal.astro`
@@ -383,38 +323,12 @@ Voulez-vous que j'ajoute `prerender = false` à toutes ces pages maintenant ?
 
 
 
-Je vais proposer un plan de migration progressif et sécurisé en plusieurs phases :
 
-### Phase 1 : Préparation et Structure
-1. **Créer la nouvelle structure sans toucher à l'existant**
-```
-src/
-  content/
-    i18n/
-      en/
-        ui.json       # Éléments d'interface communs
-        routes.json   # Mapping des URLs
-        meta.json     # Métadonnées SEO globales
-      fr/
-        ui.json
-        routes.json
+
+
         meta.json
   pages/
     [...lang]/       # Nouveau dossier pour les pages i18n
-```
-
-2. **Créer les utilitaires i18n**
-```typescript
-// src/utils/i18n.ts
-export function getLangFromUrl(url: URL) {
-  const [, lang] = url.pathname.split('/');
-  return lang === 'fr' ? 'fr' : 'en';
-}
-
-export async function useTranslations(lang: string) {
-  const ui = await import(`../content/i18n/${lang}/ui.json`);
-  return ui;
-}
 ```
 
 ### Phase 2 : Migration Page par Page
