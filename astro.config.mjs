@@ -8,6 +8,30 @@ import icon from "astro-icon";
 
 export default defineConfig({
   site: "https://winflowz.com",
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "fr"],
+    routing: {
+      prefixDefaultLocale: false,
+      redirectDefaultLocale: true,
+      strategy: "pathname",
+      paths: {
+        fr: {
+          "products": "produits",
+          "contact": "contact",
+          "blog": "blog",
+          "insights": "perspectives",
+          "services": "services",
+          "roadmap": "roadmap",
+          "disclaimer": "non-responsabilite",
+          "privacy": "confidentialite",
+          "copyright": "droits",
+          "terms": "cgu",
+          "legal": "mentions-legales"
+        }
+      }
+    }
+  },
   output: "hybrid",
   build: {
     inlineStylesheets: "auto",
@@ -64,43 +88,13 @@ export default defineConfig({
         defaultLocale: "en",
         locales: {
           en: "en",
-          fr: "fr",
-        },
-        routing: {
-          prefixDefaultLocale: false,
-          redirectDefaultLocale: true,
-          strategy: "pathname",
-          paths: {
-            fr: {
-              "products": "produits",
-              "contact": "contact",
-              "blog": "blog",
-              "insights": "perspectives",
-              "services": "services",
-              "roadmap": "roadmap",
-              "disclaimer": "non-responsabilite",
-              "privacy": "confidentialite",
-              "copyright": "droits",
-              "terms": "cgu",
-              "legal": "mentions-legales"
-            }
-          }
+          fr: "fr"
         }
-      },
+      }
     }),
     starlight({
       title: "WinFlowz",
-      defaultLocale: "root",
-      locales: {
-        root: {
-          label: "English",
-          lang: "en",
-        },
-        fr: { 
-          label: "Français", 
-          lang: "fr" 
-        },
-      },
+      defaultLocale: "en",
       sidebar: [
         {
           label: "Quick Start Guides",

@@ -4,6 +4,8 @@ description: "Discover how WinFlowz is leading the charge in promoting sustainab
 pubDate: "2024-03-01"
 author: "Emily Chen"
 image: "@images/content/insights/insight-3.webp"
+cardImage: "@images/insights/insight-3.avif"
+cardImageAlt: "Sustainable construction site with eco-friendly materials and solar panels"
 ---
 
 A revolution in sustainable construction is brewing, and at the forefront is WinFlowz, a company demonstrably changing the game with its commitment to sustainable practices.

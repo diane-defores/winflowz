@@ -1,36 +1,14 @@
 ---
-import { languages } from "@utils//ui";
+import { languages } from "@utils/ui";
 import Icon from "./icons/Icon.astro";
+import { getRelativeLocaleUrl, getPathByLocale } from 'astro:i18n';
 
-// Définir les mappings de routes
-const routeMappings = {
-  en: {
-    'terms': 'terms',
-    'cgu': 'terms',
-    'privacy': 'privacy',
-    'confidentialite': 'privacy',
-    'disclaimer': 'disclaimer',
-    'non-responsabilite': 'disclaimer',
-    'avertissement': 'disclaimer',
-    'legal': 'legal',
-    'mentions-legales': 'legal',
-    'copyright': 'copyright',
-    'droits': 'copyright'
-  },
-  fr: {
-    'terms': 'cgu',
-    'cgu': 'cgu',
-    'privacy': 'confidentialite',
-    'confidentialite': 'confidentialite',
-    'disclaimer': 'non-responsabilite',
-    'non-responsabilite': 'non-responsabilite',
-    'avertissement': 'non-responsabilite',
-    'legal': 'mentions-legales',
-    'mentions-legales': 'mentions-legales',
-    'copyright': 'droits',
-    'droits': 'droits'
-  }
-};
+// Récupérer le chemin actuel et la langue actuelle
+const currentPath = Astro.url.pathname;
+const currentLocale = Astro.currentLocale || 'en';
+
+// Obtenir le chemin sans le préfixe de langue
+const pathWithoutLocale = currentPath.replace(/^\/fr\/?/, '/');
 ---
 
 <div class="hs-dropdown relative inline-flex">
@@ -59,109 +37,23 @@ const routeMappings = {
     aria-labelledby="hs-dropdown-hover-event"
   >
     {
-      Object.entries(languages).map(([lang, label]) => (
-        <a
-          class="flex items-center gap-x-3.5 rounded-lg px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
-          href={`/${lang === "en" ? "" : lang}`}
-        >
-          {label}
-        </a>
-      ))
+      Object.entries(languages).map(([lang, label]) => {
+        // Utiliser getRelativeLocaleUrl avec le chemin sans préfixe de langue
+        const href = getRelativeLocaleUrl(lang, pathWithoutLocale);
+        return (
+          <a
+            class="flex items-center gap-x-3.5 rounded-lg px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
+            href={href}
+            hreflang={lang}
+          >
+            {label}
+          </a>
+        );
+      })
     }
   </div>
 </div>
 
-<!--Import the necessary Dropdown plugin-->
-<!--https://preline.co/plugins/html/dropdown.html-->
 <script>
   import "@preline/dropdown/index.js";
-</script>
-
-<script>
-  // Type alias for supported languages
-  type TLanguage = "en" | "fr";
-  // array of supported languages
-  const languages: TLanguage[] = ["en", "fr"];
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const languageLinks = document.querySelectorAll(".hs-dropdown-menu a");
-    languageLinks.forEach((element) => {
-      const link = element as HTMLAnchorElement;
-      const lang = link
-        .getAttribute("href")
-        ?.replace(/^\/+/, '') // Supprime tous les slashes au début
-        .replace(/\/+$/, '') as TLanguage; // Supprime tous les slashes à la fin
-
-      link.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        const url = new URL(window.location.href);
-        const cleanPath = url.pathname.replace(/^\/+/, '').replace(/\/+$/, ''); // Nettoie les slashes multiples
-        const pathParts = cleanPath
-          .split('/')
-          .filter(Boolean) // Supprime les parties vides
-          .filter((part) => !languages.includes(part as TLanguage));
-
-        // Disable the selection of the same language
-        const currentLang = url.pathname.split('/').filter(Boolean)[0];
-        if (lang === currentLang) return;
-
-        // Get the current page name
-        const currentPage = pathParts[0] || '';
-
-        // Get the route mappings for the target language
-        const routeMap = (window as any).routeMappings?.[lang] || {};
-        
-        // Get the translated page name
-        const translatedPage = routeMap[currentPage] || currentPage;
-
-        // Build the new URL
-        let newPath = lang === 'en' ? '/' : `/${lang}/`;
-        if (translatedPage) {
-          newPath += translatedPage;
-        }
-
-        // Add any remaining path parts
-        if (pathParts.length > 1) {
-          newPath += '/' + pathParts.slice(1).join('/');
-        }
-
-        // Ensure no double slashes and add trailing slash if needed
-        newPath = newPath.replace(/\/+/g, '/');
-        
-        // Update URL and navigate
-        window.location.href = `${url.origin}${newPath}${url.search}`;
-      });
-    });
-  });
-
-  // Make route mappings available globally
-  (window as any).routeMappings = {
-    en: {
-      'terms': 'terms',
-      'cgu': 'terms',
-      'privacy': 'privacy',
-      'confidentialite': 'privacy',
-      'disclaimer': 'disclaimer',
-      'non-responsabilite': 'disclaimer',
-      'avertissement': 'disclaimer',
-      'legal': 'legal',
-      'mentions-legales': 'legal',
-      'copyright': 'copyright',
-      'droits': 'copyright'
-    },
-    fr: {
-      'terms': 'cgu',
-      'cgu': 'cgu',
-      'privacy': 'confidentialite',
-      'confidentialite': 'confidentialite',
-      'disclaimer': 'non-responsabilite',
-      'non-responsabilite': 'non-responsabilite',
-      'avertissement': 'non-responsabilite',
-      'legal': 'mentions-legales',
-      'mentions-legales': 'mentions-legales',
-      'copyright': 'droits',
-      'droits': 'droits'
-    }
-  };
 </script>
