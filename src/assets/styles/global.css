@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Styles globaux pour tout le site */
 
 /* Styles pour la barre de défilement - WebKit (Chrome, Safari, Edge) */

@@ -73,23 +73,16 @@ export default defineConfig({
           paths: {
             fr: {
               "products": "produits",
-              "produits": "products",
               "contact": "contact",
               "blog": "blog",
               "insights": "perspectives",
-              "perspectives": "insights",
               "services": "services",
               "roadmap": "roadmap",
               "disclaimer": "non-responsabilite",
-              "non-responsabilite": "disclaimer",
               "privacy": "confidentialite",
-              "confidentialite": "privacy",
               "copyright": "droits",
-              "droits": "copyright",
               "terms": "cgu",
-              "cgu": "terms",
-              "legal": "mentions-legales",
-              "mentions-legales": "legal"
+              "legal": "mentions-legales"
             }
           }
         }

@@ -378,3 +378,245 @@ En résumé, voici toutes les pages qui doivent avoir `export const prerender = 
 Les autres pages (accueil, blog, pages statiques) peuvent rester en mode statique pour de meilleures performances.
 
 Voulez-vous que j'ajoute `prerender = false` à toutes ces pages maintenant ?
+
+
+
+
+
+Je vais proposer un plan de migration progressif et sécurisé en plusieurs phases :
+
+### Phase 1 : Préparation et Structure
+1. **Créer la nouvelle structure sans toucher à l'existant**
+```
+src/
+  content/
+    i18n/
+      en/
+        ui.json       # Éléments d'interface communs
+        routes.json   # Mapping des URLs
+        meta.json     # Métadonnées SEO globales
+      fr/
+        ui.json
+        routes.json
+        meta.json
+  pages/
+    [...lang]/       # Nouveau dossier pour les pages i18n
+```
+
+2. **Créer les utilitaires i18n**
+```typescript
+// src/utils/i18n.ts
+export function getLangFromUrl(url: URL) {
+  const [, lang] = url.pathname.split('/');
+  return lang === 'fr' ? 'fr' : 'en';
+}
+
+export async function useTranslations(lang: string) {
+  const ui = await import(`../content/i18n/${lang}/ui.json`);
+  return ui;
+}
+```
+
+### Phase 2 : Migration Page par Page
+1. **Commencer par une page simple** (par exemple, la page "mentions légales")
+   - Créer la nouvelle version dans `[...lang]`
+   - Migrer les traductions vers `content/i18n`
+   - Tester en parallèle avec l'ancienne version
+   - Vérifier le SEO, les métadonnées, les routes
+
+2. **Valider le processus**
+   - Tests approfondis
+   - Vérification des performances
+   - Validation du SEO
+   - Tests de navigation
+
+### Phase 3 : Migration Progressive
+Pour chaque page :
+1. **Préparation**
+   - Extraire tout le contenu statique vers les fichiers i18n
+   - Créer les types TypeScript correspondants
+   - Préparer la nouvelle version de la page
+
+2. **Migration**
+   - Implémenter la nouvelle version
+   - Tests en parallèle
+   - Vérification des routes et redirections
+
+3. **Validation**
+   - Tests fonctionnels
+   - Vérification SEO
+   - Tests de performance
+
+### Phase 4 : Nettoyage et Finalisation
+1. **Une fois toutes les pages migrées**
+   - Mettre à jour la configuration Astro
+   - Nettoyer les anciens fichiers
+   - Mettre à jour la documentation
+
+2. **Vérifications finales**
+   - Tests de régression complets
+   - Validation SEO globale
+   - Performance globale
+   - Cohérence des URLs
+
+### Sécurité pendant la migration
+1. **Versioning**
+   - Branches Git séparées pour chaque phase
+   - Points de restauration clairs
+
+2. **Tests**
+   - Tests automatisés pour les routes
+   - Vérification des métadonnées SEO
+   - Tests de performance avant/après
+
+3. **Monitoring**
+   - Suivi des erreurs 404
+   - Vérification des redirections
+   - Monitoring SEO
+
+4. **Rollback Plan**
+   - Possibilité de revenir en arrière à chaque étape
+   - Conservation temporaire des anciens fichiers
+
+Voulez-vous que nous commencions par une page spécifique pour tester cette approche ?
+
+
+
+
+Oui, absolument ! Pour les longues pages de contenu, nous avons même plusieurs options selon le type de contenu. Prenons un exemple concret avec vos pages légales :
+
+1. **Option Markdown** (recommandée pour du contenu riche)
+```typescript
+// src/content/legal/en/terms.md
+---
+title: "Terms of Service"
+lastUpdated: "2024-12-15"
+sections:
+  - title: "Introduction"
+    id: "intro"
+  - title: "License and Usage Rights"
+    id: "license"
+---
+
+## Introduction
+
+These Terms of Service govern your use of WinFlowz's digital products...
+
+## License and Usage Rights
+
+2.1. WinFlowz grants you a personal, non-exclusive...
+```
+
+```typescript
+// src/content/legal/fr/terms.md
+---
+title: "Conditions Générales d'Utilisation"
+lastUpdated: "2024-12-15"
+sections:
+  - title: "Introduction"
+    id: "intro"
+  - title: "Licence et Droits d'Utilisation"
+    id: "license"
+---
+
+## Introduction
+
+Ces Conditions Générales d'Utilisation régissent votre utilisation...
+
+## Licence et Droits d'Utilisation
+
+2.1. WinFlowz vous accorde une licence personnelle...
+```
+
+2. **La page qui utilise ce contenu**
+```astro
+---
+// src/pages/[...lang]/terms.astro
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const terms = await getCollection('legal');
+  return terms.map(entry => ({
+    params: { 
+      lang: entry.slug.startsWith('fr/') ? 'fr' : undefined 
+    },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const { title, lastUpdated, sections } = entry.data;
+---
+
+<MainLayout title={title} lang={entry.slug.startsWith('fr/') ? 'fr' : 'en'}>
+  <div class="max-w-4xl mx-auto px-4 py-10">
+    <h1>{title}</h1>
+    <p class="text-sm text-neutral-500">
+      {lastUpdated}
+    </p>
+
+    <!-- Table des matières optionnelle -->
+    <nav class="my-8">
+      {sections.map(section => (
+        <a href={`#${section.id}`}>{section.title}</a>
+      ))}
+    </nav>
+
+    <!-- Contenu rendu -->
+    <Content />
+  </div>
+</MainLayout>
+```
+
+3. **Option JSON** (pour du contenu plus structuré)
+```json
+// src/content/i18n/fr/legal/terms.json
+{
+  "meta": {
+    "title": "Conditions Générales d'Utilisation",
+    "lastUpdated": "2024-12-15"
+  },
+  "sections": [
+    {
+      "title": "Introduction",
+      "content": "Ces Conditions Générales d'Utilisation régissent...",
+      "subsections": []
+    },
+    {
+      "title": "Licence et Droits d'Utilisation",
+      "content": "WinFlowz vous accorde une licence personnelle...",
+      "subsections": [
+        {
+          "id": "2.1",
+          "content": "La licence est non-exclusive..."
+        }
+      ]
+    }
+  ]
+}
+```
+
+Les avantages de cette approche pour le contenu long :
+
+1. **Maintenance facilitée**
+   - Séparation claire contenu/présentation
+   - Possibilité d'utiliser Markdown pour un contenu riche
+   - Structure cohérente entre les langues
+
+2. **SEO optimisé**
+   - Contenu statique généré au build
+   - Structure HTML sémantique
+   - Métadonnées bien gérées
+
+3. **Performance**
+   - Pas de chargement dynamique
+   - Contenu servi en statique
+   - Optimisation possible du HTML généré
+
+4. **Flexibilité**
+   - Support du Markdown ou JSON selon les besoins
+   - Possibilité d'ajouter des métadonnées
+   - Structure adaptable
+
+Quelle approche préféreriez-vous pour vos pages de contenu : Markdown ou JSON ?
