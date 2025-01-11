@@ -7,45 +7,26 @@ interface Props {
   url: string;
   name: string;
 }
+
+// Détermine si le lien est actif
+const pathname = Astro.url.pathname;
+const isHome = pathname === "/" || pathname === "/fr";
+const isActive = 
+  (url === "/" && isHome) || 
+  (url !== "/" && pathname.includes(url.replace("/", "")));
+
+// Classes de base et classes actives
+const baseClasses = "rounded-lg text-base font-medium outline-none ring-zinc-500 focus-visible:ring dark:ring-zinc-200 dark:focus:outline-none md:py-3 md:text-sm 2xl:text-base";
+const activeClasses = "text-orange-400 dark:text-orange-300";
+const inactiveClasses = "text-neutral-600 dark:text-neutral-400 hover:text-neutral-500 dark:hover:text-neutral-500";
 ---
 
-<!--
-Re-usable link component for navigation bar. Highlights the active link
-by comparing the current URL with the href of each link.
-We assign an ID matching the URL for easy reference in our script.
-If URL is '/' (home page), assign ID as 'home' 
--->
 <a
   id={url === "/" ? "home" : url.replace("/", "")}
   href={url}
   data-astro-prefetch
-  class="rounded-lg text-base font-medium text-neutral-600 outline-none ring-zinc-500 hover:text-neutral-500 focus-visible:ring dark:text-neutral-400 dark:ring-zinc-200 dark:hover:text-neutral-500 dark:focus:outline-none md:py-3 md:text-sm 2xl:text-base"
+  class:list={[baseClasses, isActive ? activeClasses : inactiveClasses]}
+  aria-current={isActive ? "page" : undefined}
 >
   {name}
 </a>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    let url = window.location.pathname;
-    let navId;
-
-    if (url === "/") {
-      navId = "home";
-    } else {
-      navId = url.replace("/", "");
-    }
-
-    let nav = document.getElementById(navId);
-
-    if (nav) {
-      nav.classList.remove(
-        "text-neutral-600",
-        "dark:text-neutral-400",
-        "hover:text-neutral-500",
-        "dark:hover:text-neutral-500"
-      );
-      nav.classList.add("text-orange-400", "dark:text-orange-300");
-      nav.setAttribute("aria-current", "page");
-    }
-  });
-</script>

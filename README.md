@@ -16,7 +16,7 @@
 * [Integrations and Enhancements](#integrations-and-enhancements)
   * [Starlight Documentation](#starlight-documentation)
   * [Lenis for Smooth Scrolling](#lenis-for-smooth-scrolling)
-  * [GSAP Integration](#gsap-integration)
+  * [View Transitions](#view-transitions)
   * [Hiding Scrollbar](#hiding-scrollbar)
   * [SEO Configuration](#seo-configuration)
     * [Using constants.ts](#using-constantsts)
@@ -318,28 +318,26 @@ Please note that smooth scrolling can affect accessibility and performance on so
 > [!NOTE]
 > If you would like to remove Lenis and return to the browser's default scrolling behavior, simply comment out or delete these lines from the `MainLayout.astro` file and `/starlight/Head.astro` if you are using Docs.
 
-### GSAP Integration
+### View Transitions
 
- For individual product pages, [GSAP](https://gsap.com/) has been integrated to add engaging animations that execute as soon as the product page loads. You can find and modify the GSAP configuration in the script sections of the product page file located at `src/pages/products/[...slug].astro` and the insights page at `src/pages/insights/[...slug].astro`:
+Le projet utilise l'API View Transitions d'Astro pour créer des transitions fluides entre les pages. Cette fonctionnalité native permet :
+
+- Des transitions fluides entre les pages sans JavaScript supplémentaire
+- Des animations personnalisables pour différents éléments
+- Une meilleure expérience utilisateur avec des transitions visuelles cohérentes
+
+Pour personnaliser les transitions, vous pouvez utiliser les attributs `transition:name` et `transition:animate` dans vos composants. Par exemple :
 
 ```astro
-<script>
-  import { gsap } from "gsap";
-  // Initialize GSAP animations...
-</script>
+<div 
+  transition:name="hero-content"
+  transition:animate="slide"
+>
+  <!-- Contenu -->
+</div>
 ```
 
-**Customizing Animations:**
-
-Please tailor the GSAP animations within this script to fit your project's look and feel. The provided example is a starting point, representing how to leverage GSAP for immediate visual impact as a product page loads.
-
-**Modifying or Removing Animations:**
-
-* To modify an animation, update the properties and parameters within the `gsap.from()` method, or add new GSAP animation calls as required.
-* Should GSAP not be needed, or if you prefer a different animation method, simply remove the aforementioned script segment.
-
-> [!NOTE]
-> We've chosen to keep the integration lean and focused, but GSAP's comprehensive documentation can be referred to for more complex animations: [GSAP Documentation](https://gsap.com/docs/v3/).
+Pour plus d'informations sur les View Transitions dans Astro, consultez la [documentation officielle](https://docs.astro.build/en/guides/view-transitions/).
 
 ### Hiding Scrollbar
 

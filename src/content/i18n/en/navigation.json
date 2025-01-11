@@ -1,6 +1,5 @@
 {
   "navBarLinks": [
-    { "name": "Home", "url": "/" },
     { "name": "Apps", "url": "/products" },
     { "name": "Roadmap", "url": "/roadmap" },
     { "name": "Services", "url": "/services" },

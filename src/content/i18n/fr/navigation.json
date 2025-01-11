@@ -1,6 +1,5 @@
 {
   "navBarLinks": [
-    { "name": "Accueil", "url": "/fr" },
     { "name": "Apps", "url": "/fr/produits" },
     { "name": "Roadmap", "url": "/fr/roadmap" },
     { "name": "Services", "url": "/fr/services" },
