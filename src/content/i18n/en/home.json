@@ -1,12 +1,12 @@
 {
-  "title": "WinFlowz - Productivity Tools and Training",
+  "title": "WinFlowz - Tools and Training for Productivity",
   "meta": {
-    "description": "Transform your digital workflow with powerful tools and training designed by a productivity-obsessed neurodivergent expert."
+    "description": "Transform your digital workflow with powerful tools and training designed by a neurodivergent expert passionate about productivity."
   },
   "hero": {
-    "title": "Become a <span class=\"relative inline-flex sm:inline\"><span class=\"relative text-orange-400 text-6xl dark:text-pink-400\">Productivity</span><span class=\"absolute inset-0 h-full w-full bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] opacity-30 blur-lg filter\"></span></span><span class=\"text-yellow-500 text-7xl dark:text-yellow-400\">Master</span>",
-    "subTitle": "Transform your digital workflow with powerful tools and training designed by a productivity-obsessed neurodivergent expert.",
-    "primaryBtn": "Customer Stories",
+    "title": "Become a <span class=\"relative inline-flex sm:inline\"><span class=\"relative text-orange-400 text-6xl dark:text-pink-400\">Productive</span><span class=\"absolute inset-0 h-full w-full bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] opacity-30 blur-lg filter\"></span></span><span class=\"text-yellow-500 text-7xl dark:text-yellow-400\">Expert</span>",
+    "subTitle": "Transform your digital workflow with powerful tools and training designed by a neurodivergent expert obsessed with productivity.",
+    "primaryBtn": "Testimonials",
     "primaryBtnURL": "/products#testimonials",
     "secondaryBtn": "Buy Now",
     "rating": "<span class=\"font-bold\">5</span> / 5",
@@ -15,22 +15,22 @@
   },
   "clients": {
     "title": "Trusted by Leaders",
-    "subTitle": "Join entrepreneurs, freelancers and professionals who transformed their productivity with WinFlowz"
+    "subTitle": "Join entrepreneurs, freelancers, and professionals who have transformed their productivity with WinFlowz"
   },
   "features": {
     "title": "Redefining Digital Productivity",
-    "subTitle": "As someone with ADHD and autism, I struggled a lot to be self-aware and disciplined. So I've created tools that make it unreasonable and impossible not to reach our goals👌"
+    "subTitle": "As someone with ADHD and autism, I've struggled a lot with self-awareness and discipline. So I created tools that make it unreasonable and impossible not to achieve our goals👌"
   },
   "workflow": {
-    "title": "Customize <span class=\"text-yellow-500 dark:text-yellow-400\">Your Workflowz</span> to perfectly suit your personality and construct your best life",
+    "title": "Customize <span class=\"text-yellow-500 dark:text-yellow-400\">Your Workflowz</span> to perfectly match your personality and build your best life",
     "tabs": [
       {
         "heading": "ObsiFlowz",
-        "content": "I'm currenly using Obsidian a a note app so I design amazing plugins to supercharge your Obsidian experience. Transform your content curation with RSSFlowz and optimize your plugin research management with PluginFlowz."
+        "content": "I currently use Obsidian as my note-taking app, so I'm designing amazing plugins to boost your Obsidian experience. Transform your content curation with RSSFlowz and optimize your plugin search management with PluginFlowz."
       },
       {
         "heading": "TubeFlowz",
-        "content": "Revolutionize your YouTube research with a powerful annotation and bookmarking Chrome extension. Never lose valuable content again."
+        "content": "Revolutionize your YouTube searches with a powerful Chrome extension for annotation and bookmarking. Never lose valuable content again."
       },
       {
         "heading": "Windows Mastery",
@@ -39,29 +39,34 @@
     ]
   },
   "testimonials": {
-    "title": "Fast-Track Your Projects",
-    "subTitle": "We ensure you obtain the highest amount of value with minimal investment and effort.",
+    "title": "Accelerate Your Projects",
+    "subTitle": "We ensure you get maximum value with minimum investment and effort.",
+    "main": {
+      "content": "Congratulations, Diane! I just spent 20 minutes in it and I'm already wondering what I've been doing with my life until now :)) Lots of goodies to improve my work. I love it!",
+      "author": "Florin Muresan",
+      "role": "CEO and Co-Founder | Squirrly"
+    },
     "statistics": [
       {
         "count": "70k+",
-        "description": "customers equipped — from DIY to major construction firms"
+        "description": "equipped clients — from DIY to large enterprises"
       },
       {
         "count": "35%",
-        "description": "uptick in project efficiency with WinFlowz tools"
+        "description": "efficiency increase with WinFlowz tools"
       },
       {
         "count": "15.3%",
-        "description": "reduction in maintenance costs reported by long-term clients"
+        "description": "cost reduction reported by loyal clients"
       },
       {
         "count": "2x",
-        "description": "faster results with our innovative solutions"
+        "description": "faster thanks to our innovative solutions"
       }
     ]
   },
   "cta": {
     "title": "Let's Build Together",
-    "subTitle": "WinFlowz is a productivity ecosystem, meticulously crafted by Diane Defores."
+    "subTitle": "WinFlowz is a productivity ecosystem, meticulously designed by Diane Defores."
   }
 } 

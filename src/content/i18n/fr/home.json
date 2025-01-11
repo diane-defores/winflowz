@@ -41,6 +41,11 @@
   "testimonials": {
     "title": "Accélérez Vos Projets",
     "subTitle": "Nous vous assurons d'obtenir le maximum de valeur avec un minimum d'investissement et d'effort.",
+    "main": {
+      "content": "Félicitations, Diane ! Je viens de passer 20 minutes dessus et je me demande déjà ce que j'ai fait de ma vie jusqu'à maintenant :)) Plein de bonnes choses pour améliorer mon travail. J'adore !",
+      "author": "Florin Muresan",
+      "role": "PDG et Co-Fondateur | Squirrly"
+    },
     "statistics": [
       {
         "count": "70k+",
