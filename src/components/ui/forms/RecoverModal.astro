@@ -64,7 +64,7 @@ const config = {
 </div>
 
 <script is:inline type="module" define:vars={{ resetUrl: "/auth/reset-password" }}>
-  import { resetPasswordForEmail } from "/src/scripts/supabase-client";
+  import { resetPasswordForEmail } from "/src/lib/supabase";
 
   const recoverForm = document.getElementById('recover-form');
   const errorElement = document.getElementById('recover-email-error');
