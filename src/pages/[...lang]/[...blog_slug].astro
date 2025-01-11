@@ -18,22 +18,19 @@ export const prerender = true;
 
 // This gets the static paths for all the unique blog posts
 export async function getStaticPaths() {
-	const blogEntries = await getCollection("blog");
-	const posts = blogEntries.filter((post) =>
-		post.id.startsWith("fr/") || post.id.startsWith("en/"),
-	);
-
-	return posts.flatMap((post) => {
+	const posts = await getCollection("blog");
+	return posts.map((post) => {
 		const isEnglish = post.id.startsWith("en/");
-		const isFrench = post.id.startsWith("fr/");
-		const lang = isFrench ? "fr" : undefined;
 		const slug = post.id
 			.replace(isEnglish ? /^en\// : /^fr\//, "")
 			.replace(/\.md$/, "");
 
 		return {
-			params: { lang, slug },
-			props: { post },
+			params: {
+				lang: isEnglish ? undefined : "fr",
+				blog_slug: slug
+			},
+			props: { post }
 		};
 	});
 }
@@ -41,11 +38,11 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { lang } = Astro.params;
 // Ensure lang is a valid Language type
-const currentLang = (lang || 'en') as Language;
-const t = await useTranslations(currentLang, 'blog');
+const currentLang = (lang || "en") as Language;
+const t = await useTranslations(currentLang, "blog");
 
 if (!t) {
-    throw new Error(`Missing translations for ${currentLang}`);
+	throw new Error(`Missing translations for ${currentLang}`);
 }
 
 // Fetch related posts based on language
@@ -59,15 +56,16 @@ const relatedPosts: CollectionEntry<"blog">[] = blogPosts.filter(
 
 const pageTitle: string = `${post.data.title} | ${SITE.title}`;
 
-const baseUrl = currentLang === "fr" ? "https://winflowz.com/fr" : "https://winflowz.com";
+const baseUrl =
+	currentLang === "fr" ? "https://winflowz.com/fr" : "https://winflowz.com";
 
 // Ensure we have the translations before using them
 const description = t?.meta?.description || "";
 const siteDescription = t?.meta?.siteDescription || "";
 ---
 
-<MainLayout 
-	lang={currentLang} 
+<MainLayout
+	lang={currentLang}
 	title={pageTitle}
 	structuredData={{
 		"@context": "https://schema.org",
@@ -78,7 +76,7 @@ const siteDescription = t?.meta?.siteDescription || "";
 		description: post.data.description || description,
 		author: {
 			"@type": "Person",
-			name: post.data.author
+			name: post.data.author,
 		},
 		datePublished: post.data.pubDate,
 		image: post.data.cardImage,
@@ -118,7 +116,8 @@ const siteDescription = t?.meta?.siteDescription || "";
 									<li
 										class="relative inline-block pe-6 before:absolute before:end-2 before:top-1/2 before:size-1 before:-translate-y-1/2 before:rounded-full before:bg-neutral-300 last:pe-0 last-of-type:before:hidden dark:text-neutral-400 dark:before:bg-neutral-600"
 									>
-										{post.data.readTime} {t.readTime}
+										{post.data.readTime}
+										{t.readTime}
 									</li>
 								</ul>
 							</div>

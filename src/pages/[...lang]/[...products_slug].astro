@@ -16,20 +16,32 @@ declare global {
 
 export const prerender = true;
 
-// This gets the static paths for all the unique products
 export async function getStaticPaths() {
-	const productEntries = await getCollection("products");
-	const frenchProducts = productEntries.filter((product) =>
-		product.id.startsWith("fr/"),
-	);
+  const products = await getCollection("products");
+  return products.map((product) => {
+    const isEnglish = product.id.startsWith("en/");
+    const slug = product.id
+      .replace(isEnglish ? /^en\// : /^fr\//, "")
+      .replace(/\.md$/, "");
 
-	return frenchProducts.map((product) => {
-		const slug = product.id.replace(/^fr\//, "").replace(/\.md$/, "");
-		return {
-			params: { slug },
-			props: { product },
-		};
-	});
+    if (isEnglish) {
+      return {
+        params: { 
+          lang: undefined,
+          products_slug: `products/${slug}`
+        },
+        props: { product }
+      };
+    } else {
+      return {
+        params: { 
+          lang: "fr",
+          products_slug: `produits/${slug}`
+        },
+        props: { product }
+      };
+    }
+  });
 }
 
 const { product } = Astro.props;

@@ -7,12 +7,13 @@ import { getLangFromUrl, useTranslations } from "@/utils/i18n";
 
 export function getStaticPaths() {
 	return projects.flatMap((project) => [
-		{ params: { lang: undefined, projectId: project.id } },
-		{ params: { lang: "fr", projectId: project.id } },
+		{ params: { lang: undefined, roadmap_projectid: `roadmap/${project.id}` } },
+		{ params: { lang: "fr", roadmap_projectid: `roadmap/${project.id}` } },
 	]);
 }
 
-const { projectId } = Astro.params;
+const { roadmap_projectid } = Astro.params;
+const projectId = roadmap_projectid?.split('/').pop();
 const project = projects.find((p) => p.id === projectId);
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "roadmap");
@@ -28,7 +29,7 @@ if (!project) {
 	<div class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
 		<div class="mb-8 lg:mb-14">
 			<a
-				href={lang === "fr" ? "/fr/roadmap" : "/roadmap"}
+				href={`/${lang ? `${lang}/` : ""}roadmap`}
 				class="mb-3 inline-flex items-center gap-x-1 text-sm font-medium text-orange-500 decoration-2 hover:underline dark:text-orange-400"
 			>
 				<svg class="size-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>

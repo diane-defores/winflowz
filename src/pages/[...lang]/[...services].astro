@@ -5,6 +5,7 @@ import LeftSection from "@components/ui/blocks/LeftSection.astro";
 import RightSection from "@components/ui/blocks/RightSection.astro";
 import FeaturesStats from "@components/sections/features/FeaturesStats.astro";
 import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+import type { Article, ArticleImage } from "@/types";
 
 // Import necessary images
 import blueprints from "@images/blueprints-image.avif";
@@ -17,74 +18,74 @@ import progressBuilding from "@images/progress-building.avif";
 import underConstruction from "@images/under-construction.avif";
 
 export function getStaticPaths() {
-  return [
-    { params: { lang: undefined } },
-    { params: { lang: "fr" } },
-  ];
+	return [
+		{ params: { lang: undefined, services: "services" } },
+		{ params: { lang: "fr", services: "services" } },
+	];
 }
 
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "services");
 
 // Mapping des images pour les articles
-const articleImages = [
-  { imgOne: blueprints, imgTwo: personWorking },
-  { img: beforeAfter },
-  { imgOne: constructionWorkers, imgTwo: aerialView },
-  { img: usingTools },
-  { imgOne: progressBuilding, imgTwo: underConstruction },
+const articleImages: ArticleImage[] = [
+	{ imgOne: blueprints, imgTwo: personWorking },
+	{ img: beforeAfter },
+	{ imgOne: constructionWorkers, imgTwo: aerialView },
+	{ img: usingTools },
+	{ imgOne: progressBuilding, imgTwo: underConstruction },
 ];
 
 // Combiner les images avec les données de traduction
-const articles = t.articles.map((article, index) => ({
-  ...article,
-  ...articleImages[index],
+const articles = t.articles.map((article: Article, index: number) => ({
+	...article,
+	...articleImages[index],
 }));
 ---
 
 <MainLayout title={t.title} lang={lang}>
-  <MainSection
-    title={t.hero.title}
-    subTitle={t.hero.subtitle}
-    btnExists={true}
-    btnTitle={t.hero.cta}
-    btnURL="#"
-  />
+	<MainSection
+		title={t.hero.title}
+		subTitle={t.hero.subtitle}
+		btnExists={true}
+		btnTitle={t.hero.cta}
+		btnURL="#"
+	/>
 
-  {
-    articles.map((article) => {
-      return article.isRightSection ? (
-        <RightSection
-          title={article.title}
-          subTitle={article.subtitle}
-          single={article.single}
-          imgOne={article.imgOne}
-          imgOneAlt={article.imgOneAlt}
-          imgTwo={article.imgTwo}
-          imgTwoAlt={article.imgTwoAlt}
-          btnExists={article.btnExists}
-          btnTitle={article.btnTitle}
-          btnURL="#"
-        />
-      ) : (
-        <LeftSection
-          title={article.title}
-          subTitle={article.subtitle}
-          img={article.img}
-          imgAlt={article.imgAlt}
-          btnExists={article.btnExists}
-          btnTitle={article.btnTitle}
-          btnURL="#"
-        />
-      );
-    })
-  }
+	{
+		articles.map((article) => {
+			return article.isRightSection ? (
+				<RightSection
+					title={article.title}
+					subTitle={article.subtitle}
+					single={article.single}
+					imgOne={article.imgOne}
+					imgOneAlt={article.imgOneAlt}
+					imgTwo={article.imgTwo}
+					imgTwoAlt={article.imgTwoAlt}
+					btnExists={article.btnExists}
+					btnTitle={article.btnTitle}
+					btnURL="#"
+				/>
+			) : (
+				<LeftSection
+					title={article.title}
+					subTitle={article.subtitle}
+					img={article.img}
+					imgAlt={article.imgAlt}
+					btnExists={article.btnExists}
+					btnTitle={article.btnTitle}
+					btnURL="#"
+				/>
+			);
+		})
+	}
 
-  <FeaturesStats
-    title={t.stats.title}
-    subTitle={t.stats.subtitle}
-    mainStatTitle={t.stats.mainStat.title}
-    mainStatSubTitle={t.stats.mainStat.subtitle}
-    stats={t.stats.items}
-  />
+	<FeaturesStats
+		title={t.stats.title}
+		subTitle={t.stats.subtitle}
+		mainStatTitle={t.stats.mainStat.title}
+		mainStatSubTitle={t.stats.mainStat.subtitle}
+		stats={t.stats.items}
+	/>
 </MainLayout>

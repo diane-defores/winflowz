@@ -15,15 +15,15 @@ export const prerender = true;
 // This gets the static paths for the blog index page
 export function getStaticPaths() {
 	return [
-		{ params: { lang: undefined } },
-		{ params: { lang: "fr" } }
+		{ params: { lang: undefined, blog: "blog" } },
+		{ params: { lang: "fr", blog: "blog" } },
 	];
 }
 
 const { lang } = Astro.params;
 // Ensure lang is a valid Language type
-const currentLang = (lang || 'en') as Language;
-const t = await useTranslations(currentLang, 'blog');
+const currentLang = (lang || "en") as Language;
+const t = await useTranslations(currentLang, "blog");
 
 if (!t) {
     throw new Error(`Missing translations for ${currentLang}`);
@@ -34,17 +34,10 @@ const blogEntries = await getCollection("blog", ({ id }) => {
 	return id.startsWith(currentLang + "/");
 });
 
-const insightsEntries = await getCollection("insights", ({ id }) => {
-	return id.startsWith(currentLang + "/");
-});
-
 const blogPosts: CollectionEntry<"blog">[] = blogEntries.sort(
 	(a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
 		b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-
-// Get all insights posts
-const insightPosts: CollectionEntry<"insights">[] = insightsEntries;
 
 // Separate the most recent post from others
 const mostRecentPost: CollectionEntry<"blog"> = blogPosts[0];
@@ -114,27 +107,5 @@ const siteDescription = t?.meta?.siteDescription || "";
 		class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full"
 	>
 		<CardBlogRecent blogEntry={mostRecentPost} recentBlogLocale={currentLang} />
-	</section>
-	<!--Insights section-->
-	<section
-		class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full"
-	>
-		<div class="mx-auto mb-10 max-w-2xl text-center lg:mb-14">
-			<h2
-				class="text-2xl font-bold text-neutral-800 dark:text-neutral-200 md:text-4xl md:leading-tight"
-			>
-				{t.insights.title}
-			</h2>
-			<p class="mt-1 text-pretty text-neutral-600 dark:text-neutral-400">
-				{t.insights.subtitle}
-			</p>
-		</div>
-		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{
-				insightPosts.map((insightEntry) => (
-					<CardInsight insightEntry={insightEntry} insightLocale={currentLang} />
-				))
-			}
-		</div>
 	</section>
 </MainLayout>

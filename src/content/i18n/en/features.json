@@ -1,18 +1,24 @@
-[
-  {
-    "title": "Productivity Mastery",
-    "description": "Unlock your full potential with proven productivity techniques and tools designed for neurodivergent minds."
-  },
-  {
-    "title": "Obsidian Plugins",
-    "description": "Enhance your note-taking and knowledge management with powerful Obsidian plugins built for maximum efficiency."
-  },
-  {
-    "title": "Chrome Extensions",
-    "description": "Transform your browser into a productivity powerhouse with our carefully crafted Chrome extensions."
-  },
-  {
-    "title": "Windows Optimization",
-    "description": "Master your Windows environment with expert tips and tools that streamline your workflow."
-  }
-] 
+{
+  "features": [
+    {
+      "heading": "Obsidian Extensions",
+      "content": "Enhance your Obsidian experience with powerful plugins designed for productivity and content management.",
+      "svg": "tools"
+    },
+    {
+      "heading": "Chrome Extension",
+      "content": "Optimize your YouTube searches with our intuitive Chrome extension for efficient content curation.",
+      "svg": "dashboard"
+    },
+    {
+      "heading": "Windows Tools",
+      "content": "Streamline your Windows workflow with carefully curated tools and productivity enhancement techniques.",
+      "svg": "house"
+    },
+    {
+      "heading": "Training & Support",
+      "content": "Access comprehensive training materials and dedicated support to maximize your productivity journey.",
+      "svg": "support"
+    }
+  ]
+} 

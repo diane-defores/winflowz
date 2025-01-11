@@ -1,51 +1,45 @@
 {
-  "title": "Simple, Transparent Pricing",
-  "subtitle": "Choose the plan that best fits your needs",
-  "plans": [
+  "pricing": [
     {
-      "name": "Starter",
-      "description": "Perfect for getting started with productivity tools",
-      "price": "Free",
-      "period": "",
+      "name": "Free",
+      "description": "Perfect for discovering our tools",
+      "price": "$0",
       "features": [
-        "Basic Obsidian plugins",
-        "Windows optimization guide",
+        "Access to basic extensions",
+        "Complete documentation",
         "Community support",
-        "Basic documentation"
+        "Regular updates"
       ],
-      "cta": "Get Started",
+      "button": "Start for free",
       "popular": false
     },
     {
       "name": "Pro",
-      "description": "Everything you need for maximum productivity",
+      "description": "For advanced users",
       "price": "$9.99",
-      "period": "/month",
+      "interval": "/month",
       "features": [
-        "All Obsidian plugins",
-        "Chrome extensions",
+        "All free features",
+        "Premium extensions",
         "Priority support",
-        "Advanced training",
-        "Regular updates",
-        "Premium documentation"
+        "Early access to new features",
+        "Exclusive training"
       ],
-      "cta": "Start Pro",
+      "button": "Start trial",
       "popular": true
     },
     {
       "name": "Enterprise",
-      "description": "Custom solutions for teams and organizations",
+      "description": "Custom solutions",
       "price": "Custom",
-      "period": "",
       "features": [
-        "Custom development",
-        "Team training",
-        "Dedicated support",
-        "Custom integrations",
-        "SLA guarantee",
-        "Onboarding assistance"
+        "All Pro features",
+        "Custom deployment",
+        "24/7 dedicated support",
+        "Custom training",
+        "Specific integrations"
       ],
-      "cta": "Contact Us",
+      "button": "Contact us",
       "popular": false
     }
   ]
