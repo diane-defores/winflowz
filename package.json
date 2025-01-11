@@ -31,7 +31,7 @@
     "@preline/tabs": "^2.6.0",
     "@studio-freight/lenis": "^1.0.42",
     "@supabase/supabase-js": "^2.47.12",
-    "@vercel/nft": "^0.27.10",
+    "@vercel/nft": "^0.29.0",
     "astro": "^4.16.18",
     "astro-compressor": "^0.4.1",
     "astro-icon": "^1.1.5",
