@@ -29,6 +29,7 @@
     "@preline/dropdown": "^2.6.0",
     "@preline/overlay": "^2.6.0",
     "@preline/tabs": "^2.6.0",
+    "@studio-freight/lenis": "^1.0.42",
     "@supabase/supabase-js": "^2.47.12",
     "@vercel/nft": "^0.27.10",
     "astro": "^4.16.18",

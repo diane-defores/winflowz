@@ -9,9 +9,11 @@
     "primaryBtn": "Testimonials",
     "primaryBtnURL": "/products#testimonials",
     "secondaryBtn": "Buy Now",
-    "rating": "<span class=\"font-bold\">5</span> / 5",
-    "starCount": 5,
-    "reviews": "From <span class=\"font-bold\">6</span> Reviews"
+    "review": {
+      "rating": "<span class=\"font-bold\">5</span> / 5",
+      "starCount": 5,
+      "text": "From <span class=\"font-bold\">6</span> Reviews"
+    }
   },
   "clients": {
     "title": "Trusted by Leaders",

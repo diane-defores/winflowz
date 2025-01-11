@@ -9,9 +9,11 @@
     "primaryBtn": "Témoignages",
     "primaryBtnURL": "/fr/produits#testimonials",
     "secondaryBtn": "Acheter",
-    "rating": "<span class=\"font-bold\">5</span> / 5",
-    "starCount": 5,
-    "reviews": "Sur <span class=\"font-bold\">6</span> Avis"
+    "review": {
+      "rating": "<span class=\"font-bold\">5</span> / 5",
+      "starCount": 5,
+      "text": "Sur <span class=\"font-bold\">6</span> Avis"
+    }
   },
   "clients": {
     "title": "Approuvé par les Leaders",
