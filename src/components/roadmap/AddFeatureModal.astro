@@ -1,84 +1,104 @@
 ---
-import Modal from "@/components/ui/Modal.astro";
 import { getLangFromUrl, useTranslations } from "@/utils/i18n";
 
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "roadmap");
 ---
 
-<Modal
+<div
 	id="addFeatureModal"
-	title={t?.addFeature?.title ?? "Suggest a new feature"}
+	class="hs-overlay absolute start-0 top-0 z-50 hidden h-full w-full hs-overlay-backdrop-open:bg-neutral-900/90"
 >
-	<form id="addFeatureForm" class="space-y-4">
-		<div>
-			<label
-				for="title"
-				class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
+	<div
+		class="m-3 mt-0 opacity-0 transition-all ease-out hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 sm:mx-auto sm:w-full sm:max-w-lg"
+	>
+		<div class="mx-auto w-full max-w-md p-6">
+			<div
+				class="mt-7 rounded-xl border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
 			>
-				{t?.addFeature?.titleLabel ?? "Title"}
-			</label>
-			<input
-				type="text"
-				id="title"
-				name="title"
-				required
-				class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
-			/>
-		</div>
+				<div class="p-4 sm:p-7">
+					<div class="text-center">
+						<h2
+							class="block text-2xl font-bold text-neutral-800 dark:text-neutral-200"
+						>
+							{t?.addFeature?.title ?? "Suggest a new feature"}
+						</h2>
+					</div>
+					<div class="mt-5">
+						<form id="addFeatureForm" class="space-y-4">
+							<div>
+								<label
+									for="title"
+									class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
+								>
+									{t?.addFeature?.titleLabel ?? "Title"}
+								</label>
+								<input
+									type="text"
+									id="title"
+									name="title"
+									required
+									class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
+								/>
+							</div>
 
-		<div>
-			<label
-				for="description"
-				class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
-			>
-				{t?.addFeature?.descriptionLabel ?? "Description"}
-			</label>
-			<textarea
-				id="description"
-				name="description"
-				required
-				rows="4"
-				class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
-			></textarea>
-		</div>
+							<div>
+								<label
+									for="description"
+									class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
+								>
+									{t?.addFeature?.descriptionLabel ?? "Description"}
+								</label>
+								<textarea
+									id="description"
+									name="description"
+									required
+									rows="4"
+									class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
+								></textarea>
+							</div>
 
-		<div>
-			<label
-				for="project"
-				class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
-			>
-				{t?.addFeature?.projectLabel ?? "Project"}
-			</label>
-			<select
-				id="project"
-				name="project"
-				required
-				class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
-			>
-				<option value="tubeflowz">Tubeflowz</option>
-				<option value="mediaflowz">Mediaflowz</option>
-				<option value="winflowz">Winflowz</option>
-			</select>
-		</div>
+							<div>
+								<label
+									for="project"
+									class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
+								>
+									{t?.addFeature?.projectLabel ?? "Project"}
+								</label>
+								<select
+									id="project"
+									name="project"
+									required
+									class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
+								>
+									<option value="tubeflowz">Tubeflowz</option>
+									<option value="mediaflowz">Mediaflowz</option>
+									<option value="winflowz">Winflowz</option>
+								</select>
+							</div>
 
-		<div class="flex justify-end gap-3 pt-4">
-			<button
-				type="button"
-				data-modal-close="addFeatureModal"
-				class="rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-			>
-				{t?.addFeature?.cancel ?? "Cancel"}
-			</button>
-			<button
-				type="submit"
-				class="dark:hover:bg-orange-700 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 dark:bg-orange-600"
-			>
-				{t?.addFeature?.submit ?? "Submit"}
-			</button>
+							<div class="flex justify-end gap-3 pt-4">
+								<button
+									type="button"
+									data-hs-overlay="#addFeatureModal"
+									class="rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+								>
+									{t?.addFeature?.cancel ?? "Cancel"}
+								</button>
+								<button
+									type="submit"
+									class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700"
+								>
+									{t?.addFeature?.submit ?? "Submit"}
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
-	</form>
-</Modal>
+	</div>
+</div>
 
 <script>
 	const modal = document.getElementById("addFeatureModal");
@@ -105,9 +125,9 @@ const t = await useTranslations(lang, "roadmap");
 
 				if (response.ok) {
 					// Réinitialiser le formulaire
-					form.reset();
-					// Fermer la modale
-					modal.classList.add("hidden");
+					(form as HTMLFormElement).reset();
+					// Fermer la modale en utilisant l'API de Preline
+					(window as any).HSOverlay.close(modal);
 					// Recharger la page pour voir la nouvelle feature
 					window.location.reload();
 				} else {
