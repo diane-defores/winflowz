@@ -27,7 +27,7 @@ export async function getStaticPaths() {
 
 		return {
 			params: {
-				lang: isEnglish ? undefined : "fr",
+				lang: isEnglish ? "blog" : "fr/blog",
 				blog_slug: slug
 			},
 			props: { post }
@@ -37,18 +37,22 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { lang } = Astro.params;
-// Ensure lang is a valid Language type
-const currentLang = (lang || "en") as Language;
-const t = await useTranslations(currentLang, "blog");
 
-if (!t) {
-	throw new Error(`Missing translations for ${currentLang}`);
-}
+// Ensure lang is a valid Language type
+const currentLang = (lang === "fr/blog" ? "fr" : "en") as Language;
+console.log("Current lang:", currentLang, "Raw lang:", lang);
+
+// Import translations
+import enTranslations from "@/content/i18n/en/blog.json";
+import frTranslations from "@/content/i18n/fr/blog.json";
+
+// Get translations based on language
+const t = currentLang === "fr" ? frTranslations : enTranslations;
 
 // Fetch related posts based on language
 const blogPosts: CollectionEntry<"blog">[] = await getCollection(
 	"blog",
-	({ id }) => id.startsWith(currentLang + "/"),
+	({ id }) => currentLang === "fr" ? id.startsWith("fr/") : id.startsWith("en/")
 );
 const relatedPosts: CollectionEntry<"blog">[] = blogPosts.filter(
 	(blogEntry) => blogEntry.id !== post.id,

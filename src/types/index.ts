@@ -1,0 +1,1 @@
+export type { Language, Translation, MetaTranslations } from './i18n'; 

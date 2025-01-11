@@ -1,9 +1,12 @@
-export type Language = 'en' | 'fr';
+export type Language = 'fr' | 'en';
 
-export interface TranslationConfig {
-  defaultLocale: Language;
-  locales: Record<Language, string>;
+export interface Translation {
+  [key: string]: any;
 }
 
-// Type générique pour les traductions
-export type Translation = Record<string, any>; 
+export interface MetaTranslations {
+  [key: string]: {
+    title: string;
+    description: string;
+  };
+} 

@@ -14,8 +14,13 @@ export async function useUI(lang: Language) {
 
 // Fonction pour charger les traductions spécifiques
 export async function useTranslations(lang: Language, page: string) {
-  const translations = await import(`../content/i18n/${lang}/${page}.json`);
-  return translations as Translation;
+  try {
+    const translations = await import(`../content/i18n/${lang}/${page}.json`);
+    return translations as Translation;
+  } catch (error) {
+    console.error(`Failed to load translations for ${lang}/${page}:`, error);
+    return {};
+  }
 }
 
 // Fonction pour charger les routes traduites
@@ -58,4 +63,10 @@ export async function getPageMeta(lang: Language, page: keyof MetaTranslations) 
     ...meta[page],
     alternateLinks: await getAlternateLinks(page)
   };
+}
+
+// Fonction pour obtenir la langue courante
+export function getCurrentLocale(url: URL): Language {
+  const [, lang] = url.pathname.split('/');
+  return lang === "fr" ? "fr" : "en";
 } 

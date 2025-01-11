@@ -7,44 +7,50 @@ import CardInsight from "@/components/ui/cards/CardInsight.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import { SITE } from "@/constants";
-import { useTranslations } from "@/utils/i18n";
+import { getCurrentLocale } from "@/utils/i18n";
 import type { Language } from "@/types";
+
+// Import translations
+import enTranslations from "@/content/i18n/en/blog.json";
+import frTranslations from "@/content/i18n/fr/blog.json";
 
 export const prerender = true;
 
 // This gets the static paths for the blog index page
 export function getStaticPaths() {
 	return [
-		{ params: { lang: undefined, blog: "blog" } },
-		{ params: { lang: "fr", blog: "blog" } },
+		{ params: { lang: "blog" } },     // Pour /blog (anglais)
+		{ params: { lang: "fr/blog" } },  // Pour /fr/blog (français)
 	];
 }
 
 const { lang } = Astro.params;
-// Ensure lang is a valid Language type
-const currentLang = (lang || "en") as Language;
-const t = await useTranslations(currentLang, "blog");
+console.log("Raw lang param:", lang);
 
-if (!t) {
-    throw new Error(`Missing translations for ${currentLang}`);
-}
+// Get current locale
+const currentLang = getCurrentLocale(Astro.url) as Language;
+console.log("Current locale:", currentLang);
+
+// Get translations based on language
+const t = currentLang === "fr" ? frTranslations : enTranslations;
+console.log("Loaded translations:", t);
 
 // Get all blogs post in current language and sort them based on publish date
-const blogEntries = await getCollection("blog", ({ id }) => {
-	return id.startsWith(currentLang + "/");
+const blogEntries = await getCollection("blog", ({ id }: { id: string }) => {
+	return currentLang === "fr" ? id.startsWith("fr/") : !id.startsWith("fr/");
 });
 
-const blogPosts: CollectionEntry<"blog">[] = blogEntries.sort(
+// Trie les articles par date de publication
+const blogPosts = blogEntries.sort(
 	(a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
-		b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+		new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
 );
 
 // Separate the most recent post from others
-const mostRecentPost: CollectionEntry<"blog"> = blogPosts[0];
-const otherPosts: CollectionEntry<"blog">[] = blogPosts.slice(1);
+const mostRecentPost = blogPosts.length > 0 ? blogPosts[0] : null;
+const otherPosts = blogPosts.length > 0 ? blogPosts.slice(1) : [];
 
-const pageTitle: string = `Blog | ${SITE.title}`;
-
+const pageTitle = `Blog | ${SITE.title}`;
 const baseUrl = currentLang === "fr" ? "https://winflowz.com/fr" : "https://winflowz.com";
 
 // Ensure we have the translations before using them
@@ -71,41 +77,42 @@ const siteDescription = t?.meta?.siteDescription || "";
 		inLanguage: currentLang === "fr" ? "fr" : "en",
 	}}
 >
-	<section
-		class="mx-auto max-w-[85rem] space-y-8 px-4 pt-16 sm:px-6 lg:px-8 2xl:max-w-full"
-	>
+	<section class="mx-auto max-w-[85rem] space-y-8 px-4 pt-16 sm:px-6 lg:px-8 2xl:max-w-full">
 		<!--Page header-->
 		<div class="mx-auto max-w-3xl text-left sm:text-center">
-			<h1
-				class="block text-balance text-4xl font-bold tracking-tight text-neutral-800 dark:text-neutral-200 md:text-5xl lg:text-6xl"
-			>
+			<h1 class="block text-balance text-4xl font-bold tracking-tight text-neutral-800 dark:text-neutral-200 md:text-5xl lg:text-6xl">
 				{t.title}
 			</h1>
 
-			<p
-				class="mt-4 text-pretty text-lg text-neutral-600 dark:text-neutral-400"
-			>
+			<p class="mt-4 text-pretty text-lg text-neutral-600 dark:text-neutral-400">
 				{t.subtitle}
 			</p>
 		</div>
 	</section>
 
-	<section
-		class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full"
-	>
-		<!--Blog posts grid-->
-		<div class="grid gap-6 lg:grid-cols-2">
-			{
-				otherPosts.map((blogEntry) => (
-					<CardBlog blogEntry={blogEntry} blogLocale={currentLang} />
-				))
-			}
-		</div>
-	</section>
-	<!--Most recent blog post-->
-	<section
-		class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full"
-	>
-		<CardBlogRecent blogEntry={mostRecentPost} recentBlogLocale={currentLang} />
-	</section>
+	{blogPosts.length > 0 ? (
+		<>
+			<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full">
+				<!--Blog posts grid-->
+				<div class="grid gap-6 lg:grid-cols-2">
+					{otherPosts.map((blogEntry) => (
+						<CardBlog blogEntry={blogEntry} blogLocale={currentLang} />
+					))}
+				</div>
+			</section>
+			
+			<!--Most recent blog post-->
+			{mostRecentPost && (
+				<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full">
+					<CardBlogRecent blogEntry={mostRecentPost} recentBlogLocale={currentLang} />
+				</section>
+			)}
+		</>
+	) : (
+		<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full">
+			<p class="text-center text-lg text-neutral-600 dark:text-neutral-400">
+				{currentLang === "fr" ? "Aucun article de blog disponible pour le moment." : "No blog posts available at the moment."}
+			</p>
+		</section>
+	)}
 </MainLayout>
