@@ -1,15 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../types/supabase'
 
-export const supabase = createClient<Database>(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: false
-    }
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false
   }
-)
+});
 
 // Fonction de validation d'email
 function isValidEmail(email: string): boolean {

@@ -1,28 +1,26 @@
 ---
-const { label = Astro.currentLocale === "fr" ? "Me rappeler" : "Remember me", id } = Astro.props;
-
 interface Props {
+  id: string;
   label?: string;
-  id?: string;
-  name?: string;
 }
+
+const { id, label = "Remember me" } = Astro.props;
 ---
 
-<!-- Container for the checkbox and its label -->
 <div class="flex items-center">
-  <!-- Checkbox input -->
   <div class="flex">
     <input
-      id={id}
-      name={Astro.props.name}
       type="checkbox"
-      class="mt-0.5 shrink-0 rounded border-neutral-200 text-neutral-600 focus:ring-yellow-400 dark:border-neutral-700 dark:bg-neutral-800 dark:checked:border-yellow-400 dark:checked:bg-yellow-400 dark:focus:ring-offset-neutral-800"
+      id={id}
+      name={id}
+      class="relative h-5 w-5 shrink-0 appearance-none rounded-md border border-neutral-200 bg-white checked:border-orange-400 checked:bg-orange-400 checked:before:bg-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400 dark:border-neutral-700 dark:bg-neutral-900 dark:checked:border-orange-400 dark:checked:bg-orange-400 dark:focus:ring-offset-neutral-800"
     />
+    <div
+      class="pointer-events-none absolute mt-1 ml-1 hidden h-3 w-3 rotate-45 border-2 border-t-0 border-l-0 border-white opacity-0 peer-checked:opacity-100"
+    >
+    </div>
   </div>
-  <!-- Label for the checkbox -->
-  <div class="ms-3">
-    <label for={id} class="text-sm text-neutral-800 dark:text-neutral-200"
-      >{label} <slot />
-    </label>
-  </div>
+  <label for={id} class="ml-3 text-sm text-neutral-800 dark:text-neutral-200">
+    {label}
+  </label>
 </div>

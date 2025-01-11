@@ -1,17 +1,20 @@
 ---
-// Import necessary components from their individual files
 import EmailInput from "./input/EmailInput.astro";
 import PasswordInput from "./input/PasswordInput.astro";
 import Checkbox from "./input/Checkbox.astro";
 import AuthBtn from "@components/ui/buttons/AuthBtn.astro";
 import GoogleBtn from "@components/ui/buttons/GoogleBtn.astro";
+import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+
+const lang = getLangFromUrl(Astro.url);
+const t = await useTranslations(lang, "auth");
 
 // Variables for customization of the LoginModal Component
 const config = {
 	id: "hs-toggle-between-modals-login-modal", // Modal IDENTIFIER
-	title: "Sign in", // Main HEADING
-	subTitle: "Don't have an account yet?", // Sub-Heading TEXT
-	registerBtn: "Sign up here", // Text for REGISTRATION BUTTON
+	title: t?.login?.title ?? "Sign in", // Main HEADING
+	subTitle: t?.login?.subtitle ?? "Don't have an account yet?", // Sub-Heading TEXT
+	registerBtn: t?.login?.registerLink ?? "Sign up here", // Text for REGISTRATION BUTTON
 	registerBtnDataHS: "#hs-toggle-between-modals-register-modal", // TARGET LINK for registration button
 };
 ---
@@ -45,31 +48,43 @@ const config = {
 						</p>
 					</div>
 					<div class="mt-5">
-						<GoogleBtn id="google-signin" title="Sign in with Google" />
+						<GoogleBtn id="google-signin" title={t?.login?.googleButton ?? "Sign in with Google"} />
 
 						<div
 							class="flex items-center py-3 text-xs uppercase text-neutral-400 before:me-6 before:flex-[1_1_0%] before:border-t before:border-neutral-200 after:ms-6 after:flex-[1_1_0%] after:border-t after:border-neutral-200 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600"
 						>
-							Or
+							{t?.login?.or ?? "Or"}
 						</div>
 						<!-- The container for the form -->
 						<form id="login-form" method="POST">
 							<!-- A grid layout for the form fields -->
 							<div class="grid gap-y-4">
 								<!-- The email input field -->
-								<EmailInput id="login-email" name="email" errorId="login-email-error" />
+								<EmailInput 
+									id="login-email" 
+									name="email" 
+									errorId="login-email-error"
+									label={t?.fields?.email?.label}
+									placeholder={t?.fields?.email?.placeholder}
+								/>
 								<!-- The password input field -->
 								<PasswordInput
 									forgot={true}
 									id="password"
 									name="password"
 									errorId="login-password-error"
-									content="8+ characters required"
+									content={t?.fields?.password?.hint}
+									label={t?.fields?.password?.label}
+									placeholder={t?.fields?.password?.placeholder}
+									forgotText={t?.login?.forgotPassword}
 								/>
 								<!-- The remember-me checkbox -->
-								<Checkbox id="remember-me" />
+								<Checkbox 
+									id="remember-me" 
+									label={t?.login?.rememberMe ?? "Remember me"}
+								/>
 								<!-- The sign-in button -->
-								<AuthBtn title="Sign in" />
+								<AuthBtn title={t?.login?.submit ?? "Sign in"} />
 							</div>
 						</form>
 					</div>
@@ -79,77 +94,65 @@ const config = {
 	</div>
 </div>
 
-<script is:inline type="module">
-	import { signInWithEmail, signInWithGoogle } from "@lib/supabase";
-
-	console.log('Script de login chargé');
+<script>
+	import { signInWithEmail, signInWithGoogle } from "@/lib/supabase";
 
 	const loginForm = document.getElementById('login-form');
 	const googleBtn = document.getElementById('google-signin');
 	const errorElement = document.getElementById('login-email-error');
 
-	console.log('Éléments trouvés:', {
-		loginForm: !!loginForm,
-		googleBtn: !!googleBtn,
-		errorElement: !!errorElement
-	});
-
 	function showError(message) {
-		console.log('Affichage erreur:', message);
 		if (errorElement) {
 			errorElement.textContent = message;
 			errorElement.style.display = 'block';
 			errorElement.style.color = 'red';
-		} else {
-			console.error('Element erreur non trouvé');
 		}
 	}
 
 	if (loginForm) {
 		loginForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
-			console.log('Formulaire soumis');
 
 			const formData = new FormData(loginForm);
 			const email = formData.get('email');
 			const password = formData.get('password');
 
-			console.log('Données formulaire:', { 
-				hasEmail: !!email, 
-				hasPassword: !!password 
-			});
-
 			if (!email || !password) {
-				showError("Veuillez remplir tous les champs");
+				showError(document.documentElement.lang === 'fr' 
+					? "Veuillez remplir tous les champs" 
+					: "Please fill in all fields"
+				);
 				return;
 			}
 
 			try {
-				console.log('Tentative de connexion avec:', { email });
 				const { data, error } = await signInWithEmail(email, password);
-				console.log('Réponse connexion:', { data, error });
 				
 				if (error) {
-					console.log('Erreur détectée:', error.message);
 					if (error.message.includes('Invalid login credentials') || 
 						error.message.includes('Invalid email') ||
 						error.message.includes('Invalid password')) {
-						showError("Email ou mot de passe incorrect");
+						showError(document.documentElement.lang === 'fr'
+							? "Email ou mot de passe incorrect"
+							: "Invalid email or password"
+						);
 					} else {
-						showError(error.message);
+						showError(document.documentElement.lang === 'fr'
+							? "Une erreur est survenue lors de la connexion"
+							: "An error occurred during login"
+						);
 					}
 					return;
 				}
 
-				// Redirection vers le dashboard en cas de succès
 				window.location.href = '/dashboard';
 			} catch (error) {
-				console.error('Erreur de connexion:', error);
-				showError("Une erreur est survenue lors de la connexion");
+				showError(document.documentElement.lang === 'fr'
+					? "Une erreur est survenue lors de la connexion"
+					: "An error occurred during login"
+				);
 			}
 		});
-	} else {
-		console.error('Formulaire de login non trouvé');
 	}
 
 	if (googleBtn) {
