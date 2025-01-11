@@ -1,0 +1,112 @@
+<!-- Dark Theme Toggle Button -->
+<button
+  type="button"
+  aria-label="Basculer vers le thème sombre"
+  class="hs-dark-mode group flex h-8 w-8 items-center justify-center rounded-full font-medium text-neutral-600 outline-none ring-zinc-500 transition duration-300 hover:bg-neutral-200 hover:text-orange-400 hs-dark-mode-active:hidden dark:text-neutral-400 dark:ring-zinc-200 dark:hover:text-orange-300 dark:focus:outline-none"
+  data-hs-theme-click-value="dark"
+>
+  <svg
+    class="h-4 w-4 flex-shrink-0"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+  </svg>
+</button>
+
+<!-- Light Theme Toggle Button -->
+<button
+  type="button"
+  aria-label="Basculer vers le thème clair"
+  class="hs-dark-mode group hidden h-8 w-8 items-center justify-center rounded-full font-medium text-neutral-600 outline-none ring-zinc-500 transition duration-300 hover:text-orange-400 hs-dark-mode-active:flex dark:text-neutral-400 dark:ring-zinc-200 dark:hover:bg-neutral-700 dark:hover:text-orange-300 dark:focus:outline-none"
+  data-hs-theme-click-value="light"
+>
+  <svg
+    class="h-4 w-4 flex-shrink-0"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 8a2 2 0 1 0 4 4"></path>
+    <path d="M12 2v2"></path>
+    <path d="M12 20v2"></path>
+    <path d="m4.93 4.93 1.41 1.41"></path>
+    <path d="m17.66 17.66 1.41 1.41"></path>
+    <path d="M2 12h2"></path>
+    <path d="M20 12h2"></path>
+    <path d="m6.34 17.66-1.41 1.41"></path>
+    <path d="m19.07 4.93-1.41 1.41"></path>
+  </svg>
+</button>
+
+<script>
+  // Définition du type Theme
+  type Theme = "light" | "dark" | "auto";
+
+  // Fonction pour obtenir le thème initial
+  function getInitialTheme(): Theme {
+    return (localStorage.getItem("hs_theme") as Theme) || "light";
+  }
+
+  // Fonction pour appliquer le thème
+  function applyTheme(theme: Theme) {
+    const root = document.documentElement;
+    
+    // Supprimer toutes les classes de thème
+    root.classList.remove("dark", "light", "auto");
+    
+    // Appliquer le nouveau thème
+    if (theme === "auto") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      root.classList.add(isDark ? "dark" : "light");
+    } else {
+      root.classList.add(theme);
+    }
+    
+    // Sauvegarder le thème
+    localStorage.setItem("hs_theme", theme);
+    
+    // Dispatcher l'événement de changement de thème
+    window.dispatchEvent(
+      new CustomEvent("on-hs-appearance-change", { detail: theme })
+    );
+  }
+
+  // Initialisation au chargement de la page
+  document.addEventListener("astro:page-load", () => {
+    const initialTheme = getInitialTheme();
+    applyTheme(initialTheme);
+
+    // Écouteur pour les changements de préférence système
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        if (getInitialTheme() === "auto") {
+          applyTheme("auto");
+        }
+      });
+
+    // Écouteur pour les boutons de thème
+    const themeButtons = document.querySelectorAll("[data-hs-theme-click-value]");
+    themeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const newTheme = button.getAttribute(
+          "data-hs-theme-click-value"
+        ) as Theme;
+        applyTheme(newTheme);
+      });
+    });
+  });
+</script> 

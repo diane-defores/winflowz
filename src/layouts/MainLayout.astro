@@ -5,6 +5,7 @@ import FooterSection from "@/components/sections/navbar&footer/FooterSection.ast
 import Navbar from "@/components/sections/navbar&footer/Navbar.astro";
 import { SITE } from "@/constants";
 import "../assets/styles/global.css";
+import { ViewTransitions } from "astro:transitions";
 
 // Setting expected props
 const { title = SITE.title, meta, structuredData, lang = "en" } = Astro.props;
@@ -33,20 +34,18 @@ We set the language of the page to English and add classes for scroll behavior.
 		<Meta meta={meta} structuredData={structuredData} />
 		<!-- Define the title of the page -->
 		<title>{title}</title>
+		<ViewTransitions />
 		<script is:inline>
 			// Script to handle dark mode. It will check if the theme is stored in localStorage or if dark theme is preferred by system settings
 			if (
-				localStorage.getItem("hs_theme") === "dark" ||
-				(!("hs_theme" in localStorage) &&
+				localStorage.getItem("theme") === "dark" ||
+				(!("theme" in localStorage) &&
 					window.matchMedia("(prefers-color-scheme: dark)").matches)
 			) {
 				document.documentElement.classList.add("dark");
 			} else {
 				document.documentElement.classList.remove("dark");
 			}
-		</script>
-		<script>
-			import "@/assets/scripts/lenisSmoothScroll.js";
 		</script>
 	</head>
 	<body class="dark:bg-neutral-900">
@@ -61,5 +60,10 @@ We set the language of the page to English and add classes for scroll behavior.
 			</main>
 		</div>
 		<FooterSection />
+		<script>
+			import '@/scripts/preline';
+			import '@/scripts/theme';
+			import '@/scripts/lenisSmoothScroll';
+		</script>
 	</body>
 </html>

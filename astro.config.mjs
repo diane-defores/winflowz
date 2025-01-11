@@ -4,6 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import compressor from "astro-compressor";
 import vercel from "@astrojs/vercel/serverless";
 import icon from "astro-icon";
+import { fileURLToPath } from 'url';
 
 export default defineConfig({
   site: "https://winflowz.com",
@@ -16,6 +17,14 @@ export default defineConfig({
   build: {
     inlineStylesheets: "auto",
     split: true,
+  },
+  vite: {
+    resolve: {
+      alias: {
+        '@scripts': fileURLToPath(new URL('./src/scripts', import.meta.url)),
+        '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
+      }
+    }
   },
   adapter: vercel({
     webAnalytics: {
@@ -31,10 +40,30 @@ export default defineConfig({
     },
   }),
   image: {
-    domains: ["images.unsplash.com"],
-    service: {
-      entrypoint: "astro/assets/services/sharp",
-    },
+    domains: [
+      'dynapictures.com',
+      'i.pinimg.com',
+      'images.unsplash.com',
+      'www.squirrly.co'
+    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.dynapictures.com'
+      },
+      {
+        protocol: 'https',
+        hostname: '**.pinimg.com'
+      },
+      {
+        protocol: 'https',
+        hostname: '**.unsplash.com'
+      },
+      {
+        protocol: 'https',
+        hostname: '**.squirrly.co'
+      }
+    ]
   },
   prefetch: {
     prefetchAll: false,
@@ -75,6 +104,6 @@ export default defineConfig({
     compressor({
       gzip: false,
       brotli: true,
-    }),
+    })
   ],
 });

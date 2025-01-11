@@ -5,7 +5,17 @@ const routeMappings = {
   'disclaimer': 'non-responsabilite',
   'privacy': 'confidentialite',
   'copyright': 'droits',
-  'legal': 'mentions-legales'
+  'legal': 'mentions-legales',
+  'products': 'produits',
+  'services': 'services',
+  'about': 'a-propos',
+  'contact': 'contact',
+  'blog': 'blog',
+  'support': 'support',
+  'pricing': 'tarifs',
+  'partners': 'partenaires',
+  'news': 'actualites',
+  'events': 'evenements',
 };
 
 export const onRequest = defineMiddleware(async (context, next) => {
