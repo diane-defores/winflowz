@@ -8,7 +8,7 @@ const t = await useTranslations(lang, "roadmap");
 const currentPath = Astro.url.pathname;
 ---
 
-<div class="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+<div class="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 pt-6">
 	<nav class="mx-auto flex max-w-7xl gap-x-8 gap-y-2 px-4 py-4 sm:px-6 lg:px-8" aria-label={t?.nav?.projectsLabel ?? "Projects navigation"}>
 		<a
 			href={lang === "fr" ? `/fr/roadmap` : `/roadmap`}

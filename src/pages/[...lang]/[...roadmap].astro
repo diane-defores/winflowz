@@ -15,13 +15,12 @@ export function getStaticPaths() {
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "roadmap");
 
-// Fallback translations au cas où le chargement échoue
 const defaultTranslations = {
   planned: "Planned",
-  inProgress: "In Progress",
+  inProgress: "In Development",
   completed: "Completed",
-  considering: "Considering",
-  inDevelopment: "In Development",
+  considering: "Ideas",
+  rejected: "Rejected",
   vote: "Vote",
   votes: "votes"
 };
@@ -31,20 +30,35 @@ const translations = {
   inProgress: t?.status?.inProgress ?? defaultTranslations.inProgress,
   completed: t?.status?.completed ?? defaultTranslations.completed,
   considering: t?.status?.considering ?? defaultTranslations.considering,
-  inDevelopment: t?.status?.inDevelopment ?? defaultTranslations.inDevelopment,
+  rejected: t?.status?.rejected ?? defaultTranslations.rejected,
   vote: t?.feature?.vote ?? defaultTranslations.vote,
   votes: t?.feature?.votes ?? defaultTranslations.votes
 };
 
-const allFeatures = projects.flatMap(project => project.features);
+// Regrouper toutes les features par statut
+const allFeatures = projects.flatMap(project => 
+  project.features.map(feature => ({
+    ...feature,
+    projectId: project.id,
+    projectName: t?.projects?.[project.id]?.name ?? project.name
+  }))
+);
+
+const featuresByStatus = {
+  considering: allFeatures.filter(f => f.status === 'considering'),
+  planned: allFeatures.filter(f => f.status === 'planned'),
+  inProgress: allFeatures.filter(f => f.status === 'in-development'),
+  completed: allFeatures.filter(f => f.status === 'completed'),
+  rejected: allFeatures.filter(f => f.status === 'rejected')
+};
 ---
 
 <MainLayout title={t?.title ?? "Roadmap"} lang={lang}>
   <div class="min-h-screen bg-white dark:bg-neutral-900">
     <ProjectNav />
     
-    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl lg:mx-0">
+    <div class="mx-auto max-w-[120rem] px-6 py-16 sm:px-8 lg:px-12">
+      <div class="mx-auto max-w-3xl lg:mx-0 mb-12">
         <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
           {t?.title ?? "Roadmap"}
         </h1>
@@ -53,48 +67,97 @@ const allFeatures = projects.flatMap(project => project.features);
         </p>
       </div>
 
-      <div class="mt-16 space-y-20">
-        {projects.map(project => (
-          <section>
-            <div class="mb-8">
-              <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-                <a href={`/${lang ? `${lang}/` : ""}roadmap/${project.id}`} class="hover:text-orange-500 dark:hover:text-orange-400">
-                  {t?.projects?.[project.id]?.name ?? project.name}
-                </a>
-              </h2>
-              <p class="mt-2 text-lg text-neutral-600 dark:text-neutral-400">
-                {t?.projects?.[project.id]?.description ?? project.description}
-              </p>
-            </div>
-
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {project.features.map(feature => (
-                <FeatureCard 
-                  feature={feature} 
-                  translations={translations}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
-
-      <section class="mt-20">
-        <h2 class="mb-8 text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-          {t?.sections?.allFeatures ?? "All Features"}
-        </h2>
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {allFeatures
-            .sort((a, b) => b.votes - a.votes)
-            .map(feature => (
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 xl:gap-10">
+        <!-- Colonne Idées -->
+        <div class="rounded-xl">
+          <h2 class="text-xl font-semibold text-neutral-900 dark:text-white mb-6 flex items-center gap-2">
+            <span class="size-3 bg-purple-500 rounded-full"></span>
+            {translations.considering}
+            <span class="text-sm font-normal text-neutral-500 dark:text-neutral-400">({featuresByStatus.considering.length})</span>
+          </h2>
+          <div class="space-y-6">
+            {featuresByStatus.considering.map(feature => (
               <FeatureCard 
-                feature={feature} 
-                showProjectName={true}
+                feature={feature}
                 translations={translations}
+                showProjectName={true}
               />
             ))}
+          </div>
         </div>
-      </section>
+
+        <!-- Colonne Planned -->
+        <div class="rounded-xl">
+          <h2 class="text-xl font-semibold text-neutral-900 dark:text-white mb-6 flex items-center gap-2">
+            <span class="size-3 bg-blue-500 rounded-full"></span>
+            {translations.planned}
+            <span class="text-sm font-normal text-neutral-500 dark:text-neutral-400">({featuresByStatus.planned.length})</span>
+          </h2>
+          <div class="space-y-6">
+            {featuresByStatus.planned.map(feature => (
+              <FeatureCard 
+                feature={feature}
+                translations={translations}
+                showProjectName={true}
+              />
+            ))}
+          </div>
+        </div>
+
+        <!-- Colonne In Development -->
+        <div class="rounded-xl">
+          <h2 class="text-xl font-semibold text-neutral-900 dark:text-white mb-6 flex items-center gap-2">
+            <span class="size-3 bg-orange-500 rounded-full"></span>
+            {translations.inProgress}
+            <span class="text-sm font-normal text-neutral-500 dark:text-neutral-400">({featuresByStatus.inProgress.length})</span>
+          </h2>
+          <div class="space-y-6">
+            {featuresByStatus.inProgress.map(feature => (
+              <FeatureCard 
+                feature={feature}
+                translations={translations}
+                showProjectName={true}
+              />
+            ))}
+          </div>
+        </div>
+
+        <!-- Colonne Completed -->
+        <div class="rounded-xl">
+          <h2 class="text-xl font-semibold text-neutral-900 dark:text-white mb-6 flex items-center gap-2">
+            <span class="size-3 bg-green-500 rounded-full"></span>
+            {translations.completed}
+            <span class="text-sm font-normal text-neutral-500 dark:text-neutral-400">({featuresByStatus.completed.length})</span>
+          </h2>
+          <div class="space-y-6">
+            {featuresByStatus.completed.map(feature => (
+              <FeatureCard 
+                feature={feature}
+                translations={translations}
+                showProjectName={true}
+              />
+            ))}
+          </div>
+        </div>
+
+        <!-- Colonne Rejected -->
+        <div class="rounded-xl">
+          <h2 class="text-xl font-semibold text-neutral-900 dark:text-white mb-6 flex items-center gap-2">
+            <span class="size-3 bg-red-500 rounded-full"></span>
+            {translations.rejected}
+            <span class="text-sm font-normal text-neutral-500 dark:text-neutral-400">({featuresByStatus.rejected.length})</span>
+          </h2>
+          <div class="space-y-6">
+            {featuresByStatus.rejected.map(feature => (
+              <FeatureCard 
+                feature={feature}
+                translations={translations}
+                showProjectName={true}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </MainLayout> 

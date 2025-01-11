@@ -14,6 +14,7 @@ const t = await useTranslations(lang, "navigation");
 const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 ---
 
+
 <!-- Main header component -->
 <header
 	class="sticky inset-x-0 top-4 z-50 flex w-full flex-wrap text-sm md:flex-nowrap md:justify-start"
@@ -30,6 +31,8 @@ const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 					class="inline-block rounded-lg text-xl font-bold outline-none ring-zinc-500 focus-visible:ring dark:ring-zinc-200 dark:focus:outline-none"
 					href={homeUrl}
 					aria-label="Brand"
+					data-astro-prefetch
+					data-astro-reload
 				>
 					<div class="flex items-center">
 						<BrandLogo class="ml-8 w-52" />
