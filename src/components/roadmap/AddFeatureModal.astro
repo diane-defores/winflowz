@@ -1,0 +1,122 @@
+---
+import Modal from "@/components/ui/Modal.astro";
+import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+
+const lang = getLangFromUrl(Astro.url);
+const t = await useTranslations(lang, "roadmap");
+---
+
+<Modal
+	id="addFeatureModal"
+	title={t?.addFeature?.title ?? "Suggest a new feature"}
+>
+	<form id="addFeatureForm" class="space-y-4">
+		<div>
+			<label
+				for="title"
+				class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
+			>
+				{t?.addFeature?.titleLabel ?? "Title"}
+			</label>
+			<input
+				type="text"
+				id="title"
+				name="title"
+				required
+				class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
+			/>
+		</div>
+
+		<div>
+			<label
+				for="description"
+				class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
+			>
+				{t?.addFeature?.descriptionLabel ?? "Description"}
+			</label>
+			<textarea
+				id="description"
+				name="description"
+				required
+				rows="4"
+				class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
+			></textarea>
+		</div>
+
+		<div>
+			<label
+				for="project"
+				class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
+			>
+				{t?.addFeature?.projectLabel ?? "Project"}
+			</label>
+			<select
+				id="project"
+				name="project"
+				required
+				class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
+			>
+				<option value="tubeflowz">Tubeflowz</option>
+				<option value="mediaflowz">Mediaflowz</option>
+				<option value="winflowz">Winflowz</option>
+			</select>
+		</div>
+
+		<div class="flex justify-end gap-3 pt-4">
+			<button
+				type="button"
+				data-modal-close="addFeatureModal"
+				class="rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+			>
+				{t?.addFeature?.cancel ?? "Cancel"}
+			</button>
+			<button
+				type="submit"
+				class="dark:hover:bg-orange-700 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 dark:bg-orange-600"
+			>
+				{t?.addFeature?.submit ?? "Submit"}
+			</button>
+		</div>
+	</form>
+</Modal>
+
+<script>
+	const modal = document.getElementById("addFeatureModal");
+	const form = document.getElementById("addFeatureForm");
+
+	if (modal && form) {
+		form.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const formData = new FormData(form as HTMLFormElement);
+
+			try {
+				const response = await fetch("/api/features", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						title: formData.get("title"),
+						description: formData.get("description"),
+						projectId: formData.get("project"),
+						status: "considering",
+					}),
+				});
+
+				if (response.ok) {
+					// Réinitialiser le formulaire
+					form.reset();
+					// Fermer la modale
+					modal.classList.add("hidden");
+					// Recharger la page pour voir la nouvelle feature
+					window.location.reload();
+				} else {
+					console.error("Error adding feature");
+				}
+			} catch (error) {
+				console.error("Error:", error);
+			}
+		});
+	}
+</script>
+

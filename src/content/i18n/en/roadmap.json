@@ -1,6 +1,6 @@
 {
-  "title": "Roadmap",
-  "subtitle": "Discover our projects and vote for the features you'd like to see implemented",
+  "title": "Product Roadmap",
+  "subtitle": "Discover upcoming features and vote for the ones you'd like to see implemented",
   "sections": {
     "allFeatures": "All Features",
     "allProjects": "All Projects"
@@ -16,18 +16,32 @@
     }
   },
   "status": {
+    "considering": "Ideas",
     "planned": "Planned",
-    "inProgress": "In Progress",
+    "inProgress": "In Development",
     "completed": "Completed",
-    "considering": "Considering",
-    "inDevelopment": "In Development"
+    "rejected": "Rejected"
   },
   "feature": {
+    "vote": "Vote",
     "votes": "votes",
-    "vote": "Vote"
+    "loginToVote": "Please login to vote"
   },
   "nav": {
     "projectsLabel": "Projects navigation",
     "backToAll": "Back to all projects"
+  },
+  "addFeature": {
+    "button": "Suggest Feature",
+    "title": "Suggest a new feature",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter a title for your feature suggestion",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe your feature suggestion in detail",
+    "projectLabel": "Project",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "success": "Feature suggestion submitted successfully",
+    "error": "Error submitting feature suggestion"
   }
 } 

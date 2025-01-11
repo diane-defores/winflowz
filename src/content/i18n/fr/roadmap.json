@@ -1,6 +1,6 @@
 {
   "title": "Feuille de Route",
-  "subtitle": "Découvrez nos projets et votez pour les fonctionnalités que vous souhaitez voir implémentées",
+  "subtitle": "Découvrez les fonctionnalités à venir et votez pour celles que vous souhaitez voir implémentées",
   "sections": {
     "allFeatures": "Toutes les fonctionnalités",
     "allProjects": "Tous les projets"
@@ -16,18 +16,32 @@
     }
   },
   "status": {
+    "considering": "Idées",
     "planned": "Planifié",
-    "inProgress": "En cours",
+    "inProgress": "En Développement",
     "completed": "Terminé",
-    "considering": "À l'étude",
-    "inDevelopment": "En développement"
+    "rejected": "Refusé"
   },
   "feature": {
+    "vote": "Voter",
     "votes": "votes",
-    "vote": "Voter"
+    "loginToVote": "Connectez-vous pour voter"
   },
   "nav": {
     "projectsLabel": "Navigation des projets",
     "backToAll": "Retour à tous les projets"
+  },
+  "addFeature": {
+    "button": "Suggérer une Fonctionnalité",
+    "title": "Suggérer une nouvelle fonctionnalité",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "Entrez un titre pour votre suggestion",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Décrivez votre suggestion en détail",
+    "projectLabel": "Projet",
+    "submit": "Envoyer",
+    "cancel": "Annuler",
+    "success": "Suggestion envoyée avec succès",
+    "error": "Erreur lors de l'envoi de la suggestion"
   }
 } 
