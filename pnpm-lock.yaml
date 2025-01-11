@@ -66,8 +66,8 @@ importers:
         specifier: ^1.1.5
         version: 1.1.5
       astro-vtbot:
-        specifier: ^1.10.7
-        version: 1.10.7
+        specifier: ^2.0.3
+        version: 2.0.3
       clipboard:
         specifier: ^2.0.11
         version: 2.0.11
@@ -1092,8 +1092,8 @@ packages:
   astro-icon@1.1.5:
     resolution: {integrity: sha512-CJYS5nWOw9jz4RpGWmzNQY7D0y2ZZacH7atL2K9DeJXJVaz7/5WrxeyIxO8KASk1jCM96Q4LjRx/F3R+InjJrw==}
 
-  astro-vtbot@1.10.7:
-    resolution: {integrity: sha512-lwCMq+ruuTbHooJ/ZYL2tA99KXDXqbmD5JNBtlnuO7EsEp7FBpwIVBOHt/lDkqUtDt+vQkWRPA5cLZ3tEny48g==}
+  astro-vtbot@2.0.3:
+    resolution: {integrity: sha512-wUFR8HWNRQrx6qjLeq3C7h8Rdl4vqB7gKv0pAlFTZbLgC7ath8gxOlGsviyl0vmMLJnu710e0NszsO0vKHzS/g==}
 
   astro@4.16.18:
     resolution: {integrity: sha512-G7zfwJt9BDHEZwlaLNvjbInIw2hPryyD654314KV/XT34pJU6SfN1S+mWa8RAkALcZNJnJXCJmT3JXLQStD3Lw==}
@@ -4540,7 +4540,7 @@ snapshots:
       - debug
       - supports-color
 
-  astro-vtbot@1.10.7:
+  astro-vtbot@2.0.3:
     dependencies:
       '@vtbag/cam-shaft': 1.0.5
       '@vtbag/element-crossing': 1.1.0
