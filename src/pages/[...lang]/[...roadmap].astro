@@ -1,41 +1,41 @@
 ---
-import MainLayout from "@/layouts/MainLayout.astro";
-import KanbanBoard from "@/components/roadmap/KanbanBoard.astro";
-import ProjectNav from "@/components/roadmap/ProjectNav.astro";
-import AddFeatureModal from "@/components/roadmap/AddFeatureModal.astro";
-import { projects } from "@/types/roadmap";
-import { getLangFromUrl, useTranslations } from "@/utils/i18n";
-import { supabase } from "@/lib/supabase";
+import MainLayout from "../../layouts/MainLayout.astro";
+import KanbanBoard from "../../components/roadmap/KanbanBoard.astro";
+import ProjectNav from "../../components/roadmap/ProjectNav.astro";
+import AddFeatureModal from "../../components/roadmap/AddFeatureModal.astro";
+import { projects } from "../../types/roadmap";
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import { supabase } from "../../lib/supabaseClient";
 
 export function getStaticPaths() {
 	return [
 		// Routes en anglais
-		{ 
-			params: { 
-				lang: undefined, 
-				roadmap: "roadmap" 
-			}
+		{
+			params: {
+				lang: undefined,
+				roadmap: "roadmap",
+			},
 		},
-		...projects.map(project => ({
-			params: { 
-				lang: undefined, 
-				roadmap: `roadmap/${project.id}` 
-			}
+		...projects.map((project) => ({
+			params: {
+				lang: undefined,
+				roadmap: `roadmap/${project.id}`,
+			},
 		})),
-		
+
 		// Routes en français
-		{ 
-			params: { 
-				lang: "fr", 
-				roadmap: "roadmap" 
-			}
+		{
+			params: {
+				lang: "fr",
+				roadmap: "roadmap",
+			},
 		},
-		...projects.map(project => ({
-			params: { 
-				lang: "fr", 
-				roadmap: `roadmap/${project.id}` 
-			}
-		}))
+		...projects.map((project) => ({
+			params: {
+				lang: "fr",
+				roadmap: `roadmap/${project.id}`,
+			},
+		})),
 	];
 }
 
@@ -44,16 +44,19 @@ const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "roadmap");
 
 // Extraire l'ID du projet de l'URL
-const segments = Astro.url.pathname.split('/');
-const projectId = segments[segments.length - 1] === 'roadmap' ? null : segments[segments.length - 1];
-const project = projectId ? projects.find(p => p.id === projectId) : null;
+const segments = Astro.url.pathname.split("/");
+const projectId =
+	segments[segments.length - 1] === "roadmap"
+		? null
+		: segments[segments.length - 1];
+const project = projectId ? projects.find((p) => p.id === projectId) : null;
 
-console.log('Page Debug:', {
-    pathname: Astro.url.pathname,
-    segments,
-    projectId,
-    project,
-    hasProject: !!project
+console.log("Page Debug:", {
+	pathname: Astro.url.pathname,
+	segments,
+	projectId,
+	project,
+	hasProject: !!project,
 });
 
 const defaultTranslations = {
@@ -90,15 +93,18 @@ if (project) {
 const { data: features } = await query;
 
 // Ajouter les noms des projets aux features
-const featuresWithProjectNames = features?.map((feature) => ({
-	...feature,
-	projectName: projects.find((p) => p.id === feature.projectId)?.name ?? feature.projectId,
-})) ?? [];
+const featuresWithProjectNames =
+	features?.map((feature) => ({
+		...feature,
+		projectName:
+			projects.find((p) => p.id === feature.projectId)?.name ??
+			feature.projectId,
+	})) ?? [];
 
 // Définir le titre de la page
-const pageTitle = project 
-	? `${project.name} - ${t?.title ?? "Roadmap"}`
-	: t?.title ?? "Roadmap";
+const pageTitle = project
+	? `${project.name} - ${t?.title || "Roadmap"}`
+	: (t?.title || "Roadmap");
 ---
 
 <MainLayout title={pageTitle} lang={lang}>
@@ -114,4 +120,5 @@ const pageTitle = project
 	</div>
 
 	<AddFeatureModal />
-</MainLayout> 
+</MainLayout>
+

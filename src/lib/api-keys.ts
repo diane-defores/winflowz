@@ -1,12 +1,14 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './supabaseClient';
 import { randomBytes, createHash } from 'crypto';
 
-const supabase = createClient(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-);
+interface CreateApiKeyOptions {
+  userId: string;
+  name: string;
+  expiration?: string;
+  permissions?: string[];
+}
 
-function generateApiKey(prefix: string = 'wf'): string {
+export function generateApiKey(prefix: string = 'wf'): string {
   const bytes = randomBytes(32);
   const base64 = bytes.toString('base64')
     .replace(/\+/g, '-')
@@ -15,10 +17,43 @@ function generateApiKey(prefix: string = 'wf'): string {
   return `${prefix}_${base64}`;
 }
 
-function hashApiKey(apiKey: string): string {
+export function hashApiKey(apiKey: string): string {
   return createHash('sha256')
     .update(apiKey)
     .digest('hex');
+}
+
+export async function createCustomApiKey({ userId, name, expiration, permissions = [] }: CreateApiKeyOptions) {
+  const apiKey = generateApiKey();
+  const keyHash = hashApiKey(apiKey);
+
+  // Calculer la date d'expiration
+  let expiresAt: Date | null = null;
+  if (expiration && expiration !== 'never') {
+    const days = parseInt(expiration);
+    expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + days);
+  }
+
+  const { data, error } = await supabase
+    .from('api_keys')
+    .insert({
+      user_id: userId,
+      name,
+      key_hash: keyHash,
+      permissions,
+      expires_at: expiresAt,
+      status: 'active'
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return {
+    apiKey,
+    keyData: data
+  };
 }
 
 export async function createApiKeyForPurchase(userId: string, productId: string) {
@@ -44,7 +79,6 @@ export async function createApiKeyForPurchase(userId: string, productId: string)
 
   if (error) throw error;
 
-  // On retourne la clé en clair uniquement à ce moment
   return {
     apiKey,
     keyData: data

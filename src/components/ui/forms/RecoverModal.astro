@@ -51,7 +51,11 @@ const config = {
             <form id="recover-form" method="POST">
               <div class="grid gap-y-4">
                 <!-- Email input field imported from EmailInput component -->
-                <EmailInput id="recover-email" errorId="recover-email-error"/>
+                <EmailInput 
+                  id="recover-email" 
+                  name="email"
+                  errorId="recover-email-error"
+                />
                 <!-- Reset password button imported from AuthBtn component -->
                 <AuthBtn title="Reset password" />
               </div>
@@ -64,19 +68,19 @@ const config = {
 </div>
 
 <script is:inline type="module" define:vars={{ resetUrl: "/auth/reset-password" }}>
-  import { resetPasswordForEmail } from "/src/lib/supabase";
+  import { resetPasswordForEmail } from "../../../lib/auth";
 
-  const recoverForm = document.getElementById('recover-form');
+  const recoverForm = document.getElementById('recover-form') as HTMLFormElement;
   const errorElement = document.getElementById('recover-email-error');
 
-  if (recoverForm instanceof HTMLFormElement) {
+  if (recoverForm) {
     recoverForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const formData = new FormData(recoverForm);
-      const email = formData.get('email');
+      const email = formData.get('email') as string;
 
-      if (!(email && typeof email === 'string')) {
+      if (!email) {
         return;
       }
 
@@ -85,15 +89,17 @@ const config = {
 
         if (error) throw error;
         
-        if (errorElement instanceof HTMLElement) {
-          errorElement.textContent = "Vérifiez votre email pour réinitialiser votre mot de passe";
+        if (errorElement) {
+          errorElement.textContent = document.documentElement.lang === 'fr'
+            ? "Vérifiez votre email pour réinitialiser votre mot de passe"
+            : "Check your email to reset your password";
           errorElement.style.display = 'block';
           errorElement.style.color = 'green';
         }
-      } catch (error) {
-        if (error instanceof Error && errorElement instanceof HTMLElement) {
-          console.error('Erreur de récupération:', error.message);
-          errorElement.textContent = error.message;
+      } catch (err: any) {
+        if (errorElement) {
+          console.error('Erreur de récupération:', err);
+          errorElement.textContent = err.message;
           errorElement.style.display = 'block';
         }
       }

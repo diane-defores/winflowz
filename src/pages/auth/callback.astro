@@ -1,136 +1,145 @@
-export const prerender = false;
-
 ---
-import { supabase } from '../../lib/supabase';
-import Alert from '../../components/ui/notifications/Alert.astro';
-import MainLayout from '../../layouts/MainLayout.astro';
+import { supabase } from "../../lib/supabaseClient";
+import Alert from "../../components/ui/notifications/Alert.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
 
 // Détection de la langue
-const urlLang = Astro.url.searchParams.get('lang');
-const currentLocale = urlLang === 'fr' ? 'fr' : 'en';
+const urlLang = Astro.url.searchParams.get("lang");
+const currentLocale = urlLang === "fr" ? "fr" : "en";
 
-console.log('Language detection:', {
-  urlLang,
-  currentLocale
+console.log("Language detection:", {
+	urlLang,
+	currentLocale,
 });
 
 // Messages d'erreur personnalisés avec traductions
 const errorMessages = {
-  fr: {
-    'otp_expired': {
-      title: "Le lien a expiré",
-      message: "Le lien de confirmation a expiré. Veuillez vous réinscrire pour recevoir un nouveau lien."
-    },
-    'access_denied': {
-      title: "Accès refusé",
-      message: "Vous n'avez pas l'autorisation d'accéder à cette page. Veuillez vous connecter avec un compte valide."
-    },
-    'no_code': {
-      title: "Lien invalide",
-      message: "Cette page nécessite un code de confirmation valide. Veuillez utiliser le lien envoyé dans votre email."
-    },
-    'default': {
-      title: "Erreur d'authentification",
-      message: "Une erreur inattendue s'est produite. Veuillez réessayer plus tard."
-    }
-  },
-  en: {
-    'otp_expired': {
-      title: "Link expired",
-      message: "The confirmation link has expired. Please sign up again to receive a new link."
-    },
-    'access_denied': {
-      title: "Access denied",
-      message: "You don't have permission to access this page. Please sign in with a valid account."
-    },
-    'no_code': {
-      title: "Invalid link",
-      message: "This page requires a valid confirmation code. Please use the link sent to your email."
-    },
-    'default': {
-      title: "Authentication error",
-      message: "An unexpected error occurred. Please try again later."
-    }
-  }
+	fr: {
+		otp_expired: {
+			title: "Le lien a expiré",
+			message:
+				"Le lien de confirmation a expiré. Veuillez vous réinscrire pour recevoir un nouveau lien.",
+		},
+		access_denied: {
+			title: "Accès refusé",
+			message:
+				"Vous n'avez pas l'autorisation d'accéder à cette page. Veuillez vous connecter avec un compte valide.",
+		},
+		no_code: {
+			title: "Lien invalide",
+			message:
+				"Cette page nécessite un code de confirmation valide. Veuillez utiliser le lien envoyé dans votre email.",
+		},
+		default: {
+			title: "Erreur d'authentification",
+			message:
+				"Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+		},
+	},
+	en: {
+		otp_expired: {
+			title: "Link expired",
+			message:
+				"The confirmation link has expired. Please sign up again to receive a new link.",
+		},
+		access_denied: {
+			title: "Access denied",
+			message:
+				"You don't have permission to access this page. Please sign in with a valid account.",
+		},
+		no_code: {
+			title: "Invalid link",
+			message:
+				"This page requires a valid confirmation code. Please use the link sent to your email.",
+		},
+		default: {
+			title: "Authentication error",
+			message: "An unexpected error occurred. Please try again later.",
+		},
+	},
 } as const;
 
 // Récupération du code d'authentification depuis l'URL
-const code = Astro.url.searchParams.get('code');
-console.log('Code de confirmation reçu:', code ? 'Présent' : 'Absent');
+const code = Astro.url.searchParams.get("code");
+console.log("Code de confirmation reçu:", code ? "Présent" : "Absent");
 
 // Construire les URLs avec la bonne langue
-const homeUrl = currentLocale === 'fr' ? '/fr' : '/';
-const dashboardUrl = currentLocale === 'fr' ? '/fr/dashboard' : '/dashboard';
+const homeUrl = currentLocale === "fr" ? "/fr" : "/";
+const dashboardUrl = currentLocale === "fr" ? "/fr/dashboard" : "/dashboard";
 
 // Sélectionner le message approprié
-const message = !code 
-  ? errorMessages[currentLocale as keyof typeof errorMessages].no_code
-  : errorMessages[currentLocale as keyof typeof errorMessages].default;
+const message = !code
+	? errorMessages[currentLocale as keyof typeof errorMessages].no_code
+	: errorMessages[currentLocale as keyof typeof errorMessages].default;
 
 let sessionError = false;
 
 // Si nous avons un code, on essaie d'échanger le code contre une session
 if (code) {
-  console.log('Tentative d\'échange du code contre une session...');
-  const { error: authError } = await supabase.auth.exchangeCodeForSession(code);
-  
-  if (!authError) {
-    console.log('Session créée avec succès, redirection vers le tableau de bord');
-    return Astro.redirect(`${dashboardUrl}?newly_confirmed=true`);
-  }
-  
-  console.error('Erreur lors de l\'échange du code:', authError);
-  sessionError = true;
+	console.log("Tentative d'échange du code contre une session...");
+	const { error: authError } = await supabase.auth.exchangeCodeForSession(code);
+
+	if (!authError) {
+		console.log(
+			"Session créée avec succès, redirection vers le tableau de bord",
+		);
+		return Astro.redirect(`${dashboardUrl}?newly_confirmed=true`);
+	}
+
+	console.error("Erreur lors de l'échange du code:", authError);
+	sessionError = true;
 }
 ---
 
 <MainLayout title="Authentification">
-  <div class="flex min-h-[calc(100vh-30rem)] flex-col items-center justify-center p-4">
-    <div class="w-full max-w-md space-y-4">
-      <div class="rounded-lg bg-neutral-50 p-8 shadow-lg dark:bg-neutral-800">
-        <div id="error-container">
-          <Alert
-            type="error"
-            title={message.title}
-            message={message.message}
-            show={true}
-          />
-        </div>
-        <div class="mt-6 text-center">
-          <a
-            href={homeUrl}
-            class="inline-flex items-center rounded-md bg-orange-400 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
-          >
-            {currentLocale === 'fr' ? 'Retour à l\'accueil' : 'Back to home'}
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+	<div
+		class="flex min-h-[calc(100vh-30rem)] flex-col items-center justify-center p-4"
+	>
+		<div class="w-full max-w-md space-y-4">
+			<div class="rounded-lg bg-neutral-50 p-8 shadow-lg dark:bg-neutral-800">
+				<div id="error-container">
+					<Alert
+						type="error"
+						title={message.title}
+						message={message.message}
+						show={true}
+					/>
+				</div>
+				<div class="mt-6 text-center">
+					<a
+						href={homeUrl}
+						class="inline-flex items-center rounded-md bg-orange-400 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+					>
+						{currentLocale === "fr" ? "Retour à l'accueil" : "Back to home"}
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </MainLayout>
 
 <script define:vars={{ messages: errorMessages, locale: currentLocale }}>
-  // Récupérer les paramètres du hash
-  const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
-  const error = hashParams.get('error');
-  const errorCode = hashParams.get('error_code');
-  
-  console.log('Current locale:', locale);
-  console.log('Error params:', { error, errorCode });
-  
-  // Sélectionner le message approprié
-  const message = errorCode 
-    ? messages[locale][errorCode] || messages[locale].default
-    : error 
-      ? messages[locale][error] || messages[locale].default
-      : messages[locale].default;
+	// Récupérer les paramètres du hash
+	const hashParams = new URLSearchParams(window.location.hash.replace("#", ""));
+	const error = hashParams.get("error");
+	const errorCode = hashParams.get("error_code");
 
-  console.log('Selected message:', message);
+	console.log("Current locale:", locale);
+	console.log("Error params:", { error, errorCode });
 
-  // Mettre à jour le contenu de l'alerte
-  const container = document.getElementById('error-container');
-  if (container) {
-    container.innerHTML = `
+	// Sélectionner le message approprié
+	const message = errorCode
+		? messages[locale][errorCode] || messages[locale].default
+		: error
+			? messages[locale][error] || messages[locale].default
+			: messages[locale].default;
+
+	console.log("Selected message:", message);
+
+	// Mettre à jour le contenu de l'alerte
+	const container = document.getElementById("error-container");
+	if (container) {
+		container.innerHTML = `
       <div class="rounded-lg bg-red-50 dark:bg-red-900/50 p-4">
         <div class="flex">
           <div class="flex-shrink-0">
@@ -149,5 +158,6 @@ if (code) {
         </div>
       </div>
     `;
-  }
-</script> 
+	}
+</script>
+

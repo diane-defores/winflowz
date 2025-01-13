@@ -4,7 +4,9 @@ import PasswordInput from "./input/PasswordInput.astro";
 import Checkbox from "./input/Checkbox.astro";
 import AuthBtn from "@components/ui/buttons/AuthBtn.astro";
 import GoogleBtn from "@components/ui/buttons/GoogleBtn.astro";
-import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+import { getLangFromUrl, useTranslations } from "../../../utils/i18n";
+import type { Translation } from "../../../types/i18n";
+import { signUpWithEmail, signInWithGoogle } from "../../../lib/auth";
 
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "auth");
@@ -103,13 +105,13 @@ const config = {
 </div>
 
 <script>
-	import { signUpWithEmail, signInWithGoogle } from "@/lib/supabase";
+	import { signUpWithEmail, signInWithGoogle } from "../../../lib/auth";
 
-	const registerForm = document.getElementById('register-form');
+	const registerForm = document.getElementById('register-form') as HTMLFormElement;
 	const googleBtn = document.getElementById('google-signup');
 	const errorElement = document.getElementById('register-email-error');
 
-	function showError(message) {
+	function showError(message: string) {
 		if (errorElement) {
 			errorElement.textContent = message;
 			errorElement.style.display = 'block';
@@ -122,31 +124,31 @@ const config = {
 			e.preventDefault();
 
 			const formData = new FormData(registerForm);
-			const email = formData.get('email');
-			const password = formData.get('password');
-			const confirmPassword = formData.get('confirm-password');
+			const email = formData.get('email') as string;
+			const password = formData.get('password') as string;
+			const confirmPassword = formData.get('confirm-password') as string;
 			const acceptTerms = formData.get('accept-terms');
 
 			if (!email || !password || !confirmPassword) {
-					showError(document.documentElement.lang === 'fr'
-						? t?.register?.errors?.fillAllFields ?? "Veuillez remplir tous les champs"
-						: t?.register?.errors?.fillAllFields ?? "Please fill in all fields"
-					);
-					return;
+				showError(document.documentElement.lang === 'fr'
+					? "Veuillez remplir tous les champs"
+					: "Please fill in all fields"
+				);
+				return;
 			}
 
 			if (password !== confirmPassword) {
 				showError(document.documentElement.lang === 'fr'
-					? t?.fields?.confirmPassword?.hint ?? "Les mots de passe ne correspondent pas"
-					: t?.fields?.confirmPassword?.hint ?? "Passwords do not match"
+					? "Les mots de passe ne correspondent pas"
+					: "Passwords do not match"
 				);
 				return;
 			}
 
 			if (!acceptTerms) {
 				showError(document.documentElement.lang === 'fr'
-					? t?.register?.errors?.acceptTerms ?? "Veuillez accepter les conditions d'utilisation"
-					: t?.register?.errors?.acceptTerms ?? "Please accept the terms and conditions"
+					? "Veuillez accepter les conditions d'utilisation"
+					: "Please accept the terms and conditions"
 				);
 				return;
 			}
@@ -157,23 +159,23 @@ const config = {
 				if (error) {
 					if (error.message.includes('already registered')) {
 						showError(document.documentElement.lang === 'fr'
-							? t?.register?.errors?.emailExists ?? "Cette adresse email est déjà utilisée"
-							: t?.register?.errors?.emailExists ?? "This email is already registered"
+							? "Cette adresse email est déjà utilisée"
+							: "This email is already registered"
 						);
 					} else {
 						showError(document.documentElement.lang === 'fr'
-							? t?.register?.errors?.generic ?? "Une erreur est survenue lors de l'inscription"
-							: t?.register?.errors?.generic ?? "An error occurred during registration"
+							? "Une erreur est survenue lors de l'inscription"
+							: "An error occurred during registration"
 						);
 					}
 					return;
 				}
 
 				window.location.href = '/dashboard';
-			} catch (error) {
+			} catch (err: any) {
 				showError(document.documentElement.lang === 'fr'
-					? t?.register?.errors?.generic ?? "Une erreur est survenue lors de l'inscription"
-					: t?.register?.errors?.generic ?? "An error occurred during registration"
+					? "Une erreur est survenue lors de l'inscription"
+					: "An error occurred during registration"
 				);
 			}
 		});
@@ -184,8 +186,8 @@ const config = {
 			try {
 				const { error } = await signInWithGoogle();
 				if (error) throw error;
-			} catch (error) {
-				showError(error.message);
+			} catch (err: any) {
+				showError(err.message);
 			}
 		});
 	}

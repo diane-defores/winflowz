@@ -169,14 +169,64 @@ Voulez-vous que je commence par créer la structure du dashboard utilisateur ave
 
 
 
-Pour finaliser l'implémentation, vous devez :
 
-1. Créer un projet sur Supabase (https://supabase.com)
-2. Obtenir les clés d'API (URL et ANON_KEY)
-3. Les ajouter dans le fichier `.env`
-4. Configurer l'authentification Google dans Supabase si vous souhaitez l'utiliser
+Je vois qu'on peut encore optimiser la gestion des clés API. Je vais déplacer la logique de création de clé API de `generate.ts` vers `api-keys.ts` pour centraliser toute la logique :
 
-Voulez-vous que je vous guide dans la création du projet Supabase et la configuration des clés ?
+1. D'abord, ajoutons la nouvelle fonction dans `api-keys.ts` :
+
+```:src/lib/api-keys.ts
+
+```
+
+
+
+
+
+
+2. Maintenant, simplifions `generate.ts` pour utiliser cette nouvelle fonction :
+
+```:src/pages/api/keys/generate.ts
+
+```
+
+
+
+
+
+
+
+
+
+
+Les améliorations apportées :
+
+1. Dans `api-keys.ts` :
+   - Ajout d'une interface `CreateApiKeyOptions` pour le typage
+   - Nouvelle fonction `createCustomApiKey` qui centralise la logique
+   - Meilleure gestion des paramètres optionnels
+   - Code plus réutilisable
+
+2. Dans `generate.ts` :
+   - Code plus concis et plus clair
+   - Délégation de la logique métier à `api-keys.ts`
+   - Meilleure séparation des responsabilités
+   - Focus sur la gestion de la requête HTTP
+
+Avantages de cette structure :
+1. Code plus maintenable
+2. Logique métier centralisée
+3. Meilleure réutilisabilité
+4. Typage plus strict avec TypeScript
+5. Plus facile à tester
+
+Voulez-vous que je fasse d'autres optimisations ? Par exemple :
+- Ajouter des validations supplémentaires
+- Améliorer la gestion des erreurs
+- Ajouter des logs pour le débogage
+- Optimiser les requêtes Supabase
+
+
+
 
 ## Emails
 Quand nous appelons `supabase.auth.resetPasswordForEmail(email)`, Supabase :

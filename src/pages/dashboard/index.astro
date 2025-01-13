@@ -2,7 +2,8 @@
 export const prerender = false;
 
 import MainLayout from "../../layouts/MainLayout.astro";
-import { supabase, getCurrentUser } from "../../lib/supabase";
+import { supabase } from "../../lib/supabaseClient";
+import { getCurrentUser } from "../../lib/auth";
 import Header from "../../components/ui/dashboard/Header.astro";
 import Sidebar from "../../components/ui/dashboard/Sidebar.astro";
 import Stats from "../../components/ui/dashboard/Stats.astro";
@@ -13,11 +14,12 @@ import GenerateApiKeyModal from "../../components/ui/forms/GenerateApiKeyModal.a
 const user = await getCurrentUser();
 
 if (!user) {
-	return Astro.redirect('/auth/login');
+	return Astro.redirect("/auth/login");
 }
 
 // Vérifier si l'utilisateur vient de confirmer son email
-const isNewlyConfirmed = Astro.url.searchParams.get("newly_confirmed") === "true";
+const isNewlyConfirmed =
+	Astro.url.searchParams.get("newly_confirmed") === "true";
 
 // Récupérer les clés API de l'utilisateur
 const { data: apiKeys, error } = await supabase
@@ -27,7 +29,7 @@ const { data: apiKeys, error } = await supabase
 	.order("created_at", { ascending: false });
 
 if (error) {
-	console.error('Erreur lors de la récupération des clés API:', error);
+	console.error("Erreur lors de la récupération des clés API:", error);
 }
 ---
 
@@ -44,7 +46,9 @@ if (error) {
 
 			<main class="flex-1 overflow-y-auto">
 				<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-					{/* Message de bienvenue pour les nouveaux utilisateurs confirmés */}
+					{
+						/* Message de bienvenue pour les nouveaux utilisateurs confirmés */
+					}
 					{
 						isNewlyConfirmed && (
 							<div class="bg-green-50 dark:bg-green-900/50 mb-8 rounded-lg p-4">
@@ -68,8 +72,8 @@ if (error) {
 										</h3>
 										<div class="text-green-700 dark:text-green-300 mt-2 text-sm">
 											<p>
-												Merci d'avoir confirmé votre email. Votre compte est
-												maintenant actif.
+												Merci d'avoir confirmé votre email. Votre
+												compte est maintenant actif.
 											</p>
 										</div>
 									</div>
@@ -110,7 +114,9 @@ if (error) {
 							class="mt-4 overflow-hidden rounded-lg bg-white shadow dark:bg-neutral-800"
 						>
 							<div class="p-6">
-								<p class="text-center text-neutral-500 dark:text-neutral-400">
+								<p
+									class="text-center text-neutral-500 dark:text-neutral-400"
+								>
 									Vous n'avez pas encore acheté de produits
 								</p>
 							</div>
@@ -128,7 +134,9 @@ if (error) {
 							class="mt-4 overflow-hidden rounded-lg bg-white shadow dark:bg-neutral-800"
 						>
 							<div class="p-6">
-								<p class="text-center text-neutral-500 dark:text-neutral-400">
+								<p
+									class="text-center text-neutral-500 dark:text-neutral-400"
+								>
 									Découvrez notre catalogue de produits
 								</p>
 								<div class="mt-4 text-center">
@@ -206,4 +214,3 @@ if (error) {
 		});
 	});
 </script>
-

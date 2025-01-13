@@ -1,4 +1,4 @@
-import { isUserLoggedIn } from '../lib/supabase'
+import { isUserLoggedIn } from '../../5/supabase'
 import type { MiddlewareHandler } from 'astro'
 
 export const authMiddleware: MiddlewareHandler = async ({ request }, next) => {

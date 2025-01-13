@@ -4,7 +4,9 @@ import PasswordInput from "./input/PasswordInput.astro";
 import Checkbox from "./input/Checkbox.astro";
 import AuthBtn from "@components/ui/buttons/AuthBtn.astro";
 import GoogleBtn from "@components/ui/buttons/GoogleBtn.astro";
-import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+import { getLangFromUrl, useTranslations } from "../../../utils/i18n";
+import { signInWithEmail, signInWithGoogle } from "../../../lib/auth";
+import type { Translation } from "../../../types/i18n";
 
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "auth");
@@ -95,13 +97,13 @@ const config = {
 </div>
 
 <script>
-	import { signInWithEmail, signInWithGoogle } from "@/lib/supabase";
+	import { signInWithEmail, signInWithGoogle } from "../../../lib/auth";
 
-	const loginForm = document.getElementById('login-form');
+	const loginForm = document.getElementById('login-form') as HTMLFormElement;
 	const googleBtn = document.getElementById('google-signin');
 	const errorElement = document.getElementById('login-email-error');
 
-	function showError(message) {
+	function showError(message: string) {
 		if (errorElement) {
 			errorElement.textContent = message;
 			errorElement.style.display = 'block';
@@ -114,12 +116,12 @@ const config = {
 			e.preventDefault();
 
 			const formData = new FormData(loginForm);
-			const email = formData.get('email');
-			const password = formData.get('password');
+			const email = formData.get('email') as string;
+			const password = formData.get('password') as string;
 
 			if (!email || !password) {
-				showError(document.documentElement.lang === 'fr' 
-					? "Veuillez remplir tous les champs" 
+				showError(document.documentElement.lang === 'fr'
+					? "Veuillez remplir tous les champs"
 					: "Please fill in all fields"
 				);
 				return;
@@ -129,24 +131,15 @@ const config = {
 				const { data, error } = await signInWithEmail(email, password);
 				
 				if (error) {
-					if (error.message.includes('Invalid login credentials') || 
-						error.message.includes('Invalid email') ||
-						error.message.includes('Invalid password')) {
-						showError(document.documentElement.lang === 'fr'
-							? "Email ou mot de passe incorrect"
-							: "Invalid email or password"
-						);
-					} else {
-						showError(document.documentElement.lang === 'fr'
-							? "Une erreur est survenue lors de la connexion"
-							: "An error occurred during login"
-						);
-					}
+					showError(document.documentElement.lang === 'fr'
+						? "Email ou mot de passe incorrect"
+						: "Invalid email or password"
+					);
 					return;
 				}
 
 				window.location.href = '/dashboard';
-			} catch (error) {
+			} catch (err: any) {
 				showError(document.documentElement.lang === 'fr'
 					? "Une erreur est survenue lors de la connexion"
 					: "An error occurred during login"
@@ -160,8 +153,8 @@ const config = {
 			try {
 				const { error } = await signInWithGoogle();
 				if (error) throw error;
-			} catch (error) {
-				showError(error.message);
+			} catch (err: any) {
+				showError(err.message);
 			}
 		});
 	}
