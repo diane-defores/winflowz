@@ -1,6 +1,6 @@
 ---
 import MainLayout from "@/layouts/MainLayout.astro";
-import FeatureCard from "@/components/roadmap/FeatureCard.astro";
+import KanbanBoard from "@/components/roadmap/KanbanBoard.astro";
 import ProjectNav from "@/components/roadmap/ProjectNav.astro";
 import AddFeatureModal from "@/components/roadmap/AddFeatureModal.astro";
 import { projects } from "@/types/roadmap";
@@ -12,6 +12,11 @@ export const prerender = false;
 
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "roadmap");
+
+// Récupérer le projet sélectionné depuis l'URL
+const currentPath = Astro.url.pathname;
+const currentProjectId = currentPath.split('/').pop();
+const isProjectPage = projects.some(p => p.id === currentProjectId);
 
 const defaultTranslations = {
 	planned: "Planned",
@@ -34,231 +39,40 @@ const translations = {
 };
 
 // Charger les features depuis Supabase
-const { data: features } = await supabase
+let query = supabase
 	.from("features")
 	.select("*")
 	.order("votes", { ascending: false });
 
-// Ajouter les noms des projets aux features et les regrouper par statut
-const featuresByStatus = {
-	considering:
-		features
-			?.filter((f) => f.status === "considering")
-			.map((f) => ({
-				...f,
-				projectName:
-					projects.find((p) => p.id === f.projectId)?.name ?? f.projectId,
-			})) ?? [],
-	planned:
-		features
-			?.filter((f) => f.status === "planned")
-			.map((f) => ({
-				...f,
-				projectName:
-					projects.find((p) => p.id === f.projectId)?.name ?? f.projectId,
-			})) ?? [],
-	inProgress:
-		features
-			?.filter((f) => f.status === "in-development")
-			.map((f) => ({
-				...f,
-				projectName:
-					projects.find((p) => p.id === f.projectId)?.name ?? f.projectId,
-			})) ?? [],
-	completed:
-		features
-			?.filter((f) => f.status === "completed")
-			.map((f) => ({
-				...f,
-				projectName:
-					projects.find((p) => p.id === f.projectId)?.name ?? f.projectId,
-			})) ?? [],
-	rejected:
-		features
-			?.filter((f) => f.status === "rejected")
-			.map((f) => ({
-				...f,
-				projectName:
-					projects.find((p) => p.id === f.projectId)?.name ?? f.projectId,
-			})) ?? [],
-};
+// Filtrer par projet si on est sur une page projet
+if (isProjectPage) {
+	query = query.eq("projectId", currentProjectId);
+}
+
+const { data: features } = await query;
+
+// Ajouter les noms des projets aux features
+const featuresWithProjectNames =
+	features?.map((feature) => ({
+		...feature,
+		projectName:
+			projects.find((p) => p.id === feature.projectId)?.name ??
+			feature.projectId,
+	})) ?? [];
 ---
 
 <MainLayout title={t?.title ?? "Roadmap"} lang={lang}>
 	<div class="min-h-screen bg-white dark:bg-neutral-900">
 		<ProjectNav />
 
-		<div class="mx-auto max-w-[120rem] px-6 py-16 sm:px-8 lg:px-12">
-			<div class="mx-auto mb-12 max-w-3xl lg:mx-0">
-				<div class="flex items-center justify-between">
-					<div>
-						<h1
-							class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl"
-						>
-							{t?.title ?? "Roadmap"}
-						</h1>
-						<p
-							class="mt-2 text-lg leading-8 text-neutral-600 dark:text-neutral-400"
-						>
-							{
-								t?.subtitle ??
-									"Discover our projects and vote for the features you'd like to see implemented"
-							}
-						</p>
-					</div>
-
-					<button
-						type="button"
-						data-hs-overlay="#addFeatureModal"
-						class="dark:hover:bg-orange-700 flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 dark:bg-orange-600"
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							class="h-5 w-5"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M12 4.5v15m7.5-7.5h-15"></path>
-						</svg>
-						{t?.addFeature?.button ?? "Add Feature"}
-					</button>
-				</div>
-			</div>
-
-			<div class="grid grid-cols-1 gap-8 lg:grid-cols-5 xl:gap-10">
-				<!-- Colonne Idées -->
-				<div class="rounded-xl">
-					<h2
-						class="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white"
-					>
-						<span class="bg-purple-500 size-3 rounded-full"></span>
-						{translations.considering}
-						<span
-							class="text-sm font-normal text-neutral-500 dark:text-neutral-400"
-							>({featuresByStatus.considering.length})</span
-						>
-					</h2>
-					<div class="space-y-6">
-						{
-							featuresByStatus.considering.map((feature) => (
-								<FeatureCard
-									feature={feature}
-									translations={translations}
-									showProjectName={true}
-								/>
-							))
-						}
-					</div>
-				</div>
-
-				<!-- Colonne Planned -->
-				<div class="rounded-xl">
-					<h2
-						class="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white"
-					>
-						<span class="size-3 rounded-full bg-blue-500"></span>
-						{translations.planned}
-						<span
-							class="text-sm font-normal text-neutral-500 dark:text-neutral-400"
-							>({featuresByStatus.planned.length})</span
-						>
-					</h2>
-					<div class="space-y-6">
-						{
-							featuresByStatus.planned.map((feature) => (
-								<FeatureCard
-									feature={feature}
-									translations={translations}
-									showProjectName={true}
-								/>
-							))
-						}
-					</div>
-				</div>
-
-				<!-- Colonne In Development -->
-				<div class="rounded-xl">
-					<h2
-						class="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white"
-					>
-						<span class="size-3 rounded-full bg-orange-500"></span>
-						{translations.inProgress}
-						<span
-							class="text-sm font-normal text-neutral-500 dark:text-neutral-400"
-							>({featuresByStatus.inProgress.length})</span
-						>
-					</h2>
-					<div class="space-y-6">
-						{
-							featuresByStatus.inProgress.map((feature) => (
-								<FeatureCard
-									feature={feature}
-									translations={translations}
-									showProjectName={true}
-								/>
-							))
-						}
-					</div>
-				</div>
-
-				<!-- Colonne Completed -->
-				<div class="rounded-xl">
-					<h2
-						class="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white"
-					>
-						<span class="bg-green-500 size-3 rounded-full"></span>
-						{translations.completed}
-						<span
-							class="text-sm font-normal text-neutral-500 dark:text-neutral-400"
-							>({featuresByStatus.completed.length})</span
-						>
-					</h2>
-					<div class="space-y-6">
-						{
-							featuresByStatus.completed.map((feature) => (
-								<FeatureCard
-									feature={feature}
-									translations={translations}
-									showProjectName={true}
-								/>
-							))
-						}
-					</div>
-				</div>
-
-				<!-- Colonne Rejected -->
-				<div class="rounded-xl">
-					<h2
-						class="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white"
-					>
-						<span class="size-3 rounded-full bg-red-500"></span>
-						{translations.rejected}
-						<span
-							class="text-sm font-normal text-neutral-500 dark:text-neutral-400"
-							>({featuresByStatus.rejected.length})</span
-						>
-					</h2>
-					<div class="space-y-6">
-						{
-							featuresByStatus.rejected.map((feature) => (
-								<FeatureCard
-									feature={feature}
-									translations={translations}
-									showProjectName={true}
-								/>
-							))
-						}
-					</div>
-				</div>
-			</div>
+		<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+			<KanbanBoard
+				features={featuresWithProjectNames}
+				showProjectName={!isProjectPage}
+				translations={translations}
+			/>
 		</div>
 	</div>
 
 	<AddFeatureModal />
 </MainLayout>
-

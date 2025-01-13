@@ -102,12 +102,19 @@ const t = await useTranslations(lang, "roadmap");
 
 <script>
 	const modal = document.getElementById("addFeatureModal");
-	const form = document.getElementById("addFeatureForm");
+	const form = document.getElementById("addFeatureForm") as HTMLFormElement;
 
 	if (modal && form) {
 		form.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const formData = new FormData(form as HTMLFormElement);
+
+			const formData = new FormData(form);
+			const data = {
+				title: formData.get("title"),
+				description: formData.get("description"),
+				projectId: formData.get("project"),
+				status: "considering",
+			};
 
 			try {
 				const response = await fetch("/api/features", {
@@ -115,23 +122,19 @@ const t = await useTranslations(lang, "roadmap");
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
-						title: formData.get("title"),
-						description: formData.get("description"),
-						projectId: formData.get("project"),
-						status: "considering",
-					}),
+					body: JSON.stringify(data),
 				});
 
 				if (response.ok) {
 					// Réinitialiser le formulaire
-					(form as HTMLFormElement).reset();
+					form.reset();
 					// Fermer la modale en utilisant l'API de Preline
 					(window as any).HSOverlay.close(modal);
 					// Recharger la page pour voir la nouvelle feature
 					window.location.reload();
 				} else {
-					console.error("Error adding feature");
+					const error = await response.json();
+					console.error("Error adding feature:", error);
 				}
 			} catch (error) {
 				console.error("Error:", error);

@@ -1,59 +1,86 @@
 ---
-import type { Feature } from "../../types/roadmap";
+import type { Feature } from "@/types/roadmap";
 import FeatureCard from "./FeatureCard.astro";
 
 interface Props {
-  features: Feature[];
+  features: (Feature & { projectName?: string })[];
   showProjectName?: boolean;
+  translations: {
+    planned: string;
+    inProgress: string;
+    completed: string;
+    considering: string;
+    rejected: string;
+    vote: string;
+    votes: string;
+  };
 }
 
-const { features, showProjectName = false } = Astro.props;
+const { features, showProjectName = false, translations } = Astro.props;
 
-function groupFeaturesByStatus(features: Feature[]) {
-  return features.reduce((acc, feature) => {
-    const status = feature.status;
-    if (!acc[status]) {
-      acc[status] = [];
-    }
-    acc[status].push(feature);
-    return acc;
-  }, {} as Record<Feature["status"], Feature[]>);
-}
+// Grouper les features par status
+const featuresByStatus = {
+  considering: features.filter((f) => f.status === "considering"),
+  planned: features.filter((f) => f.status === "planned"),
+  inProgress: features.filter((f) => f.status === "in-development"),
+  completed: features.filter((f) => f.status === "completed"),
+  rejected: features.filter((f) => f.status === "rejected"),
+};
 
-const groupedFeatures = groupFeaturesByStatus(features);
-const statuses: Feature["status"][] = ["considering", "planned", "in-development", "completed"];
-
-function getStatusTitle(status: Feature["status"]) {
-  switch (status) {
-    case "in-development":
-      return "En développement";
-    case "planned":
-      return "Planifié";
-    case "considering":
-      return "À l'étude";
-    case "completed":
-      return "Terminé";
-    default:
-      return status;
+// Configuration des colonnes
+const columns = [
+  {
+    id: "considering",
+    title: translations.considering,
+    features: featuresByStatus.considering,
+    color: "bg-purple-500"
+  },
+  {
+    id: "planned",
+    title: translations.planned,
+    features: featuresByStatus.planned,
+    color: "bg-blue-500"
+  },
+  {
+    id: "inProgress",
+    title: translations.inProgress,
+    features: featuresByStatus.inProgress,
+    color: "bg-orange-500"
+  },
+  {
+    id: "completed",
+    title: translations.completed,
+    features: featuresByStatus.completed,
+    color: "bg-green-500"
+  },
+  {
+    id: "rejected",
+    title: translations.rejected,
+    features: featuresByStatus.rejected,
+    color: "bg-red-500"
   }
-}
+];
 ---
 
-<div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-4">
-  {statuses.map(status => (
+<div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-5">
+  {columns.map(column => (
     <div class="flex flex-col rounded-lg border border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-900">
       <div class="mb-6 flex items-center justify-between">
         <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">
-          {getStatusTitle(status)}
+          {column.title}
           <span class="ml-2 text-sm font-normal text-neutral-500">
-            ({groupedFeatures[status]?.length || 0})
+            ({column.features.length})
           </span>
         </h2>
       </div>
       
       <div class="flex-1 space-y-4">
-        {groupedFeatures[status]?.map(feature => (
-          <FeatureCard feature={feature} showProjectName={showProjectName} />
+        {column.features.map(feature => (
+          <FeatureCard
+            feature={feature}
+            translations={translations}
+            showProjectName={showProjectName}
+          />
         ))}
       </div>
     </div>

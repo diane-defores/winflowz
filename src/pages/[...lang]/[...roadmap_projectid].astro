@@ -4,16 +4,22 @@ import FeatureCard from "@/components/roadmap/FeatureCard.astro";
 import ProjectNav from "@/components/roadmap/ProjectNav.astro";
 import { projects } from "@/types/roadmap";
 import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+import { ViewTransitions } from "astro:transitions";
 
 export function getStaticPaths() {
 	return projects.flatMap((project) => [
-		{ params: { lang: undefined, roadmap_projectid: `roadmap/${project.id}` } },
+		{
+			params: {
+				lang: undefined,
+				roadmap_projectid: `roadmap/${project.id}`,
+			},
+		},
 		{ params: { lang: "fr", roadmap_projectid: `roadmap/${project.id}` } },
 	]);
 }
 
 const { roadmap_projectid } = Astro.params;
-const projectId = roadmap_projectid?.split('/').pop();
+const projectId = roadmap_projectid?.split("/").pop();
 const project = projects.find((p) => p.id === projectId);
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "roadmap");
@@ -24,40 +30,29 @@ if (!project) {
 ---
 
 <MainLayout title={project.name} lang={lang}>
+	<ViewTransitions />
 	<ProjectNav />
 
 	<div class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-		<div class="mb-8 lg:mb-14">
-			<a
-				href={`/${lang ? `${lang}/` : ""}roadmap`}
-				class="mb-3 inline-flex items-center gap-x-1 text-sm font-medium text-orange-500 decoration-2 hover:underline dark:text-orange-400"
-			>
-				<svg class="size-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-				{t?.nav?.backToAll}
-			</a>
-			<h1 class="block text-2xl font-bold text-neutral-800 dark:text-white sm:text-3xl">
-				{t?.projects?.[project.id]?.name ?? project.name}
-			</h1>
-			<p class="mt-2 text-lg text-neutral-600 dark:text-neutral-400">
-				{t?.projects?.[project.id]?.description ?? project.description}
-			</p>
-		</div>
-
-		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{project.features.map((feature) => (
-				<FeatureCard
-					feature={feature}
-					translations={{
-						planned: t?.status?.planned ?? "Planned",
-						inProgress: t?.status?.inProgress ?? "In Progress",
-						completed: t?.status?.completed ?? "Completed",
-						considering: t?.status?.considering ?? "Considering",
-						inDevelopment: t?.status?.inDevelopment ?? "In Development",
-						vote: t?.feature?.vote ?? "Vote",
-						votes: t?.feature?.votes ?? "votes",
-					}}
-				/>
-			))}
+		<div
+			class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+			transition:animate="fade"
+		>
+			{
+				project.features.map((feature) => (
+					<FeatureCard
+						feature={feature}
+						translations={{
+							planned: t?.status?.planned ?? "Planned",
+							inProgress: t?.status?.inProgress ?? "In Progress",
+							completed: t?.status?.completed ?? "Completed",
+							considering: t?.status?.considering ?? "Considering",
+							vote: t?.feature?.vote ?? "Vote",
+							votes: t?.feature?.votes ?? "votes",
+						}}
+					/>
+				))
+			}
 		</div>
 	</div>
 </MainLayout>
