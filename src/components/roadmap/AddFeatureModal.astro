@@ -1,145 +1,210 @@
 ---
 import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+import { projects } from "@/types/roadmap";
 
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "roadmap");
+
+// Préparer les messages de validation pour le JavaScript
+const validationMessages = {
+  projectRequired: t?.addFeature?.validation?.projectRequired ?? "Please select a project",
+  titleRequired: t?.addFeature?.validation?.titleRequired ?? "Please enter a title",
+  titleMinLength: t?.addFeature?.validation?.titleMinLength ?? "Title must be at least 3 characters long",
+  descriptionRequired: t?.addFeature?.validation?.descriptionRequired ?? "Please enter a description",
+  descriptionMinLength: t?.addFeature?.validation?.descriptionMinLength ?? "Description must be at least 10 characters long"
+};
 ---
 
 <div
 	id="addFeatureModal"
-	class="hs-overlay absolute start-0 top-0 z-50 hidden h-full w-full hs-overlay-backdrop-open:bg-neutral-900/90"
+	class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none"
 >
 	<div
-		class="m-3 mt-0 opacity-0 transition-all ease-out hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 sm:mx-auto sm:w-full sm:max-w-lg"
+		class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto min-h-[calc(100%-3.5rem)]"
 	>
-		<div class="mx-auto w-full max-w-md p-6">
-			<div
-				class="mt-7 rounded-xl border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
-			>
-				<div class="p-4 sm:p-7">
-					<div class="text-center">
-						<h2
-							class="block text-2xl font-bold text-neutral-800 dark:text-neutral-200"
-						>
-							{t?.addFeature?.title ?? "Suggest a new feature"}
-						</h2>
-					</div>
-					<div class="mt-5">
-						<form id="addFeatureForm" class="space-y-4">
-							<div>
-								<label
-									for="title"
-									class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
-								>
-									{t?.addFeature?.titleLabel ?? "Title"}
-								</label>
-								<input
-									type="text"
-									id="title"
-									name="title"
-									required
-									class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
-								/>
-							</div>
+		<div class="relative flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto dark:bg-neutral-800 dark:border-neutral-700">
+			<div class="flex justify-between items-center py-3 px-4 border-b dark:border-neutral-700">
+				<h3 class="font-bold text-neutral-800 dark:text-white">
+					{t?.addFeature?.title ?? "Add Feature"}
+				</h3>
+				<button
+					type="button"
+					class="flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-neutral-800 hover:bg-neutral-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600"
+					data-hs-overlay="#addFeatureModal"
+				>
+					<span class="sr-only">Close</span>
+					<svg
+						class="flex-shrink-0 size-4"
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M18 6 6 18"></path>
+						<path d="m6 6 12 12"></path>
+					</svg>
+				</button>
+			</div>
 
-							<div>
-								<label
-									for="description"
-									class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
-								>
-									{t?.addFeature?.descriptionLabel ?? "Description"}
-								</label>
-								<textarea
-									id="description"
-									name="description"
-									required
-									rows="4"
-									class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
-								></textarea>
-							</div>
+			<form id="addFeatureForm">
+				<div class="p-4 overflow-y-auto">
+					<div class="grid gap-y-4">
+						<!-- Sélection du projet -->
+						<div>
+							<label
+								for="project"
+								class="block text-sm font-medium mb-2 dark:text-white"
+							>
+								{t?.addFeature?.project ?? "Project"}
+							</label>
+							<select
+								id="project"
+								name="project"
+								class="py-3 px-4 block w-full border-neutral-200 rounded-lg text-sm focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-400 dark:focus:ring-neutral-600"
+								required
+							>
+								<option value="" disabled selected>
+									{t?.addFeature?.selectProject ?? "Select a project"}
+								</option>
+								{
+									projects.map((project) => (
+										<option value={project.id}>
+											{t?.projects?.[project.id]?.name ?? project.name}
+										</option>
+									))
+								}
+							</select>
+						</div>
 
-							<div>
-								<label
-									for="project"
-									class="mb-2 block text-sm font-medium text-neutral-900 dark:text-white"
-								>
-									{t?.addFeature?.projectLabel ?? "Project"}
-								</label>
-								<select
-									id="project"
-									name="project"
-									required
-									class="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-orange-400"
-								>
-									<option value="tubeflowz">Tubeflowz</option>
-									<option value="mediaflowz">Mediaflowz</option>
-									<option value="winflowz">Winflowz</option>
-								</select>
-							</div>
+						<!-- Titre de la fonctionnalité -->
+						<div>
+							<label
+								for="title"
+								class="block text-sm font-medium mb-2 dark:text-white"
+							>
+								{t?.addFeature?.featureTitle ?? "Feature Title"}
+							</label>
+							<input
+								type="text"
+								id="title"
+								name="title"
+								class="py-3 px-4 block w-full border-neutral-200 rounded-lg text-sm focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-400 dark:focus:ring-neutral-600"
+								required
+                minlength="3"
+							/>
+						</div>
 
-							<div class="flex justify-end gap-3 pt-4">
-								<button
-									type="button"
-									data-hs-overlay="#addFeatureModal"
-									class="rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-								>
-									{t?.addFeature?.cancel ?? "Cancel"}
-								</button>
-								<button
-									type="submit"
-									class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700"
-								>
-									{t?.addFeature?.submit ?? "Submit"}
-								</button>
-							</div>
-						</form>
+						<!-- Description de la fonctionnalité -->
+						<div>
+							<label
+								for="description"
+								class="block text-sm font-medium mb-2 dark:text-white"
+							>
+								{t?.addFeature?.description ?? "Description"}
+							</label>
+							<textarea
+								id="description"
+								name="description"
+								rows="4"
+								class="py-3 px-4 block w-full border-neutral-200 rounded-lg text-sm focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-400 dark:focus:ring-neutral-600"
+								required
+                minlength="10"
+              ></textarea>
+						</div>
 					</div>
 				</div>
-			</div>
+
+				<div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t dark:border-neutral-700">
+					<button
+						type="button"
+						class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-neutral-200 bg-white text-neutral-800 shadow-sm hover:bg-neutral-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600"
+						data-hs-overlay="#addFeatureModal"
+					>
+						{t?.addFeature?.cancel ?? "Cancel"}
+					</button>
+					<button
+						type="submit"
+						class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-neutral-600"
+					>
+						{t?.addFeature?.submit ?? "Submit"}
+					</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
 
-<script>
-	const modal = document.getElementById("addFeatureModal");
-	const form = document.getElementById("addFeatureForm") as HTMLFormElement;
+<script define:vars={{ validationMessages }}>
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('addFeatureModal');
+    const backdrop = document.querySelector('.hs-overlay-backdrop');
+    const projectSelect = document.getElementById('project');
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
 
-	if (modal && form) {
-		form.addEventListener("submit", async (e) => {
-			e.preventDefault();
+    // Configuration de la validation personnalisée
+    function setupValidation(input, requiredMessage, minLengthMessage) {
+        input.addEventListener('invalid', (e) => {
+            if (input.validity.valueMissing) {
+                input.setCustomValidity(requiredMessage);
+            } else if (input.validity.tooShort) {
+                input.setCustomValidity(minLengthMessage);
+            }
+        });
 
-			const formData = new FormData(form);
-			const data = {
-				title: formData.get("title"),
-				description: formData.get("description"),
-				projectId: formData.get("project"),
-				status: "considering",
-			};
+        input.addEventListener('input', () => {
+            input.setCustomValidity('');
+        });
+    }
 
-			try {
-				const response = await fetch("/api/features", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(data),
-				});
+    // Configuration de la validation du select
+    projectSelect?.addEventListener('invalid', (e) => {
+        projectSelect.setCustomValidity(validationMessages.projectRequired);
+    });
 
-				if (response.ok) {
-					// Réinitialiser le formulaire
-					form.reset();
-					// Fermer la modale en utilisant l'API de Preline
-					(window as any).HSOverlay.close(modal);
-					// Recharger la page pour voir la nouvelle feature
-					window.location.reload();
-				} else {
-					const error = await response.json();
-					console.error("Error adding feature:", error);
-				}
-			} catch (error) {
-				console.error("Error:", error);
-			}
-		});
-	}
+    projectSelect?.addEventListener('change', () => {
+        projectSelect.setCustomValidity('');
+    });
+
+    // Configurer la validation pour chaque champ
+    setupValidation(titleInput, validationMessages.titleRequired, validationMessages.titleMinLength);
+    setupValidation(descriptionInput, validationMessages.descriptionRequired, validationMessages.descriptionMinLength);
+
+    // Fonction pour nettoyer la modale et le backdrop
+    function cleanupModal() {
+        document.body.classList.remove('overflow-hidden');
+        document.body.style.paddingRight = '';
+        if (backdrop) {
+            backdrop.remove();
+        }
+        modal?.classList.remove('hs-overlay-open');
+        modal?.classList.add('hidden');
+    }
+
+    // Gestionnaire pour le clic en dehors de la modale
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            cleanupModal();
+        }
+    });
+
+    // Gestionnaire pour la touche Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal?.classList.contains('hs-overlay-open')) {
+            cleanupModal();
+        }
+    });
+
+    // Nettoyer aussi quand on ferme avec le bouton
+    const closeButtons = document.querySelectorAll('[data-hs-overlay="#addFeatureModal"]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', cleanupModal);
+    });
+});
 </script>
 

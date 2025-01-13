@@ -1,13 +1,21 @@
 ---
-import type { Feature } from "../../types/roadmap";
+import type { Feature } from "@/types/roadmap";
 import FeatureCard from "./FeatureCard.astro";
 
 interface Props {
   features: Feature[];
   showProjectName?: boolean;
+  translations: {
+    planned: string;
+    inProgress: string;
+    completed: string;
+    considering: string;
+    vote: string;
+    votes: string;
+  };
 }
 
-const { features, showProjectName = false } = Astro.props;
+const { features, showProjectName = false, translations } = Astro.props;
 
 function groupFeaturesByStatus(features: Feature[]) {
   return features.reduce((acc, feature) => {
@@ -26,13 +34,13 @@ const statuses: Feature["status"][] = ["considering", "planned", "in-development
 function getStatusTitle(status: Feature["status"]) {
   switch (status) {
     case "in-development":
-      return "En développement";
+      return translations.inProgress;
     case "planned":
-      return "Planifié";
+      return translations.planned;
     case "considering":
-      return "À l'étude";
+      return translations.considering;
     case "completed":
-      return "Terminé";
+      return translations.completed;
     default:
       return status;
   }
@@ -50,7 +58,11 @@ function getStatusTitle(status: Feature["status"]) {
       </h2>
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {groupedFeatures[status]?.map(feature => (
-          <FeatureCard feature={feature} showProjectName={showProjectName} />
+          <FeatureCard 
+            feature={feature} 
+            showProjectName={showProjectName}
+            translations={translations}
+          />
         ))}
       </div>
     </section>

@@ -26,9 +26,9 @@ export async function getStaticPaths() {
 			.replace(/\.md$/, "");
 
 		return {
-			params: {
-				lang: isEnglish ? "blog" : "fr/blog",
-				blog_slug: slug
+			params: { 
+				lang: isEnglish ? undefined : "fr",
+				blog_slug: `blog/${slug}`
 			},
 			props: { post }
 		};
@@ -39,7 +39,7 @@ const { post } = Astro.props;
 const { lang } = Astro.params;
 
 // Ensure lang is a valid Language type
-const currentLang = (lang === "fr/blog" ? "fr" : "en") as Language;
+const currentLang = (lang === "fr" ? "fr" : "en") as Language;
 console.log("Current lang:", currentLang, "Raw lang:", lang);
 
 // Import translations
@@ -71,6 +71,7 @@ const siteDescription = t?.meta?.siteDescription || "";
 <MainLayout
 	lang={currentLang}
 	title={pageTitle}
+	transition:animate="slide"
 	structuredData={{
 		"@context": "https://schema.org",
 		"@type": "BlogPosting",
@@ -93,7 +94,7 @@ const siteDescription = t?.meta?.siteDescription || "";
 		inLanguage: currentLang === "fr" ? "fr" : "en",
 	}}
 >
-	<section class="mx-auto max-w-3xl px-4 pb-12 pt-6 sm:px-6 lg:px-8 lg:pt-10">
+	<section class="mx-auto max-w-3xl px-4 pb-12 pt-6 sm:px-6 lg:px-8 lg:pt-10" transition:name={`blog-card-${post.slug}`}>
 		<div class="max-w-2xl">
 			<div class="mb-6 flex items-center justify-between">
 				<div class="flex w-full gap-x-5 sm:items-center sm:gap-x-3">
@@ -132,32 +133,27 @@ const siteDescription = t?.meta?.siteDescription || "";
 			<!--Blog post title-->
 			<h2
 				class="mb-3 text-2xl font-bold text-neutral-800 dark:text-neutral-200 md:text-3xl"
+				transition:name={`blog-title-${post.slug}`}
 			>
 				{post.data.title}
 			</h2>
 			<!--Blog post contents-->
 			<div class="mb-5 space-y-5 md:mb-8 md:space-y-8">
+				<Image
+					class="w-full rounded-xl object-cover"
+					src={post.data.cardImage}
+					alt={post.data.cardImageAlt}
+					draggable={"false"}
+					loading={"eager"}
+					format={"avif"}
+					transition:name={`blog-image-${post.slug}`}
+				/>
 				{
-					post.data.contents.map((content: string, index: any) =>
-						index === 1 ? (
-							<>
-								<p class="text-pretty text-lg text-neutral-700 dark:text-neutral-300">
-									{content}
-								</p>
-								<Image
-									class="w-full rounded-xl object-cover"
-									src={post.data.cardImage}
-									alt={post.data.cardImageAlt}
-									draggable={"false"}
-									format={"avif"}
-								/>
-							</>
-						) : (
-							<p class="text-pretty text-lg text-neutral-700 dark:text-neutral-300">
-								{content}
-							</p>
-						),
-					)
+					post.data.contents.map((content: string, index: any) => (
+						<p class="text-pretty text-lg text-neutral-700 dark:text-neutral-300" transition:name={index === 0 ? `blog-desc-${post.slug}` : undefined}>
+							{content}
+						</p>
+					))
 				}
 			</div>
 			<div

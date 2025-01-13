@@ -13,6 +13,13 @@ interface Props {
     rejected: string;
     vote: string;
     votes: string;
+    emptyMessages?: {
+      considering: string;
+      planned: string;
+      inProgress: string;
+      completed: string;
+      rejected: string;
+    };
   };
 }
 
@@ -33,36 +40,41 @@ const columns = [
     id: "considering",
     title: translations.considering,
     features: featuresByStatus.considering,
-    color: "bg-purple-500"
+    color: "bg-purple-500",
+    emptyMessage: translations.emptyMessages?.considering ?? "No ideas yet"
   },
   {
     id: "planned",
     title: translations.planned,
     features: featuresByStatus.planned,
-    color: "bg-blue-500"
+    color: "bg-blue-500",
+    emptyMessage: translations.emptyMessages?.planned ?? "No planned features"
   },
   {
     id: "inProgress",
     title: translations.inProgress,
     features: featuresByStatus.inProgress,
-    color: "bg-orange-500"
+    color: "bg-orange-500",
+    emptyMessage: translations.emptyMessages?.inProgress ?? "No features in development"
   },
   {
     id: "completed",
     title: translations.completed,
     features: featuresByStatus.completed,
-    color: "bg-green-500"
+    color: "bg-green-500",
+    emptyMessage: translations.emptyMessages?.completed ?? "No completed features"
   },
   {
     id: "rejected",
     title: translations.rejected,
     features: featuresByStatus.rejected,
-    color: "bg-red-500"
+    color: "bg-red-500",
+    emptyMessage: translations.emptyMessages?.rejected ?? "No rejected features"
   }
 ];
 ---
 
-<div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-5">
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-5">
   {columns.map(column => (
     <div class="flex flex-col rounded-lg border border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-900">
       <div class="mb-6 flex items-center justify-between">
@@ -75,13 +87,19 @@ const columns = [
       </div>
       
       <div class="flex-1 space-y-4">
-        {column.features.map(feature => (
-          <FeatureCard
-            feature={feature}
-            translations={translations}
-            showProjectName={showProjectName}
-          />
-        ))}
+        {column.features.length > 0 ? (
+          column.features.map(feature => (
+            <FeatureCard
+              feature={feature}
+              translations={translations}
+              showProjectName={showProjectName}
+            />
+          ))
+        ) : (
+          <div class="flex h-24 items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 bg-white p-4 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+            <p>{column.emptyMessage}</p>
+          </div>
+        )}
       </div>
     </div>
   ))}

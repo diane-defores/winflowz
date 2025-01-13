@@ -28,17 +28,23 @@ interface Props {
 	<head>
 		<Meta meta={meta} structuredData={structuredData} />
 		<title>{title}</title>
-		<ViewTransitions />
+		<ViewTransitions handleForms />
 		<script is:inline>
-			if (
-				localStorage.getItem("theme") === "dark" ||
-				(!("theme" in localStorage) &&
-					window.matchMedia("(prefers-color-scheme: dark)").matches)
-			) {
-				document.documentElement.classList.add("dark");
-			} else {
-				document.documentElement.classList.remove("dark");
-			}
+			// Appliquer le thème immédiatement
+			const theme = localStorage.getItem('hs_theme') || 'light';
+			document.documentElement.classList.toggle('dark', theme === 'dark');
+
+			// Réappliquer le thème après chaque transition
+			document.addEventListener('astro:after-swap', () => {
+				const theme = localStorage.getItem('hs_theme') || 'light';
+				document.documentElement.classList.toggle('dark', theme === 'dark');
+			});
+
+			// Gérer les changements de thème
+			document.addEventListener('astro:page-load', () => {
+				const theme = localStorage.getItem('hs_theme') || 'light';
+				document.documentElement.classList.toggle('dark', theme === 'dark');
+			});
 		</script>
 	</head>
 	<body class="dark:bg-neutral-900">
@@ -50,10 +56,9 @@ interface Props {
 		</div>
 		<FooterSection />
 		<script>
-			import '@/scripts/preline';
-			import '@/scripts/theme';
-			import '@/scripts/lenisSmoothScroll';
-			import '@/scripts/modal';
+			import "@/scripts/preline";
+			import "@/scripts/lenisSmoothScroll";
+			import "@/scripts/modal";
 		</script>
 	</body>
 </html>

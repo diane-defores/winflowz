@@ -1,15 +1,11 @@
-export type FeatureStatus = 'considering' | 'planned' | 'in-development' | 'completed' | 'rejected';
-
-export interface Feature {
+export type Feature = {
   id: string;
   title: string;
   description: string;
-  status: FeatureStatus;
+  status: "in-development" | "planned" | "considering" | "completed";
   votes: number;
-  projectId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  project?: string;
+};
 
 export interface Project {
   id: string;

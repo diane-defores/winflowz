@@ -20,7 +20,14 @@
     "planned": "Planned",
     "inProgress": "In Development",
     "completed": "Completed",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "emptyMessages": {
+      "considering": "No ideas yet",
+      "planned": "No planned features",
+      "inProgress": "No features in development",
+      "completed": "No completed features",
+      "rejected": "No rejected features"
+    }
   },
   "feature": {
     "vote": "Vote",
@@ -34,6 +41,9 @@
   "addFeature": {
     "button": "Suggest Feature",
     "title": "Suggest a new feature",
+    "project": "Project",
+    "selectProject": "Select a project",
+    "featureTitle": "Feature Title",
     "titleLabel": "Title",
     "titlePlaceholder": "Enter a title for your feature suggestion",
     "descriptionLabel": "Description",
@@ -42,6 +52,13 @@
     "submit": "Submit",
     "cancel": "Cancel",
     "success": "Feature suggestion submitted successfully",
-    "error": "Error submitting feature suggestion"
+    "error": "Error submitting feature suggestion",
+    "validation": {
+      "projectRequired": "Please select a project",
+      "titleRequired": "Please enter a title",
+      "titleMinLength": "Title must be at least 3 characters long",
+      "descriptionRequired": "Please enter a description",
+      "descriptionMinLength": "Description must be at least 10 characters long"
+    }
   }
 } 

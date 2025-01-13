@@ -20,7 +20,14 @@
     "planned": "Planifié",
     "inProgress": "En Développement",
     "completed": "Terminé",
-    "rejected": "Refusé"
+    "rejected": "Refusé",
+    "emptyMessages": {
+      "considering": "Aucune idée pour le moment",
+      "planned": "Aucune fonctionnalité planifiée",
+      "inProgress": "Aucun développement en cours",
+      "completed": "Aucune fonctionnalité terminée",
+      "rejected": "Aucune fonctionnalité rejetée"
+    }
   },
   "feature": {
     "vote": "Voter",
@@ -34,6 +41,9 @@
   "addFeature": {
     "button": "Suggérer une Fonctionnalité",
     "title": "Suggérer une nouvelle fonctionnalité",
+    "project": "Projet",
+    "selectProject": "Sélectionner un projet",
+    "featureTitle": "Titre de la fonctionnalité",
     "titleLabel": "Titre",
     "titlePlaceholder": "Entrez un titre pour votre suggestion",
     "descriptionLabel": "Description",
@@ -42,6 +52,13 @@
     "submit": "Envoyer",
     "cancel": "Annuler",
     "success": "Suggestion envoyée avec succès",
-    "error": "Erreur lors de l'envoi de la suggestion"
+    "error": "Erreur lors de l'envoi de la suggestion",
+    "validation": {
+      "projectRequired": "Veuillez sélectionner un projet",
+      "titleRequired": "Veuillez entrer un titre",
+      "titleMinLength": "Le titre doit contenir au moins 3 caractères",
+      "descriptionRequired": "Veuillez entrer une description",
+      "descriptionMinLength": "La description doit contenir au moins 10 caractères"
+    }
   }
 } 

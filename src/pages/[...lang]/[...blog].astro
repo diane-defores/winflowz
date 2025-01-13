@@ -19,8 +19,8 @@ export const prerender = true;
 // This gets the static paths for the blog index page
 export function getStaticPaths() {
 	return [
-		{ params: { lang: "blog" } },     // Pour /blog (anglais)
-		{ params: { lang: "fr/blog" } },  // Pour /fr/blog (français)
+		{ params: { lang: undefined, blog: "blog" } },     // Pour /blog
+		{ params: { lang: "fr", blog: "blog" } },  // Pour /fr/blog
 	];
 }
 

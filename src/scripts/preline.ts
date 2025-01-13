@@ -1,3 +1,4 @@
+import 'preline';
 import '@preline/dropdown';
 import '@preline/overlay';
 
