@@ -21,6 +21,11 @@ function initPreline() {
   }
 }
 
-// Initialisation au chargement initial et après chaque navigation
+// Initialisation au chargement initial
+document.addEventListener('DOMContentLoaded', initPreline);
+
+// Initialisation après chaque navigation
 document.addEventListener('astro:page-load', initPreline);
+
+// Réinitialisation après chaque transition de page
 document.addEventListener('astro:after-swap', initPreline); 

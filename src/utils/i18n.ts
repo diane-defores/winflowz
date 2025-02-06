@@ -8,14 +8,14 @@ export function getLangFromUrl(url: URL): Language {
 
 // Fonction pour charger les traductions UI communes
 export async function useUI(lang: Language) {
-  const translations = await import(`../content/i18n/${lang}/ui.json`);
+  const translations = await import(`../i18n/${lang}/ui.json`);
   return translations as Translation;
 }
 
 // Fonction pour charger les traductions spécifiques
 export async function useTranslations(lang: Language, page: string) {
   try {
-    const translations = await import(`../content/i18n/${lang}/${page}.json`);
+    const translations = await import(`../i18n/${lang}/${page}.json`);
     return translations as Translation;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}/${page}:`, error);
@@ -25,7 +25,7 @@ export async function useTranslations(lang: Language, page: string) {
 
 // Fonction pour charger les routes traduites
 export async function useRoutes(lang: Language) {
-  const routes = await import(`../content/i18n/${lang}/routes.json`);
+  const routes = await import(`../i18n/${lang}/routes.json`);
   return routes as Translation;
 }
 

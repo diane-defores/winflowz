@@ -1,7 +1,7 @@
 import type { APIRoute, ImageMetadata } from "astro";
 import { getImage } from "astro:assets";
-import icon from "@images/icon.png";
-import maskableIcon from "@images/icon-maskable.png";
+import icon from "@/images/WinFlowz.png";
+import maskableIcon from "@/images/WinFlowz.png";
 
 interface Favicon {
   purpose: 'any' | 'maskable' | 'monochrome';
@@ -46,12 +46,13 @@ export const GET: APIRoute = async () => {
   const manifest = {
     short_name: "WinFlowz",
     name: "WinFlowz",
+    description: "Optimize your Windows workflow",
     icons,
-    display: "minimal-ui",
+    display: "standalone",
     id: "/",
     start_url: "/",
-    theme_color: "#FFEDD5",
-    background_color: "#262626",
+    theme_color: "#000000",
+    background_color: "#ffffff",
   };
 
   return new Response(JSON.stringify(manifest));

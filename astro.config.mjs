@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import compressor from "astro-compressor";
-import vercel from "@astrojs/vercel/serverless";
+import node from "@astrojs/node";
 import icon from "astro-icon";
 import { fileURLToPath } from 'url';
 
@@ -13,7 +13,7 @@ export default defineConfig({
     locales: ["en", "fr"],
     routing: "manual"
   },
-  output: "hybrid",
+  output: "server",
   build: {
     inlineStylesheets: "auto",
     split: true,
@@ -21,49 +21,24 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
         '@scripts': fileURLToPath(new URL('./src/scripts', import.meta.url)),
         '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
+        '@images': fileURLToPath(new URL('./public/images', import.meta.url)),
       }
     }
   },
-  adapter: vercel({
-    webAnalytics: {
-      enabled: true,
-    },
-    speedInsights: {
-      enabled: true,
-    },
-    imageService: true,
-    imagesConfig: {
-      sizes: [640, 750, 828, 1080, 1200],
-      formats: ["image/webp"],
-    },
+  adapter: node({
+    mode: "standalone"
   }),
   image: {
-    domains: [
-      'dynapictures.com',
-      'i.pinimg.com',
-      'images.unsplash.com',
-      'www.squirrly.co'
-    ],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.dynapictures.com'
-      },
-      {
-        protocol: 'https',
-        hostname: '**.pinimg.com'
-      },
-      {
-        protocol: 'https',
-        hostname: '**.unsplash.com'
-      },
-      {
-        protocol: 'https',
-        hostname: '**.squirrly.co'
-      }
-    ]
+    service: {
+      entrypoint: 'astro/assets/services/sharp'
+    },
+    remotePatterns: [{ protocol: "https" }],
+    domains: ["dynapictures.com", "i.pinimg.com", "images.unsplash.com", "www.squirrly.co"],
+    assets: true,
+    publicDir: true
   },
   prefetch: {
     prefetchAll: false,

@@ -5,8 +5,8 @@ main:
   id: 1
   content: |
     Discover TubeFlowz – your ultimate YouTube productivity companion. This powerful Chrome extension transforms your video watching experience with advanced bookmarking features, customizable keyboard shortcuts, and seamless export options. Perfect for students, researchers, and anyone looking to organize their YouTube learning journey.
-  imgCard: "@/images/product-image-3.avif"
-  imgMain: "@/images/product-image-main-3.avif"
+  imgCard: "@/images/WinFlowz.png"
+  imgMain: "@/images/WinFlowz.png"
   imgAlt: "TubeFlowz Chrome extension interface screenshot"
 tabs:
   - id: "tabs-with-card-item-1"
@@ -50,6 +50,6 @@ specificationsRight:
   - title: "Security"
     subTitle: "Robust error handling, secure data storage, and validated data imports for reliable operation."
 blueprints:
-  first: "@/images/blueprint-1.avif"
-  second: "@/images/blueprint-2.avif"  
+  first: "@/images/WinFlowz.png"
+  second: "@/images/WinFlowz.png"  
 ---

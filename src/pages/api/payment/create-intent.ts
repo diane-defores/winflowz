@@ -2,11 +2,13 @@ import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 import { supabase } from '../../../lib/supabaseClient';
 
+export const prerender = false;
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia'
 });
 
-export const post: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     // Vérifier l'authentification
     const authHeader = request.headers.get('Authorization');

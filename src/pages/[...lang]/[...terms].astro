@@ -1,27 +1,29 @@
 ---
-import MainLayout from "@/layouts/MainLayout.astro";
-import { getLangFromUrl, useTranslations, useUI } from "@/utils/i18n";
+import MainLayout from '@/layouts/MainLayout.astro'
+import { getLangFromUrl, useTranslations, useUI } from '@/utils/i18n'
+
+export const prerender = true
 
 export function getStaticPaths() {
 	return [
-		{ params: { lang: "en", terms: "terms" } },
-		{ params: { lang: "fr", terms: "cgu" } },
-	];
+		{ params: { lang: 'en', terms: 'terms' } },
+		{ params: { lang: 'fr', terms: 'cgu' } },
+	]
 }
 
-const lang = getLangFromUrl(Astro.url);
-const t = await useTranslations(lang, "terms");
-const ui = await useUI(lang);
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'terms')
+const ui = await useUI(lang)
 
 interface Section {
-	title: string;
-	content?: string;
-	items?: string[];
+	title: string
+	content?: string
+	items?: string[]
 }
 
 type Terms = {
-	sections: Record<string, Section>;
-};
+	sections: Record<string, Section>
+}
 ---
 
 <MainLayout title={t.title} lang={lang}>
@@ -43,7 +45,7 @@ type Terms = {
 							</ul>
 						)}
 					</section>
-				),
+				)
 			)
 		}
 

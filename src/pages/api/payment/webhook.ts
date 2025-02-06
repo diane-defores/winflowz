@@ -3,13 +3,15 @@ import Stripe from 'stripe';
 import { createApiKeyForPurchase } from '../../../lib/api-keys';
 import { supabase } from '../../../lib/supabaseClient';
 
+export const prerender = false;
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia'
 });
 
 const endpointSecret = import.meta.env.STRIPE_WEBHOOK_SECRET;
 
-export const post: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     const sig = request.headers.get('stripe-signature');
     const payload = await request.text();

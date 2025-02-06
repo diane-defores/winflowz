@@ -1,0 +1,77 @@
+{
+  "title": "Our Services",
+  "description": "Discover our range of Windows optimization services",
+  "learnMore": "Learn More",
+  "meta": {
+    "description": "Explore our comprehensive range of Windows optimization services designed to enhance your system's performance."
+  },
+  "hero": {
+    "title": "Empowering Your Digital Productivity",
+    "subtitle": "Transform your workflow with custom development and expert training. As a neurodivergent developer, UX/UI enthusiast, and productivity specialist, I offer tailored solutions and guidance to help you achieve peak efficiency in your digital workspace.",
+    "cta": "Schedule a Consultation"
+  },
+  "articles": [
+    {
+      "isRightSection": true,
+      "title": "Custom Development",
+      "subtitle": "As a neurodivergent developer specialized in productivity tools and passionate about UX/UI, I create custom solutions that enhance your digital workflow. From Obsidian plugins to Chrome extensions, each project is meticulously crafted to meet your specific needs while ensuring optimal performance and an intuitive user experience.",
+      "single": false,
+      "imgOneAlt": "Development workflow illustration",
+      "imgTwoAlt": "Person working with digital tools"
+    },
+    {
+      "isRightSection": false,
+      "title": "Productivity Training",
+      "subtitle": "Transform your digital workflow with expert guidance. I offer personalized training sessions focused on productivity optimization, tool mastery, and workflow enhancement. Whether you're a beginner or advanced user, my approach adapts to your learning style and objectives.",
+      "imgAlt": "Productivity training session",
+      "btnExists": true,
+      "btnTitle": "Learn More"
+    },
+    {
+      "isRightSection": true,
+      "title": "WordPress Expertise",
+      "subtitle": "Master WordPress with comprehensive training from basics to advanced features. I provide hands-on guidance for website creation, customization, and optimization. Learn to manage your content effectively while implementing best practices for performance and SEO.",
+      "single": false,
+      "imgOneAlt": "WordPress development illustration",
+      "imgTwoAlt": "Website management overview"
+    },
+    {
+      "isRightSection": false,
+      "title": "Software Implementation",
+      "subtitle": "Get personalized support for implementing and mastering essential software tools. From Obsidian to productivity apps, I help you optimize your digital workspace and establish efficient workflows tailored to your needs.",
+      "imgAlt": "Software implementation demonstration"
+    },
+    {
+      "isRightSection": true,
+      "title": "Custom Solutions & Integration",
+      "subtitle": "Need a specific tool or workflow enhancement? I develop custom solutions that integrate seamlessly with your existing systems. From automation scripts to specialized plugins, I create tools that boost your productivity and streamline your work processes, always with a focus on exceptional user experience and interface design.",
+      "single": false,
+      "imgOneAlt": "Custom development process",
+      "imgTwoAlt": "Integration workflow",
+      "btnExists": true,
+      "btnTitle": "Explore Solutions"
+    }
+  ],
+  "stats": {
+    "title": "Impact & Results",
+    "subtitle": "My commitment to enhancing digital productivity is reflected in the success of my clients and the effectiveness of my solutions.",
+    "mainStat": {
+      "title": "96%",
+      "subtitle": "of clients report significant productivity improvements after implementation"
+    },
+    "items": [
+      {
+        "stat": "50+",
+        "description": "custom solutions delivered"
+      },
+      {
+        "stat": "200+",
+        "description": "productivity tips and techniques"
+      },
+      {
+        "stat": "85%",
+        "description": "time saved on repetitive tasks"
+      }
+    ]
+  }
+} 

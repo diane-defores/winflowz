@@ -1,35 +1,32 @@
 ---
 // Import necessary modules and utilities
-import { Image } from "astro:assets";
-import { formatDate } from "@/utils/utils";
-import type { CollectionEntry } from "astro:content";
+import { formatDate } from '@/utils/utils'
+import type { CollectionEntry } from 'astro:content'
 
 interface Props {
-	blogEntry: CollectionEntry<"blog">;
-	recentBlogLocale?: string;
+	blogEntry: CollectionEntry<'blog'>
+	blogLocale?: string
 }
 
-const { blogEntry, recentBlogLocale = "en" } = Astro.props;
+const { blogEntry, blogLocale = 'en' } = Astro.props
 
-// Nettoyer le slug en retirant le préfixe de langue si présent
-const cleanSlug = blogEntry.id.replace(/^(fr|en)\//, "").replace(/\.md$/, "");
+// Nettoyer le slug en retirant le préfixe de langue et l'extension
+const cleanSlug = blogEntry.id.split('/')[1].replace(/\.md$/, '')
 ---
 
 <a
 	class="group block rounded-xl outline-none ring-zinc-500 transition duration-300 focus-visible:ring dark:ring-zinc-200 dark:focus:outline-none"
-	href={recentBlogLocale === "fr"
-		? `/fr/blog/${cleanSlug}`
-		: `/blog/${cleanSlug}`}
+	href={blogLocale === 'fr' ? `/fr/blog/${cleanSlug}` : `/blog/${cleanSlug}`}
 	data-astro-prefetch
 	data-astro-transition-persist
 >
 	<div>
-		<Image
+		<img
 			class="aspect-video rounded-xl"
 			src={blogEntry.data.cardImage}
 			alt={blogEntry.data.cardImageAlt}
-			draggable={"false"}
-			format={"avif"}
+			draggable="false"
+			loading="eager"
 		/>
 		<!-- The title of the blog post -->
 		<h3

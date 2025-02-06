@@ -1,25 +1,29 @@
-import { supabase } from './supabaseClient'
+import { getSupabase, createServerSupabase } from './supabaseClient'
 
 // Helper pour vérifier si l'utilisateur est connecté
 export async function isUserLoggedIn() {
+  const supabase = typeof window !== 'undefined' ? getSupabase() : createServerSupabase();
   const { data: { session } } = await supabase.auth.getSession()
   return !!session
 }
 
 // Helper pour obtenir l'utilisateur courant
 export async function getCurrentUser() {
+  const supabase = typeof window !== 'undefined' ? getSupabase() : createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
 
 // Helper pour la déconnexion
 export async function signOut() {
+  const supabase = getSupabase();
   const { error } = await supabase.auth.signOut()
   return { error }
 }
 
 // Helper pour la connexion avec email/password
 export async function signInWithEmail(email: string, password: string) {
+  const supabase = getSupabase();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -29,6 +33,7 @@ export async function signInWithEmail(email: string, password: string) {
 
 // Helper pour la création de compte
 export async function signUpWithEmail(email: string, password: string, locale: string = 'en') {
+  const supabase = getSupabase();
   const redirectUrl = `${import.meta.env.PUBLIC_SITE_URL}/auth/callback?lang=${locale}`
 
   try {
@@ -95,6 +100,7 @@ export async function signUpWithEmail(email: string, password: string, locale: s
 
 // Helper pour la connexion avec Google
 export async function signInWithGoogle() {
+  const supabase = getSupabase();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -106,6 +112,7 @@ export async function signInWithGoogle() {
 
 // Helper pour la réinitialisation du mot de passe
 export async function resetPasswordForEmail(email: string, redirectUrl: string) {
+  const supabase = getSupabase();
   return await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${import.meta.env.PUBLIC_SITE_URL}${redirectUrl}`,
   })
@@ -113,11 +120,13 @@ export async function resetPasswordForEmail(email: string, redirectUrl: string) 
 
 // Helper pour la mise à jour du mot de passe
 export async function updateUserPassword(password: string) {
+  const supabase = getSupabase();
   return await supabase.auth.updateUser({ password })
 }
 
 // Helper pour obtenir la session
 export async function getSession() {
+  const supabase = typeof window !== 'undefined' ? getSupabase() : createServerSupabase();
   return await supabase.auth.getSession()
 }
 

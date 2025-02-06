@@ -1,54 +1,51 @@
 ---
 title: "WinFlowz"
-description: "Formation complète sur la productivité Windows" 
+description: "Optimisez votre flux de travail Windows"
 main:
-  id: 2
-  content: |
-    Découvrez WinFlowz – une formation complète conçue par une experte neurodivergente pour maximiser votre productivité sur Windows. Plus de 200 astuces et outils testés et approuvés pour transformer votre façon de travailler.
-  imgCard: "@/images/product-image-2.avif"
-  imgMain: "@/images/product-image-main-2.avif"
-  imgAlt: "Capture d'écran de Windows avec des outils de productivité"
-tabs:
-  - id: "tabs-with-card-item-1"
-    dataTab: "#tabs-with-card-1"
-    title: "Description"
-  - id: "tabs-with-card-item-2"
-    dataTab: "#tabs-with-card-2"
-    title: "Programme"
-  - id: "tabs-with-card-item-3"
-    dataTab: "#tabs-with-card-3"
-    title: "Bonus"
+  id: 1
+  content: "WinFlowz est une suite d'outils Windows conçue pour optimiser votre flux de travail quotidien."
+  imgCard: "/images/WinFlowz.png"
+  imgMain: "/images/WinFlowz.png"
+  imgAlt: "WinFlowz product illustration"
 longDescription:
-  title: "Devenez un expert de la productivité Windows avec WinFlowz"
-  subTitle: |
-    Cette formation unique combine mon expertise en tant que professionnelle neurodivergente avec des années d'optimisation de flux de travail. Vous apprendrez à exploiter pleinement Windows pour une productivité maximale, que vous soyez entrepreneur, freelance ou professionnel.
-  btnTitle: "Découvrir le programme complet"
-  btnURL: "#"
+  title: "Améliorez votre productivité avec WinFlowz"
+  subTitle: "WinFlowz est une suite d'outils Windows conçue pour optimiser votre flux de travail quotidien. Avec des fonctionnalités puissantes et une interface intuitive, WinFlowz vous aide à travailler plus efficacement."
+  btnTitle: "Commencer"
+  btnURL: "/fr/produits/winflowz"
 descriptionList:
-  - title: "Approche Pratique"
-    subTitle: "Des techniques immédiatement applicables, testées et optimisées pour une productivité réelle."
-  - title: "Pour Tous les Niveaux"
-    subTitle: "Du débutant à l'expert, chacun trouvera des outils pour améliorer son workflow."
-  - title: "Support Personnalisé"
-    subTitle: "Accès à notre communauté et support direct pour répondre à vos questions."
+  - title: "Interface intuitive"
+    subTitle: "Une interface utilisateur moderne et intuitive qui s'intègre parfaitement à Windows."
+  - title: "Outils puissants"
+    subTitle: "Des outils puissants pour automatiser vos tâches quotidiennes et améliorer votre productivité."
+  - title: "Personnalisation"
+    subTitle: "Des options de personnalisation avancées pour adapter WinFlowz à vos besoins."
+  - title: "Support premium"
+    subTitle: "Un support technique premium pour vous aider à tirer le meilleur parti de WinFlowz."
+tabs:
+  - title: "Vue d'ensemble"
+    id: "tabs-with-card-item-1"
+    dataTab: "#tabs-with-card-1"
+  - title: "Spécifications"
+    id: "tabs-with-card-item-2"
+    dataTab: "#tabs-with-card-2"
+  - title: "Plans"
+    id: "tabs-with-card-item-3"
+    dataTab: "#tabs-with-card-3"
 specificationsLeft:
-  - title: "Format"
-    subTitle: "Formation en ligne avec vidéos HD, ressources téléchargeables et exercices pratiques."
-  - title: "Durée"
-    subTitle: "Plus de 10 heures de contenu, accessible à vie avec mises à jour gratuites."
-  - title: "Prérequis"
-    subTitle: "Windows 10 ou 11, aucune connaissance technique avancée requise."
-  - title: "Certification"
-    subTitle: "Certificat de complétion personnalisé à la fin de la formation."
-tableData:
-  - feature: ["Module", "Contenu"]
-    description:
-      - ["Fondamentaux", "Maîtrise des raccourcis essentiels"]
-      - ["Organisation", "Gestion des fichiers et des fenêtres"]
-      - ["Automatisation", "Scripts et outils d'automatisation"]
-      - ["Personnalisation", "Configuration avancée de Windows"]
-      - ["Productivité", "Méthodes et workflows optimisés"]
+  - title: "Système d'exploitation"
+    subTitle: "Windows 10 ou supérieur"
+  - title: "Processeur"
+    subTitle: "Intel Core i3 ou équivalent"
+  - title: "Mémoire"
+    subTitle: "4 Go de RAM minimum"
+specificationsRight:
+  - title: "Espace disque"
+    subTitle: "500 Mo d'espace disque disponible"
+  - title: "Résolution d'écran"
+    subTitle: "1280 x 720 minimum"
+  - title: "Connexion Internet"
+    subTitle: "Requise pour certaines fonctionnalités"
 blueprints:
-  first: "@/images/blueprint-1.avif"
-  second: "@/images/blueprint-2.avif"
+  first: "/images/WinFlowz.png"
+  second: "/images/WinFlowz.png"
 ---

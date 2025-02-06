@@ -1,12 +1,12 @@
-import ogImageSrc from "@images/social.png";
+import ogImageSrc from "@/images/WinFlowz.png";
 
 export const SITE = {
-  title: "WinFlowz",
-  tagline: "Software & Courses",
-  description: "WinFlowz offers top-tier software and courses to meet all your project needs. Start exploring and contact our sales team for superior quality and reliability.",
-  description_short: "WinFlowz offers top-tier software and courses to meet all your project needs.",
-  url: "https://winflowz.com",
-  author: "Emil Gulamov",
+  name: 'WinFlowz',
+  title: 'WinFlowz - Optimize your Windows workflow',
+  description: 'WinFlowz is a Windows toolkit designed to optimize your daily workflow.',
+  url: 'https://winflowz.com',
+  githubUrl: 'https://github.com/winflowz',
+  ogImage: '/images/WinFlowz.png'
 };
 
 export const SEO = {

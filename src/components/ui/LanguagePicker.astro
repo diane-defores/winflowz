@@ -1,61 +1,61 @@
 ---
-import { languages } from "@/utils/ui";
-import Icon from "./icons/Icon.astro";
+import { languages } from '@/utils/ui'
+import Icon from './icons/Icon.astro'
 
-const { pathname } = Astro.url;
-const currentLocale = pathname.startsWith("/fr/") ? "fr" : "en";
+const { pathname } = Astro.url
+const currentLocale = pathname.startsWith('/fr/') ? 'fr' : 'en'
 
 // Mappings des routes pour la traduction
 const routeMappings = {
-	terms: "cgu",
-	disclaimer: "non-responsabilite",
-	privacy: "confidentialite",
-	copyright: "droits",
-	legal: "mentions-legales",
-	products: "produits",
-	"products/obsidian": "produits/obsidian",
-	"products/chrome": "produits/chrome",
-	"products/windows": "produits/windows",
-	"products/pricing": "produits/tarifs",
-	services: "services",
-	blog: "blog",
-	contact: "contact",
-	roadmap: "roadmap",
-};
+	terms: 'cgu',
+	disclaimer: 'non-responsabilite',
+	privacy: 'confidentialite',
+	copyright: 'droits',
+	legal: 'mentions-legales',
+	products: 'produits',
+	'products/obsidian': 'produits/obsidian',
+	'products/chrome': 'produits/chrome',
+	'products/windows': 'produits/windows',
+	'products/pricing': 'produits/tarifs',
+	services: 'services',
+	blog: 'blog',
+	contact: 'contact',
+	roadmap: 'roadmap',
+}
 
 // Fonction pour obtenir l'URL traduite
 function getTranslatedPath(path: string, targetLang: string): string {
 	// Cas spécial pour la page d'accueil
-	if (path === "/" || path === "/fr" || path === "/fr/") {
-		return targetLang === "fr" ? "/fr" : "/";
+	if (path === '/' || path === '/fr' || path === '/fr/') {
+		return targetLang === 'fr' ? '/fr' : '/'
 	}
 
 	// Enlève le préfixe /fr/ si présent
-	const cleanPath = path.replace(/^\/fr\//, "/");
+	const cleanPath = path.replace(/^\/fr\//, '/')
 
-	if (targetLang === "fr") {
+	if (targetLang === 'fr') {
 		// Conversion de l'anglais vers le français
 		for (const [en, fr] of Object.entries(routeMappings)) {
 			if (cleanPath === `/${en}` || cleanPath.startsWith(`/${en}/`)) {
-				return `/fr/${fr}${cleanPath.substring(en.length + 1)}`;
+				return `/fr/${fr}${cleanPath.substring(en.length + 1)}`
 			}
 		}
 		// Si pas de mapping spécifique, ajoute simplement /fr/
-		return `/fr${cleanPath}`;
+		return `/fr${cleanPath}`
 	} else {
 		// Conversion du français vers l'anglais
 		for (const [en, fr] of Object.entries(routeMappings)) {
 			if (cleanPath === `/${fr}` || cleanPath.startsWith(`/${fr}/`)) {
-				return `/${en}${cleanPath.substring(fr.length + 1)}`;
+				return `/${en}${cleanPath.substring(fr.length + 1)}`
 			}
 		}
 		// Si pas de mapping spécifique, enlève simplement /fr/
-		return cleanPath;
+		return cleanPath
 	}
 }
 ---
 
-<div class="hs-dropdown relative inline-flex">
+<div class="hs-dropdown relative inline-flex" data-hs-dropdown>
 	<button
 		id="hs-dropdown-default"
 		type="button"
@@ -96,5 +96,5 @@ function getTranslatedPath(path: string, targetLang: string): string {
 </div>
 
 <script>
-	import "@preline/dropdown/index.js";
+	import '@preline/dropdown/index.js'
 </script>

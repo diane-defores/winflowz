@@ -5,14 +5,14 @@ import { docsSchema } from '@astrojs/starlight/schema';
 
 const productsCollection = defineCollection({
   type: 'content',
-    schema: ({ image }) => z.object({
+  schema: z.object({
     title: z.string(),
     description: z.string(),
     main: z.object({
       id: z.number(),
       content: z.string(),
-      imgCard: image(),
-      imgMain: image(),
+      imgCard: z.string(),
+      imgMain: z.string(),
       imgAlt: z.string(),
     }),
     tabs: z.array(
@@ -53,45 +53,57 @@ const productsCollection = defineCollection({
       })
     ).optional(),
     blueprints: z.object({
-      first: image().optional(),
-      second: image().optional(),
+      first: z.string().optional(),
+      second: z.string().optional(),
     }),
   }),
 });
 
 const blogCollection = defineCollection({
   type: "content",
-  schema: ({ image }) => z.object ({
-  title: z.string(),
-  description: z.string(),
-  contents: z.array(z.string()),
-  author: z.string(),
-  role: z.string().optional(),
-  authorImage: image(),
-  authorImageAlt: z.string(),
-  pubDate: z.date(),
-  cardImage: image(),
-  cardImageAlt: z.string(),
-  readTime: z.number(),
-  tags: z.array(z.string()).optional(),
-  }),
-});
-
-const insightsCollection = defineCollection({
-  type: "content",
-  schema: ({ image }) => z.object ({
+  schema: z.object({
     title: z.string(),
     description: z.string(),
     contents: z.array(z.string()),
     author: z.string(),
     role: z.string().optional(),
-    authorImage: image(),
+    authorImage: z.string(),
     authorImageAlt: z.string(),
     pubDate: z.date(),
-    cardImage: image(),
+    cardImage: z.string(),
     cardImageAlt: z.string(),
     readTime: z.number(),
     tags: z.array(z.string()).optional(),
+  }),
+});
+
+const insightsCollection = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    contents: z.array(z.string()),
+    author: z.string(),
+    role: z.string().optional(),
+    authorImage: z.string(),
+    authorImageAlt: z.string(),
+    pubDate: z.date(),
+    cardImage: z.string(),
+    cardImageAlt: z.string(),
+    readTime: z.number(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+
+const servicesCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    icon: z.string().optional(),
+    features: z.array(z.string()).optional(),
+    image: z.string().optional(),
+    imageAlt: z.string().optional(),
   }),
 });
 
@@ -100,4 +112,5 @@ export const collections = {
   'products': productsCollection,
   'blog': blogCollection,
   'insights': insightsCollection,
+  'services': servicesCollection,
 };

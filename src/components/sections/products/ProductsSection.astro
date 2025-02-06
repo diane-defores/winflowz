@@ -18,7 +18,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslatedPath(lang);
 
 // Import dynamique du fichier JSON en fonction de la langue
-const productsData = await import(`@/content/i18n/${lang}/products.json`);
+const productsData = await import(`@/i18n/${lang}/products.json`);
 const products = Object.entries(productsData.default).map(([key, value]) => ({
 	id: key,
 	title: value.title,
@@ -115,4 +115,3 @@ const products = Object.entries(productsData.default).map(([key, value]) => ({
 		}
 	</div>
 </section>
-

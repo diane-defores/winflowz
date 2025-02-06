@@ -1,11 +1,13 @@
 ---
-import MainLayout from "../../layouts/MainLayout.astro";
-import KanbanBoard from "../../components/roadmap/KanbanBoard.astro";
-import ProjectNav from "../../components/roadmap/ProjectNav.astro";
-import AddFeatureModal from "../../components/roadmap/AddFeatureModal.astro";
-import { projects } from "../../types/roadmap";
-import { getLangFromUrl, useTranslations } from "../../utils/i18n";
-import { supabase } from "../../lib/supabaseClient";
+import MainLayout from '../../layouts/MainLayout.astro'
+import KanbanBoard from '../../components/roadmap/KanbanBoard.astro'
+import ProjectNav from '../../components/roadmap/ProjectNav.astro'
+import AddFeatureModal from '../../components/roadmap/AddFeatureModal.astro'
+import { projects } from '../../types/roadmap'
+import { getLangFromUrl, useTranslations } from '../../utils/i18n'
+import { supabase } from '../../lib/supabaseClient'
+
+export const prerender = true
 
 export function getStaticPaths() {
 	return [
@@ -13,7 +15,7 @@ export function getStaticPaths() {
 		{
 			params: {
 				lang: undefined,
-				roadmap: "roadmap",
+				roadmap: 'roadmap',
 			},
 		},
 		...projects.map((project) => ({
@@ -26,48 +28,48 @@ export function getStaticPaths() {
 		// Routes en français
 		{
 			params: {
-				lang: "fr",
-				roadmap: "roadmap",
+				lang: 'fr',
+				roadmap: 'roadmap',
 			},
 		},
 		...projects.map((project) => ({
 			params: {
-				lang: "fr",
+				lang: 'fr',
 				roadmap: `roadmap/${project.id}`,
 			},
 		})),
-	];
+	]
 }
 
 // Récupérer la langue et le projet actif
-const lang = getLangFromUrl(Astro.url);
-const t = await useTranslations(lang, "roadmap");
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'roadmap')
 
 // Extraire l'ID du projet de l'URL
-const segments = Astro.url.pathname.split("/");
+const segments = Astro.url.pathname.split('/')
 const projectId =
-	segments[segments.length - 1] === "roadmap"
+	segments[segments.length - 1] === 'roadmap'
 		? null
-		: segments[segments.length - 1];
-const project = projectId ? projects.find((p) => p.id === projectId) : null;
+		: segments[segments.length - 1]
+const project = projectId ? projects.find((p) => p.id === projectId) : null
 
-console.log("Page Debug:", {
+console.log('Page Debug:', {
 	pathname: Astro.url.pathname,
 	segments,
 	projectId,
 	project,
 	hasProject: !!project,
-});
+})
 
 const defaultTranslations = {
-	planned: "Planned",
-	inProgress: "In Development",
-	completed: "Completed",
-	considering: "Ideas",
-	rejected: "Rejected",
-	vote: "Vote",
-	votes: "votes",
-};
+	planned: 'Planned',
+	inProgress: 'In Development',
+	completed: 'Completed',
+	considering: 'Ideas',
+	rejected: 'Rejected',
+	vote: 'Vote',
+	votes: 'votes',
+}
 
 const translations = {
 	planned: t?.status?.planned ?? defaultTranslations.planned,
@@ -77,20 +79,20 @@ const translations = {
 	rejected: t?.status?.rejected ?? defaultTranslations.rejected,
 	vote: t?.feature?.vote ?? defaultTranslations.vote,
 	votes: t?.feature?.votes ?? defaultTranslations.votes,
-};
+}
 
 // Charger les features depuis Supabase
 let query = supabase
-	.from("features")
-	.select("*")
-	.order("votes", { ascending: false });
+	.from('features')
+	.select('*')
+	.order('votes', { ascending: false })
 
 // Si nous sommes sur une page de projet spécifique, filtrer les features
 if (project) {
-	query = query.eq("projectId", project.id);
+	query = query.eq('projectId', project.id)
 }
 
-const { data: features } = await query;
+const { data: features } = await query
 
 // Ajouter les noms des projets aux features
 const featuresWithProjectNames =
@@ -99,12 +101,12 @@ const featuresWithProjectNames =
 		projectName:
 			projects.find((p) => p.id === feature.projectId)?.name ??
 			feature.projectId,
-	})) ?? [];
+	})) ?? []
 
 // Définir le titre de la page
 const pageTitle = project
-	? `${project.name} - ${t?.title || "Roadmap"}`
-	: (t?.title || "Roadmap");
+	? `${project.name} - ${t?.title || 'Roadmap'}`
+	: t?.title || 'Roadmap'
 ---
 
 <MainLayout title={pageTitle} lang={lang}>
@@ -121,4 +123,3 @@ const pageTitle = project
 
 	<AddFeatureModal />
 </MainLayout>
-

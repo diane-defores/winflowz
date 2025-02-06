@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+export const prerender = false;
+
 // Liste des origines autorisées
 const allowedOrigins = [
   'app://obsidian.md', // Pour le plugin Obsidian
@@ -13,7 +15,7 @@ function verifyPluginToken(token: string | null): boolean {
   return token === validToken;
 }
 
-export const get: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     // Vérification CORS
     const origin = request.headers.get('Origin');

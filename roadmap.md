@@ -1,3 +1,7 @@
+https://www.gettoby.com/pricing
+
+
+
 Custom Implementation
 If you need more specific functionality, you might consider implementing a custom solution using a combination of libraries. For example:
 Use generate-api-key for key generation

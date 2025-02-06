@@ -1,26 +1,26 @@
 ---
 // Importing necessary components
-import Meta from "@/components/Meta.astro";
-import FooterSection from "@/components/sections/navbar&footer/FooterSection.astro";
-import Navbar from "@/components/sections/navbar&footer/Navbar.astro";
-import { SITE } from "@/constants";
-import "../assets/styles/global.css";
-import { ViewTransitions } from "astro:transitions";
+import Meta from '@/components/Meta.astro'
+import FooterSection from '@/components/sections/navbar&footer/FooterSection.astro'
+import Navbar from '@/components/sections/navbar&footer/Navbar.astro'
+import { SITE } from '@/constants'
+import '../assets/styles/global.css'
+import { ViewTransitions } from 'astro:transitions'
 
 // Setting expected props
-const { title = SITE.title, meta, structuredData, lang = "en" } = Astro.props;
+const { title = SITE.title, meta, structuredData, lang = 'en' } = Astro.props
 
 // Interface to type-check the properties
 interface Props {
-	title?: string;
+	title?: string
 	meta?: {
-		title?: string;
-		description?: string;
-		image?: string;
-		canonicalURL?: string;
-	};
-	structuredData?: object;
-	lang?: string;
+		title?: string
+		description?: string
+		image?: string
+		canonicalURL?: string
+	}
+	structuredData?: object
+	lang?: string
 }
 ---
 
@@ -31,20 +31,20 @@ interface Props {
 		<ViewTransitions handleForms />
 		<script is:inline>
 			// Appliquer le thème immédiatement
-			const theme = localStorage.getItem('hs_theme') || 'light';
-			document.documentElement.classList.toggle('dark', theme === 'dark');
+			const theme = localStorage.getItem('hs_theme') || 'light'
+			document.documentElement.classList.toggle('dark', theme === 'dark')
 
 			// Réappliquer le thème après chaque transition
 			document.addEventListener('astro:after-swap', () => {
-				const theme = localStorage.getItem('hs_theme') || 'light';
-				document.documentElement.classList.toggle('dark', theme === 'dark');
-			});
+				const theme = localStorage.getItem('hs_theme') || 'light'
+				document.documentElement.classList.toggle('dark', theme === 'dark')
+			})
 
 			// Gérer les changements de thème
 			document.addEventListener('astro:page-load', () => {
-				const theme = localStorage.getItem('hs_theme') || 'light';
-				document.documentElement.classList.toggle('dark', theme === 'dark');
-			});
+				const theme = localStorage.getItem('hs_theme') || 'light'
+				document.documentElement.classList.toggle('dark', theme === 'dark')
+			})
 		</script>
 	</head>
 	<body class="dark:bg-neutral-900">
@@ -55,10 +55,11 @@ interface Props {
 			</main>
 		</div>
 		<FooterSection />
+		<script src="https://cdn.onthe.io/io.js/YyAMWtaLLPUi"></script>
 		<script>
-			import "@/scripts/preline";
-			import "@/scripts/lenisSmoothScroll";
-			import "@/scripts/modal";
+			import '@/scripts/preline'
+			import '@/scripts/lenisSmoothScroll'
+			import '@/scripts/modal'
 		</script>
 	</body>
 </html>
