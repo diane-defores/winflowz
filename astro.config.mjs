@@ -53,27 +53,19 @@ export default defineConfig({
         fr: {
           label: 'Français',
           lang: 'fr',
-          routes: {
-            'courses': 'formations'
-          }
+          pathPrefix: '/fr'
         }
       },
       disable404Route: true,
       sidebar: [
         {
-          label: 'Getting Started',
+          label: 'Courses',
           translations: {
-            fr: 'Pour commencer'
+            fr: 'Formations'
           },
-          items: [
-            {
-              label: 'Courses',
-              translations: {
-                fr: 'Formations'
-              },
-              link: '/courses'
-            }
-          ]
+          autogenerate: {
+            directory: 'courses'
+          }
         }
       ],
       social: {

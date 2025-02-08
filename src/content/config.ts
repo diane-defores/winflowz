@@ -3,6 +3,38 @@
 import { z, defineCollection } from 'astro:content';
 import { docsSchema } from '@astrojs/starlight/schema';
 
+// Extension du schéma Starlight pour les cours
+const courseSchema = docsSchema({
+  extend: z.object({
+    courseData: z.object({
+      translations: z.object({
+        en: z.object({
+          title: z.string(),
+          description: z.string(),
+          objectives: z.array(z.string()).optional(),
+          prerequisites: z.array(z.string()).optional(),
+        }),
+        fr: z.object({
+          title: z.string(),
+          description: z.string(),
+          objectives: z.array(z.string()).optional(),
+          prerequisites: z.array(z.string()).optional(),
+        }),
+      }),
+      duration: z.string().optional(),
+      level: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+      featured: z.boolean().optional(),
+      order: z.number().optional(),
+      components: z.array(
+        z.object({
+          type: z.enum(['video', 'quiz', 'exercise', 'resources']),
+          data: z.record(z.any()),
+        })
+      ).optional(),
+    }).optional(),
+  }),
+});
+
 const productsCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -90,7 +122,7 @@ const servicesCollection = defineCollection({
 });
 
 export const collections = {
-  docs: defineCollection({ schema: docsSchema() }),
+  docs: defineCollection({ schema: courseSchema }),
   'products': productsCollection,
   'blog': blogCollection,
   'services': servicesCollection,
