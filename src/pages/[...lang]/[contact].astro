@@ -1,0 +1,40 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import ContactSection from '@/components/sections/ContactSection.astro'
+import { useTranslations } from '@/utils/i18n'
+import type { Language } from '@/types'
+import { generateStaticPaths, getLocalizedPath } from '@/utils/routing'
+
+export const getStaticPaths = () => generateStaticPaths('contact')
+
+interface Props {
+	lang: Language
+}
+
+const { lang } = Astro.props
+const t = await useTranslations(lang, 'contact')
+
+// S'assurer que t.title est une chaîne de caractères
+const title: string = typeof t.title === 'string' ? t.title : 'Contact'
+const description: string =
+	typeof t.meta?.description === 'string' ? t.meta.description : ''
+---
+
+<MainLayout
+	title={title}
+	meta={{
+		description: description,
+	}}
+	lang={lang}
+	structuredData={{
+		'@context': 'https://schema.org',
+		'@type': 'ContactPage',
+		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}contact`,
+		url: `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}contact`,
+		name: title,
+		description: description,
+		inLanguage: lang,
+	}}
+>
+	<ContactSection t={t} />
+</MainLayout>

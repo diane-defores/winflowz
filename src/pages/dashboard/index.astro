@@ -1,35 +1,59 @@
 ---
-export const prerender = false;
+export const prerender = false
+import Layout from '@/layouts/Layout.astro'
+import { supabase } from '@/lib/supabaseClient'
 
-import MainLayout from "../../layouts/MainLayout.astro";
-import { supabase } from "../../lib/supabaseClient";
-import { getCurrentUser } from "../../lib/auth";
-import Header from "../../components/ui/dashboard/Header.astro";
-import Sidebar from "../../components/ui/dashboard/Sidebar.astro";
-import Stats from "../../components/ui/dashboard/Stats.astro";
-import ApiKeys from "../../components/ui/dashboard/ApiKeys.astro";
-import GenerateApiKeyModal from "../../components/ui/forms/GenerateApiKeyModal.astro";
+// Vérification des tokens
+const accessToken = Astro.cookies.get('sb-access-token')
+const refreshToken = Astro.cookies.get('sb-refresh-token')
 
-// Récupérer l'utilisateur actuel
-const user = await getCurrentUser();
-
-if (!user) {
-	return Astro.redirect("/auth/login");
+if (!accessToken || !refreshToken) {
+	return Astro.redirect('/auth/login')
 }
+
+// Validation et rafraîchissement de la session
+let session
+try {
+	session = await supabase.auth.setSession({
+		refresh_token: refreshToken.value,
+		access_token: accessToken.value,
+	})
+
+	if (session.error) {
+		Astro.cookies.delete('sb-access-token', { path: '/' })
+		Astro.cookies.delete('sb-refresh-token', { path: '/' })
+		return Astro.redirect('/auth/login')
+	}
+} catch (error) {
+	console.error('Erreur de session:', error)
+	Astro.cookies.delete('sb-access-token', { path: '/' })
+	Astro.cookies.delete('sb-refresh-token', { path: '/' })
+	return Astro.redirect('/auth/login')
+}
+
+const user = session.data.user
+
+import MainLayout from '../../layouts/MainLayout.astro'
+import { getCurrentUser } from '../../lib/auth'
+import Header from '../../components/ui/dashboard/Header.astro'
+import Sidebar from '../../components/ui/dashboard/Sidebar.astro'
+import Stats from '../../components/ui/dashboard/Stats.astro'
+import ApiKeys from '../../components/ui/dashboard/ApiKeys.astro'
+import GenerateApiKeyModal from '../../components/ui/forms/GenerateApiKeyModal.astro'
 
 // Vérifier si l'utilisateur vient de confirmer son email
 const isNewlyConfirmed =
-	Astro.url.searchParams.get("newly_confirmed") === "true";
+	Astro.url.searchParams.get('newly_confirmed') === 'true'
 
 // Récupérer les clés API de l'utilisateur
 const { data: apiKeys, error } = await supabase
-	.from("api_keys")
-	.select("*")
-	.eq("user_id", user.id)
-	.order("created_at", { ascending: false });
+	.from('api_keys')
+	.select('*')
+	.eq('user_id', user.id)
+	.order('created_at', { ascending: false })
 
 if (error) {
-	console.error("Erreur lors de la récupération des clés API:", error);
+	console.error('Erreur lors de la récupération des clés API:', error)
 }
 ---
 
@@ -42,7 +66,7 @@ if (error) {
 
 		{/* Main Content */}
 		<div class="flex flex-1 flex-col overflow-hidden">
-			<Header userEmail={user?.email || ""} />
+			<Header userEmail={user?.email || ''} />
 
 			<main class="flex-1 overflow-y-auto">
 				<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -161,56 +185,56 @@ if (error) {
 
 <script>
 	// Gérer la copie des clés API
-	document.querySelectorAll("[data-copy-key]").forEach((button) => {
-		button.addEventListener("click", async () => {
-			const key = button.getAttribute("data-copy-key");
+	document.querySelectorAll('[data-copy-key]').forEach((button) => {
+		button.addEventListener('click', async () => {
+			const key = button.getAttribute('data-copy-key')
 			if (key) {
 				try {
-					await navigator.clipboard.writeText(key);
+					await navigator.clipboard.writeText(key)
 					// Afficher une notification de succès
-					const notification = document.createElement("div");
+					const notification = document.createElement('div')
 					notification.className =
-						"fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg";
-					notification.textContent = "Clé copiée !";
-					document.body.appendChild(notification);
-					setTimeout(() => notification.remove(), 2000);
+						'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg'
+					notification.textContent = 'Clé copiée !'
+					document.body.appendChild(notification)
+					setTimeout(() => notification.remove(), 2000)
 				} catch (err) {
-					console.error("Failed to copy:", err);
+					console.error('Failed to copy:', err)
 				}
 			}
-		});
-	});
+		})
+	})
 
 	// Gérer la révocation des clés API
-	document.querySelectorAll("[data-revoke-key]").forEach((button) => {
-		button.addEventListener("click", async () => {
+	document.querySelectorAll('[data-revoke-key]').forEach((button) => {
+		button.addEventListener('click', async () => {
 			if (
 				confirm(
-					"Êtes-vous sûr de vouloir révoquer cette clé API ? Cette action est irréversible.",
+					'Êtes-vous sûr de vouloir révoquer cette clé API ? Cette action est irréversible.'
 				)
 			) {
-				const keyId = button.getAttribute("data-revoke-key");
+				const keyId = button.getAttribute('data-revoke-key')
 				try {
-					const response = await fetch("/api/keys/revoke", {
-						method: "POST",
+					const response = await fetch('/api/keys/revoke', {
+						method: 'POST',
 						headers: {
-							"Content-Type": "application/x-www-form-urlencoded",
+							'Content-Type': 'application/x-www-form-urlencoded',
 						},
 						body: `keyId=${keyId}`,
-					});
+					})
 
 					if (response.ok) {
 						// Recharger la page pour mettre à jour la liste des clés
-						window.location.reload();
+						window.location.reload()
 					} else {
-						const data = await response.json();
-						alert(data.error || "Une erreur est survenue");
+						const data = await response.json()
+						alert(data.error || 'Une erreur est survenue')
 					}
 				} catch (err) {
-					console.error("Failed to revoke key:", err);
-					alert("Une erreur est survenue");
+					console.error('Failed to revoke key:', err)
+					alert('Une erreur est survenue')
 				}
 			}
-		});
-	});
+		})
+	})
 </script>

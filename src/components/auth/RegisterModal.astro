@@ -1,0 +1,147 @@
+---
+import AuthBtn from './AuthBtn.astro'
+import GoogleBtn from './GoogleBtn.astro'
+import { getLangFromUrl, useTranslations } from '@/i18n/utils'
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+---
+
+<dialog id="register-modal" class="modal">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">{t('auth.register.title')}</h3>
+		<form method="POST" action="/api/auth/register" class="space-y-4 py-4">
+			<div class="form-control w-full">
+				<label class="label" for="email">
+					<span class="label-text">{t('auth.register.email')}</span>
+				</label>
+				<input
+					type="email"
+					name="email"
+					id="email"
+					class="input input-bordered w-full"
+					required
+				/>
+			</div>
+
+			<div class="form-control w-full">
+				<label class="label" for="password">
+					<span class="label-text">{t('auth.register.password')}</span>
+				</label>
+				<input
+					type="password"
+					name="password"
+					id="password"
+					class="input input-bordered w-full"
+					required
+					minlength="6"
+				/>
+			</div>
+
+			<div class="form-control w-full">
+				<label class="label" for="confirm-password">
+					<span class="label-text"
+						>{t('auth.register.confirmPassword')}</span
+					>
+				</label>
+				<input
+					type="password"
+					name="confirm-password"
+					id="confirm-password"
+					class="input input-bordered w-full"
+					required
+					minlength="6"
+				/>
+			</div>
+
+			<div id="error-message" class="text-error hidden"></div>
+
+			<div class="modal-action">
+				<AuthBtn type="submit" text={t('auth.register.submit')} />
+				<button type="button" class="btn" onclick="register-modal.close()">
+					{t('common.cancel')}
+				</button>
+			</div>
+		</form>
+
+		<div class="divider">{t('auth.or')}</div>
+
+		<div class="flex justify-center">
+			<GoogleBtn text={t('auth.google')} />
+		</div>
+	</div>
+</dialog>
+
+<script>
+	const form = document.querySelector('#register-modal form')
+	const errorMessage = document.querySelector('#error-message')
+
+	function showError(message: string) {
+		if (errorMessage) {
+			errorMessage.textContent = message
+			errorMessage.classList.remove('hidden')
+		}
+	}
+
+	function hideError() {
+		if (errorMessage) {
+			errorMessage.classList.add('hidden')
+		}
+	}
+
+	form?.addEventListener('submit', async (e) => {
+		e.preventDefault()
+		hideError()
+
+		const password = (form.querySelector('#password') as HTMLInputElement)
+			.value
+		const confirmPassword = (
+			form.querySelector('#confirm-password') as HTMLInputElement
+		).value
+
+		if (password !== confirmPassword) {
+			showError(t('auth.register.passwordMismatch'))
+			return
+		}
+
+		try {
+			const response = await fetch(form.action, {
+				method: 'POST',
+				body: new FormData(form),
+			})
+
+			const data = await response.json()
+
+			if (!response.ok) {
+				switch (data.error) {
+					case 'user-exists':
+						showError(t('auth.register.userExists'))
+						break
+					case 'missing-fields':
+						showError(t('auth.register.missingFields'))
+						break
+					default:
+						showError(data.message || t('auth.register.error'))
+				}
+				return
+			}
+
+			if (data.redirectUrl) {
+				window.location.href = data.redirectUrl
+			} else {
+				// Email de confirmation envoyé
+				showError(data.message)
+				setTimeout(() => {
+					const modal = document.querySelector('#register-modal')
+					if (modal instanceof HTMLDialogElement) {
+						modal.close()
+					}
+				}, 3000)
+			}
+		} catch (err) {
+			console.error('Registration error:', err)
+			showError(t('auth.register.error'))
+		}
+	})
+</script>
+

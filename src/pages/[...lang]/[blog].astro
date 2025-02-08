@@ -1,0 +1,117 @@
+---
+// Import necessary components, modules and types
+import MainLayout from "@/layouts/MainLayout.astro";
+import CardBlog from "@/components/ui/cards/CardBlog.astro";
+import CardBlogRecent from "@/components/ui/cards/CardBlogRecent.astro";
+import CardInsight from "@/components/ui/cards/CardInsight.astro";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { SITE } from "@/constants";
+import { getCurrentLocale } from "@/utils/i18n";
+import type { Language } from "@/types";
+import { useTranslations } from '@/utils/i18n';
+
+// Import translations
+import enTranslations from "@/i18n/en/blog.json";
+import frTranslations from "@/i18n/fr/blog.json";
+
+// This gets the static paths for the blog index page
+export function getStaticPaths() {
+	return [
+		{ params: { lang: undefined, blog: "blog" } },     // Pour /blog
+		{ params: { lang: "fr", blog: "blog" } },  // Pour /fr/blog
+	];
+}
+
+const { lang } = Astro.params;
+console.log("Raw lang param:", lang);
+
+// Get current locale
+const currentLang = getCurrentLocale(Astro.url) as Language;
+console.log("Current locale:", currentLang);
+
+// Get translations based on language
+const t = currentLang === "fr" ? frTranslations : enTranslations;
+console.log("Loaded translations:", t);
+
+// Get all blogs post in current language and sort them based on publish date
+const blogEntries = await getCollection("blog", ({ id }: { id: string }) => {
+	return currentLang === "fr" ? id.startsWith("fr/") : !id.startsWith("fr/");
+});
+
+// Trie les articles par date de publication
+const blogPosts = blogEntries.sort(
+	(a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+		new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
+);
+
+// Separate the most recent post from others
+const mostRecentPost = blogPosts.length > 0 ? blogPosts[0] : null;
+const otherPosts = blogPosts.length > 0 ? blogPosts.slice(1) : [];
+
+const pageTitle = `Blog | ${SITE.title}`;
+const baseUrl = currentLang === "fr" ? "https://winflowz.com/fr" : "https://winflowz.com";
+
+// Ensure we have the translations before using them
+const description = t?.meta?.description || "";
+const siteDescription = t?.meta?.siteDescription || "";
+---
+
+<MainLayout
+	lang={currentLang}
+	title={pageTitle}
+	structuredData={{
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		"@id": `${baseUrl}/blog`,
+		url: `${baseUrl}/blog`,
+		name: "Blog | ScrewFast",
+		description: description,
+		isPartOf: {
+			"@type": "WebSite",
+			url: baseUrl,
+			name: "ScrewFast",
+			description: siteDescription,
+		},
+		inLanguage: currentLang === "fr" ? "fr" : "en",
+	}}
+>
+	<section class="mx-auto max-w-[85rem] space-y-8 px-4 pt-16 sm:px-6 lg:px-8 2xl:max-w-full">
+		<!--Page header-->
+		<div class="mx-auto max-w-3xl text-left sm:text-center">
+			<h1 class="block text-balance text-4xl font-bold tracking-tight text-neutral-800 dark:text-neutral-200 md:text-5xl lg:text-6xl">
+				{t.title}
+			</h1>
+
+			<p class="mt-4 text-pretty text-lg text-neutral-600 dark:text-neutral-400">
+				{t.subtitle}
+			</p>
+		</div>
+	</section>
+
+	{blogPosts.length > 0 ? (
+		<>
+			<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full">
+				<!--Blog posts grid-->
+				<div class="grid gap-6 lg:grid-cols-2">
+					{otherPosts.map((blogEntry) => (
+						<CardBlog blogEntry={blogEntry} blogLocale={currentLang} />
+					))}
+				</div>
+			</section>
+			
+			<!--Most recent blog post-->
+			{mostRecentPost && (
+				<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full">
+					<CardBlogRecent blogEntry={mostRecentPost} blogLocale={currentLang} />
+				</section>
+			)}
+		</>
+	) : (
+		<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full">
+			<p class="text-center text-lg text-neutral-600 dark:text-neutral-400">
+				{currentLang === "fr" ? "Aucun article de blog disponible pour le moment." : "No blog posts available at the moment."}
+			</p>
+		</section>
+	)}
+</MainLayout>

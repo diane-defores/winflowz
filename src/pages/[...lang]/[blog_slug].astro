@@ -1,0 +1,186 @@
+---
+// Import necessary components and utilities
+import MainLayout from '@/layouts/MainLayout.astro'
+import AvatarBlogLarge from '@/components/ui/avatars/AvatarBlogLarge.astro'
+import CardRelated from '@/components/ui/cards/CardRelated.astro'
+import Bookmark from '@/components/ui/buttons/Bookmark.astro'
+import SocialShare from '@/components/ui/buttons/SocialShare.astro'
+import PostFeedback from '@/components/ui/feedback/PostFeedback.astro'
+import { capitalize, formatDate } from '@/utils/utils'
+import { getCollection } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+import { SITE } from '@/constants'
+import { useTranslations } from '@/utils/i18n'
+import type { Language } from '@/types'
+
+// This gets the static paths for all the unique blog posts
+export async function getStaticPaths() {
+	const posts = await getCollection('blog')
+	const paths = []
+
+	for (const post of posts) {
+		const isEnglish = post.id.startsWith('en/')
+		const slug = post.id
+			.replace(isEnglish ? /^en\// : /^fr\//, '')
+			.replace(/\.md$/, '')
+
+		if (isEnglish) {
+			paths.push({
+				params: {
+					lang: undefined,
+					blog_slug: `blog/${slug}`,
+				},
+				props: {
+					post,
+					lang: 'en' as Language,
+				},
+			})
+		} else {
+			paths.push({
+				params: {
+					lang: 'fr',
+					blog_slug: `blog/${slug}`,
+				},
+				props: {
+					post,
+					lang: 'fr' as Language,
+				},
+			})
+		}
+	}
+
+	return paths
+}
+
+interface Props {
+	post: CollectionEntry<'blog'>
+	lang: Language
+}
+
+// Get the props from getStaticPaths
+const { post, lang } = Astro.props
+const t = await useTranslations(lang, 'blog')
+
+// Render the markdown content
+const { Content } = await post.render()
+
+// Get related posts
+const allPosts = await getCollection('blog')
+const relatedPosts = allPosts
+	.filter((p) => {
+		const [postLang] = p.id.split('/')
+		return postLang === lang && p.id !== post.id
+	})
+	.slice(0, 3)
+
+// Format the date
+const formattedDate = formatDate(post.data.pubDate)
+
+// Calculate reading time
+const wordsPerMinute = 200
+const readingTime = post.body
+	? Math.ceil(post.body.split(/\s+/).length / wordsPerMinute)
+	: 0
+
+// Get the post URL for sharing
+const postUrl = new URL(Astro.url.pathname, Astro.site).toString()
+---
+
+<MainLayout
+	title={post.data.title}
+	meta={{
+		title: post.data.title,
+		description: post.data.description,
+		image: post.data.cardImage,
+		canonicalURL: postUrl,
+	}}
+	lang={lang}
+	structuredData={{
+		'@context': 'https://schema.org',
+		'@type': 'BlogPosting',
+		headline: post.data.title,
+		description: post.data.description,
+		image: post.data.cardImage,
+		datePublished: post.data.pubDate,
+		dateModified: post.data.pubDate,
+		author: {
+			'@type': 'Person',
+			name: post.data.author,
+		},
+		publisher: {
+			'@type': 'Organization',
+			name: SITE.name,
+			logo: {
+				'@type': 'ImageObject',
+				url: '/images/logo.png',
+			},
+		},
+	}}
+>
+	<article class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		{/* Article Header */}
+		<div class="mb-10">
+			<h1
+				class="mb-4 text-3xl font-bold text-neutral-800 dark:text-neutral-200 sm:text-4xl lg:text-5xl"
+			>
+				{post.data.title}
+			</h1>
+			<div class="flex flex-wrap items-center gap-3">
+				<AvatarBlogLarge post={post} />
+				<div class="flex gap-3">
+					<Bookmark pageTitle={post.data.title} />
+					<SocialShare pageTitle={post.data.title} />
+				</div>
+			</div>
+		</div>
+
+		{/* Article Content */}
+		<div
+			class="prose prose-lg dark:prose-invert prose-headings:scroll-mt-20 prose-a:text-orange-500 hover:prose-a:text-orange-600 prose-img:rounded-xl prose-img:shadow-lg dark:prose-a:text-orange-400 dark:hover:prose-a:text-orange-300 mx-auto max-w-none"
+		>
+			{
+				post.data.cardImage && (
+					<img
+						src={post.data.cardImage}
+						alt={post.data.cardImageAlt || post.data.title}
+						class="mb-10 aspect-video w-full rounded-xl object-cover"
+						width={1200}
+						height={630}
+					/>
+				)
+			}
+			{
+				post.data.contents.map((paragraph) => (
+					<p class="text-pretty text-neutral-600 dark:text-neutral-400">
+						{paragraph}
+					</p>
+				))
+			}
+		</div>
+
+		{/* Article Footer */}
+		<div class="mt-10">
+			<PostFeedback
+				title={t.feedback.title}
+				firstChoice={t.feedback.yes}
+				secondChoice={t.feedback.no}
+			/>
+		</div>
+
+		{/* Related Articles */}
+		{
+			relatedPosts.length > 0 && (
+				<div class="mt-16">
+					<h2 class="mb-8 text-2xl font-bold text-neutral-800 dark:text-neutral-200">
+						{t.relatedArticles}
+					</h2>
+					<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{relatedPosts.map((relatedPost) => (
+							<CardRelated blogEntry={relatedPost} blogLocale={lang} />
+						))}
+					</div>
+				</div>
+			)
+		}
+	</article>
+</MainLayout>

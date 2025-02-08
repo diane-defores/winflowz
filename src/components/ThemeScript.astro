@@ -1,0 +1,22 @@
+---
+// Ce composant gère le thème sombre/clair
+---
+
+<script is:inline>
+	// Appliquer le thème immédiatement
+	const theme = localStorage.getItem('hs_theme') || 'light'
+	document.documentElement.classList.toggle('dark', theme === 'dark')
+
+	// Réappliquer le thème après chaque transition
+	document.addEventListener('astro:after-swap', () => {
+		const theme = localStorage.getItem('hs_theme') || 'light'
+		document.documentElement.classList.toggle('dark', theme === 'dark')
+	})
+
+	// Gérer les changements de thème
+	document.addEventListener('astro:page-load', () => {
+		const theme = localStorage.getItem('hs_theme') || 'light'
+		document.documentElement.classList.toggle('dark', theme === 'dark')
+	})
+</script>
+

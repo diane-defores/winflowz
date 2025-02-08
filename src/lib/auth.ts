@@ -1,27 +1,38 @@
 import { getSupabase, createServerSupabase } from './supabaseClient'
 
-// Helper pour vérifier si l'utilisateur est connecté
+/**
+ * Helper pour vérifier si l'utilisateur est connecté
+ * @returns boolean indiquant si l'utilisateur est connecté
+ */
 export async function isUserLoggedIn() {
   const supabase = typeof window !== 'undefined' ? getSupabase() : createServerSupabase();
   const { data: { session } } = await supabase.auth.getSession()
   return !!session
 }
 
-// Helper pour obtenir l'utilisateur courant
+/**
+ * Helper pour obtenir l'utilisateur courant
+ * @returns L'utilisateur courant ou null
+ */
 export async function getCurrentUser() {
   const supabase = typeof window !== 'undefined' ? getSupabase() : createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
 
-// Helper pour la déconnexion
+/**
+ * Helper pour la déconnexion
+ */
 export async function signOut() {
   const supabase = getSupabase();
   const { error } = await supabase.auth.signOut()
+  // Supabase nettoie automatiquement les cookies
   return { error }
 }
 
-// Helper pour la connexion avec email/password
+/**
+ * Helper pour la connexion avec email/password
+ */
 export async function signInWithEmail(email: string, password: string) {
   const supabase = getSupabase();
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -31,7 +42,10 @@ export async function signInWithEmail(email: string, password: string) {
   return { data, error }
 }
 
-// Helper pour la création de compte
+/**
+ * Helper pour la création de compte
+ * Inclut la validation d'email et la gestion des erreurs
+ */
 export async function signUpWithEmail(email: string, password: string, locale: string = 'en') {
   const supabase = getSupabase();
   const redirectUrl = `${import.meta.env.PUBLIC_SITE_URL}/auth/callback?lang=${locale}`
@@ -98,7 +112,9 @@ export async function signUpWithEmail(email: string, password: string, locale: s
   }
 }
 
-// Helper pour la connexion avec Google
+/**
+ * Helper pour la connexion avec Google
+ */
 export async function signInWithGoogle() {
   const supabase = getSupabase();
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -110,7 +126,9 @@ export async function signInWithGoogle() {
   return { data, error }
 }
 
-// Helper pour la réinitialisation du mot de passe
+/**
+ * Helper pour la réinitialisation du mot de passe
+ */
 export async function resetPasswordForEmail(email: string, redirectUrl: string) {
   const supabase = getSupabase();
   return await supabase.auth.resetPasswordForEmail(email, {
@@ -118,19 +136,27 @@ export async function resetPasswordForEmail(email: string, redirectUrl: string) 
   })
 }
 
-// Helper pour la mise à jour du mot de passe
+/**
+ * Helper pour la mise à jour du mot de passe
+ */
 export async function updateUserPassword(password: string) {
   const supabase = getSupabase();
   return await supabase.auth.updateUser({ password })
 }
 
-// Helper pour obtenir la session
+/**
+ * Helper pour obtenir la session
+ */
 export async function getSession() {
   const supabase = typeof window !== 'undefined' ? getSupabase() : createServerSupabase();
   return await supabase.auth.getSession()
 }
 
-// Fonction de validation d'email
+/**
+ * Fonction de validation d'email
+ * @param email L'email à valider
+ * @returns boolean indiquant si l'email est valide
+ */
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)

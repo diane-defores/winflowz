@@ -1,16 +1,27 @@
 ---
 // Import the necessary dependencies
-import FooterSocialLink from "@/components/ui/links/FooterSocialLink.astro";
-import EmailFooterInput from "@/components/ui/forms/input/EmailFooterInput.astro";
-import Icon from "@/components/ui/icons/Icon.astro";
-import BrandLogo from "@/components/BrandLogo.astro";
-import { SITE } from "@/constants";
-import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+import FooterSocialLink from '@/components/ui/links/FooterSocialLink.astro'
+import EmailFooterInput from '@/components/ui/forms/input/EmailFooterInput.astro'
+import Icon from '@/components/ui/icons/Icon.astro'
+import BrandLogo from '@/components/BrandLogo.astro'
+import { SITE } from '@/constants'
+import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+import type { Language } from '@/types'
+
+interface FooterLink {
+	name: string
+	url: string
+}
+
+interface FooterSection {
+	section: string
+	links: FooterLink[]
+}
 
 // Select the correct translation based on the page's lang prop:
-const lang = getLangFromUrl(Astro.url);
-const t = await useTranslations(lang, "navigation");
-const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'navigation')
+const homeUrl = lang === 'fr' ? '/fr' : '/'
 ---
 
 <footer class="w-full dark:bg-neutral-900">
@@ -24,13 +35,13 @@ const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 			</div>
 			<!-- An array of links for Product and Company sections -->
 			{
-				t.footerLinks.map((section) => (
+				t.footerLinks.map((section: FooterSection) => (
 					<div class="col-span-1">
 						<h3 class="font-bold text-neutral-800 dark:text-neutral-200">
 							{section.section}
 						</h3>
 						<ul class="mt-3 grid space-y-3">
-							{section.links.map((link, index) => (
+							{section.links.map((link: FooterLink, index: number) => (
 								<li>
 									<a
 										href={link.url}
@@ -38,7 +49,7 @@ const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 									>
 										{link.name}
 									</a>
-									{section.section === "Company" && index === 1 ? (
+									{section.section === 'Company' && index === 1 ? (
 										<span class="ms-1 inline rounded-lg bg-orange-500 px-2 py-1 text-xs font-bold text-neutral-50">
 											NEW
 										</span>
@@ -95,9 +106,9 @@ const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 		</div>
 
 		<script>
-			const year = new Date().getFullYear();
-			const element = document.getElementById("current-year");
-			element!.innerText = year.toString();
+			const year = new Date().getFullYear()
+			const element = document.getElementById('current-year')
+			element!.innerText = year.toString()
 		</script>
 	</div>
 </footer>

@@ -18,8 +18,8 @@ export async function useTranslations(lang: Language, page: string) {
     const translations = await import(`../i18n/${lang}/${page}.json`);
     return translations as Translation;
   } catch (error) {
-    console.error(`Failed to load translations for ${lang}/${page}:`, error);
-    return {};
+    console.error(`Erreur lors du chargement des traductions pour ${lang}/${page}:`, error);
+    return {} as Translation;
   }
 }
 

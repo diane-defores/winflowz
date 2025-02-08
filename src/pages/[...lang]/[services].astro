@@ -1,0 +1,44 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { useTranslations } from '@/utils/i18n'
+import type { Language } from '@/types'
+import { routes } from '@/i18n/config'
+
+export async function getStaticPaths() {
+	return [
+		// Route anglaise
+		{
+			params: { lang: undefined, services: 'services' },
+			props: { lang: 'en' as Language },
+		},
+		// Route française
+		{
+			params: { lang: 'fr', services: 'services' },
+			props: { lang: 'fr' as Language },
+		},
+	]
+}
+
+interface Props {
+	lang: Language
+}
+
+const { lang } = Astro.props
+const t = await useTranslations(lang, 'services')
+---
+
+<MainLayout
+	title={t.title}
+	meta={{
+		title: t.title,
+		description: t.description,
+	}}
+	lang={lang}
+>
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="mb-8 text-4xl font-bold">{t.title}</h1>
+		<div class="prose max-w-none">
+			{t.content}
+		</div>
+	</div>
+</MainLayout>

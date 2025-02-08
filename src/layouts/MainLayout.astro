@@ -5,7 +5,8 @@ import FooterSection from '@/components/sections/navbar&footer/FooterSection.ast
 import Navbar from '@/components/sections/navbar&footer/Navbar.astro'
 import { SITE } from '@/constants'
 import '../assets/styles/global.css'
-import { ViewTransitions } from 'astro:transitions'
+import { ClientRouter } from 'astro:transitions'
+import ThemeScript from '@/components/ThemeScript.astro'
 
 // Setting expected props
 const { title = SITE.title, meta, structuredData, lang = 'en' } = Astro.props
@@ -28,24 +29,8 @@ interface Props {
 	<head>
 		<Meta meta={meta} structuredData={structuredData} />
 		<title>{title}</title>
-		<ViewTransitions handleForms />
-		<script is:inline>
-			// Appliquer le thème immédiatement
-			const theme = localStorage.getItem('hs_theme') || 'light'
-			document.documentElement.classList.toggle('dark', theme === 'dark')
-
-			// Réappliquer le thème après chaque transition
-			document.addEventListener('astro:after-swap', () => {
-				const theme = localStorage.getItem('hs_theme') || 'light'
-				document.documentElement.classList.toggle('dark', theme === 'dark')
-			})
-
-			// Gérer les changements de thème
-			document.addEventListener('astro:page-load', () => {
-				const theme = localStorage.getItem('hs_theme') || 'light'
-				document.documentElement.classList.toggle('dark', theme === 'dark')
-			})
-		</script>
+		<ClientRouter handleForms />
+		<ThemeScript />
 	</head>
 	<body class="dark:bg-neutral-900">
 		<div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">

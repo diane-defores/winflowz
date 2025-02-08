@@ -1,24 +1,22 @@
 ---
-import EmailInput from "./input/EmailInput.astro";
-import PasswordInput from "./input/PasswordInput.astro";
-import Checkbox from "./input/Checkbox.astro";
-import AuthBtn from "@components/ui/buttons/AuthBtn.astro";
-import GoogleBtn from "@components/ui/buttons/GoogleBtn.astro";
-import { getLangFromUrl, useTranslations } from "../../../utils/i18n";
-import type { Translation } from "../../../types/i18n";
-import { signUpWithEmail, signInWithGoogle } from "../../../lib/auth";
+import EmailInput from './input/EmailInput.astro'
+import PasswordInput from './input/PasswordInput.astro'
+import Checkbox from './input/Checkbox.astro'
+import AuthBtn from '@components/ui/buttons/AuthBtn.astro'
+import GoogleBtn from '@components/ui/buttons/GoogleBtn.astro'
+import { getLangFromUrl, useTranslations } from '@/utils/i18n'
 
-const lang = getLangFromUrl(Astro.url);
-const t = await useTranslations(lang, "auth");
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'auth')
 
-// Variables for customization of the RegisterModal Component
+// Config object for customization of the component
 const config = {
-	id: "hs-toggle-between-modals-register-modal", // Modal IDENTIFIER
-	title: t?.register?.title ?? "Create an account", // Main HEADING
-	subTitle: t?.register?.subtitle ?? "Already have an account?", // Sub-Heading TEXT
-	loginBtn: t?.register?.loginLink ?? "Sign in here", // Text for LOGIN BUTTON
-	loginBtnDataHS: "#hs-toggle-between-modals-login-modal", // TARGET LINK for login button
-};
+	id: 'hs-toggle-between-modals-register-modal',
+	title: t?.register?.title ?? 'Create an account',
+	subTitle: t?.register?.subtitle ?? 'Already have an account?',
+	loginBtn: t?.register?.loginLink ?? 'Sign in here',
+	loginBtnDataHS: '#hs-toggle-between-modals-login-modal',
+}
 ---
 
 <div
@@ -39,7 +37,9 @@ const config = {
 						>
 							{config.title}
 						</h2>
-						<p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+						<p
+							class="mt-2 text-sm text-neutral-600 dark:text-neutral-400"
+						>
 							{config.subTitle}
 							<button
 								class="rounded-lg p-1 font-medium text-orange-400 decoration-2 outline-none ring-zinc-500 hover:underline focus-visible:ring dark:text-orange-400 dark:ring-zinc-200 dark:focus:outline-none"
@@ -50,24 +50,32 @@ const config = {
 						</p>
 					</div>
 					<div class="mt-5">
-						<GoogleBtn id="google-signup" title={t?.register?.googleButton ?? "Sign up with Google"} />
+						<GoogleBtn
+							id="google-signup"
+							title={t?.register?.googleButton ?? 'Sign up with Google'}
+						/>
 
 						<div
 							class="flex items-center py-3 text-xs uppercase text-neutral-400 before:me-6 before:flex-[1_1_0%] before:border-t before:border-neutral-200 after:ms-6 after:flex-[1_1_0%] after:border-t after:border-neutral-200 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600"
 						>
-							{t?.register?.or ?? "Or"}
+							{t?.register?.or ?? 'Or'}
 						</div>
 						<!-- The container for the form -->
-						<form id="register-form" method="POST">
+						<form
+							id="register-form"
+							action="/api/auth/register"
+							method="POST"
+						>
 							<!-- A grid layout for the form fields -->
 							<div class="grid gap-y-4">
 								<!-- The email input field -->
-								<EmailInput 
-									id="register-email" 
-									name="email" 
+								<EmailInput
+									id="register-email"
+									name="email"
 									errorId="register-email-error"
 									label={t?.fields?.email?.label}
 									placeholder={t?.fields?.email?.placeholder}
+									required
 								/>
 								<!-- The password input field -->
 								<PasswordInput
@@ -77,6 +85,7 @@ const config = {
 									content={t?.fields?.password?.hint}
 									label={t?.fields?.password?.label}
 									placeholder={t?.fields?.password?.placeholder}
+									required
 								/>
 								<!-- The confirm password input field -->
 								<PasswordInput
@@ -87,14 +96,18 @@ const config = {
 									label={t?.fields?.confirmPassword?.label}
 									placeholder={t?.fields?.confirmPassword?.placeholder}
 									isConfirm={true}
+									required
 								/>
 								<!-- The terms checkbox -->
-								<Checkbox 
-									id="accept-terms" 
-									label={t?.register?.acceptTerms ?? "I accept the Terms and Conditions"}
+								<Checkbox
+									id="accept-terms"
+									name="accept-terms"
+									label={t?.register?.acceptTerms ??
+										'I accept the Terms and Conditions'}
+									required
 								/>
 								<!-- The sign-up button -->
-								<AuthBtn title={t?.register?.submit ?? "Sign up"} />
+								<AuthBtn title={t?.register?.submit ?? 'Sign up'} />
 							</div>
 						</form>
 					</div>
@@ -105,90 +118,76 @@ const config = {
 </div>
 
 <script>
-	import { signUpWithEmail, signInWithGoogle } from "../../../lib/auth";
-
-	const registerForm = document.getElementById('register-form') as HTMLFormElement;
-	const googleBtn = document.getElementById('google-signup');
-	const errorElement = document.getElementById('register-email-error');
+	const form = document.getElementById('register-form')
+	const errorElement = document.getElementById('register-email-error')
 
 	function showError(message: string) {
 		if (errorElement) {
-			errorElement.textContent = message;
-			errorElement.style.display = 'block';
-			errorElement.style.color = 'red';
+			errorElement.textContent = message
+			errorElement.style.display = 'block'
 		}
 	}
 
-	if (registerForm) {
-		registerForm.addEventListener('submit', async (e) => {
-			e.preventDefault();
-
-			const formData = new FormData(registerForm);
-			const email = formData.get('email') as string;
-			const password = formData.get('password') as string;
-			const confirmPassword = formData.get('confirm-password') as string;
-			const acceptTerms = formData.get('accept-terms');
-
-			if (!email || !password || !confirmPassword) {
-				showError(document.documentElement.lang === 'fr'
-					? "Veuillez remplir tous les champs"
-					: "Please fill in all fields"
-				);
-				return;
-			}
+	if (form instanceof HTMLFormElement) {
+		form.addEventListener('submit', async (e) => {
+			// Validation des mots de passe
+			const password = form.querySelector('#register-password')?.value
+			const confirmPassword = form.querySelector('#confirm-password')?.value
 
 			if (password !== confirmPassword) {
-				showError(document.documentElement.lang === 'fr'
-					? "Les mots de passe ne correspondent pas"
-					: "Passwords do not match"
-				);
-				return;
+				e.preventDefault()
+				showError(
+					document.documentElement.lang === 'fr'
+						? 'Les mots de passe ne correspondent pas'
+						: 'Passwords do not match'
+				)
+				return
 			}
 
-			if (!acceptTerms) {
-				showError(document.documentElement.lang === 'fr'
-					? "Veuillez accepter les conditions d'utilisation"
-					: "Please accept the terms and conditions"
-				);
-				return;
-			}
-
+			e.preventDefault()
 			try {
-				const { data, error } = await signUpWithEmail(email, password);
-				
-				if (error) {
-					if (error.message.includes('already registered')) {
-						showError(document.documentElement.lang === 'fr'
-							? "Cette adresse email est déjà utilisée"
-							: "This email is already registered"
-						);
+				const response = await fetch(form.action, {
+					method: form.method,
+					body: new FormData(form),
+				})
+
+				const data = await response.json()
+
+				if (!response.ok) {
+					// Gestion spécifique des erreurs
+					if (data.error === 'user-exists') {
+						showError(
+							document.documentElement.lang === 'fr'
+								? 'Cette adresse email est déjà utilisée'
+								: 'This email is already registered'
+						)
 					} else {
-						showError(document.documentElement.lang === 'fr'
-							? "Une erreur est survenue lors de l'inscription"
-							: "An error occurred during registration"
-						);
+						showError(
+							document.documentElement.lang === 'fr'
+								? "Une erreur est survenue lors de l'inscription"
+								: 'An error occurred during registration'
+						)
 					}
-					return;
+					return
 				}
 
-				window.location.href = '/dashboard';
-			} catch (err: any) {
-				showError(document.documentElement.lang === 'fr'
-					? "Une erreur est survenue lors de l'inscription"
-					: "An error occurred during registration"
-				);
+				// Succès - redirection
+				window.location.href = data.redirectUrl || '/dashboard'
+			} catch (err) {
+				showError(
+					document.documentElement.lang === 'fr'
+						? "Une erreur est survenue lors de l'inscription"
+						: 'An error occurred during registration'
+				)
 			}
-		});
+		})
 	}
 
+	// Google Sign In - Redirection simple
+	const googleBtn = document.getElementById('google-signup')
 	if (googleBtn) {
-		googleBtn.addEventListener('click', async () => {
-			try {
-				const { error } = await signInWithGoogle();
-				if (error) throw error;
-			} catch (err: any) {
-				showError(err.message);
-			}
-		});
+		googleBtn.addEventListener('click', () => {
+			window.location.href = '/api/auth/signin?provider=google'
+		})
 	}
 </script>

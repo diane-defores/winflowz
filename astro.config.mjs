@@ -1,35 +1,62 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
-import compressor from "astro-compressor";
+import compress from "astro-compress";
 import node from "@astrojs/node";
 import icon from "astro-icon";
 import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   site: "https://winflowz.com",
   i18n: {
     defaultLocale: "en",
     locales: ["en", "fr"],
-    routing: "manual"
+    routing: {
+      prefixDefaultLocale: false
+    }
   },
-  output: "server",
+  output: "static",
   build: {
     inlineStylesheets: "auto",
     split: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          '@astrojs/data-layer-content': ['@astrojs/data-layer-content'],
+          '@astrojs/assets': ['@astrojs/assets'],
+          'astro/server': ['astro/server'],
+          '@astrojs-ssr-adapter': ['@astrojs/node/server'],
+        },
+      },
+    },
   },
   vite: {
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-        '@scripts': fileURLToPath(new URL('./src/scripts', import.meta.url)),
-        '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
-        '@images': fileURLToPath(new URL('./public/images', import.meta.url)),
+        '@': path.resolve(__dirname, './src'),
+        '@components': path.resolve(__dirname, './src/components'),
+        '@layouts': path.resolve(__dirname, './src/layouts'),
+        '@lib': path.resolve(__dirname, './src/lib'),
+        '@utils': path.resolve(__dirname, './src/utils'),
+        '@styles': path.resolve(__dirname, './src/styles'),
+        '@assets': path.resolve(__dirname, './src/assets'),
+        '@scripts': path.resolve(__dirname, './src/scripts')
       }
-    }
+    },
+    optimizeDeps: {
+      exclude: ['@resvg/resvg-js']
+    },
+    build: {
+      sourcemap: true
+    },
+    logLevel: 'info',
+    clearScreen: false
   },
   adapter: node({
-    mode: "standalone"
+    mode: "standalone",
   }),
   image: {
     service: {
@@ -76,9 +103,6 @@ export default defineConfig({
         }
       }
     }),
-    compressor({
-      gzip: false,
-      brotli: true,
-    })
+    compress(),
   ],
 });

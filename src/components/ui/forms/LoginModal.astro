@@ -1,24 +1,22 @@
 ---
-import EmailInput from "./input/EmailInput.astro";
-import PasswordInput from "./input/PasswordInput.astro";
-import Checkbox from "./input/Checkbox.astro";
-import AuthBtn from "@components/ui/buttons/AuthBtn.astro";
-import GoogleBtn from "@components/ui/buttons/GoogleBtn.astro";
-import { getLangFromUrl, useTranslations } from "../../../utils/i18n";
-import { signInWithEmail, signInWithGoogle } from "../../../lib/auth";
-import type { Translation } from "../../../types/i18n";
+import EmailInput from './input/EmailInput.astro'
+import PasswordInput from './input/PasswordInput.astro'
+import Checkbox from './input/Checkbox.astro'
+import AuthBtn from '@components/ui/buttons/AuthBtn.astro'
+import GoogleBtn from '@components/ui/buttons/GoogleBtn.astro'
+import { getLangFromUrl, useTranslations } from '@/utils/i18n'
 
-const lang = getLangFromUrl(Astro.url);
-const t = await useTranslations(lang, "auth");
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'auth')
 
 // Variables for customization of the LoginModal Component
 const config = {
-	id: "hs-toggle-between-modals-login-modal", // Modal IDENTIFIER
-	title: t?.login?.title ?? "Sign in", // Main HEADING
+	id: 'hs-toggle-between-modals-login-modal', // Modal IDENTIFIER
+	title: t?.login?.title ?? 'Sign in', // Main HEADING
 	subTitle: t?.login?.subtitle ?? "Don't have an account yet?", // Sub-Heading TEXT
-	registerBtn: t?.login?.registerLink ?? "Sign up here", // Text for REGISTRATION BUTTON
-	registerBtnDataHS: "#hs-toggle-between-modals-register-modal", // TARGET LINK for registration button
-};
+	registerBtn: t?.login?.registerLink ?? 'Sign up here', // Text for REGISTRATION BUTTON
+	registerBtnDataHS: '#hs-toggle-between-modals-register-modal', // TARGET LINK for registration button
+}
 ---
 
 <div
@@ -39,7 +37,9 @@ const config = {
 						>
 							{config.title}
 						</h2>
-						<p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+						<p
+							class="mt-2 text-sm text-neutral-600 dark:text-neutral-400"
+						>
 							{config.subTitle}
 							<button
 								class="rounded-lg p-1 font-medium text-orange-400 decoration-2 outline-none ring-zinc-500 hover:underline focus-visible:ring dark:text-orange-400 dark:ring-zinc-200 dark:focus:outline-none"
@@ -50,24 +50,28 @@ const config = {
 						</p>
 					</div>
 					<div class="mt-5">
-						<GoogleBtn id="google-signin" title={t?.login?.googleButton ?? "Sign in with Google"} />
+						<GoogleBtn
+							id="google-signin"
+							title={t?.login?.googleButton ?? 'Sign in with Google'}
+						/>
 
 						<div
 							class="flex items-center py-3 text-xs uppercase text-neutral-400 before:me-6 before:flex-[1_1_0%] before:border-t before:border-neutral-200 after:ms-6 after:flex-[1_1_0%] after:border-t after:border-neutral-200 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600"
 						>
-							{t?.login?.or ?? "Or"}
+							{t?.login?.or ?? 'Or'}
 						</div>
 						<!-- The container for the form -->
-						<form id="login-form" method="POST">
+						<form id="login-form" action="/api/auth/signin" method="POST">
 							<!-- A grid layout for the form fields -->
 							<div class="grid gap-y-4">
 								<!-- The email input field -->
-								<EmailInput 
-									id="login-email" 
-									name="email" 
+								<EmailInput
+									id="login-email"
+									name="email"
 									errorId="login-email-error"
 									label={t?.fields?.email?.label}
 									placeholder={t?.fields?.email?.placeholder}
+									required
 								/>
 								<!-- The password input field -->
 								<PasswordInput
@@ -79,14 +83,16 @@ const config = {
 									label={t?.fields?.password?.label}
 									placeholder={t?.fields?.password?.placeholder}
 									forgotText={t?.login?.forgotPassword}
+									required
 								/>
 								<!-- The remember-me checkbox -->
-								<Checkbox 
-									id="remember-me" 
-									label={t?.login?.rememberMe ?? "Remember me"}
+								<Checkbox
+									id="remember-me"
+									name="remember-me"
+									label={t?.login?.rememberMe ?? 'Remember me'}
 								/>
 								<!-- The sign-in button -->
-								<AuthBtn title={t?.login?.submit ?? "Sign in"} />
+								<AuthBtn title={t?.login?.submit ?? 'Sign in'} />
 							</div>
 						</form>
 					</div>
@@ -97,65 +103,8 @@ const config = {
 </div>
 
 <script>
-	import { signInWithEmail, signInWithGoogle } from "../../../lib/auth";
+	import { setupLoginForm } from './LoginForm'
 
-	const loginForm = document.getElementById('login-form') as HTMLFormElement;
-	const googleBtn = document.getElementById('google-signin');
-	const errorElement = document.getElementById('login-email-error');
-
-	function showError(message: string) {
-		if (errorElement) {
-			errorElement.textContent = message;
-			errorElement.style.display = 'block';
-			errorElement.style.color = 'red';
-		}
-	}
-
-	if (loginForm) {
-		loginForm.addEventListener('submit', async (e) => {
-			e.preventDefault();
-
-			const formData = new FormData(loginForm);
-			const email = formData.get('email') as string;
-			const password = formData.get('password') as string;
-
-			if (!email || !password) {
-				showError(document.documentElement.lang === 'fr'
-					? "Veuillez remplir tous les champs"
-					: "Please fill in all fields"
-				);
-				return;
-			}
-
-			try {
-				const { data, error } = await signInWithEmail(email, password);
-				
-				if (error) {
-					showError(document.documentElement.lang === 'fr'
-						? "Email ou mot de passe incorrect"
-						: "Invalid email or password"
-					);
-					return;
-				}
-
-				window.location.href = '/dashboard';
-			} catch (err: any) {
-				showError(document.documentElement.lang === 'fr'
-					? "Une erreur est survenue lors de la connexion"
-					: "An error occurred during login"
-				);
-			}
-		});
-	}
-
-	if (googleBtn) {
-		googleBtn.addEventListener('click', async () => {
-			try {
-				const { error } = await signInWithGoogle();
-				if (error) throw error;
-			} catch (err: any) {
-				showError(err.message);
-			}
-		});
-	}
+	// Initialiser le formulaire une fois que le DOM est chargé
+	document.addEventListener('astro:page-load', setupLoginForm)
 </script>
