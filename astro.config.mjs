@@ -12,7 +12,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   site: "https://winflowz.com",
   output: "static",
-  adapter: vercel(),
+  adapter: vercel({
+  }),
   build: {
     inlineStylesheets: "auto"
   },
@@ -28,6 +29,7 @@ export default defineConfig({
         '@scripts': path.resolve(__dirname, './src/assets/scripts'),
         '@assets': path.resolve(__dirname, './src/assets'),
         '@images': path.resolve(__dirname, './src/assets/images'),
+        'nanoid/non-secure': 'nanoid/non-secure/index.js'
       }
     },
     ssr: {
@@ -37,12 +39,16 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'WinFlowz Docs',
-      customCss: ['./src/assets/styles/global.css'],
+      customCss: [
+        './src/assets/styles/global.css',
+        './src/assets/styles/starlight.css'
+      ],
       components: {
         Hero: './src/components/ui/starlight/Hero.astro'
       },
       logo: {
         src: './src/assets/images/WinFlowz.png',
+        replacesTitle: true
       },
       defaultLocale: 'en',
       locales: {

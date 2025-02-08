@@ -15,6 +15,11 @@
     --sl-color-white: #fff;
     --list-marker-color: #fb923c;
     --border-neutral: 0, 0%, 25.1%;
+    
+    /* Scrollbar colors */
+    --sl-scrollbar-track: var(--sl-color-black);
+    --sl-scrollbar-thumb: var(--sl-color-gray-5);
+    --sl-scrollbar-thumb-hover: var(--sl-color-gray-4);
 }
 
 /* Light mode colors. */
@@ -35,7 +40,53 @@
     --sl-color-white: #181818;
     --list-marker-color: #fb923c;
     --border-yellow: 54.9, 96.7%, 88%;
+    
+    /* Scrollbar colors */
+    --sl-scrollbar-track: var(--sl-color-gray-7);
+    --sl-scrollbar-thumb: var(--sl-color-gray-5);
+    --sl-scrollbar-thumb-hover: var(--sl-color-gray-4);
+}
 
+/* Navigation dropdowns */
+.language-select,
+.sl-select,
+select {
+    background-color: #fff !important;
+    border-color: #e2e8f0 !important;
+    color: #1e293b !important;
+    padding-right: 1.5rem !important;
+}
+
+[data-theme="dark"] .language-select,
+[data-theme="dark"] .sl-select,
+[data-theme="dark"] select {
+    background-color: var(--sl-color-gray-6) !important;
+    border-color: var(--sl-color-gray-5) !important;
+    color: #fff !important;
+}
+
+/* Spacing for select icons */
+.sl-select-icon {
+    margin-right: 0.25rem !important;
+}
+
+/* Fix select padding and icon position */
+select {
+    padding-left: 1.75rem !important;
+    background-position: left 0.5rem center, right 0.5rem center !important;
+}
+
+.language-select:hover,
+.sl-select:hover,
+select:hover {
+    border-color: var(--sl-color-accent) !important;
+}
+
+.language-select:focus,
+.sl-select:focus,
+select:focus {
+    border-color: var(--sl-color-accent) !important;
+    outline-color: var(--sl-color-accent) !important;
 }
 
 header {
@@ -172,4 +223,94 @@ article.card {
     header.header {
         padding-inline: 1.5rem !important;
     }
+}
+
+/* Styles spécifiques pour Starlight */
+
+/* Dropdown styles */
+.sl-select {
+  @apply bg-white dark:bg-[--sl-color-gray-6] border-[--sl-color-gray-5] dark:border-[--sl-color-gray-5];
+}
+
+.sl-select:hover {
+  @apply border-[--sl-color-gray-2] dark:border-[--sl-color-gray-2];
+}
+
+.sl-select:focus {
+  @apply border-[--sl-color-accent] dark:border-[--sl-color-accent] outline-[--sl-color-accent] dark:outline-[--sl-color-accent];
+}
+
+/* Dropdown options */
+.sl-select option {
+  @apply bg-white dark:bg-[--sl-color-gray-6] text-[--sl-color-text] dark:text-[--sl-color-text];
+}
+
+/* Sidebar dropdown */
+details.sl-dropdown {
+  @apply text-[--sl-color-text] dark:text-[--sl-color-text];
+}
+
+details.sl-dropdown summary {
+  @apply hover:bg-[--sl-color-gray-3] dark:hover:bg-[--sl-color-gray-5];
+}
+
+details.sl-dropdown[open] > summary {
+  @apply bg-[--sl-color-gray-3] dark:bg-[--sl-color-gray-5];
+}
+
+/* Dropdown content */
+details.sl-dropdown .sl-dropdown-content {
+  @apply bg-white dark:bg-[--sl-color-gray-6] border-[--sl-color-gray-5] dark:border-[--sl-color-gray-5];
+}
+
+/* Scrollbar styles - WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--sl-color-accent);
+    border: 3px solid #ffffff;
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--sl-color-accent-high);
+}
+
+/* Mode sombre */
+.dark ::-webkit-scrollbar-track,
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--sl-color-gray-6);
+}
+
+.dark ::-webkit-scrollbar-thumb,
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--sl-color-accent);
+    border: 3px solid var(--sl-color-gray-6);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--sl-color-accent-low);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sl-color-accent) #ffffff;
+}
+
+.dark *,
+[data-theme="dark"] * {
+    scrollbar-color: var(--sl-color-accent) var(--sl-color-gray-6);
+}
+
+/* Style global pour assurer que le défilement est fluide */
+html.lenis {
+    scroll-behavior: auto;
 }

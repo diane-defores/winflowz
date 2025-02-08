@@ -6,7 +6,6 @@ import Navbar from '@/components/sections/navbar&footer/Navbar.astro'
 import { SITE } from '@/constants'
 import '../assets/styles/global.css'
 import { ClientRouter } from 'astro:transitions'
-import ThemeScript from '@/components/ThemeScript.astro'
 
 // Setting expected props
 const { title = SITE.title, meta, structuredData, lang = 'en' } = Astro.props
@@ -30,7 +29,6 @@ interface Props {
 		<Meta meta={meta} structuredData={structuredData} />
 		<title>{title}</title>
 		<ClientRouter handleForms />
-		<ThemeScript />
 	</head>
 	<body class="dark:bg-neutral-900">
 		<div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
