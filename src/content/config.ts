@@ -77,24 +77,6 @@ const blogCollection = defineCollection({
   }),
 });
 
-const insightsCollection = defineCollection({
-  type: "content",
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    contents: z.array(z.string()),
-    author: z.string(),
-    role: z.string().optional(),
-    authorImage: z.string(),
-    authorImageAlt: z.string(),
-    pubDate: z.date(),
-    cardImage: z.string(),
-    cardImageAlt: z.string(),
-    readTime: z.number(),
-    tags: z.array(z.string()).optional(),
-  }),
-});
-
 const servicesCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -111,6 +93,5 @@ export const collections = {
   docs: defineCollection({ schema: docsSchema() }),
   'products': productsCollection,
   'blog': blogCollection,
-  'insights': insightsCollection,
   'services': servicesCollection,
 };

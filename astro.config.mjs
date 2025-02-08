@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import starlight from '@astrojs/starlight';
-import vercel from '@astrojs/vercel/static';
+import vercel from '@astrojs/vercel';
 import icon from "astro-icon";
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -11,13 +11,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   site: "https://winflowz.com",
-  i18n: {
-    defaultLocale: "en",
-    locales: ["en", "fr"],
-    routing: {
-      prefixDefaultLocale: false
-    }
-  },
   output: "static",
   adapter: vercel(),
   build: {
@@ -51,6 +44,20 @@ export default defineConfig({
       logo: {
         src: './src/assets/images/WinFlowz.png',
       },
+      defaultLocale: 'en',
+      locales: {
+        en: {
+          label: 'English',
+          lang: 'en'
+        },
+        fr: {
+          label: 'Français',
+          lang: 'fr',
+          routes: {
+            'courses': 'formations'
+          }
+        }
+      },
       disable404Route: true,
       sidebar: [
         {
@@ -60,8 +67,11 @@ export default defineConfig({
           },
           items: [
             {
-              label: 'Introduction',
-              link: '/introduction'
+              label: 'Courses',
+              translations: {
+                fr: 'Formations'
+              },
+              link: '/courses'
             }
           ]
         }

@@ -1,25 +1,24 @@
 ---
-title: WinFlowz Docs
-head:
-  - tag: title
-    content: WinFlowz Docs
-description: Explore WinFlowz's comprehensive documentation for an in-depth look at our premium tools and services. 
-template: splash
+title: Formations WinFlowz
+description: Explorez les formations complètes de WinFlowz pour une maîtrise approfondie de nos outils et services premium.
 editUrl: false
-lastUpdated: false
+lastUpdated: true
 next: false
+sidebar:
+  label: Formations
+  order: 1
 hero:
-  title: Documentation Hub
-  tagline: Votre centre de ressources pour une documentation complète de nos outils, services et support projet.
+  title: Centre de Formation
+  tagline: Votre centre de ressources pour une formation complète, des cours détaillés et un support projet.
   image:
-      alt: Logo WinFlowz
-      dark: ../../assets/images/WinFlowz.png
-      light: ../../assets/images/WinFlowz.png
+    alt: Logo WinFlowz
+    dark: ../../../assets/images/WinFlowz.png
+    light: ../../../assets/images/WinFlowz.png
   actions:
     - text: Commencer
       icon: right-arrow
       variant: primary
-      link: /guides/getting-started/
+      link: /guides/getting-started
     - text: GitHub
       icon: external
       link: https://github.com/dianedef
@@ -41,4 +40,4 @@ hero:
   <Card title="Sujets Avancés" icon="open-book">
     Plongez dans nos ressources avancées pour maîtriser les fonctionnalités complexes. Optimisez vos processus, automatisez vos tâches et exploitez pleinement le potentiel de nos solutions.
   </Card>
-</CardGrid>
+</CardGrid> 
