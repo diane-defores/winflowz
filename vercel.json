@@ -1,9 +1,8 @@
 {
-  "buildCommand": "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build",
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel",
+      "use": "@vercel/static-build",
       "config": {
         "maxLambdaSize": "15mb",
         "memory": 4096
