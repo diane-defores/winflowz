@@ -1,4 +1,4 @@
-import ogImageSrc from "@/images/WinFlowz.png";
+import ogImageSrc from "@/assets/images/WinFlowz.png";
 
 export const SITE = {
   name: 'WinFlowz',

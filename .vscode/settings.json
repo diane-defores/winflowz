@@ -25,7 +25,7 @@
   "accessibility.verbosity.inlineChat": false,
   "editor.selectionHighlight": true,
   "editor.suggest.selectionMode": "always",
-  "cursor.cmdk.autoSelect": false,
+  "cursor.cmdk.autoSelect": true,
   "tailwind-fold.unfoldIfLineSelected": true,
   "markdown.preview.markEditorSelection": false,
   "editor.semanticHighlighting.enabled": "configuredByTheme",

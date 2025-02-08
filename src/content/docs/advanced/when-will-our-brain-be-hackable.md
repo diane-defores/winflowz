@@ -1,14 +1,34 @@
 ---
-title: Quand notre cerveau sera-t-il piratable ?
-description: Une exploration approfondie des avancées en neurotechnologie et des implications futures pour l'interface cerveau-machine.
-image: ../../../images/hacker-pc.gif
+title: Quand notre cerveau sera-t-il hackable ?
+description: Découvrez les avancées technologiques qui pourraient permettre de hacker notre cerveau.
 ---
 
+import { Image } from 'astro:assets';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
+import hackerPc from '@/assets/images/hacker-pc.gif';
 
-![Un hacker devant son ordinateur](../../../images/hacker-pc.gif)
+# Quand notre cerveau sera-t-il hackable ?
 
-# Quand notre cerveau sera-t-il piratable ?
+<div class="hero-image">
+  <Image src={hackerPc} alt="Un hacker devant son ordinateur" />
+</div>
+
+## Introduction
+
+Les avancées technologiques dans le domaine des interfaces cerveau-machine soulèvent de nombreuses questions éthiques...
+
+<style>
+  .hero-image {
+    margin: 2rem 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>
 
 ## État actuel de la technologie
 

@@ -1,7 +1,7 @@
 import type { APIRoute, ImageMetadata } from "astro";
 import { getImage } from "astro:assets";
-import icon from "@/images/WinFlowz.png";
-import maskableIcon from "@/images/WinFlowz.png";
+import icon from "@/assets/images/WinFlowz.png";
+import maskableIcon from "@/assets/images/WinFlowz.png";
 
 interface Favicon {
   purpose: 'any' | 'maskable' | 'monochrome';

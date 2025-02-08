@@ -1,23 +1,32 @@
 import type { APIRoute } from "astro";
 import sharp from "sharp";
-import ico from "sharp-ico";
-import path from "node:path";
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-export async function GET() {
-  const faviconSrc = path.resolve("public/images/WinFlowz.png");
-  
-  // D'abord, convertir en PNG 32x32
-  const pngBuffer = await sharp(faviconSrc)
-    .resize(32, 32)
-    .png()
-    .toBuffer();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  // Ensuite, convertir le PNG en ICO
-  const icoBuffer = ico.encode([pngBuffer]);
+export const getStaticPaths = () => {
+  return [
+    { params: { lang: 'fr' } },
+    { params: { lang: 'en' } },
+  ];
+};
 
-  return new Response(icoBuffer, {
-    headers: {
-      'Content-Type': 'image/x-icon'
-    }
-  });
-}
+export const GET: APIRoute = async () => {
+  try {
+    const faviconBuffer = await sharp(path.join(__dirname, '../../../../public/images/WinFlowz.png'))
+      .resize(32, 32)
+      .png()
+      .toBuffer();
+
+    return new Response(faviconBuffer, {
+      headers: {
+        'Content-Type': 'image/x-icon'
+      }
+    });
+  } catch (error) {
+    console.error('Error generating favicon:', error);
+    return new Response('Error generating favicon', { status: 500 });
+  }
+};

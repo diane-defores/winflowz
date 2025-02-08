@@ -1,14 +1,30 @@
 ---
 title: Pourquoi la plupart des gens échouent à atteindre leurs objectifs ?
 description: Une analyse approfondie des facteurs psychologiques, comportementaux et environnementaux qui influencent notre capacité à atteindre nos objectifs.
-image: ../../../images/exploding-head-much-work.gif
 ---
 
+import { Image } from 'astro:assets';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-
-![Tête qui explose de travail](../../../images/exploding-head-much-work.gif)
+import explodingHead from '@/assets/images/exploding-head-much-work.gif';
 
 # Pourquoi la plupart des gens échouent à atteindre leurs objectifs ?
+
+<div class="hero-image">
+  <Image src={explodingHead} alt="Tête qui explose de travail" />
+</div>
+
+<style>
+  .hero-image {
+    margin: 2rem 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>
 
 ## Les mécanismes de l'échec
 

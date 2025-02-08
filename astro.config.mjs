@@ -1,8 +1,8 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
-import compress from "astro-compress";
-import node from "@astrojs/node";
+import starlight from '@astrojs/starlight';
+import vercel from '@astrojs/vercel/static';
 import icon from "astro-icon";
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -19,19 +19,9 @@ export default defineConfig({
     }
   },
   output: "static",
+  adapter: vercel(),
   build: {
-    inlineStylesheets: "auto",
-    split: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          '@astrojs/data-layer-content': ['@astrojs/data-layer-content'],
-          '@astrojs/assets': ['@astrojs/assets'],
-          'astro/server': ['astro/server'],
-          '@astrojs-ssr-adapter': ['@astrojs/node/server'],
-        },
-      },
-    },
+    inlineStylesheets: "auto"
   },
   vite: {
     resolve: {
@@ -41,55 +31,52 @@ export default defineConfig({
         '@layouts': path.resolve(__dirname, './src/layouts'),
         '@lib': path.resolve(__dirname, './src/lib'),
         '@utils': path.resolve(__dirname, './src/utils'),
-        '@styles': path.resolve(__dirname, './src/styles'),
+        '@styles': path.resolve(__dirname, './src/assets/styles'),
+        '@scripts': path.resolve(__dirname, './src/assets/scripts'),
         '@assets': path.resolve(__dirname, './src/assets'),
-        '@scripts': path.resolve(__dirname, './src/scripts')
+        '@images': path.resolve(__dirname, './src/assets/images'),
       }
     },
-    optimizeDeps: {
-      exclude: ['@resvg/resvg-js']
-    },
-    build: {
-      sourcemap: true
-    },
-    logLevel: 'info',
-    clearScreen: false
-  },
-  adapter: node({
-    mode: "standalone",
-  }),
-  image: {
-    service: {
-      entrypoint: 'astro/assets/services/sharp'
-    },
-    remotePatterns: [{ protocol: "https" }],
-    domains: ["dynapictures.com", "i.pinimg.com", "images.unsplash.com", "www.squirrly.co"],
-    assets: true,
-    publicDir: true
-  },
-  prefetch: {
-    prefetchAll: false,
-    defaultStrategy: "hover",
+    ssr: {
+      noExternal: ['@astrojs/starlight/*']
+    }
   },
   integrations: [
+    starlight({
+      title: 'WinFlowz Docs',
+      customCss: ['./src/assets/styles/global.css'],
+      components: {
+        Hero: './src/components/ui/starlight/Hero.astro'
+      },
+      logo: {
+        src: './src/assets/images/WinFlowz.png',
+      },
+      disable404Route: true,
+      sidebar: [
+        {
+          label: 'Getting Started',
+          translations: {
+            fr: 'Pour commencer'
+          },
+          items: [
+            {
+              label: 'Introduction',
+              link: '/introduction'
+            }
+          ]
+        }
+      ],
+      social: {
+        github: 'https://github.com/dianedef/winflowz',
+      },
+      lastUpdated: true,
+      pagination: true,
+    }),
     icon({
       include: {
         heroicons: ["*"],
         "phosphor-icons": ["*"]
-      },
-      svgoOptions: {
-        multipass: true,
-        plugins: [
-          {
-            name: "preset-default",
-            params: {
-              overrides: {
-                removeViewBox: false,
-              },
-            },
-          },
-        ],
-      },
+      }
     }),
     tailwind({
       applyBaseStyles: false,
@@ -103,6 +90,5 @@ export default defineConfig({
         }
       }
     }),
-    compress(),
   ],
 });
