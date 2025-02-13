@@ -1,96 +1,159 @@
 <!-- Dark Theme Toggle Button -->
 <button
-  type="button"
-  aria-label="Basculer vers le thème sombre"
-  class="hs-dark-mode-active:hidden flex h-8 w-8 items-center justify-center rounded-full font-medium text-neutral-600 outline-none ring-zinc-500 transition duration-300 hover:bg-neutral-200 hover:text-orange-400 dark:text-neutral-400 dark:ring-zinc-200 dark:hover:text-orange-300 dark:focus:outline-none"
-  data-hs-theme-click-value="dark"
+	type="button"
+	aria-label="Basculer vers le thème sombre"
+	class="flex h-8 w-8 items-center justify-center rounded-full font-medium text-neutral-600 outline-none ring-zinc-500 transition duration-300 hover:bg-neutral-200 hover:text-orange-400 hs-dark-mode-active:hidden dark:text-neutral-400 dark:ring-zinc-200 dark:hover:text-orange-300 dark:focus:outline-none"
+	data-hs-theme-click-value="dark"
 >
-  <svg
-    class="h-4 w-4 flex-shrink-0"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-  </svg>
+	<svg
+		class="h-4 w-4 flex-shrink-0"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+	</svg>
 </button>
 
 <!-- Light Theme Toggle Button -->
 <button
-  type="button"
-  aria-label="Basculer vers le thème clair"
-  class="hs-dark-mode-active:flex hidden h-8 w-8 items-center justify-center rounded-full font-medium text-neutral-600 outline-none ring-zinc-500 transition duration-300 hover:text-orange-400 dark:text-neutral-400 dark:ring-zinc-200 dark:hover:bg-neutral-700 dark:hover:text-orange-300 dark:focus:outline-none"
-  data-hs-theme-click-value="light"
+	type="button"
+	aria-label="Basculer vers le thème clair"
+	class="hidden h-8 w-8 items-center justify-center rounded-full font-medium text-neutral-600 outline-none ring-zinc-500 transition duration-300 hover:text-orange-400 hs-dark-mode-active:flex dark:text-neutral-400 dark:ring-zinc-200 dark:hover:bg-neutral-700 dark:hover:text-orange-300 dark:focus:outline-none"
+	data-hs-theme-click-value="light"
 >
-  <svg
-    class="h-4 w-4 flex-shrink-0"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <circle cx="12" cy="12" r="4"></circle>
-    <path d="M12 8a2 2 0 1 0 4 4"></path>
-    <path d="M12 2v2"></path>
-    <path d="M12 20v2"></path>
-    <path d="m4.93 4.93 1.41 1.41"></path>
-    <path d="m17.66 17.66 1.41 1.41"></path>
-    <path d="M2 12h2"></path>
-    <path d="M20 12h2"></path>
-    <path d="m6.34 17.66-1.41 1.41"></path>
-    <path d="m19.07 4.93-1.41 1.41"></path>
-  </svg>
+	<svg
+		class="h-4 w-4 flex-shrink-0"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<circle cx="12" cy="12" r="4"></circle>
+		<path d="M12 8a2 2 0 1 0 4 4"></path>
+		<path d="M12 2v2"></path>
+		<path d="M12 20v2"></path>
+		<path d="m4.93 4.93 1.41 1.41"></path>
+		<path d="m17.66 17.66 1.41 1.41"></path>
+		<path d="M2 12h2"></path>
+		<path d="M20 12h2"></path>
+		<path d="m6.34 17.66-1.41 1.41"></path>
+		<path d="m19.07 4.93-1.41 1.41"></path>
+	</svg>
 </button>
 
 <script>
-  // Définition du type Theme
-  type Theme = "light" | "dark";
+	// Définition du type Theme
+	type Theme = 'light' | 'dark'
 
-  // Fonction pour appliquer le thème
-  function applyTheme(theme: Theme) {
-    const root = document.documentElement;
-    
-    // Supprimer toutes les classes de thème
-    root.classList.remove("dark", "light");
-    
-    // Appliquer le nouveau thème
-    root.classList.add(theme);
-    
-    // Sauvegarder le thème
-    localStorage.setItem("hs_theme", theme);
-    
-    // Mettre à jour les boutons
-    document.querySelectorAll("[data-hs-theme-click-value]").forEach((button) => {
-      const buttonTheme = button.getAttribute("data-hs-theme-click-value") as Theme;
-      if (buttonTheme === theme) {
-        button.classList.add("hidden");
-      } else {
-        button.classList.remove("hidden");
-      }
-    });
-  }
+	// Fonction pour appliquer le thème
+	function applyTheme(theme: Theme, skipStarlightSync = false) {
+		const root = document.documentElement
 
-  // Initialisation au chargement de la page
-  document.addEventListener("astro:page-load", () => {
-    // Appliquer le thème initial
-    const theme = localStorage.getItem("hs_theme") as Theme || "light";
-    applyTheme(theme);
+		// Supprimer toutes les classes de thème
+		root.classList.remove('dark', 'light')
 
-    // Écouteur pour les boutons de thème
-    document.querySelectorAll("[data-hs-theme-click-value]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const newTheme = button.getAttribute("data-hs-theme-click-value") as Theme;
-        applyTheme(newTheme);
-      });
-    });
-  });
-</script> 
+		// Appliquer le nouveau thème
+		root.classList.add(theme)
+
+		// Mettre à jour l'attribut data-theme pour Starlight
+		root.setAttribute('data-theme', theme)
+
+		// Sauvegarder le thème
+		localStorage.setItem('hs_theme', theme)
+
+		// Mettre à jour les boutons
+		document
+			.querySelectorAll('[data-hs-theme-click-value]')
+			.forEach((button) => {
+				const buttonTheme = button.getAttribute(
+					'data-hs-theme-click-value'
+				) as Theme
+				if (buttonTheme === theme) {
+					button.classList.add('hidden')
+				} else {
+					button.classList.remove('hidden')
+				}
+			})
+
+		// Synchroniser avec le thème Starlight seulement si on ne vient pas déjà d'une synchro Starlight
+		if (!skipStarlightSync) {
+			const starlightTheme = document.querySelector('starlight-theme-select')
+			if (starlightTheme) {
+				// @ts-ignore - Starlight specific
+				starlightTheme.theme = theme
+			}
+		}
+	}
+
+	// Fonction pour écouter les changements de thème Starlight
+	function listenToStarlightTheme() {
+		const starlightTheme = document.querySelector('starlight-theme-select')
+		if (starlightTheme) {
+			const observer = new MutationObserver((mutations) => {
+				mutations.forEach((mutation) => {
+					if (
+						mutation.type === 'attributes' &&
+						mutation.attributeName === 'theme'
+					) {
+						// @ts-ignore - Starlight specific
+						const newTheme = starlightTheme.theme as Theme
+						applyTheme(newTheme, true)
+					}
+				})
+			})
+
+			observer.observe(starlightTheme, {
+				attributes: true,
+				attributeFilter: ['theme'],
+			})
+		}
+	}
+
+	// Initialisation au chargement de la page
+	document.addEventListener('astro:page-load', () => {
+		// Récupérer le thème depuis le localStorage ou utiliser le thème système
+		const savedTheme = localStorage.getItem('hs_theme') as Theme
+		const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+			.matches
+			? 'dark'
+			: 'light'
+		const theme = savedTheme || systemTheme
+
+		// Appliquer le thème initial
+		applyTheme(theme)
+
+		// Écouter les changements de thème Starlight
+		listenToStarlightTheme()
+
+		// Écouteur pour les boutons de thème
+		document
+			.querySelectorAll('[data-hs-theme-click-value]')
+			.forEach((button) => {
+				button.addEventListener('click', () => {
+					const newTheme = button.getAttribute(
+						'data-hs-theme-click-value'
+					) as Theme
+					applyTheme(newTheme)
+				})
+			})
+
+		// Écouter les changements de thème système
+		window
+			.matchMedia('(prefers-color-scheme: dark)')
+			.addEventListener('change', (e) => {
+				if (!localStorage.getItem('hs_theme')) {
+					applyTheme(e.matches ? 'dark' : 'light')
+				}
+			})
+	})
+</script>
