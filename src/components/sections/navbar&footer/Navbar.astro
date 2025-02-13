@@ -8,6 +8,7 @@ import BrandLogo from '@/components/BrandLogo.astro'
 import LanguagePicker from '@/components/ui/LanguagePicker.astro'
 import ThemePicker from '../../ui/ThemePicker.astro'
 import type { NavLink as NavLinkType } from '@/types'
+import TextLogo from '@components/ui/TextLogo.astro';
 
 // Select the correct translation based on the page's lang prop:
 const lang = getLangFromUrl(Astro.url)
@@ -34,7 +35,7 @@ const homeUrl = lang === 'fr' ? '/fr' : '/'
 					data-astro-prefetch
 				>
 					<div class="flex items-center">
-						<BrandLogo class="ml-8 w-52" />
+						<TextLogo class="ml-8 w-52" />
 					</div>
 				</a>
 			</div>

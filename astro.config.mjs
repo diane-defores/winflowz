@@ -46,6 +46,9 @@ export default defineConfig({
         './src/assets/styles/global.css',
         './src/assets/styles/starlight.css'
       ],
+      components: {
+        SkipLink: '@components/overrides/EmptySkipLink.astro'
+      },
       logo: {
         src: './src/assets/images/WinFlowz.png',
         replacesTitle: true

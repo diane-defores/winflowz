@@ -11,6 +11,7 @@ import FAQ from '@components/sections/misc/FAQ.astro'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types'
 
+
 export async function getStaticPaths() {
 	return [
 		// Route anglaise (racine /)
@@ -107,7 +108,7 @@ if (!hasValidStats) {
 		src="/images/WinFlowz.png"
 		alt="Stack of WinFlowz product boxes containing assorted productivity tools"
 	/>
-
+	
 	<ClientsSection title={t.clients.title} subTitle={t.clients.subTitle} />
 
 	<FeaturesGeneral
