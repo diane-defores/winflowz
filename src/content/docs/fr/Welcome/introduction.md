@@ -1,6 +1,7 @@
 ---
 title: Bienvenue dans la Documentation WinFlowz
 description: Commencez avec WinFlowz et découvrez notre écosystème d'outils de productivité.
+
 ---
 
 Bienvenue dans la documentation WinFlowz ! Vous trouverez ici tout ce dont vous avez besoin pour démarrer avec notre suite d'outils de productivité.

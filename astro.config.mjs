@@ -20,6 +20,7 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
+        '~': path.resolve(__dirname, './src'),
         '@': path.resolve(__dirname, './src'),
         '@components': path.resolve(__dirname, './src/components'),
         '@layouts': path.resolve(__dirname, './src/layouts'),
@@ -34,8 +35,10 @@ export default defineConfig({
     },
     ssr: {
       noExternal: ['@astrojs/starlight/*']
-    }
+    },
+    cacheDir: '.vite'
   },
+  cacheDir: '.astro',
   integrations: [
     starlight({
       title: 'WinFlowz Docs',
@@ -43,9 +46,6 @@ export default defineConfig({
         './src/assets/styles/global.css',
         './src/assets/styles/starlight.css'
       ],
-      components: {
-        Hero: './src/components/ui/starlight/Hero.astro'
-      },
       logo: {
         src: './src/assets/images/WinFlowz.png',
         replacesTitle: true
@@ -65,14 +65,21 @@ export default defineConfig({
       disable404Route: true,
       sidebar: [
         {
-          label: 'Courses',
+          label: 'Welcome',
+          translations: {
+            fr: 'Bienvenue'
+          },
+          autogenerate: {
+            directory: 'Welcome'
+          }
+        },
+        {
+          label: 'Formations',
           translations: {
             fr: 'Formations'
           },
-          autogenerate: {
-            directory: 'courses'
-          }
-        }
+          autogenerate: { directory: 'formations' }
+        },
       ],
       social: {
         github: 'https://github.com/dianedef/winflowz',

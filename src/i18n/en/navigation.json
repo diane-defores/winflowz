@@ -1,7 +1,7 @@
 {
   "navBarLinks": [
     { "name": "Apps", "url": "/products" },
-    { "name": "Roadmap", "url": "/roadmap" },
+    { "name": "Courses", "url": "/courses" },
     { "name": "Services", "url": "/services" },
     { "name": "Blog", "url": "/blog" },
     { "name": "Contact", "url": "/contact" }
@@ -10,7 +10,7 @@
     {
       "section": "Ecosystem",
       "links": [
-        { "name": "Documentation", "url": "/welcome-to-docs/" },
+        { "name": "Formations", "url": "/en/formations/" },
         { "name": "Tools & Equipment", "url": "/products" },
         { "name": "Construction Services", "url": "/services" }
       ]
