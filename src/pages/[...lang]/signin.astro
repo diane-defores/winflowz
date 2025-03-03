@@ -1,0 +1,88 @@
+import MainLayout from '../../layouts/MainLayout.astro' import GoogleLoginButton
+from '../../components/auth/GoogleLoginButton.astro' import GithubLoginButton
+from '../../components/auth/GithubLoginButton.astro' import FacebookLoginButton
+from '../../components/auth/FacebookLoginButton.astro' import {
+	(getLangFromUrl, useTranslations)
+} from '../../i18n/utils' const lang = getLangFromUrl(Astro.url) const t = useTranslations(lang)
+// Récupérer l'URL de redirection si elle existe
+const redirectTo = Astro.url.searchParams.get('redirectTo')
+
+<MainLayout title={t('auth.signin.title')}>
+	<div class="flex min-h-screen items-center justify-center">
+		<div
+			class="bg-base-200 w-full max-w-md space-y-8 rounded-lg p-6 shadow-xl"
+		>
+			<div class="text-center">
+				<h1 class="text-2xl font-bold">{t('auth.signin.title')}</h1>
+				<p class="text-base-content/70 mt-2">{t('auth.signin.subtitle')}</p>
+			</div>
+
+			<div class="space-y-4">
+				<GoogleLoginButton redirectTo={redirectTo} />
+				<GithubLoginButton redirectTo={redirectTo} />
+				<FacebookLoginButton redirectTo={redirectTo} />
+
+				<div class="divider">{t('auth.signin.or')}</div>
+
+				<form class="space-y-4" action="/api/auth/signin" method="POST">
+					<div>
+						<label class="label" for="email">
+							<span class="label-text">{t('auth.email')}</span>
+						</label>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							class="input input-bordered w-full"
+							required
+						/>
+					</div>
+
+					<div>
+						<label class="label" for="password">
+							<span class="label-text">{t('auth.password')}</span>
+						</label>
+						<input
+							type="password"
+							id="password"
+							name="password"
+							class="input input-bordered w-full"
+							required
+						/>
+					</div>
+
+					<div class="flex items-center justify-between">
+						<div class="flex items-center">
+							<input
+								type="checkbox"
+								id="remember"
+								name="remember"
+								class="checkbox"
+							/>
+							<label class="label-text ml-2" for="remember">
+								{t('auth.signin.remember')}
+							</label>
+						</div>
+						<a
+							href="/reset-password"
+							class="text-primary hover:text-primary-focus text-sm"
+						>
+							{t('auth.signin.forgot')}
+						</a>
+					</div>
+
+					<button type="submit" class="btn btn-primary w-full">
+						{t('auth.signin.submit')}
+					</button>
+				</form>
+
+				<p class="text-center text-sm">
+					{t('auth.signin.no_account')}
+					<a href="/signup" class="text-primary hover:text-primary-focus">
+						{t('auth.signin.create_account')}
+					</a>
+				</p>
+			</div>
+		</div>
+	</div>
+</MainLayout>

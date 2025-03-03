@@ -19,31 +19,31 @@ export const OPTIONS: APIRoute = async () => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const supabase = createServerSupabase();
-    
-    // Récupérer le token de session depuis les cookies
-    const authCookie = request.headers.get('cookie')?.split(';')
-      .find(cookie => cookie.trim().startsWith('sb-access-token='));
-    
-    if (!authCookie) {
+    const { email } = await request.json();
+
+    if (!email) {
       return new Response(
         JSON.stringify({
-          error: 'no-session',
-          message: 'Aucune session active trouvée'
+          error: 'missing-email',
+          message: 'L\'adresse email est requise'
         }),
         { 
-          status: 401,
+          status: 400,
           headers: corsHeaders
         }
       );
     }
 
-    // Déconnexion via Supabase
-    const { error } = await supabase.auth.signOut();
+    // Envoyer l'email de vérification via Supabase
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+    });
 
     if (error) {
       return new Response(
         JSON.stringify({
-          error: 'signout-failed',
+          error: 'verification-failed',
           message: error.message
         }),
         { 
@@ -53,32 +53,22 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Supprimer les cookies de session
-    const cookieOptions = 'Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0';
-    const clearCookies = {
-      ...corsHeaders,
-      'Set-Cookie': [
-        `sb-access-token=; ${cookieOptions}`,
-        `sb-refresh-token=; ${cookieOptions}`
-      ].join(', ')
-    };
-
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
-        message: 'Déconnexion réussie'
+        message: 'Email de vérification envoyé avec succès'
       }),
       { 
         status: 200,
-        headers: clearCookies
+        headers: corsHeaders
       }
     );
   } catch (error) {
-    console.error('Erreur lors de la déconnexion:', error);
+    console.error('Erreur lors de l\'envoi de l\'email de vérification:', error);
     return new Response(
       JSON.stringify({
         error: 'internal-error',
-        message: 'Une erreur est survenue lors de la déconnexion'
+        message: 'Une erreur est survenue lors de l\'envoi de l\'email de vérification'
       }),
       { 
         status: 500,
@@ -86,4 +76,4 @@ export const POST: APIRoute = async ({ request }) => {
       }
     );
   }
-};
+}; 

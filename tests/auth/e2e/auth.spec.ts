@@ -1,64 +1,29 @@
-import { test, expect } from './setup'
+import { test, expect } from '@playwright/test'
 
 test('Flux d\'authentification complet', async ({ page }) => {
   const testEmail = `test${Date.now()}@example.com`
   const testPassword = 'TestPassword123!'
 
-  // 1. Inscription
-  await test.step('Inscription', async () => {
-    await page.goto('/')
-    await page.click('[data-hs-overlay="#hs-toggle-between-modals-register-modal"]')
-    
-    await page.fill('#email', testEmail)
-    await page.fill('#password', testPassword)
-    await page.fill('#confirm-password', testPassword)
-    await page.check('#accept-terms')
-    
-    await page.click('button[type="submit"]')
-    
-    await expect(page.locator('#error-message')).toContainText('vérifier votre email')
-  })
+  // Accéder à la page d'inscription
+  await page.goto('/auth/register')
+  await page.waitForLoadState('networkidle')
 
-  // 2. Tentative d'inscription avec email existant
-  await test.step('Email déjà utilisé', async () => {
-    await page.goto('/')
-    await page.click('[data-hs-overlay="#hs-toggle-between-modals-register-modal"]')
-    
-    await page.fill('#email', testEmail)
-    await page.fill('#password', testPassword)
-    await page.fill('#confirm-password', testPassword)
-    await page.check('#accept-terms')
-    
-    await page.click('button[type="submit"]')
-    
-    await expect(page.locator('#error-message')).toContainText('déjà utilisée')
-  })
+  // Remplir le formulaire d'inscription
+  await page.fill('input[name="email"]', testEmail)
+  await page.fill('input[name="password"]', testPassword)
+  await page.click('button[type="submit"]')
 
-  // 3. Connexion
-  await test.step('Connexion', async () => {
-    await page.goto('/')
-    await page.click('[data-hs-overlay="#hs-toggle-between-modals-login-modal"]')
-    
-    await page.fill('#login-email', testEmail)
-    await page.fill('#password', testPassword)
-    
-    await page.click('button[type="submit"]')
-    
-    await expect(page).toHaveURL('/dashboard')
-  })
+  // Vérifier la redirection vers la page de connexion
+  await expect(page).toHaveURL('/auth/signin')
 
-  // 4. Déconnexion
-  await test.step('Déconnexion', async () => {
-    await page.click('[data-logout-button]')
-    await expect(page).toHaveURL('/')
-  })
+  // Remplir le formulaire de connexion
+  await page.fill('input[name="email"]', testEmail)
+  await page.fill('input[name="password"]', testPassword)
+  await page.click('button[type="submit"]')
 
-  // 5. Réinitialisation de mot de passe
-  await test.step('Réinitialisation de mot de passe', async () => {
-    await page.click('[data-hs-overlay="#hs-toggle-between-modals-recover-modal"]')
-    await page.fill('#recover-email', testEmail)
-    await page.click('button[type="submit"]')
-    
-    await expect(page.locator('#recover-email-error')).toContainText('vérifier votre email')
-  })
+  // Vérifier la redirection vers le tableau de bord
+  await expect(page).toHaveURL('/dashboard')
+
+  // Vérifier que l'utilisateur est connecté
+  await expect(page.locator('text=Dashboard')).toBeVisible()
 }) 

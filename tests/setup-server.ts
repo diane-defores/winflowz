@@ -1,32 +1,22 @@
-import { Server } from 'http'
-import { handler } from '../dist/server/entry.mjs'
 import { config } from 'dotenv'
+import { fileURLToPath } from 'url'
 import path from 'path'
+import './mocks/i18n'
+import { mswServer } from './mocks/test-server'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const rootDir = path.join(__dirname, '..')
 
 // Charger les variables d'environnement de test
-config({ path: path.resolve(process.cwd(), '.env.test') })
-
-let server: Server
+config({ path: path.join(rootDir, '.env.test') })
 
 export async function startTestServer() {
-  if (server) return server
-
-  const port = 4321
-  server = new Server(handler)
-  
-  await new Promise<void>((resolve) => {
-    server.listen(port, () => {
-      console.log(`Test server running at http://localhost:${port}`)
-      resolve()
-    })
-  })
-
-  return server
+  mswServer.listen({ onUnhandledRequest: 'error' })
+  return mswServer
 }
 
 export async function stopTestServer() {
-  if (server) {
-    await new Promise((resolve) => server.close(resolve))
-    server = null
-  }
-} 
+  mswServer.close()
+}
+
+export { mswServer } 

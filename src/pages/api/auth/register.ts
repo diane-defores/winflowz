@@ -1,8 +1,37 @@
-export const prerender = false;
 import type { APIRoute } from "astro";
 import { createServerSupabase } from "@/lib/supabaseClient";
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'http://localhost:4327',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Accept, Origin',
+  'Access-Control-Allow-Credentials': 'true',
+  'Content-Type': 'application/json'
+};
+
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders
+  });
+};
+
 export const POST: APIRoute = async ({ request }) => {
+  // Vérifier si la requête accepte du JSON
+  const acceptHeader = request.headers.get('accept');
+  if (!acceptHeader?.includes('application/json')) {
+    return new Response(
+      JSON.stringify({
+        error: "invalid-content-type",
+        message: "This endpoint only accepts application/json"
+      }),
+      { 
+        status: 406,
+        headers: corsHeaders
+      }
+    );
+  }
+
   try {
     let email: string | undefined;
     let password: string | undefined;
@@ -13,10 +42,17 @@ export const POST: APIRoute = async ({ request }) => {
       const body = await request.json();
       email = body.email;
       password = body.password;
-    } else if (contentType?.includes('multipart/form-data')) {
-      const formData = await request.formData();
-      email = formData.get('email')?.toString();
-      password = formData.get('password')?.toString();
+    } else {
+      return new Response(
+        JSON.stringify({
+          error: "invalid-content-type",
+          message: "Content-Type must be application/json"
+        }),
+        { 
+          status: 415,
+          headers: corsHeaders
+        }
+      );
     }
 
     if (!email || !password) {
@@ -25,7 +61,10 @@ export const POST: APIRoute = async ({ request }) => {
           error: "missing-fields",
           message: "Email and password are required"
         }),
-        { status: 400 }
+        { 
+          status: 400,
+          headers: corsHeaders
+        }
       );
     }
 
@@ -43,9 +82,13 @@ export const POST: APIRoute = async ({ request }) => {
         return new Response(
           JSON.stringify({
             error: "user-exists",
-            message: "This email is already registered"
+            message: "This email is already registered",
+            success: false
           }),
-          { status: 400 }
+          { 
+            status: 400,
+            headers: corsHeaders
+          }
         );
       }
       return new Response(
@@ -53,11 +96,13 @@ export const POST: APIRoute = async ({ request }) => {
           error: "auth-error",
           message: error.message
         }),
-        { status: error.status || 400 }
+        { 
+          status: error.status || 400,
+          headers: corsHeaders
+        }
       );
     }
 
-    // Succès - Supabase gère automatiquement la session
     return new Response(
       JSON.stringify({
         success: true,
@@ -66,7 +111,10 @@ export const POST: APIRoute = async ({ request }) => {
           user: data.user
         }
       }),
-      { status: 200 }
+      { 
+        status: 200,
+        headers: corsHeaders
+      }
     );
   } catch (err) {
     console.error("Registration error:", err);
@@ -75,7 +123,10 @@ export const POST: APIRoute = async ({ request }) => {
         error: "server-error",
         message: "An error occurred during registration"
       }),
-      { status: 500 }
+      { 
+        status: 500,
+        headers: corsHeaders
+      }
     );
   }
-};
+}; 

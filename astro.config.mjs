@@ -11,9 +11,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   site: "https://winflowz.com",
-  output: "static",
+  output: "server",
   adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+    functionPerRoute: false,
+    edgeMiddleware: true
   }),
+  server: {
+    host: true,
+    port: 4327
+  },
   build: {
     inlineStylesheets: "auto"
   },
@@ -109,4 +118,16 @@ export default defineConfig({
       }
     }),
   ],
+  middleware: [
+    {
+      name: 'rate-limit',
+      order: 1,
+      handler: './src/middleware/rate-limit.ts'
+    },
+    {
+      name: 'auth',
+      order: 2,
+      handler: './src/middleware/auth.ts'
+    }
+  ]
 });

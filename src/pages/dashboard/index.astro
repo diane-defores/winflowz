@@ -39,7 +39,6 @@ import Header from '../../components/ui/dashboard/Header.astro'
 import Sidebar from '../../components/ui/dashboard/Sidebar.astro'
 import Stats from '../../components/ui/dashboard/Stats.astro'
 import ApiKeys from '../../components/ui/dashboard/ApiKeys.astro'
-import GenerateApiKeyModal from '../../components/ui/forms/GenerateApiKeyModal.astro'
 
 // Vérifier si l'utilisateur vient de confirmer son email
 const isNewlyConfirmed =
@@ -178,9 +177,6 @@ if (error) {
 			</main>
 		</div>
 	</div>
-
-	{/* Modal de génération de clé API */}
-	<GenerateApiKeyModal />
 </MainLayout>
 
 <script>

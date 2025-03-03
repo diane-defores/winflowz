@@ -2,7 +2,7 @@
 dist/
 .output/
 .vercel/
-.vite/deps/
+.vite/
 
 # generated types
 .astro/
