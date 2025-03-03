@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabaseClient';
 export const prerender = false;
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia'
+  apiVersion: '2025-01-27.acacia'
 });
 
 export const POST: APIRoute = async ({ request }) => {

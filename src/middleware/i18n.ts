@@ -2,7 +2,7 @@ import type { MiddlewareHandler } from 'astro'
 import { defaultLocale, locales, routes } from '../i18n/config'
 import type { Language } from '../types'
 
-type Locals = {
+interface Locals extends App.Locals {
   lang: Language
 }
 
@@ -11,7 +11,7 @@ export const i18nMiddleware: MiddlewareHandler = async ({ url, locals, redirect 
 
   // Si nous sommes à la racine
   if (pathname === '/') {
-    (locals as Locals).lang = defaultLocale
+    locals.lang = defaultLocale
     return next()
   }
 
@@ -26,7 +26,7 @@ export const i18nMiddleware: MiddlewareHandler = async ({ url, locals, redirect 
   }
 
   // Stocker la langue dans locals
-  (locals as Locals).lang = currentLang
+  locals.lang = currentLang
 
   // Si nous sommes sur une route avec paramètres (ex: [...blog_slug].astro)
   if (segments.length > 1) {

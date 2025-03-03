@@ -1,4 +1,5 @@
-import type { MiddlewareResponseHandler } from 'astro'
+import type { MiddlewareHandler } from 'astro'
+import type { APIContext, MiddlewareNext } from 'astro'
 import { createServerSupabase } from '../lib/supabaseClient'
 
 // Utiliser Redis ou une autre solution de cache en production
@@ -21,7 +22,7 @@ function cleanupOldAttempts() {
   }
 }
 
-export const onRequest: MiddlewareResponseHandler = async (context, next) => {
+export const onRequest: MiddlewareHandler = async (context: APIContext, next: MiddlewareNext) => {
   const { request } = context
 
   // Ne pas appliquer le rate limiting sur les routes non-auth

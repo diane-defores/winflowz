@@ -1,11 +1,11 @@
 import { sequence } from 'astro:middleware';
-import type { MiddlewareHandler } from 'astro';
+import type { MiddlewareHandler, APIContext, MiddlewareNext } from 'astro';
 import { corsMiddleware } from './cors';
 import { i18nMiddleware } from './i18n';
 import { authGuardMiddleware } from './authGuard';
 
 // Séquence des middlewares dans l'ordre d'exécution
-const mainMiddleware: MiddlewareHandler = async (context, next) => {
+const mainMiddleware: MiddlewareHandler = async (context: APIContext, next: MiddlewareNext) => {
   const url = new URL(context.request.url);
   
   // Appliquer CORS uniquement pour les routes API

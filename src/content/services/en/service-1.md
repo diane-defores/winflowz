@@ -59,3 +59,8 @@ Core Values
 Our working relationship should be one of trust. You’ve (hopefully!) entrusted me to help you make key decisions, and I will honor that trust by ensuring that we are on the same page regarding scope and pricing. I will let you know if I’m not the right fit your project, and can refer you to my extensive network of freelance contacts.
 
 I love working with mission-driven organizations and offer special rates for organizations with a commitment to social justice.
+
+
+
+
+

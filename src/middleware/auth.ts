@@ -1,7 +1,8 @@
-import type { MiddlewareResponseHandler } from 'astro'
+import type { MiddlewareHandler } from 'astro'
 import { createServerSupabase } from '../lib/supabaseClient'
+import type { APIContext, MiddlewareNext } from 'astro'
 
-export const onRequest: MiddlewareResponseHandler = async (context, next) => {
+export const onRequest: MiddlewareHandler = async (context: APIContext, next: MiddlewareNext) => {
   const { request } = context
   const supabase = createServerSupabase()
 

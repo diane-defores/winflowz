@@ -1,4 +1,4 @@
-import type { Language, Translation } from '@/types/i18n';
+import type { Language, Translation, MetaTranslations } from '@/types/i18n';
 
 // Fonction pour obtenir la langue depuis l'URL
 export function getLangFromUrl(url: URL): Language {
@@ -7,16 +7,16 @@ export function getLangFromUrl(url: URL): Language {
 }
 
 // Fonction pour charger les traductions UI communes
-export async function useUI(lang: Language) {
+export async function useUI(lang: Language): Promise<Translation> {
   const translations = await import(`../i18n/${lang}/ui.json`);
-  return translations as Translation;
+  return translations.default;
 }
 
 // Fonction pour charger les traductions spécifiques
-export async function useTranslations(lang: Language, page: string) {
+export async function useTranslations(lang: Language, page: string): Promise<Translation> {
   try {
     const translations = await import(`../i18n/${lang}/${page}.json`);
-    return translations as Translation;
+    return translations.default;
   } catch (error) {
     console.error(`Erreur lors du chargement des traductions pour ${lang}/${page}:`, error);
     return {} as Translation;
@@ -24,9 +24,9 @@ export async function useTranslations(lang: Language, page: string) {
 }
 
 // Fonction pour charger les routes traduites
-export async function useRoutes(lang: Language) {
+export async function useRoutes(lang: Language): Promise<Record<string, string>> {
   const routes = await import(`../i18n/${lang}/routes.json`);
-  return routes as Translation;
+  return routes.default;
 }
 
 // Fonction pour obtenir l'URL traduite
@@ -40,13 +40,13 @@ export async function getLocalizedPath(lang: Language, path: string): Promise<st
     return routes[segment] || segment;
   });
 
-  return lang === '' 
+  return lang === 'en'
     ? `/${localizedSegments.join('/')}` 
     : `/fr/${localizedSegments.join('/')}`;
 }
 
 // Fonction pour obtenir les liens alternatifs pour le SEO
-export async function getAlternateLinks(currentPath: string) {
+export async function getAlternateLinks(currentPath: string): Promise<Array<{href: string, hreflang: string}>> {
   const enPath = await getLocalizedPath('en', currentPath);
   const frPath = await getLocalizedPath('fr', currentPath);
 
@@ -57,10 +57,10 @@ export async function getAlternateLinks(currentPath: string) {
 }
 
 // Fonction pour obtenir les métadonnées d'une page
-export async function getPageMeta(lang: Language, page: keyof MetaTranslations) {
-  const meta = await useMeta(lang);
+export async function getPageMeta(lang: Language, page: string): Promise<Translation & { alternateLinks: Array<{href: string, hreflang: string}> }> {
+  const meta = await useTranslations(lang, 'meta');
   return {
-    ...meta[page],
+    ...meta,
     alternateLinks: await getAlternateLinks(page)
   };
 }

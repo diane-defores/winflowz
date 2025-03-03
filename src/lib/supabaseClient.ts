@@ -1,5 +1,35 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '../types/supabase'
+import type { AstroCookies } from 'astro'
+
+function validateSupabaseUrl(): string {
+  const url = import.meta.env.SUPABASE_URL;
+  console.log('Validation URL Supabase:', { url, env: import.meta.env });
+  
+  if (!url) {
+    throw new Error('La variable d\'environnement SUPABASE_URL est manquante');
+  }
+  try {
+    new URL(url);
+    return url;
+  } catch (error) {
+    console.error('Erreur de validation URL:', error);
+    throw new Error(`L'URL Supabase n'est pas valide: ${url}`);
+  }
+}
+
+function validateSupabaseKey(): string {
+  const key = import.meta.env.SUPABASE_PUBLISHABLE_KEY;
+  console.log('Validation clé Supabase:', { key: key?.substring(0, 10) + '...' });
+  
+  if (!key) {
+    throw new Error('La variable d\'environnement SUPABASE_PUBLISHABLE_KEY est manquante');
+  }
+  if (!key.startsWith('eyJ') || key.length < 20) {
+    throw new Error('La clé Supabase n\'est pas valide');
+  }
+  return key;
+}
 
 /**
  * Singleton pour gérer l'instance du client Supabase
@@ -39,12 +69,8 @@ export class SupabaseClientSingleton {
       return this.mockClient;
     }
 
-    const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-    const supabaseKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Les variables d\'environnement Supabase sont manquantes');
-    }
+    const supabaseUrl = validateSupabaseUrl();
+    const supabaseKey = validateSupabaseKey();
 
     return createClient<Database>(supabaseUrl, supabaseKey, {
       auth: {
@@ -82,10 +108,21 @@ export class SupabaseClientSingleton {
       return this.mockClient;
     }
 
-    return this.createBaseClient({ 
-      persistSession: false,
-      detectSessionInUrl: false,
-      autoRefreshToken: false
+    const supabaseUrl = validateSupabaseUrl();
+    const supabaseKey = validateSupabaseKey();
+
+    return createClient<Database>(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: false,
+        detectSessionInUrl: false,
+        autoRefreshToken: false,
+        flowType: "pkce",
+        storage: {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {}
+        }
+      }
     });
   }
 
@@ -183,4 +220,44 @@ export const supabase = getSupabase();
  */
 export function setMockSupabaseClient(client: SupabaseClient<Database>): void {
   SupabaseClientSingleton.setMockClient(client);
+}
+
+/**
+ * Crée un client Supabase pour le serveur avec gestion des cookies Astro
+ */
+export function createServerSupabaseClient(cookies: AstroCookies): SupabaseClient<Database> {
+  const supabaseUrl = validateSupabaseUrl();
+  const supabaseKey = validateSupabaseKey();
+
+  return createClient<Database>(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: true,
+      detectSessionInUrl: false,
+      autoRefreshToken: true,
+      flowType: "pkce",
+      storage: {
+        getItem: (key: string) => {
+          const cookie = cookies.get(key);
+          if (cookie) {
+            return cookie.value;
+          }
+          return null;
+        },
+        setItem: (key: string, value: string) => {
+          cookies.set(key, value, {
+            path: '/',
+            httpOnly: true,
+            secure: import.meta.env.PROD,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7 // 1 semaine
+          });
+        },
+        removeItem: (key: string) => {
+          cookies.delete(key, {
+            path: '/'
+          });
+        }
+      }
+    }
+  });
 } 
