@@ -54,8 +54,8 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1
       astro-vtbot:
-        specifier: ^1.10.7
-        version: 1.10.7
+        specifier: ^2.1.1
+        version: 2.1.1
       clipboard:
         specifier: ^2.0.11
         version: 2.0.11
@@ -1430,8 +1430,8 @@ packages:
   '@vscode/l10n@0.0.18':
     resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
 
-  '@vtbag/cam-shaft@1.0.5':
-    resolution: {integrity: sha512-fQIS4v8KmZ8t2FzfijAroX5i4s4KC1bgNoTZlrusBwXU5jaU6CxG6iFPgkPYRXre6tKzI0/aQTjPt03dyCY0ew==}
+  '@vtbag/cam-shaft@1.0.6':
+    resolution: {integrity: sha512-Xy1bmJJLXuCqxmY2agwPfhGNv1XZViqh54H0VGK4mouGsItFsh8Mz/wWAP6mZwAOEuu9bEOJ1mJ+oNoaczZ1zw==}
 
   '@vtbag/element-crossing@1.1.0':
     resolution: {integrity: sha512-1YL609KPwhHUKRrVNfoogQCVJPfFrE5DubOLcCJZLHVCjWZ2ZAPcaq1wR2OP6nXD0Ok9JLX41YsEtYBYzw6CxQ==}
@@ -1439,8 +1439,11 @@ packages:
   '@vtbag/inspection-chamber@1.0.21':
     resolution: {integrity: sha512-7TWv9W7Nx5Dkp6Uak9gcLuaF3v10ErEuCcSiUbkN8GTvgjuAIHuV5EKTg+dI1wd7JRoWU840Jf4Avxa+yNyUmw==}
 
-  '@vtbag/turn-signal@1.3.0':
-    resolution: {integrity: sha512-2Dj5sHjCrdDclGInN8K2pGCwlWmhT53jIqKL7sJLOFYKJlDSTz+LcC/JJFYNDPr7US001Aum51QtCcz1FXbvHw==}
+  '@vtbag/turn-signal@1.3.1':
+    resolution: {integrity: sha512-6rWkG+ik3U+KQGI94yNOrOh5QedB9zmP/8H51X5WQwrJz8m2MAU5YwGRRcweO/dJ6wW/Bn7OsgC1vRURnwrvCg==}
+
+  '@vtbag/utensil-drawer@1.2.0':
+    resolution: {integrity: sha512-o1LoA2QtXesonezCoVVXK0irvGymGu+JFxlyr4knu0tRKenaBoIilMt2W1eTfarWp8X1JTK88oHSIVnXUA1odw==}
 
   '@vue/babel-helper-vue-transform-on@1.2.5':
     resolution: {integrity: sha512-lOz4t39ZdmU4DJAa2hwPYmKc8EsuGa2U0L9KaZaOJUt0UwQNjNA3AZTq6uEivhOKhhG1Wvy96SvYBoFmCg3uuw==}
@@ -1602,8 +1605,8 @@ packages:
   astro-icon@1.1.5:
     resolution: {integrity: sha512-CJYS5nWOw9jz4RpGWmzNQY7D0y2ZZacH7atL2K9DeJXJVaz7/5WrxeyIxO8KASk1jCM96Q4LjRx/F3R+InjJrw==}
 
-  astro-vtbot@1.10.7:
-    resolution: {integrity: sha512-lwCMq+ruuTbHooJ/ZYL2tA99KXDXqbmD5JNBtlnuO7EsEp7FBpwIVBOHt/lDkqUtDt+vQkWRPA5cLZ3tEny48g==}
+  astro-vtbot@2.1.1:
+    resolution: {integrity: sha512-S50LeeQeHTt7oDrwylixi1FU1sAcHKY354vKyl0Q+QBwHYzaZBylfyQ2KSVgOU/PSX3WKWs3iwN97/Gw+fvUpw==}
 
   astro@5.2.5:
     resolution: {integrity: sha512-AYXyYkc+c5xbKTm48FyQA91y81nXyNPAaoyafR0LUugE4lAwuvIUcXDBfMzmbuP1lGRvsE33G2oypv6gbGaPFg==}
@@ -6063,13 +6066,15 @@ snapshots:
 
   '@vscode/l10n@0.0.18': {}
 
-  '@vtbag/cam-shaft@1.0.5': {}
+  '@vtbag/cam-shaft@1.0.6': {}
 
   '@vtbag/element-crossing@1.1.0': {}
 
   '@vtbag/inspection-chamber@1.0.21': {}
 
-  '@vtbag/turn-signal@1.3.0': {}
+  '@vtbag/turn-signal@1.3.1': {}
+
+  '@vtbag/utensil-drawer@1.2.0': {}
 
   '@vue/babel-helper-vue-transform-on@1.2.5': {}
 
@@ -6321,12 +6326,13 @@ snapshots:
       - debug
       - supports-color
 
-  astro-vtbot@1.10.7:
+  astro-vtbot@2.1.1:
     dependencies:
-      '@vtbag/cam-shaft': 1.0.5
+      '@vtbag/cam-shaft': 1.0.6
       '@vtbag/element-crossing': 1.1.0
       '@vtbag/inspection-chamber': 1.0.21
-      '@vtbag/turn-signal': 1.3.0
+      '@vtbag/turn-signal': 1.3.1
+      '@vtbag/utensil-drawer': 1.2.0
 
   astro@5.2.5(@types/node@22.13.1)(jiti@1.21.7)(lightningcss@1.28.2)(rollup@4.34.6)(terser@5.37.0)(typescript@5.7.3)(yaml@2.7.0):
     dependencies:
