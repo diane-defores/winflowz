@@ -69,8 +69,8 @@ importers:
         specifier: ^1.1.20
         version: 1.1.20(react@19.0.0)(vue@3.5.13(typescript@5.7.3))
       preline:
-        specifier: ^2.7.0
-        version: 2.7.0
+        specifier: ^3.0.0
+        version: 3.0.0
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1043,9 +1043,6 @@ packages:
 
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
-
-  '@popperjs/core@2.11.8':
-    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
   '@preline/accordion@2.6.0':
     resolution: {integrity: sha512-MWZrV1RC0urfG9KuaKTd316gXK8yc8vIq3XtABCVbEf43hNRYUqLFbRPD3JTbdHtYiD/xT53NZkFC0CIvGj1yg==}
@@ -3459,8 +3456,8 @@ packages:
     resolution: {integrity: sha512-rU+ZAv1Ur9jAUZtGPebQVQPzdGhNzaEiQ7VL9+cjsAWPHFYOccNXPNiev1CCDSOg/2j7UujM7ojNhpkuILEVNQ==}
     engines: {node: '>=18.12'}
 
-  preline@2.7.0:
-    resolution: {integrity: sha512-xMuMVZ7aftBT1/5/3Rb48i/t+LWQfsUjBX7bls4peqS6h5OZTbIgz0N6eMDzuDlOZF3DiSWLehl00oGlAkvovw==}
+  preline@3.0.0:
+    resolution: {integrity: sha512-q4aWzzHP2CckuSudu9fG36Gt2t4iKuQw1Qa5p6t6iXn9QjaY9mCPjgQinul+AUSiGCgCsP26JiUNqw8VrPccvg==}
 
   prettier-plugin-astro@0.14.1:
     resolution: {integrity: sha512-RiBETaaP9veVstE4vUwSIcdATj6dKmXljouXc/DDNwBSPTp8FRkLGDSGFClKsAFeeg+13SB0Z1JZvbD76bigJw==}
@@ -5627,8 +5624,6 @@ snapshots:
       playwright: 1.50.1
 
   '@polka/url@1.0.0-next.28': {}
-
-  '@popperjs/core@2.11.8': {}
 
   '@preline/accordion@2.6.0': {}
 
@@ -8783,9 +8778,7 @@ snapshots:
       find-yarn-workspace-root2: 1.2.16
       which-pm: 3.0.1
 
-  preline@2.7.0:
-    dependencies:
-      '@popperjs/core': 2.11.8
+  preline@3.0.0: {}
 
   prettier-plugin-astro@0.14.1:
     dependencies:
