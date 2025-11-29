@@ -5,26 +5,7 @@
   },
   "hero": {
     "title": "Become a <span class=\"relative inline-flex sm:inline\"><span class=\"relative text-orange-400 text-6xl dark:text-pink-400\">Productive</span><span class=\"absolute inset-0 h-full w-full bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] opacity-30 blur-lg filter\"></span></span><span class=\"text-yellow-500 text-7xl dark:text-yellow-400\">Expert</span>",
-    "subTitle": "Transform your digital workflow with powerful tools and training designed by a neurodivergent expert obsessed with productivity.
-    Your digital workspace is a mess.
-
-No structure, no process – just chaos. 
-
-We fix it, one workflow at a time.
-
-Team by team, we build scalable processes.
-
-Efficiency is our expertise.
-
-Never building a process for process sake.
-
-Optimize your workspace with us.
-
-Strategy, implementation, training, documentation included.
-    
-    
-    
-    ",
+    "subTitle": "Transform your digital workflow with powerful tools and training designed by a neurodivergent expert obsessed with productivity.\n\nYour digital workspace is a mess.\n\nNo structure, no process – just chaos.\n\nWe fix it, one workflow at a time.\n\nTeam by team, we build scalable processes.\n\nEfficiency is our expertise.\n\nNever building a process for process sake.\n\nOptimize your workspace with us.\n\nStrategy, implementation, training, documentation included.",
     "primaryBtn": "Testimonials",
     "primaryBtnURL": "/products#testimonials",
     "secondaryBtn": "Buy Now",
