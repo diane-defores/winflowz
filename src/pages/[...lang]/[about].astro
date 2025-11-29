@@ -1,0 +1,131 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+import type { Language } from '@/types'
+
+export function getStaticPaths() {
+	return [
+		{ params: { lang: undefined, about: 'about' } },
+		{ params: { lang: 'fr', about: 'a-propos' } },
+	]
+}
+
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'about')
+
+interface Value {
+	title: string
+	description: string
+}
+
+interface Offering {
+	title: string
+	description: string
+}
+---
+
+<MainLayout
+	title={t.title}
+	lang={lang}
+	meta={{
+		description: t.meta?.description || t.title,
+	}}
+	structuredData={{
+		'@context': 'https://schema.org',
+		'@type': 'AboutPage',
+		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr/a-propos' : 'about'}`,
+		url: `https://winflowz.com/${lang === 'fr' ? 'fr/a-propos' : 'about'}`,
+		name: `${t.title} | WinFlowz`,
+		description: t.meta?.description || t.title,
+		inLanguage: lang,
+	}}
+>
+	<div class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+		<!-- Hero Section -->
+		<div class="mb-12 text-center">
+			<p class="mb-2 text-sm font-semibold uppercase tracking-wide text-orange-500">
+				{t.hero.tagline}
+			</p>
+			<h1 class="mb-4 text-4xl font-bold text-neutral-900 dark:text-white sm:text-5xl">
+				{t.hero.headline}
+			</h1>
+			<p class="text-xl text-neutral-600 dark:text-neutral-400">
+				{t.hero.subheadline}
+			</p>
+		</div>
+
+		<!-- Story Section -->
+		<div class="mb-12">
+			<h2 class="mb-6 text-2xl font-bold text-neutral-900 dark:text-white">
+				{t.story.title}
+			</h2>
+			<div class="space-y-4 text-neutral-600 dark:text-neutral-400">
+				{t.story.paragraphs.map((paragraph: string) => (
+					<p class="leading-relaxed">{paragraph}</p>
+				))}
+			</div>
+		</div>
+
+		<!-- Mission Section -->
+		<div class="mb-12 rounded-xl bg-neutral-100 p-8 dark:bg-neutral-800">
+			<h2 class="mb-4 text-2xl font-bold text-neutral-900 dark:text-white">
+				{t.mission.title}
+			</h2>
+			<p class="mb-6 text-neutral-600 dark:text-neutral-400">
+				{t.mission.content}
+			</p>
+			<div class="grid gap-6 md:grid-cols-3">
+				{t.mission.values.map((value: Value) => (
+					<div class="rounded-lg bg-white p-6 dark:bg-neutral-900">
+						<h3 class="mb-2 font-semibold text-neutral-900 dark:text-white">
+							{value.title}
+						</h3>
+						<p class="text-sm text-neutral-600 dark:text-neutral-400">
+							{value.description}
+						</p>
+					</div>
+				))}
+			</div>
+		</div>
+
+		<!-- Offerings Section -->
+		<div class="mb-12">
+			<h2 class="mb-6 text-2xl font-bold text-neutral-900 dark:text-white">
+				{t.offerings.title}
+			</h2>
+			<div class="grid gap-6 md:grid-cols-3">
+				{t.offerings.items.map((item: Offering) => (
+					<div class="rounded-lg border border-neutral-200 p-6 dark:border-neutral-700">
+						<h3 class="mb-2 font-semibold text-neutral-900 dark:text-white">
+							{item.title}
+						</h3>
+						<p class="text-sm text-neutral-600 dark:text-neutral-400">
+							{item.description}
+						</p>
+					</div>
+				))}
+			</div>
+		</div>
+
+		<!-- CTA Section -->
+		<div class="rounded-xl bg-orange-50 p-8 text-center dark:bg-orange-900/20">
+			<h2 class="mb-4 text-2xl font-bold text-neutral-900 dark:text-white">
+				{t.cta.title}
+			</h2>
+			<p class="mb-6 text-neutral-600 dark:text-neutral-400">
+				{t.cta.description}
+			</p>
+			<a
+				href={lang === 'fr' ? '/fr/produits' : '/products'}
+				class="inline-flex items-center justify-center rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600"
+			>
+				{t.cta.button}
+			</a>
+		</div>
+
+		<!-- Footer -->
+		<p class="mt-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
+			{t.footer.contact}
+		</p>
+	</div>
+</MainLayout>

@@ -3,11 +3,9 @@ import MainLayout from '@/layouts/MainLayout.astro'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types/i18n'
 
-export function getStaticPaths() {
-	return [{ params: { lang: 'fr' } }, { params: { lang: 'en' } }]
-}
-
-const { lang = 'en' } = Astro.params as { lang?: Language }
+// Detect language from URL - if path starts with /fr, use French, otherwise English
+const url = Astro.url
+const lang: Language = url.pathname.startsWith('/fr') ? 'fr' : 'en'
 const t = await useTranslations(lang, '404')
 ---
 
