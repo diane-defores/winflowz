@@ -12,27 +12,27 @@ declare global {
 }
 
 function initPreline() {
-  // Initialiser les collapse (hamburger menu)
+  // Initialize collapse components (hamburger menu)
   if (typeof window.HSCollapse !== 'undefined') {
     window.HSCollapse.autoInit();
   }
 
-  // Initialiser les dropdowns
+  // Initialize dropdowns
   if (typeof window.HSDropdown !== 'undefined') {
     window.HSDropdown.autoInit();
   }
 
-  // Initialiser les overlays (modales)
+  // Initialize overlays (modals)
   if (typeof window.HSOverlay !== 'undefined') {
     window.HSOverlay.autoInit();
   }
 }
 
-// Initialisation au chargement initial
+// Initial load
 document.addEventListener('DOMContentLoaded', initPreline);
 
-// Initialisation après chaque navigation
+// After each navigation
 document.addEventListener('astro:page-load', initPreline);
 
-// Réinitialisation après chaque transition de page
+// Reinitialize after each page transition
 document.addEventListener('astro:after-swap', initPreline); 
