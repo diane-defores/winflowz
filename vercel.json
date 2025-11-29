@@ -9,13 +9,6 @@
       }
     }
   ],
-  "routes": [
-    {
-      "src": "/fr/(?!.*\\..*$).*",
-      "status": 404,
-      "dest": "/fr/404/index.html"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
