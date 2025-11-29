@@ -1,15 +1,22 @@
 import 'preline';
+import '@preline/collapse';
 import '@preline/dropdown';
 import '@preline/overlay';
 
 declare global {
   interface Window {
+    HSCollapse: any;
     HSDropdown: any;
     HSOverlay: any;
   }
 }
 
 function initPreline() {
+  // Initialiser les collapse (hamburger menu)
+  if (typeof window.HSCollapse !== 'undefined') {
+    window.HSCollapse.autoInit();
+  }
+
   // Initialiser les dropdowns
   if (typeof window.HSDropdown !== 'undefined') {
     window.HSDropdown.autoInit();
