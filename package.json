@@ -24,7 +24,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/sitemap": "^3.2.1",
-    "@astrojs/vercel": "^8.0.6",
+    "@astrojs/vercel": "^9.0.2",
     "@heroicons/react": "^2.2.0",
     "@preline/accordion": "^2.6.0",
     "@preline/collapse": "^2.6.0",
@@ -44,7 +44,7 @@
     "lenis": "^1.1.20",
     "preline": "^2.7.0",
     "rimraf": "^6.0.1",
-    "sharp": "^0.33.5",
+    "sharp": "^0.34.5",
     "sharp-ico": "^0.1.5",
     "stripe": "^17.6.0",
     "tailwindcss": "^3.4.17"
@@ -58,21 +58,21 @@
     "@phosphor-icons/web": "^2.1.1",
     "@playwright/test": "^1.50.1",
     "@tailwindcss/forms": "^0.5.10",
-    "@vitest/coverage-v8": "^1.6.1",
-    "@vitest/ui": "^1.6.1",
+    "@vitest/coverage-v8": "^4.0.14",
+    "@vitest/ui": "^4.0.14",
     "astro": "^5.2.5",
     "astro-icon": "^1.1.5",
     "dotenv": "^16.4.7",
-    "jsdom": "^26.0.0",
+    "jsdom": "^27.2.0",
     "msw": "^2.7.0",
-    "nanoid": "4.0.2",
-    "postcss": "8.4.35",
+    "nanoid": "^5.1.6",
+    "postcss": "^8.5.6",
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "supabase": "^2.9.6",
     "typescript": "^5.7.3",
-    "vitest": "^1.6.1"
+    "vitest": "^4.0.14"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
