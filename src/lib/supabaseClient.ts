@@ -3,7 +3,8 @@ import type { Database } from '../types/supabase'
 import type { AstroCookies } from 'astro'
 
 function validateSupabaseUrl(): string {
-  // Try SUPABASE_URL first, then PUBLIC_SUPABASE_URL as fallback
+  // During build time, SUPABASE_URL may not be set, so we fallback to PUBLIC_SUPABASE_URL
+  // which is exposed by Vercel during the build process
   const url = import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL;
   
   if (!url) {
@@ -19,7 +20,8 @@ function validateSupabaseUrl(): string {
 }
 
 function validateSupabaseKey(): string {
-  // Try SUPABASE_PUBLISHABLE_KEY first, then PUBLIC_SUPABASE_PUBLISHABLE_KEY and PUBLIC_SUPABASE_ANON_KEY as fallbacks
+  // During build time, SUPABASE_PUBLISHABLE_KEY may not be set, so we fallback to PUBLIC_ variants
+  // which are exposed by Vercel during the build process
   const key = import.meta.env.SUPABASE_PUBLISHABLE_KEY || 
               import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
               import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
@@ -226,8 +228,14 @@ export function getSupabaseInstance(): SupabaseClient<Database> {
 }
 
 /**
- * @deprecated Use getSupabaseInstance() for lazy initialization.
- * This export is kept for backwards compatibility.
+ * Lazy-loaded Supabase client for backwards compatibility.
+ * Uses a Proxy to defer initialization until first property access, preventing
+ * build-time errors when environment variables are not available.
+ * 
+ * The Proxy overhead is negligible compared to network operations.
+ * For new code, prefer using getSupabaseInstance() directly.
+ * 
+ * À utiliser uniquement côté client
  */
 export const supabase = new Proxy({} as SupabaseClient<Database>, {
   get(_target, prop) {
