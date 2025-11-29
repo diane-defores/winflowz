@@ -17,7 +17,7 @@ export default defineConfig({
       enabled: true,
     },
     functionPerRoute: false,
-    edgeMiddleware: true
+    edgeMiddleware: false
   }),
   server: {
     host: true,
