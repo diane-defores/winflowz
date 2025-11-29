@@ -1,31 +1,38 @@
 import 'preline';
+import '@preline/collapse';
 import '@preline/dropdown';
 import '@preline/overlay';
 
 declare global {
   interface Window {
+    HSCollapse: any;
     HSDropdown: any;
     HSOverlay: any;
   }
 }
 
 function initPreline() {
-  // Initialiser les dropdowns
+  // Initialize collapse components (hamburger menu)
+  if (typeof window.HSCollapse !== 'undefined') {
+    window.HSCollapse.autoInit();
+  }
+
+  // Initialize dropdowns
   if (typeof window.HSDropdown !== 'undefined') {
     window.HSDropdown.autoInit();
   }
 
-  // Initialiser les overlays (modales)
+  // Initialize overlays (modals)
   if (typeof window.HSOverlay !== 'undefined') {
     window.HSOverlay.autoInit();
   }
 }
 
-// Initialisation au chargement initial
+// Initial load
 document.addEventListener('DOMContentLoaded', initPreline);
 
-// Initialisation après chaque navigation
+// After each navigation
 document.addEventListener('astro:page-load', initPreline);
 
-// Réinitialisation après chaque transition de page
+// Reinitialize after each page transition
 document.addEventListener('astro:after-swap', initPreline); 
