@@ -3,8 +3,9 @@ import type { Database } from '../types/supabase'
 import type { AstroCookies } from 'astro'
 
 function validateSupabaseUrl(): string {
-  const url = import.meta.env.SUPABASE_URL;
-  console.log('Validation URL Supabase:', { url, env: import.meta.env });
+  // During build time, SUPABASE_URL may not be set, so we fallback to PUBLIC_SUPABASE_URL
+  // which is exposed by Vercel during the build process
+  const url = import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL;
   
   if (!url) {
     throw new Error('La variable d\'environnement SUPABASE_URL est manquante');
@@ -19,8 +20,11 @@ function validateSupabaseUrl(): string {
 }
 
 function validateSupabaseKey(): string {
-  const key = import.meta.env.SUPABASE_PUBLISHABLE_KEY;
-  console.log('Validation clé Supabase:', { key: key?.substring(0, 10) + '...' });
+  // During build time, SUPABASE_PUBLISHABLE_KEY may not be set, so we fallback to PUBLIC_ variants
+  // which are exposed by Vercel during the build process
+  const key = import.meta.env.SUPABASE_PUBLISHABLE_KEY || 
+              import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+              import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   
   if (!key) {
     throw new Error('La variable d\'environnement SUPABASE_PUBLISHABLE_KEY est manquante');
@@ -210,10 +214,34 @@ export function createServerSupabase(): SupabaseClient<Database> {
 }
 
 /**
- * Instance unique du client Supabase
+ * Lazily-initialized Supabase client instance
+ * Uses a getter to defer initialization until first access
  * À utiliser uniquement côté client
  */
-export const supabase = getSupabase();
+let _supabaseInstance: SupabaseClient<Database> | null = null;
+
+export function getSupabaseInstance(): SupabaseClient<Database> {
+  if (!_supabaseInstance) {
+    _supabaseInstance = getSupabase();
+  }
+  return _supabaseInstance;
+}
+
+/**
+ * Lazy-loaded Supabase client for backwards compatibility.
+ * Uses a Proxy to defer initialization until first property access, preventing
+ * build-time errors when environment variables are not available.
+ * 
+ * The Proxy overhead is negligible compared to network operations.
+ * For new code, prefer using getSupabaseInstance() directly.
+ * 
+ * À utiliser uniquement côté client
+ */
+export const supabase = new Proxy({} as SupabaseClient<Database>, {
+  get(_target, prop) {
+    return Reflect.get(getSupabaseInstance(), prop);
+  }
+});
 
 /**
  * Définit un mock client pour les tests
