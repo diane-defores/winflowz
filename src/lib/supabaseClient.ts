@@ -3,8 +3,8 @@ import type { Database } from '../types/supabase'
 import type { AstroCookies } from 'astro'
 
 function validateSupabaseUrl(): string {
-  const url = import.meta.env.SUPABASE_URL;
-  console.log('Validation URL Supabase:', { url, env: import.meta.env });
+  // Try SUPABASE_URL first, then PUBLIC_SUPABASE_URL as fallback
+  const url = import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL;
   
   if (!url) {
     throw new Error('La variable d\'environnement SUPABASE_URL est manquante');
@@ -19,8 +19,10 @@ function validateSupabaseUrl(): string {
 }
 
 function validateSupabaseKey(): string {
-  const key = import.meta.env.SUPABASE_PUBLISHABLE_KEY;
-  console.log('Validation clé Supabase:', { key: key?.substring(0, 10) + '...' });
+  // Try SUPABASE_PUBLISHABLE_KEY first, then PUBLIC_SUPABASE_PUBLISHABLE_KEY and PUBLIC_SUPABASE_ANON_KEY as fallbacks
+  const key = import.meta.env.SUPABASE_PUBLISHABLE_KEY || 
+              import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+              import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   
   if (!key) {
     throw new Error('La variable d\'environnement SUPABASE_PUBLISHABLE_KEY est manquante');
@@ -210,10 +212,28 @@ export function createServerSupabase(): SupabaseClient<Database> {
 }
 
 /**
- * Instance unique du client Supabase
+ * Lazily-initialized Supabase client instance
+ * Uses a getter to defer initialization until first access
  * À utiliser uniquement côté client
  */
-export const supabase = getSupabase();
+let _supabaseInstance: SupabaseClient<Database> | null = null;
+
+export function getSupabaseInstance(): SupabaseClient<Database> {
+  if (!_supabaseInstance) {
+    _supabaseInstance = getSupabase();
+  }
+  return _supabaseInstance;
+}
+
+/**
+ * @deprecated Use getSupabaseInstance() for lazy initialization.
+ * This export is kept for backwards compatibility.
+ */
+export const supabase = new Proxy({} as SupabaseClient<Database>, {
+  get(_target, prop) {
+    return Reflect.get(getSupabaseInstance(), prop);
+  }
+});
 
 /**
  * Définit un mock client pour les tests
