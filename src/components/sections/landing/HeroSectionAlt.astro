@@ -16,7 +16,7 @@ interface Props {
 ---
 
 <section
-  class="relative mx-auto max-w-[85rem] px-4 pb-24 pt-10 sm:px-6 lg:px-8"
+  class="relative mx-auto max-w-[85rem] px-3 pb-16 pt-8 sm:px-6 sm:pb-24 sm:pt-10 lg:px-8"
 >
   <!-- Decorating SVG elements -->
   <div
@@ -117,18 +117,18 @@ interface Props {
     </svg>
   </div>
   <!-- Hero Section Heading -->
-  <div class="mx-auto mt-5 max-w-xl text-center">
+  <div class="mx-auto mt-4 max-w-xl text-center sm:mt-5">
     <h2
-      class="block text-balance text-4xl font-bold leading-tight tracking-tight text-neutral-800 dark:text-neutral-200 md:text-5xl lg:text-6xl"
+      class="block text-balance text-2xl font-bold leading-tight tracking-tight text-neutral-800 dark:text-neutral-200 sm:text-4xl md:text-5xl lg:text-6xl"
     >
       {title}
     </h2>
   </div>
   <!-- Hero Section Sub-heading -->
-  <div class="mx-auto mt-5 max-w-3xl text-center">
+  <div class="mx-auto mt-4 max-w-3xl text-center sm:mt-5">
     {
       subTitle && (
-        <p class="text-pretty text-lg text-neutral-600 dark:text-neutral-400">
+        <p class="text-pretty text-base text-neutral-600 dark:text-neutral-400 sm:text-lg">
           {subTitle}
         </p>
       )
@@ -137,7 +137,7 @@ interface Props {
   <!-- Github Button -->
   {
     url && (
-      <div class="mt-8 flex justify-center gap-3">
+      <div class="mt-6 flex justify-center gap-3 sm:mt-8">
         <GithubBtn url={url} title={btnTitle}/>
       </div>
     )
