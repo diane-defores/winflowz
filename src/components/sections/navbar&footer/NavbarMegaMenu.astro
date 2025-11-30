@@ -6,7 +6,7 @@ import MegaMenuLink from "@components/ui/links/MegaMenuLink.astro";
 import Authentication from "../misc/Authentication.astro";
 import enStrings from "@/utils/navigation.ts";
 import frStrings from "@/utils/fr/navigation.ts";
-import BrandLogo from "@components/BrandLogo.astro";
+import TextLogo from "@components/ui/TextLogo.astro";
 import LanguagePicker from "@components/ui/LanguagePicker.astro";
 
 // Select the correct translation based on the page's lang prop:
@@ -30,7 +30,7 @@ const homeUrl = Astro.currentLocale === "fr" ? "/fr" : "/";
 				href={homeUrl}
 				aria-label="Brand"
 			>
-				<BrandLogo class="h-auto w-24" />
+				<TextLogo class="w-24" />
 			</a>
 			<!-- Collapse toggle for smaller screens -->
 			<div class="ml-auto mr-5 md:hidden">
