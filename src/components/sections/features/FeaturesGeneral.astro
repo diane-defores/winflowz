@@ -21,10 +21,10 @@ const { title, subTitle, src, alt, features } = Astro.props
 ---
 
 <section
-	class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full"
+	class="mx-auto max-w-[85rem] px-3 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14 2xl:max-w-full"
 >
 	<!-- Block to display the feature image -->
-	<div class="relative mb-6 overflow-hidden md:mb-8">
+	<div class="relative mb-4 overflow-hidden sm:mb-6 md:mb-8">
 		{
 			src && alt && (
 				<img
@@ -39,7 +39,7 @@ const { title, subTitle, src, alt, features } = Astro.props
 	</div>
 
 	<!-- Displaying the main content consisting of title, subtitle, and several `IconBlock` components -->
-	<div class="mt-5 grid gap-8 lg:mt-16 lg:grid-cols-3 lg:gap-12">
+	<div class="mt-4 grid gap-6 sm:mt-5 lg:mt-16 lg:grid-cols-3 lg:gap-12">
 		<!-- Block for title and subtitle -->
 		<div class="lg:col-span-1">
 			<!-- Rendering title -->
@@ -60,7 +60,7 @@ const { title, subTitle, src, alt, features } = Astro.props
 
 		<!-- Block to display the IconBlock components -->
 		<div class="lg:col-span-2">
-			<div class="grid gap-8 sm:grid-cols-2 md:gap-12">
+			<div class="grid gap-6 sm:grid-cols-2 sm:gap-8 md:gap-12">
 				<!-- Injecting IconBlock components with different properties -->
 				{
 					features &&
