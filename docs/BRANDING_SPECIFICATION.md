@@ -274,7 +274,7 @@ Uses Tailwind CSS default system font stack for optimal performance and native f
 ```css
 background: linear-gradient(to right, #44BCFF, #FF44EC, #FF675E);
 opacity: 0.30;
-filter: blur(lg);
+filter: blur(24px); /* Tailwind's blur-lg equivalent */
 ```
 
 #### Page Background (Starlight)
@@ -428,7 +428,7 @@ font-weight: bold;
 /* Secondary variant */
 .action.secondary {
   background: var(--sl-color-black);
-  border: 2px solid;
+  border: 2px solid currentColor;
 }
 ```
 
@@ -465,7 +465,10 @@ font-weight: bold;
 
 /* Firefox */
 scrollbar-width: thin;
+/* Light mode: accent color on white track */
 scrollbar-color: var(--sl-color-accent, #ffcfaa) #ffffff;
+/* Dark mode (applied via html.dark): accent color on gray track */
+/* html.dark { scrollbar-color: var(--sl-color-accent, #ffcfaa) var(--sl-color-gray-6, #272727); } */
 ```
 
 ---
@@ -585,5 +588,5 @@ Gradient animation: 6s (normal), 4s (hover)
 
 ---
 
-*Last Updated: December 2024*
+*Last Updated: December 1, 2024*
 *Source Repository: dianedef/winflowz*
