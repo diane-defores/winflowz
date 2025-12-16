@@ -4,6 +4,9 @@
 * [Getting Started](#getting-started)
   * [Installation](#installation)
   * [Development Commands](#development-commands)
+* [BMAD Method](#bmad-method)
+  * [AI-Driven Development](#ai-driven-development)
+  * [Quick Start with BMAD](#quick-start-with-bmad)
 * [Project Structure](#project-structure)
 * [Static Assets and Public Resources](#static-assets-and-public-resources)
 * [Customization](#customization)
@@ -91,6 +94,40 @@ With dependencies installed, you can utilize the following npm scripts to manage
 * `npm run build`: Bundles your site into static files for production.
 
 For detailed help with Astro CLI commands, visit [Astro's documentation](https://docs.astro.build/en/reference/cli-reference/).
+
+## BMAD Method
+
+WinFlowz uses the **BMAD (Breakthrough Method for Agile AI-Driven Development)** framework to organize development with AI assistance.
+
+### AI-Driven Development
+
+BMAD provides specialized AI agents for different development phases:
+- **Planning Phase**: Analyst, PM, Architect, UX Expert
+- **Development Phase**: Developer, QA, Scrum Master
+
+### Quick Start with BMAD
+
+**First Time Using BMAD?**
+1. Read [`bmad/GETTING_STARTED.md`](bmad/GETTING_STARTED.md) for comprehensive guide
+2. Check [`bmad/NEXT_STEPS.md`](bmad/NEXT_STEPS.md) for immediate actions
+3. Browse [`bmad/INDEX.md`](bmad/INDEX.md) for documentation map
+
+**Using AI Assistants (ChatGPT, Claude, Gemini)?**
+- Upload agent files from `web-bundles/agents/` for specific tasks
+- Use team bundles from `web-bundles/teams/` for complex projects
+- See [BMAD README](bmad/README.md) for detailed instructions
+
+**Documentation Organization:**
+- Business & Product Planning → `bmad/planning/`
+- Technical Specifications → `docs/`
+- Templates & Prompts → `bmad/templates/`
+- Case Studies → `bmad/planning/case-studies/`
+
+**Key Resources:**
+- [BMAD User Guide](.bmad-core/user-guide.md) - Complete method documentation
+- [Agent Definitions](.bmad-core/agents/) - AI agent capabilities
+- [Workflows](.bmad-core/workflows/) - Pre-defined development workflows
+- [Templates](.bmad-core/templates/) - Document templates
 
 ## Deployment
 
