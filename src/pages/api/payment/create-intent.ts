@@ -1,16 +1,46 @@
+/**
+ * Payment Intent Creation Endpoint
+ * 
+ * Creates a Stripe PaymentIntent for product purchases. A PaymentIntent
+ * represents the intent to collect a payment and tracks the lifecycle
+ * of that payment through to completion.
+ * 
+ * Flow:
+ * 1. Verify user authentication via Bearer token
+ * 2. Look up product details and pricing
+ * 3. Create PaymentIntent with user/product metadata
+ * 4. Return client secret for frontend Stripe.js integration
+ * 
+ * The client secret allows the frontend to complete the payment securely
+ * without exposing the full PaymentIntent or API keys.
+ * 
+ * @module api/payment/create-intent
+ */
+
 import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 import { supabase } from '../../../lib/supabaseClient';
 
+// Disable static pre-rendering - this must run server-side
 export const prerender = false;
 
+// Initialize Stripe client with API version for type safety
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-01-27.acacia'
 });
 
+/**
+ * POST handler to create a new PaymentIntent.
+ * 
+ * Request requirements:
+ * - Authorization header with valid Bearer token
+ * - Form data with productId field
+ * 
+ * Returns the PaymentIntent client secret for Stripe.js confirmation.
+ */
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // Vérifier l'authentification
+    // Authenticate the request using Supabase JWT from Authorization header
     const authHeader = request.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Non autorisé' }), {
@@ -19,6 +49,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    // Verify the JWT and get user info
     const token = authHeader.split(' ')[1];
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
@@ -29,7 +60,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Récupérer les données du formulaire
+    // Extract product ID from form data
     const formData = await request.formData();
     const productId = formData.get('productId') as string;
 
@@ -40,7 +71,8 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Récupérer les informations du produit
+    // Fetch product details to get current pricing
+    // Always use database price, never trust client-provided amounts
     const { data: product, error: productError } = await supabase
       .from('products')
       .select('*')
@@ -54,9 +86,10 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Créer l'intention de paiement Stripe
+    // Create PaymentIntent with metadata for webhook processing
+    // Metadata links the payment back to user and product for fulfillment
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: product.price,
+      amount: product.price,  // Amount in cents (e.g., 1000 = €10.00)
       currency: 'eur',
       metadata: {
         user_id: user.id,
@@ -64,6 +97,8 @@ export const POST: APIRoute = async ({ request }) => {
       }
     });
 
+    // Return client secret - this is safe to expose to the frontend
+    // It can only be used to confirm this specific PaymentIntent
     return new Response(JSON.stringify({
       clientSecret: paymentIntent.client_secret
     }), {

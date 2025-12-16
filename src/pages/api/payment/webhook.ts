@@ -1,18 +1,49 @@
+/**
+ * Stripe Webhook Handler
+ * 
+ * This endpoint receives and processes webhook events from Stripe. Webhooks
+ * are the primary mechanism for handling asynchronous payment events like
+ * successful charges, failed payments, and refunds.
+ * 
+ * Security: Stripe signs all webhook payloads with a secret. We verify this
+ * signature to ensure the request actually came from Stripe and wasn't
+ * tampered with in transit.
+ * 
+ * Flow for successful payment:
+ * 1. Stripe sends payment_intent.succeeded event
+ * 2. We verify the signature
+ * 3. Create a purchase record in the database
+ * 4. Generate an API key for the purchased product
+ * 5. (TODO) Send confirmation email with the API key
+ * 
+ * @module api/payment/webhook
+ */
+
 import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 import { createApiKeyForPurchase } from '../../../lib/api-keys';
 import { supabase } from '../../../lib/supabaseClient';
 
+// Disable static pre-rendering - this must run server-side
 export const prerender = false;
 
+// Initialize Stripe client with secret key for server-side operations
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-01-27.acacia'
 });
 
+// Webhook signing secret for payload verification
 const endpointSecret = import.meta.env.STRIPE_WEBHOOK_SECRET;
 
+/**
+ * POST handler for Stripe webhook events.
+ * 
+ * Important: The raw request body must be used for signature verification.
+ * Do not parse JSON before calling constructEvent.
+ */
 export const POST: APIRoute = async ({ request }) => {
   try {
+    // Stripe includes a signature header with every webhook request
     const sig = request.headers.get('stripe-signature');
     const payload = await request.text();
 
@@ -23,7 +54,8 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Vérifier la signature du webhook
+    // Verify the webhook signature to ensure authenticity
+    // This throws an error if signature is invalid
     let event;
     try {
       event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
@@ -35,12 +67,13 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Gérer l'événement
+    // Handle the payment_intent.succeeded event - triggered when payment completes
     if (event.type === 'payment_intent.succeeded') {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      // Metadata was attached when creating the payment intent
       const { user_id, product_id } = paymentIntent.metadata;
 
-      // Créer l'entrée dans la table purchases
+      // Record the successful purchase in our database
       const { data: purchase, error: purchaseError } = await supabase
         .from('purchases')
         .insert({
@@ -48,7 +81,7 @@ export const POST: APIRoute = async ({ request }) => {
           product_id,
           payment_intent_id: paymentIntent.id,
           status: 'completed',
-          amount: paymentIntent.amount
+          amount: paymentIntent.amount  // Amount in cents
         })
         .select()
         .single();
@@ -61,12 +94,12 @@ export const POST: APIRoute = async ({ request }) => {
         });
       }
 
-      // Générer la clé API
+      // Generate an API key for the purchased product
       try {
         const { apiKey } = await createApiKeyForPurchase(user_id, product_id);
 
-        // Envoyer un email avec la clé API
-        // TODO: Implémenter l'envoi d'email
+        // TODO: Send confirmation email with the API key
+        // The key should only be shown once, so email is important
 
         return new Response(JSON.stringify({ success: true }), {
           status: 200,
@@ -81,7 +114,8 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // Gérer les autres événements si nécessaire
+    // Acknowledge receipt of unhandled events
+    // Stripe expects a 2xx response to mark the webhook as delivered
     return new Response(JSON.stringify({ received: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

@@ -1,12 +1,41 @@
+/**
+ * Purchase Completion Endpoint
+ * 
+ * Finalizes a product purchase after payment has been confirmed. This endpoint
+ * is called from the frontend after Stripe payment confirmation succeeds.
+ * 
+ * Note: This provides an alternative to webhook-based fulfillment. While
+ * webhooks are more reliable (they work even if the user closes the browser),
+ * this endpoint provides immediate response for better UX.
+ * 
+ * Flow:
+ * 1. Verify user authentication
+ * 2. Validate product exists
+ * 3. Record purchase in database
+ * 4. Generate API key for product access
+ * 5. Return purchase confirmation with API key
+ * 
+ * @module api/purchase/complete
+ */
+
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { supabase } from '../../../lib/supabaseClient';
 import { createApiKeyForPurchase } from '../../../lib/api-keys';
 
+/**
+ * POST handler to complete a purchase and generate API key.
+ * 
+ * Request requirements:
+ * - Authorization header with valid Bearer token
+ * - Form data with: productId, paymentIntentId
+ * 
+ * Returns purchase details and the plain text API key (shown once).
+ */
 export const post: APIRoute = async ({ request }) => {
   try {
-    // Vérifier l'authentification
+    // Authenticate request using Supabase JWT
     const authHeader = request.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Non autorisé' }), {
@@ -25,7 +54,7 @@ export const post: APIRoute = async ({ request }) => {
       });
     }
 
-    // Récupérer les données de l'achat
+    // Extract purchase details from form data
     const formData = await request.formData();
     const productId = formData.get('productId') as string;
     const paymentIntentId = formData.get('paymentIntentId') as string;
@@ -37,7 +66,7 @@ export const post: APIRoute = async ({ request }) => {
       });
     }
 
-    // Vérifier que le produit existe
+    // Verify product exists and get pricing info
     const { data: product, error: productError } = await supabase
       .from('products')
       .select('*')
@@ -51,7 +80,8 @@ export const post: APIRoute = async ({ request }) => {
       });
     }
 
-    // Créer l'achat dans la base de données
+    // Record the purchase in the database
+    // Note: In production, verify the paymentIntentId with Stripe API
     const { data: purchase, error: purchaseError } = await supabase
       .from('purchases')
       .insert({
@@ -72,12 +102,14 @@ export const post: APIRoute = async ({ request }) => {
       });
     }
 
-    // Générer la clé API
+    // Generate API key for accessing the purchased product
     const { apiKey, keyData } = await createApiKeyForPurchase(user.id, productId);
 
-    // Envoyer un email de confirmation avec la clé API
-    // TODO: Implémenter l'envoi d'email
+    // TODO: Send confirmation email with the API key
+    // Important since the key is only shown once
 
+    // Return purchase confirmation with the API key
+    // The key is displayed once - user must save it now
     return new Response(JSON.stringify({
       success: true,
       purchase: {
@@ -89,7 +121,7 @@ export const post: APIRoute = async ({ request }) => {
         name: product.name,
         description: product.description
       },
-      apiKey
+      apiKey  // Show this ONCE - cannot be retrieved later
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
