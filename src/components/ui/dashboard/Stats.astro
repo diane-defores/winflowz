@@ -1,0 +1,78 @@
+---
+const stats = [
+  {
+    name: 'Produits achetés',
+    value: '0',
+    change: '+0%',
+    changeType: 'positive',
+    icon: `<svg class="h-6 w-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+    </svg>`
+  },
+  {
+    name: 'Produits disponibles',
+    value: '12',
+    change: 'total',
+    changeType: 'neutral',
+    icon: `<svg class="h-6 w-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+    </svg>`
+  },
+  {
+    name: 'Dernière connexion',
+    value: 'Aujourd\'hui',
+    change: '',
+    changeType: 'neutral',
+    icon: `<svg class="h-6 w-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>`
+  }
+];
+---
+
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+  {
+    stats.map((item) => (
+      <div class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 shadow dark:bg-neutral-800 sm:px-6 sm:pt-6">
+        <dt>
+          <div class="absolute rounded-md bg-neutral-100 p-3 dark:bg-neutral-700">
+            <Fragment set:html={item.icon} />
+          </div>
+          <p class="ml-16 truncate text-sm font-medium text-neutral-500 dark:text-neutral-400">
+            {item.name}
+          </p>
+        </dt>
+        <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+          <p class="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">
+            {item.value}
+          </p>
+          {item.change && (
+            <p
+              class:list={[
+                "ml-2 flex items-baseline text-sm font-semibold",
+                item.changeType === 'positive'
+                  ? "text-green-600 dark:text-green-400"
+                  : item.changeType === 'negative'
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-neutral-500 dark:text-neutral-400"
+              ]}
+            >
+              {item.change}
+            </p>
+          )}
+          <div class="absolute inset-x-0 bottom-0 bg-neutral-50 px-4 py-4 dark:bg-neutral-700/50 sm:px-6">
+            <div class="text-sm">
+              <a
+                href="#"
+                class="font-medium text-neutral-600 hover:text-neutral-500 dark:text-neutral-300 dark:hover:text-neutral-200"
+              >
+                Voir les détails
+                <span class="sr-only"> {item.name}</span>
+              </a>
+            </div>
+          </div>
+        </dd>
+      </div>
+    ))
+  }
+</div> 

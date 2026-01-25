@@ -1,0 +1,107 @@
+---
+export const prerender = false
+import MainLayout from '../../layouts/MainLayout.astro'
+import OAuthButton from '../../components/auth/OAuthButton.astro'
+import { getLangFromUrl, useTranslations } from '../../utils/i18n'
+import type { Language } from '@/types/i18n'
+
+const lang = getLangFromUrl(Astro.url)
+const translations = await useTranslations(lang, 'auth')
+const redirectTo = Astro.url.searchParams.get('redirectTo') || '/'
+
+function t(key: string): string {
+	return translations[key] || key
+}
+---
+
+<MainLayout title={t('signin.title')}>
+	<div class="flex min-h-screen items-center justify-center">
+		<div
+			class="bg-base-200 w-full max-w-md space-y-8 rounded-lg p-6 shadow-xl"
+		>
+			<div class="text-center">
+				<h1 class="text-2xl font-bold">{t('signin.title')}</h1>
+				<p class="text-base-content/70 mt-2">{t('signin.subtitle')}</p>
+			</div>
+
+			<div class="space-y-4">
+				<OAuthButton
+					provider="google"
+					title={t('signin.with_google')}
+					id="google-signin"
+				/>
+				<OAuthButton
+					provider="github"
+					title={t('signin.with_github')}
+					id="github-signin"
+				/>
+				<OAuthButton
+					provider="facebook"
+					title={t('signin.with_facebook')}
+					id="facebook-signin"
+				/>
+
+				<div class="divider">{t('signin.or')}</div>
+
+				<form class="space-y-4" action="/api/auth/signin" method="POST">
+					<div>
+						<label class="label" for="email">
+							<span class="label-text">{t('email')}</span>
+						</label>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							class="input input-bordered w-full"
+							required
+						/>
+					</div>
+
+					<div>
+						<label class="label" for="password">
+							<span class="label-text">{t('password')}</span>
+						</label>
+						<input
+							type="password"
+							id="password"
+							name="password"
+							class="input input-bordered w-full"
+							required
+						/>
+					</div>
+
+					<div class="flex items-center justify-between">
+						<div class="flex items-center">
+							<input
+								type="checkbox"
+								id="remember"
+								name="remember"
+								class="checkbox"
+							/>
+							<label class="label-text ml-2" for="remember">
+								{t('signin.remember')}
+							</label>
+						</div>
+						<a
+							href="/reset-password"
+							class="text-primary hover:text-primary-focus text-sm"
+						>
+							{t('signin.forgot')}
+						</a>
+					</div>
+
+					<button type="submit" class="btn btn-primary w-full">
+						{t('signin.submit')}
+					</button>
+				</form>
+
+				<p class="text-center text-sm">
+					{t('signin.no_account')}
+					<a href="/signup" class="text-primary hover:text-primary-focus">
+						{t('signin.create_account')}
+					</a>
+				</p>
+			</div>
+		</div>
+	</div>
+</MainLayout>

@@ -1,0 +1,193 @@
+---
+import EmailInput from './input/EmailInput.astro'
+import PasswordInput from './input/PasswordInput.astro'
+import Checkbox from './input/Checkbox.astro'
+import AuthBtn from '@components/ui/buttons/AuthBtn.astro'
+import GoogleBtn from '@/components/auth/GoogleBtn.astro'
+import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'auth')
+
+// Config object for customization of the component
+const config = {
+	id: 'hs-toggle-between-modals-register-modal',
+	title: t?.register?.title ?? 'Create an account',
+	subTitle: t?.register?.subtitle ?? 'Already have an account?',
+	loginBtn: t?.register?.loginLink ?? 'Sign in here',
+	loginBtnDataHS: '#hs-toggle-between-modals-login-modal',
+}
+---
+
+<div
+	id={config.id}
+	class="hs-overlay absolute start-0 top-0 z-50 hidden h-full w-full hs-overlay-backdrop-open:bg-neutral-900/90"
+>
+	<div
+		class="m-3 mt-0 opacity-0 transition-all ease-out hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 sm:mx-auto sm:w-full sm:max-w-lg"
+	>
+		<div class="mx-auto w-full max-w-md p-6">
+			<div
+				class="mt-7 rounded-xl border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
+			>
+				<div class="p-4 sm:p-7">
+					<div class="text-center">
+						<h2
+							class="block text-2xl font-bold text-neutral-800 dark:text-neutral-200"
+						>
+							{config.title}
+						</h2>
+						<p
+							class="mt-2 text-neutral-600 dark:text-neutral-400"
+						>
+							{config.subTitle}
+							<button
+								class="rounded-lg p-1 font-medium text-orange-400 decoration-2 outline-none ring-zinc-500 hover:underline focus-visible:ring dark:text-orange-400 dark:ring-zinc-200 dark:focus:outline-none"
+								data-hs-overlay={config.loginBtnDataHS}
+							>
+								{config.loginBtn}
+							</button>
+						</p>
+					</div>
+					<div class="mt-5">
+						<GoogleBtn
+							id="google-signup"
+							title={t?.register?.googleButton ?? 'Sign up with Google'}
+						/>
+
+						<div
+							class="flex items-center py-3 uppercase text-neutral-400 before:me-6 before:flex-[1_1_0%] before:border-t before:border-neutral-200 after:ms-6 after:flex-[1_1_0%] after:border-t after:border-neutral-200 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600"
+						>
+							{t?.register?.or ?? 'Or'}
+						</div>
+						<!-- The container for the form -->
+						<form
+							id="register-form"
+							action="/api/auth/register"
+							method="POST"
+						>
+							<!-- A grid layout for the form fields -->
+							<div class="grid gap-y-4">
+								<!-- The email input field -->
+								<EmailInput
+									id="register-email"
+									name="email"
+									errorId="register-email-error"
+									label={t?.fields?.email?.label}
+									placeholder={t?.fields?.email?.placeholder}
+									required
+								/>
+								<!-- The password input field -->
+								<PasswordInput
+									id="register-password"
+									name="password"
+									errorId="register-password-error"
+									content={t?.fields?.password?.hint}
+									label={t?.fields?.password?.label}
+									placeholder={t?.fields?.password?.placeholder}
+									required
+								/>
+								<!-- The confirm password input field -->
+								<PasswordInput
+									id="confirm-password"
+									name="confirm-password"
+									errorId="confirm-password-error"
+									content={t?.fields?.confirmPassword?.hint}
+									label={t?.fields?.confirmPassword?.label}
+									placeholder={t?.fields?.confirmPassword?.placeholder}
+									isConfirm={true}
+									required
+								/>
+								<!-- The terms checkbox -->
+								<Checkbox
+									id="accept-terms"
+									name="accept-terms"
+									label={t?.register?.acceptTerms ??
+										'I accept the Terms and Conditions'}
+									required
+								/>
+								<!-- The sign-up button -->
+								<AuthBtn title={t?.register?.submit ?? 'Sign up'} />
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	const form = document.getElementById('register-form')
+	const errorElement = document.getElementById('register-email-error')
+
+	function showError(message: string) {
+		if (errorElement) {
+			errorElement.textContent = message
+			errorElement.style.display = 'block'
+		}
+	}
+
+	if (form instanceof HTMLFormElement) {
+		form.addEventListener('submit', async (e) => {
+			// Validation des mots de passe
+			const password = form.querySelector('#register-password')?.value
+			const confirmPassword = form.querySelector('#confirm-password')?.value
+
+			if (password !== confirmPassword) {
+				e.preventDefault()
+				showError(
+					document.documentElement.lang === 'fr'
+						? 'Les mots de passe ne correspondent pas'
+						: 'Passwords do not match'
+				)
+				return
+			}
+
+			e.preventDefault()
+			try {
+				const response = await fetch(form.action, {
+					method: form.method,
+					body: new FormData(form),
+				})
+
+				const data = await response.json()
+
+				if (!response.ok) {
+					// Gestion spécifique des erreurs
+					if (data.error === 'user-exists') {
+						showError(
+							document.documentElement.lang === 'fr'
+								? 'Cette adresse email est déjà utilisée'
+								: 'This email is already registered'
+						)
+					} else {
+						showError(
+							document.documentElement.lang === 'fr'
+								? "Une erreur est survenue lors de l'inscription"
+								: 'An error occurred during registration'
+						)
+					}
+					return
+				}
+
+				// Succès - redirection
+				window.location.href = data.redirectUrl || '/dashboard'
+			} catch (err) {
+				showError(
+					document.documentElement.lang === 'fr'
+						? "Une erreur est survenue lors de l'inscription"
+						: 'An error occurred during registration'
+				)
+			}
+		})
+	}
+
+	// Google Sign In - Redirection simple
+	const googleBtn = document.getElementById('google-signup')
+	if (googleBtn) {
+		googleBtn.addEventListener('click', () => {
+			window.location.href = '/api/auth/signin?provider=google'
+		})
+	}
+</script>

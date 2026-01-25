@@ -1,0 +1,46 @@
+{
+  "navBarLinks": [
+    { "name": "Apps", "url": "/products" },
+    { "name": "Courses", "url": "/courses" },
+    { "name": "Services", "url": "/services" },
+    { "name": "Blog", "url": "/blog" },
+    { "name": "Contact", "url": "/contact" }
+  ],
+  "footerLinks": [
+    {
+      "section": "Ecosystem",
+      "links": [
+        { "name": "Formations", "url": "/en/formations/" },
+        { "name": "Tools & Equipment", "url": "/products" },
+        { "name": "Construction Services", "url": "/services" }
+      ]
+    },
+    {
+      "section": "Company",
+      "links": [
+        { "name": "About Us", "url": "/about" },
+        { "name": "Blog", "url": "/blog" },
+        { "name": "Copyright", "url": "/copyright" },
+        { "name": "Disclaimer", "url": "/disclaimer" },
+        { "name": "Legal Notice", "url": "/legal" },
+        { "name": "Privacy Policy", "url": "/privacy" },
+        { "name": "Terms of Service", "url": "/terms" }
+      ]
+    }
+  ],
+  "socialLinks": {
+    "facebook": "#",
+    "twitter": "#",
+    "github": "https://github.com/dianedef/winflowz",
+    "linkedin": "#",
+    "instagram": "#",
+    "x": "#"
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Stay up to date",
+      "content": "Stay updated with the latest tools and exclusive deals."
+    },
+    "crafted": "Crafted by"
+  }
+} 

@@ -1,0 +1,216 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import { useTranslations } from '@/utils/i18n'
+import type { Language } from '@/types'
+import { routes } from '@/i18n/config'
+import { getCollection } from 'astro:content'
+import { Image } from 'astro:assets'
+import MainSection from '@components/ui/blocks/MainSection.astro'
+import LeftSection from '@components/ui/blocks/LeftSection.astro'
+import RightSection from '@components/ui/blocks/RightSection.astro'
+import FeaturesStats from '@components/sections/features/FeaturesStats.astro'
+
+// Import des images par défaut
+import defaultImage1 from '@/assets/images/WinFlowz.png'
+import defaultImage2 from '@/assets/images/WinFlowz.png'
+
+// Tableau d'images par défaut pour plus de variété
+const defaultImages = [defaultImage1, defaultImage2]
+
+interface Article {
+	isRightSection: boolean
+	title: string
+	subTitle: string
+	btnExists?: boolean
+	btnTitle?: string
+	btnURL?: string
+	single?: boolean
+	img?: any
+	imgAlt?: string
+	imgOne?: any
+	imgOneAlt?: string
+	imgTwo?: any
+	imgTwoAlt?: string
+}
+
+interface ServiceFrontmatter {
+	title: string
+	description: string
+	icon: string
+	image?: string
+	imageAlt?: string
+	features?: string[]
+}
+
+interface TranslatedArticle {
+	isRightSection: boolean
+	title: string
+	subtitle: string
+	single?: boolean
+	imgAlt?: string
+	imgOneAlt?: string
+	imgTwoAlt?: string
+	btnExists?: boolean
+	btnTitle?: string
+	btnURL?: string
+}
+
+export async function getStaticPaths() {
+	return [
+		// Route anglaise
+		{
+			params: { lang: undefined, services: 'services' },
+			props: { lang: 'en' as Language },
+		},
+		// Route française
+		{
+			params: { lang: 'fr', services: 'services' },
+			props: { lang: 'fr' as Language },
+		},
+	]
+}
+
+interface Props {
+	lang: Language
+}
+
+const { lang } = Astro.props
+const t = await useTranslations(lang, 'services')
+
+// Articles statiques qui donnent plus de contexte
+const staticArticles: Article[] = t.articles.map(
+	(article: TranslatedArticle) => {
+		if (article.isRightSection) {
+			return {
+				isRightSection: article.isRightSection,
+				title: article.title,
+				subTitle: article.subtitle,
+				single: article.single ?? false,
+				imgOne: defaultImage1,
+				imgOneAlt: article.imgOneAlt,
+				imgTwo: defaultImage2,
+				imgTwoAlt: article.imgTwoAlt,
+				btnExists: article.btnExists,
+				btnTitle: article.btnTitle,
+				btnURL: article.btnURL || '/contact',
+			}
+		} else {
+			return {
+				isRightSection: article.isRightSection,
+				title: article.title,
+				subTitle: article.subtitle,
+				img: defaultImage1,
+				imgAlt: article.imgAlt,
+				btnExists: article.btnExists,
+				btnTitle: article.btnTitle,
+				btnURL: article.btnURL || '/contact',
+			}
+		}
+	}
+)
+
+// Charger les services en fonction de la langue
+const services = await getCollection('services', ({ id }) => {
+	return id.startsWith(lang === 'en' ? 'en/' : 'fr/')
+})
+
+// Transformer les services en articles pour l'affichage
+const serviceArticles = services.map((service, index) => {
+	const isRightSection = index % 2 === 0
+	const imageIndex = index % defaultImages.length
+	const nextImageIndex = (index + 1) % defaultImages.length
+
+	if (isRightSection) {
+		return {
+			isRightSection,
+			title: service.data.title,
+			subTitle: service.data.description,
+			single: false,
+			imgOne: defaultImages[imageIndex],
+			imgOneAlt: service.data.imageAlt || service.data.title,
+			imgTwo: defaultImages[nextImageIndex],
+			imgTwoAlt: service.data.imageAlt || service.data.title,
+			btnExists: true,
+			btnTitle: t.learnMore || 'Learn More',
+			btnURL: '/contact',
+		}
+	} else {
+		return {
+			isRightSection,
+			title: service.data.title,
+			subTitle: service.data.description,
+			img: defaultImages[imageIndex],
+			imgAlt: service.data.imageAlt || service.data.title,
+			btnExists: true,
+			btnTitle: t.learnMore || 'Learn More',
+			btnURL: '/contact',
+		}
+	}
+})
+
+// Combiner les articles statiques et dynamiques
+const allArticles = [...staticArticles, ...serviceArticles]
+---
+
+<MainLayout
+	title={t.title}
+	meta={{
+		title: t.title,
+		description: t.description,
+	}}
+	lang={lang}
+	structuredData={{
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}services`,
+		url: `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}services`,
+		name: t.title,
+		description: t.description,
+		inLanguage: lang,
+	}}
+>
+	<MainSection
+		title={t.hero.title}
+		subTitle={t.hero.subtitle}
+		btnExists={true}
+		btnTitle={t.hero.cta}
+		btnURL="/contact"
+	/>
+
+	{
+		allArticles.map((article) => {
+			return article.isRightSection ? (
+				<RightSection
+					title={article.title}
+					subTitle={article.subTitle}
+					single={article.single}
+					imgOne={article.imgOne}
+					imgOneAlt={article.imgOneAlt}
+					imgTwo={article.imgTwo}
+					imgTwoAlt={article.imgTwoAlt}
+					btnExists={article.btnExists}
+					btnTitle={article.btnTitle}
+					btnURL={article.btnURL}
+				/>
+			) : (
+				<LeftSection
+					title={article.title}
+					subTitle={article.subTitle}
+					img={article.img}
+					imgAlt={article.imgAlt}
+					btnExists={article.btnExists}
+					btnTitle={article.btnTitle}
+					btnURL={article.btnURL}
+				/>
+			)
+		})
+	}
+
+	<FeaturesStats
+		title={t.stats.title}
+		subTitle={t.stats.subtitle}
+		mainStatTitle={t.stats.mainStat.title}
+		mainStatSubTitle={t.stats.mainStat.subtitle}
+		stats={t.stats.items}
+	/>
+</MainLayout>

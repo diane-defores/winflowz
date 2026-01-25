@@ -1,0 +1,43 @@
+---
+// Destructure the properties from Astro.props
+const { title, url } = Astro.props;
+
+// Define TypeScript interface for the properties
+interface Props {
+  title?: string;
+  url?: string;
+}
+// Define CSS classes for the hyperlink button
+const baseClasses = "font-pj mt-4 inline-flex w-full items-center justify-center rounded-xl border-2 border-gray-400 px-4 py-2.5 font-bold text-gray-900 transition-all duration-200 hover:border-magenta hover:bg-magenta hover:text-white focus:border-magenta focus:bg-magenta focus:text-white focus:outline-none focus:ring-2 focus:ring-magenta focus:ring-offset-2 sm:mt-0 sm:w-auto sm:px-6 sm:py-3";
+const borderClasses = "border border-neutral-200";
+const bgColorClasses = "bg-neutral-100";
+const hoverClasses =
+  "hover:bg-magenta hover:text-white active:text-magenta hover:border-magenta";
+const disableClasses = "disabled:pointer-events-none disabled:opacity-50";
+const ringClasses = "ring-magenta";
+
+const darkClasses =
+  "dark:border-neutral-700 dark:bg-zinc-700 dark:text-neutral-300 dark:ring-magenta dark:hover:bg-magenta dark:focus:outline-none";
+---
+
+<!-- Styled hyperlink -->
+<a
+  class={`${baseClasses} ${borderClasses} ${bgColorClasses} ${hoverClasses} ${disableClasses} ${ringClasses} ${darkClasses}`}
+  href={url}
+  >
+  <svg
+  class="mr-2 h-5 w-5"
+  viewBox="0 0 18 18"
+  fill="none"
+  stroke="currentColor"
+  xmlns="http://www.w3.org/2000/svg"
+  >
+  <path
+  d="M8.18003 13.4261C6.8586 14.3918 5 13.448 5 11.8113V5.43865C5 3.80198 6.8586 2.85821 8.18003 3.82387L12.5403 7.01022C13.6336 7.80916 13.6336 9.44084 12.5403 10.2398L8.18003 13.4261Z"
+  stroke-width="2"
+  stroke-miterlimit="10"
+  stroke-linecap="round"
+  stroke-linejoin="round"></path>
+</svg>
+  {title}
+</a>

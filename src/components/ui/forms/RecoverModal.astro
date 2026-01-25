@@ -1,0 +1,124 @@
+---
+// Composants UI (côté serveur)
+import EmailInput from './input/EmailInput.astro'
+import AuthBtn from '@components/ui/buttons/AuthBtn.astro'
+
+// Utilitaires (côté serveur)
+import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'auth')
+
+// Config object for customization of the component
+const config = {
+	id: 'hs-toggle-between-modals-recover-modal',
+	title: t?.recover?.title ?? 'Forgot password?',
+	subTitle: t?.recover?.subtitle ?? 'Remember your password?',
+	loginBtn: t?.recover?.loginLink ?? 'Sign in here',
+	loginBtnDataHS: '#hs-toggle-between-modals-login-modal',
+}
+---
+
+<!-- Root element of the modal with id and styling -->
+<div
+	id={config.id}
+	class="hs-overlay absolute start-0 top-0 z-50 hidden h-full w-full hs-overlay-backdrop-open:bg-neutral-900/90"
+>
+	<!-- Modal content container -->
+	<div
+		class="m-3 mt-0 opacity-0 transition-all ease-out hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 sm:mx-auto sm:w-full sm:max-w-lg"
+	>
+		<div class="mx-auto w-full max-w-md p-6">
+			<!-- Actual box for the modal elements -->
+			<div
+				class="mt-7 rounded-xl border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
+			>
+				<div class="p-4 sm:p-7">
+					<div class="text-center">
+						<h2
+							class="block text-2xl font-bold text-neutral-800 dark:text-neutral-200"
+						>
+							{config.title}
+						</h2>
+						<p class="mt-2 text-neutral-600 dark:text-neutral-400">
+							{config.subTitle}
+							<!-- Button that, when clicked, opens the login modal -->
+							<button
+								class="rounded-lg p-1 font-medium text-orange-400 decoration-2 outline-none ring-zinc-500 hover:underline focus-visible:ring dark:text-orange-400 dark:ring-zinc-200 dark:focus:outline-none"
+								data-hs-overlay={config.loginBtnDataHS}
+							>
+								{config.loginBtn}
+							</button>
+						</p>
+					</div>
+
+					<div class="mt-5">
+						<!-- The form for password recovery -->
+						<form
+							id="recover-form"
+							action="/api/auth/reset-password"
+							method="POST"
+						>
+							<div class="grid gap-y-4">
+								<!-- Email input field imported from EmailInput component -->
+								<EmailInput
+									id="recover-email"
+									name="email"
+									errorId="recover-email-error"
+									label={t?.fields?.email?.label}
+									placeholder={t?.fields?.email?.placeholder}
+									required
+								/>
+								<!-- Reset password button imported from AuthBtn component -->
+								<AuthBtn title={t?.recover?.submit ?? 'Reset password'} />
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	const form = document.getElementById('recover-form')
+	const errorElement = document.getElementById('recover-email-error')
+
+	function showMessage(message: string, isSuccess = false) {
+		if (errorElement) {
+			errorElement.textContent = message
+			errorElement.style.display = 'block'
+			errorElement.style.color = isSuccess ? 'green' : 'red'
+		}
+	}
+
+	if (form instanceof HTMLFormElement) {
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault()
+
+			try {
+				const response = await fetch(form.action, {
+					method: form.method,
+					body: new FormData(form),
+				})
+
+				if (!response.ok) {
+					throw new Error(await response.text())
+				}
+
+				showMessage(
+					document.documentElement.lang === 'fr'
+						? 'Vérifiez votre email pour réinitialiser votre mot de passe'
+						: 'Check your email to reset your password',
+					true
+				)
+			} catch (err) {
+				showMessage(
+					document.documentElement.lang === 'fr'
+						? 'Une erreur est survenue lors de la réinitialisation'
+						: 'An error occurred during password reset'
+				)
+			}
+		})
+	}
+</script>

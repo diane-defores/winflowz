@@ -1,0 +1,69 @@
+{
+  "title": "Products | WinFlowz",
+  "description": "Explore WinFlowz's digital productivity tools, designed for both professionals and enthusiasts.",
+  "siteDescription": "WinFlowz offers premium digital productivity tools and expert services to meet all your project needs.",
+  "subtitle": "Discover our range of productivity tools designed to enhance your digital workflow.",
+  "customerStories": "Customer Stories",
+  "features": {
+    "title": "Why Choose WinFlowz?",
+    "subtitle": "Transform your ideas into tangible results with WinFlowz tools. Whether you're starting with a sketch or diving into a complete project, our tools are designed to help you build with confidence.",
+    "benefits": [
+      "Robust and reliable tools for lasting performance",
+      "Innovative solutions adapted to modern productivity needs",
+      "Dedicated customer support for your project's success"
+    ]
+  },
+  "testimonials": {
+    "title": "What Our Customers Say"
+  },
+  "products": {
+    "obsidianplugins": {
+      "title": "Obsidian Plugins",
+      "description": "A collection of plugins to enhance your Obsidian experience",
+      "features": [
+        "Seamless integration",
+        "Advanced customization",
+        "Automatic synchronization",
+        "Premium support"
+      ],
+      "price": "29.99",
+      "link": "/products/obsidian-plugins"
+    },
+    "chromeextensions": {
+      "title": "Chrome Extensions",
+      "description": "Powerful extensions to optimize your browsing",
+      "features": [
+        "Enhanced productivity",
+        "Ad blocking",
+        "Task management",
+        "Multi-device sync"
+      ],
+      "price": "19.99",
+      "link": "/products/chrome-extensions"
+    },
+    "windowsoptimization": {
+      "title": "Windows Optimization",
+      "description": "Optimize your Windows system performance",
+      "features": [
+        "Automatic cleanup",
+        "Real-time optimization",
+        "Advanced protection",
+        "Smart backup"
+      ],
+      "price": "39.99",
+      "link": "/products/windows-optimization"
+    },
+    "productivitysuite": {
+      "title": "Productivity Suite",
+      "description": "A complete suite of tools to maximize your productivity",
+      "features": [
+        "All products included",
+        "Priority updates",
+        "24/7 dedicated support",
+        "Custom training"
+      ],
+      "price": "79.99",
+      "link": "/products/productivity-suite"
+    }
+  }
+} 

@@ -1,0 +1,77 @@
+{
+  "title": "Nos Services",
+  "description": "Découvrez notre gamme de services d'optimisation Windows",
+  "learnMore": "En savoir plus",
+  "meta": {
+    "description": "Explorez notre gamme complète de services d'optimisation Windows conçus pour améliorer les performances de votre système."
+  },
+  "hero": {
+    "title": "Optimisez Votre Productivité Numérique",
+    "subtitle": "Transformez votre flux de travail avec du développement sur mesure et une formation experte. En tant que développeuse neurodivergente, passionnée d'UX/UI et spécialiste de la productivité, je propose des solutions et des conseils personnalisés pour vous aider à atteindre une efficacité maximale dans votre espace de travail numérique.",
+    "cta": "Planifier une consultation"
+  },
+  "articles": [
+    {
+      "isRightSection": true,
+      "title": "Développement Sur Mesure",
+      "subtitle": "En tant que développeuse neurodivergente spécialisée dans les outils de productivité et passionnée d'UX/UI, je crée des solutions personnalisées qui améliorent votre flux de travail numérique. Des plugins Obsidian aux extensions Chrome, chaque projet est méticuleusement conçu pour répondre à vos besoins spécifiques tout en garantissant une performance et une expérience utilisateur optimales.",
+      "single": false,
+      "imgOneAlt": "Illustration du flux de développement",
+      "imgTwoAlt": "Personne travaillant avec des outils numériques"
+    },
+    {
+      "isRightSection": false,
+      "title": "Formation en Productivité",
+      "subtitle": "Transformez votre flux de travail numérique avec des conseils d'expert. Je propose des sessions de formation personnalisées axées sur l'optimisation de la productivité, la maîtrise des outils et l'amélioration des processus. Que vous soyez débutant ou utilisateur avancé, mon approche s'adapte à votre style d'apprentissage et à vos objectifs.",
+      "imgAlt": "Session de formation en productivité",
+      "btnExists": true,
+      "btnTitle": "En savoir plus"
+    },
+    {
+      "isRightSection": true,
+      "title": "Expertise WordPress",
+      "subtitle": "Maîtrisez WordPress avec une formation complète, des bases aux fonctionnalités avancées. Je fournis un accompagnement pratique pour la création, la personnalisation et l'optimisation de sites web. Apprenez à gérer efficacement votre contenu tout en appliquant les meilleures pratiques pour la performance et le SEO.",
+      "single": false,
+      "imgOneAlt": "Illustration du développement WordPress",
+      "imgTwoAlt": "Aperçu de la gestion de site web"
+    },
+    {
+      "isRightSection": false,
+      "title": "Implémentation Logicielle",
+      "subtitle": "Bénéficiez d'un support personnalisé pour l'implémentation et la maîtrise des outils logiciels essentiels. D'Obsidian aux applications de productivité, je vous aide à optimiser votre espace de travail numérique et à établir des flux de travail efficaces adaptés à vos besoins.",
+      "imgAlt": "Démonstration d'implémentation logicielle"
+    },
+    {
+      "isRightSection": true,
+      "title": "Solutions & Intégration Sur Mesure",
+      "subtitle": "Besoin d'un outil spécifique ou d'une amélioration de votre flux de travail ? Je développe des solutions personnalisées qui s'intègrent parfaitement à vos systèmes existants. Des scripts d'automatisation aux plugins spécialisés, je crée des outils qui boostent votre productivité et optimisent vos processus de travail, toujours avec un accent particulier sur l'expérience utilisateur et le design d'interface.",
+      "single": false,
+      "imgOneAlt": "Processus de développement personnalisé",
+      "imgTwoAlt": "Flux d'intégration",
+      "btnExists": true,
+      "btnTitle": "Explorer les Solutions"
+    }
+  ],
+  "stats": {
+    "title": "Impact & Résultats",
+    "subtitle": "Mon engagement envers l'amélioration de la productivité numérique se reflète dans le succès de mes clients et l'efficacité de mes solutions.",
+    "mainStat": {
+      "title": "96%",
+      "subtitle": "des clients constatent des améliorations significatives de leur productivité après implémentation"
+    },
+    "items": [
+      {
+        "stat": "50+",
+        "description": "solutions personnalisées livrées"
+      },
+      {
+        "stat": "200+",
+        "description": "astuces et techniques de productivité"
+      },
+      {
+        "stat": "85%",
+        "description": "de temps gagné sur les tâches répétitives"
+      }
+    ]
+  }
+} 

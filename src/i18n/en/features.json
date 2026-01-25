@@ -1,0 +1,24 @@
+{
+  "features": [
+    {
+      "heading": "Obsidian Extensions",
+      "content": "Enhance your Obsidian experience with powerful plugins designed for productivity and content management.",
+      "svg": "tools"
+    },
+    {
+      "heading": "Chrome Extension",
+      "content": "Optimize your YouTube searches with our intuitive Chrome extension for efficient content curation.",
+      "svg": "dashboard"
+    },
+    {
+      "heading": "Windows Tools",
+      "content": "Streamline your Windows workflow with carefully curated tools and productivity enhancement techniques.",
+      "svg": "house"
+    },
+    {
+      "heading": "Training & Support",
+      "content": "Access comprehensive training materials and dedicated support to maximize your productivity journey.",
+      "svg": "support"
+    }
+  ]
+} 

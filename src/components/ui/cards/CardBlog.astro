@@ -1,0 +1,79 @@
+---
+// Import necessary components and utilities
+import AvatarBlog from '@components/ui/avatars/AvatarBlog.astro'
+import { formatDate } from '@/utils/utils'
+import type { CollectionEntry } from 'astro:content'
+
+const { blogEntry, blogLocale = '', class: className } = Astro.props
+
+interface Props {
+	blogEntry: CollectionEntry<'blog'>
+	blogLocale?: string
+	class?: string
+}
+
+const { title, description, cardImage, cardImageAlt } = blogEntry.data
+
+// Nettoyer le slug en retirant le préfixe de langue et l'extension
+const cleanSlug = blogEntry.id.split('/')[1].replace(/\.md$/, '')
+---
+
+<!-- The following anchor tag is the main container for the card.
+     It's a link to the blog post detailed page.
+     The data-astro-prefetch is an Astro specific Dynamic HTML feature,
+     which automatically prefetches the linked page to speed up navigation. -->
+<a
+	class={`group relative block rounded-xl outline-none ring-zinc-500 transition duration-500 focus-visible:ring dark:ring-zinc-200 dark:focus:outline-none ${className}`}
+	href={blogLocale === 'fr' ? `/fr/blog/${cleanSlug}` : `/blog/${cleanSlug}`}
+	data-astro-prefetch
+	transition:name={`blog-card-${cleanSlug}`}
+>
+	<!-- The container for the blog post's cover image. Uses astro:assets' Image for image source -->
+	<div
+		class="relative h-[350px] w-full flex-shrink-0 overflow-hidden rounded-xl before:absolute before:inset-x-0 before:z-[1] before:size-full before:bg-gradient-to-t before:from-neutral-900/[.7]"
+		transition:name={`blog-image-${cleanSlug}`}
+	>
+		<img
+			src={cardImage}
+			alt={cardImageAlt}
+			width="800"
+			height="600"
+			class="absolute start-0 top-0 size-full object-cover transition duration-500 group-hover:scale-110"
+			loading="lazy"
+		/>
+	</div>
+	<!-- The container for the blog author's avatar and associated metadata (author name and publication date) -->
+	<div class="absolute inset-x-0 top-0 z-10">
+		<div class="flex h-full flex-col p-4 sm:p-6">
+			<div class="flex items-center">
+				<AvatarBlog post={blogEntry} />
+
+				<div class="ms-2.5 sm:ms-4">
+					<h4 class="font-bold text-neutral-50">
+						{blogEntry.data.author}
+					</h4>
+					<p class="text-neutral-50/[.8]">
+						{formatDate(blogEntry.data.pubDate)}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- The container for the blog post's title and description -->
+	<div class="absolute inset-x-0 bottom-0 z-10">
+		<div class="flex h-full flex-col p-4 sm:p-6">
+			<h3
+				class="text-balance text-lg font-bold text-neutral-50 group-hover:text-neutral-50/[.8] sm:text-3xl"
+				transition:name={`blog-title-${cleanSlug}`}
+			>
+				{title}
+			</h3>
+			<p
+				class="mt-2 text-pretty text-neutral-50/[.8]"
+				transition:name={`blog-desc-${cleanSlug}`}
+			>
+				{description}
+			</p>
+		</div>
+	</div>
+</a>

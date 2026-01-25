@@ -1,0 +1,59 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getCurrentUser } from "../../lib/auth";
+import { supabase } from "../../lib/supabaseClient";
+import PurchaseSuccess from "../../components/ui/notifications/PurchaseSuccess.astro";
+
+const user = await getCurrentUser();
+if (!user) {
+	return Astro.redirect("/login");
+}
+
+// Récupérer les données de l'achat depuis l'URL
+const purchaseId = Astro.url.searchParams.get("purchase_id");
+const apiKey = Astro.url.searchParams.get("api_key");
+
+// Vérifier que les données sont présentes
+if (!purchaseId || !apiKey) {
+	return Astro.redirect("/dashboard");
+}
+
+// Récupérer les détails de l'achat
+const { data: purchase } = await supabase
+	.from("purchases")
+	.select(
+		`
+    *,
+    products (
+      name,
+      price
+    )
+  `,
+	)
+	.eq("id", purchaseId)
+	.single();
+
+// Vérifier que l'achat appartient à l'utilisateur
+if (!purchase || purchase.user_id !== user.id) {
+	return Astro.redirect("/dashboard");
+}
+
+// Formater le prix
+const price = new Intl.NumberFormat("fr-FR", {
+	style: "currency",
+	currency: "EUR",
+}).format(purchase.amount);
+---
+
+<MainLayout title="Achat confirmé">
+	<div class="min-h-screen bg-neutral-50 py-16 dark:bg-neutral-900">
+		<div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+			<PurchaseSuccess
+				productName={purchase.products.name}
+				apiKey={apiKey}
+				price={price}
+			/>
+		</div>
+	</div>
+</MainLayout>
+

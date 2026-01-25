@@ -1,0 +1,104 @@
+---
+import { Icons } from '@/components/ui/icons/icons'
+import { getLangFromUrl } from '@/utils/i18n'
+import PrimaryCTA from '@/components/ui/buttons/PrimaryCTA.astro'
+import CardSmall from '@/components/ui/cards/CardSmall.astro'
+import CardWide from '@/components/ui/cards/CardWide.astro'
+import FeaturesStatsAlt from '@/components/sections/features/FeaturesStatsAlt.astro'
+import TestimonialsSectionAlt from '@/components/sections/testimonials/TestimonialsSectionAlt.astro'
+import type { CollectionEntry } from 'astro:content'
+import type { Language } from '@/types'
+
+interface Props {
+	t: {
+		title: string
+		description?: string
+		siteDescription?: string
+		subtitle?: string
+		customerStories: string
+		features: {
+			title: string
+			subtitle: string
+			benefits: string[]
+		}
+		testimonials: {
+			title: string
+		}
+	}
+	products: CollectionEntry<'products'>[]
+	productLocale: Language
+}
+
+const { t, products, productLocale } = Astro.props
+
+interface Testimonial {
+	content: string
+	author: string
+	role: string
+	avatarSrc: string
+	avatarAlt: string
+}
+
+const testimonials: Testimonial[] = [
+	{
+		content:
+			"Congratulations, Diane! I just spent 20 minutes in it and l'm already wondering what I've been doing with my life until now :)) Lots of goodies to improve my work. I love it!",
+		author: 'Florin Muresan',
+		role: 'CEO and Co-Founder | Squirrly',
+		avatarSrc:
+			'https://www.squirrly.co/media/2018/09/1516612623-7888933-109x109x119x109x5x0-Screenshot-2016-09-1.png',
+		avatarAlt: 'Photo de profil de Florin Muresan',
+	},
+]
+---
+
+<div
+	class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 2xl:max-w-full"
+>
+	<div class="mb-4 flex items-center justify-between gap-8 sm:mb-8 md:mb-12">
+		<div class="flex items-center gap-12">
+			<h1
+				class="text-balance text-2xl font-bold tracking-tight text-neutral-800 dark:text-neutral-200 md:text-4xl md:leading-tight"
+			>
+				{t.title}
+			</h1>
+			{
+				t.subtitle && (
+					<p class="hidden max-w-screen-sm text-pretty text-neutral-600 dark:text-neutral-400 md:block">
+						{t.subtitle}
+					</p>
+				)
+			}
+		</div>
+		<PrimaryCTA
+			title={t.customerStories}
+			url="#testimonials"
+			noArrow={true}
+		/>
+	</div>
+	<section class="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-6 xl:gap-8">
+		{
+			products.map((product, index) => {
+				const position = index % 4
+				if (position === 0 || position === 3) {
+					return (
+						<CardSmall product={product} productLocale={productLocale} />
+					)
+				} else {
+					return (
+						<CardWide product={product} productLocale={productLocale} />
+					)
+				}
+			})
+		}
+	</section>
+</div>
+<FeaturesStatsAlt
+	title={t.features.title}
+	subTitle={t.features.subtitle}
+	benefits={t.features.benefits}
+/>
+<TestimonialsSectionAlt
+	title={t.testimonials.title}
+	testimonials={testimonials}
+/>

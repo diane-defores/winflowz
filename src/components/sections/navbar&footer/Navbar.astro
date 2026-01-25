@@ -1,0 +1,116 @@
+---
+//Import relevant dependencies
+import ThemeIcon from '@/components/ThemeIcon.astro'
+import NavLink from '@/components/ui/links/NavLink.astro'
+import AuthenticationIsland from '../misc/AuthenticationIsland.astro'
+import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+import BrandLogo from '@/components/BrandLogo.astro'
+import LanguagePicker from '@/components/ui/LanguagePicker.astro'
+import ThemePicker from '../../ui/ThemePicker.astro'
+import type { NavLink as NavLinkType } from '@/types'
+import TextLogo from '@components/ui/TextLogo.astro';
+
+// Select the correct translation based on the page's lang prop:
+const lang = getLangFromUrl(Astro.url)
+const t = await useTranslations(lang, 'navigation')
+const homeUrl = lang === 'fr' ? '/fr' : '/'
+---
+
+<!-- Main header component -->
+<header
+	class="sticky inset-x-0 top-2 z-50 flex w-full flex-wrap sm:top-4 md:flex-nowrap md:justify-start"
+>
+	<!-- Navigation container -->
+	<nav
+		class="relative mx-1.5 w-full rounded-[28px] border border-neutral-200/60 bg-white/60 px-3 py-2 shadow-sm backdrop-blur-md dark:border-neutral-700/40 dark:bg-neutral-800/80 dark:shadow-none sm:mx-2 sm:rounded-[36px] sm:px-4 sm:py-3 md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto"
+		aria-label="Global"
+	>
+		<div class="flex items-center justify-between">
+			<!-- Brand logo -->
+			<div class="">
+				<a
+					class="inline-block rounded-lg text-xl font-bold outline-none ring-zinc-500 focus-visible:ring dark:ring-zinc-200 dark:focus:outline-none"
+					href={homeUrl}
+					aria-label="Brand"
+					data-astro-prefetch
+				>
+					<div class="flex items-center">
+						<TextLogo class="ml-2 w-36 sm:ml-8 sm:w-52" />
+					</div>
+				</a>
+			</div>
+			<div class="ml-auto mr-3 sm:mr-5 md:hidden">
+				<button
+					type="button"
+					class="hs-collapse-toggle flex h-8 w-8 items-center justify-center rounded-full font-bold text-neutral-600 transition duration-300 hover:bg-neutral-200 disabled:pointer-events-none disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:outline-none"
+					data-hs-collapse="#navbar-collapse-with-animation"
+					aria-controls="navbar-collapse-with-animation"
+					aria-label="Toggle navigation"
+				>
+					<svg
+						class="h-[1.25rem] w-[1.25rem] flex-shrink-0 hs-collapse-open:hidden"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<line x1="3" x2="21" y1="6" y2="6"></line>
+						<line x1="3" x2="21" y1="12" y2="12"></line>
+						<line x1="3" x2="21" y1="18" y2="18"></line>
+					</svg>
+					<svg
+						class="hidden h-[1.25rem] w-[1.25rem] flex-shrink-0 hs-collapse-open:block"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M18 6 6 18"></path>
+						<path d="m6 6 12 12"></path>
+					</svg>
+				</button>
+			</div>
+			<!-- ThemeIcon component specifically for smaller screens -->
+			<span class="inline-block md:hidden">
+				<ThemeIcon />
+			</span>
+		</div>
+		<!-- Contains navigation links -->
+		<div
+			id="navbar-collapse-with-animation"
+			class="hs-collapse hidden grow basis-full overflow-hidden transition-all duration-300 md:block"
+		>
+			<!-- Navigation links container -->
+			<div
+				class="mt-5 flex flex-col gap-x-0 gap-y-4 md:mt-0 md:flex-row md:items-center md:justify-end md:gap-x-4 md:gap-y-0 md:ps-7 lg:gap-x-7"
+			>
+				<!-- Navigation links and Authentication component -->
+				{
+					t.navBarLinks.map((link: NavLinkType) => (
+						<NavLink url={link.url} name={link.name} />
+					))
+				}
+
+				<AuthenticationIsland />
+				<LanguagePicker />
+				<!-- ThemePicker component specifically for larger screens -->
+				<span class="hidden md:inline-block">
+					<ThemePicker />
+				</span>
+			</div>
+		</div>
+	</nav>
+</header>
+
+<script>
+	import '@preline/collapse/index.js'
+	import '@preline/overlay/index.js'
+</script>

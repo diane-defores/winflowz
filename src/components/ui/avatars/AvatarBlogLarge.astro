@@ -1,0 +1,18 @@
+---
+// Import necessary components
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+	post: CollectionEntry<'blog'>
+	class?: string
+}
+
+const { post, class: className } = Astro.props
+const { authorImage, author } = post.data
+---
+
+<div class={`avatar ${className}`}>
+	<div class="w-24 rounded-full">
+		<img src={authorImage} alt={`Avatar of ${author}`} />
+	</div>
+</div>

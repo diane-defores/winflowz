@@ -1,0 +1,48 @@
+{
+  "title": "Simple and transparent pricing",
+  "subtitle": "Choose the plan that fits your needs",
+  "plans": [
+    {
+      "name": "Free",
+      "description": "Perfect to discover our tools",
+      "price": "$0",
+      "period": "/month",
+      "features": [
+        "Access to basic extensions",
+        "Complete documentation",
+        "Community support",
+        "Regular updates"
+      ],
+      "cta": "Get started for free"
+    },
+    {
+      "name": "Pro",
+      "description": "For advanced users",
+      "price": "$9.99",
+      "period": "/month",
+      "features": [
+        "All free features",
+        "Premium extensions",
+        "Priority support",
+        "Early access to new features",
+        "Exclusive training"
+      ],
+      "cta": "Start trial",
+      "popular": true
+    },
+    {
+      "name": "Enterprise",
+      "description": "Need a custom solution?",
+      "price": "Custom",
+      "period": "",
+      "features": [
+        "All Pro features",
+        "Custom deployment",
+        "24/7 dedicated support",
+        "Custom training",
+        "Specific integrations"
+      ],
+      "cta": "Contact us"
+    }
+  ]
+} 

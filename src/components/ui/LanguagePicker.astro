@@ -1,0 +1,100 @@
+---
+import { languages } from '@/utils/ui'
+import Icon from './icons/Icon.astro'
+
+const { pathname } = Astro.url
+const currentLocale = pathname.startsWith('/fr/') ? 'fr' : 'en'
+
+// Mappings des routes pour la traduction
+const routeMappings = {
+	terms: 'cgu',
+	disclaimer: 'non-responsabilite',
+	privacy: 'confidentialite',
+	copyright: 'droits',
+	legal: 'mentions-legales',
+	products: 'produits',
+	'products/obsidian': 'produits/obsidian',
+	'products/chrome': 'produits/chrome',
+	'products/windows': 'produits/windows',
+	'products/pricing': 'produits/tarifs',
+	services: 'services',
+	blog: 'blog',
+	contact: 'contact',
+	roadmap: 'roadmap',
+}
+
+// Fonction pour obtenir l'URL traduite
+function getTranslatedPath(path: string, targetLang: string): string {
+	// Cas spécial pour la page d'accueil
+	if (path === '/' || path === '/fr' || path === '/fr/') {
+		return targetLang === 'fr' ? '/fr' : '/'
+	}
+
+	// Enlève le préfixe /fr/ si présent
+	const cleanPath = path.replace(/^\/fr\//, '/')
+
+	if (targetLang === 'fr') {
+		// Conversion de l'anglais vers le français
+		for (const [en, fr] of Object.entries(routeMappings)) {
+			if (cleanPath === `/${en}` || cleanPath.startsWith(`/${en}/`)) {
+				return `/fr/${fr}${cleanPath.substring(en.length + 1)}`
+			}
+		}
+		// Si pas de mapping spécifique, ajoute simplement /fr/
+		return `/fr${cleanPath}`
+	} else {
+		// Conversion du français vers l'anglais
+		for (const [en, fr] of Object.entries(routeMappings)) {
+			if (cleanPath === `/${fr}` || cleanPath.startsWith(`/${fr}/`)) {
+				return `/${en}${cleanPath.substring(fr.length + 1)}`
+			}
+		}
+		// Si pas de mapping spécifique, enlève simplement /fr/
+		return cleanPath
+	}
+}
+---
+
+<div class="hs-dropdown relative inline-flex" data-hs-dropdown>
+	<button
+		id="hs-dropdown-default"
+		type="button"
+		aria-label="Change language"
+		class="hs-dropdown-toggle inline-flex items-center gap-x-2 rounded-lg px-1.5 py-1.5 font-medium text-neutral-600 outline-none ring-zinc-500 transition duration-300 hover:bg-neutral-200 hover:text-orange-400 dark:border-neutral-700 dark:text-neutral-400 dark:ring-zinc-200 dark:hover:bg-neutral-700 dark:hover:text-orange-300 dark:focus:outline-none"
+	>
+		<Icon name="earth" />
+		<svg
+			class="size-4 hs-dropdown-open:rotate-180"
+			width="24"
+			height="24"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg
+		>
+	</button>
+
+	<div
+		class="hs-dropdown-menu duration !right-0 !top-full mt-2 hidden !transform-none rounded-lg bg-neutral-50 p-2 opacity-0 shadow-md transition-[opacity,margin] before:absolute before:-top-4 before:start-0 before:h-4 before:w-full after:absolute after:-bottom-4 after:start-0 after:h-4 after:w-full hs-dropdown-open:opacity-100 dark:divide-neutral-700 dark:border dark:border-neutral-700 dark:bg-neutral-800"
+		aria-labelledby="hs-dropdown-hover-event"
+	>
+		{
+			Object.entries(languages).map(([lang, label]) => (
+				<a
+					class="flex items-center gap-x-3.5 rounded-lg px-3 py-2 text-neutral-800 hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
+					href={getTranslatedPath(pathname, lang)}
+					hreflang={lang}
+					data-lang={lang}
+				>
+					{label}
+				</a>
+			))
+		}
+	</div>
+</div>
+
+<script>
+	import '@preline/dropdown/index.js'
+</script>

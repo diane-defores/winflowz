@@ -1,0 +1,54 @@
+---
+// Importing necessary components
+import Meta from '@/components/Meta.astro'
+import FooterSection from '@/components/sections/navbar&footer/FooterSection.astro'
+import Navbar from '@/components/sections/navbar&footer/Navbar.astro'
+import { SITE } from '@/constants'
+import '../assets/styles/global.css'
+import { ClientRouter } from 'astro:transitions'
+
+// Setting expected props
+const { title = SITE.title, meta, structuredData, lang = 'en' } = Astro.props
+
+// Interface to type-check the properties
+interface Props {
+	title?: string
+	meta?: {
+		title?: string
+		description?: string
+		image?: string
+		canonicalURL?: string
+	}
+	structuredData?: object
+	lang?: string
+}
+---
+
+<html lang={lang} class="scroll-pt-16">
+	<head>
+		<Meta meta={meta} structuredData={structuredData} />
+		<title>{title}</title>
+		<ClientRouter handleForms />
+	</head>
+	<body class="dark:bg-neutral-900">
+		<div class="mx-auto max-w-screen-2xl px-3 sm:px-6 lg:px-8">
+			<Navbar />
+			<main>
+				<slot />
+			</main>
+		</div>
+		<FooterSection />
+		{
+			import.meta.env.PROD && (
+				<script async src="https://cdn.onthe.io/io.js/YyAMWtaLLPUi" />
+			)
+		}
+		<script>
+		import '@/assets/scripts/preline'
+		import '@/assets/scripts/lenisSmoothScroll'
+		import '@/assets/scripts/modal'
+		</script>
+	  <!-- buildflowz-inspector -->
+  <script src="/buildflowz-inspector.js" defer></script>
+</body>
+</html>

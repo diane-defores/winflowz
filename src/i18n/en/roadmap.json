@@ -1,0 +1,64 @@
+{
+  "title": "Product Roadmap",
+  "subtitle": "Discover upcoming features and vote for the ones you'd like to see implemented",
+  "sections": {
+    "allFeatures": "All Features",
+    "allProjects": "All Projects"
+  },
+  "projects": {
+    "tubeflowz": {
+      "name": "TubeFlowz",
+      "description": "YouTube management and automation platform"
+    },
+    "mediaflowz": {
+      "name": "MediaFlowz",
+      "description": "Media content management solution"
+    }
+  },
+  "status": {
+    "considering": "Ideas",
+    "planned": "Planned",
+    "inProgress": "In Development",
+    "completed": "Completed",
+    "rejected": "Rejected",
+    "emptyMessages": {
+      "considering": "No ideas yet",
+      "planned": "No planned features",
+      "inProgress": "No features in development",
+      "completed": "No completed features",
+      "rejected": "No rejected features"
+    }
+  },
+  "feature": {
+    "vote": "Vote",
+    "votes": "votes",
+    "loginToVote": "Please login to vote"
+  },
+  "nav": {
+    "projectsLabel": "Projects navigation",
+    "backToAll": "Back to all projects"
+  },
+  "addFeature": {
+    "button": "Suggest Feature",
+    "title": "Suggest a new feature",
+    "project": "Project",
+    "selectProject": "Select a project",
+    "featureTitle": "Feature Title",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter a title for your feature suggestion",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe your feature suggestion in detail",
+    "projectLabel": "Project",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "success": "Feature suggestion submitted successfully",
+    "error": "Error submitting feature suggestion",
+    "validation": {
+      "projectRequired": "Please select a project",
+      "titleRequired": "Please enter a title",
+      "titleMinLength": "Title must be at least 3 characters long",
+      "descriptionRequired": "Please enter a description",
+      "descriptionMinLength": "Description must be at least 10 characters long"
+    }
+  }
+} 

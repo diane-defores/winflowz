@@ -1,0 +1,204 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styles globaux pour tout le site */
+
+/* Global Typography System - Mobile-first with responsive scaling */
+@layer base {
+  /* Base font size */
+  html {
+    font-size: 16px;
+  }
+  
+  body {
+    @apply text-xl leading-relaxed text-neutral-700 dark:text-neutral-300;
+  }
+  
+  /* Headings - Mobile first, larger baseline for readability */
+  h1 {
+    @apply text-5xl font-bold leading-tight tracking-tight text-neutral-800 dark:text-neutral-200;
+  }
+  
+  h2 {
+    @apply text-4xl font-bold leading-tight text-neutral-800 dark:text-neutral-200;
+  }
+  
+  h3 {
+    @apply text-3xl font-bold leading-snug text-neutral-800 dark:text-neutral-200;
+  }
+  
+  h4 {
+    @apply text-2xl font-bold leading-snug text-neutral-800 dark:text-neutral-200;
+  }
+  
+  h5, h6 {
+    @apply text-xl font-bold leading-normal text-neutral-800 dark:text-neutral-200;
+  }
+  
+  /* Paragraphs - Much larger on mobile for better readability */
+  p {
+    @apply text-xl leading-relaxed text-neutral-700 dark:text-neutral-400;
+  }
+  
+  /* Tablet and up (sm: 640px+) */
+  @media (min-width: 640px) {
+    h1 {
+      @apply text-6xl;
+    }
+    h2 {
+      @apply text-5xl;
+    }
+    h3 {
+      @apply text-4xl;
+    }
+    p {
+      @apply text-2xl;
+    }
+  }
+  
+  /* Desktop (md: 768px+) */
+  @media (min-width: 768px) {
+    h1 {
+      @apply text-7xl;
+    }
+    h2 {
+      @apply text-6xl;
+    }
+  }
+  
+  /* Large desktop (lg: 1024px+) */
+  @media (min-width: 1024px) {
+    h1 {
+      @apply text-8xl;
+    }
+  }
+}
+
+/* Rainbow Brand Components */
+@layer components {
+  /* Primary CTA Button - Rainbow gradient background */
+  .btn-primary {
+    @apply inline-flex w-full items-center justify-center rounded-xl border-2 border-transparent;
+    @apply px-6 py-2.5 text-lg font-bold text-white;
+    @apply bg-gray-900 hover:bg-magenta hover:bg-gradient-rainbow;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-magenta focus:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+    @apply sm:w-auto sm:px-8 sm:py-3 sm:text-xl;
+    @apply dark:ring-magenta dark:focus:outline-none;
+  }
+
+  /* Secondary CTA Button - Border with hover fill */
+  .btn-secondary {
+    @apply inline-flex w-full items-center justify-center rounded-xl border-2;
+    @apply border-gray-400 px-4 py-2.5 text-lg font-bold text-gray-900;
+    @apply bg-neutral-100 hover:border-magenta hover:bg-magenta hover:text-white;
+    @apply transition-all duration-200;
+    @apply focus:border-magenta focus:bg-magenta focus:text-white;
+    @apply focus:outline-none focus:ring-2 focus:ring-magenta focus:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+    @apply sm:px-6 sm:py-3 sm:text-xl;
+    @apply dark:border-neutral-700 dark:bg-zinc-700 dark:text-neutral-300;
+    @apply dark:ring-magenta dark:hover:bg-magenta dark:focus:outline-none;
+  }
+
+  /* Rainbow CTA - Full gradient background */
+  .btn-rainbow {
+    @apply block rounded-lg bg-gradient-rainbow px-6 py-2.5;
+    @apply text-center text-sm font-bold text-white;
+    @apply outline-none ring-magenta transition duration-100;
+    @apply hover:opacity-90 focus-visible:ring active:opacity-80;
+    @apply sm:px-8 sm:py-3 md:text-base;
+  }
+
+  /* Rainbow Border Card - For premium/popular items */
+  .card-rainbow-border {
+    @apply relative rounded-xl shadow-xl;
+  }
+
+  .card-rainbow-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl bg-gradient-rainbow;
+  }
+
+  .card-rainbow-border > * {
+    @apply relative m-[3px] rounded-[10px];
+  }
+
+  /* Active/Selected Link State */
+  .link-active {
+    @apply text-magenta dark:text-magenta;
+  }
+
+  .link-hover {
+    @apply hover:text-magenta dark:hover:text-magenta;
+  }
+
+  /* Badge Styles */
+  .badge-rainbow {
+    @apply inline-block rounded-full bg-gradient-rainbow;
+    @apply px-3 py-1 text-xs font-bold uppercase tracking-wider text-white;
+  }
+
+  .badge-neutral {
+    @apply inline-block rounded-full bg-neutral-200 dark:bg-neutral-700;
+    @apply px-3 py-1 text-xs font-medium text-neutral-600 dark:text-neutral-300;
+  }
+
+  /* Rainbow gradient text effect */
+  .text-rainbow {
+    @apply bg-gradient-rainbow bg-clip-text text-transparent;
+  }
+}
+
+/* Styles pour la barre de défilement - WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Mode clair par défaut */
+html::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: var(--sl-color-accent, #ffcfaa);
+  border: 3px solid #ffffff;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: var(--sl-color-accent-high, #562800);
+}
+
+/* Mode sombre */
+html.dark::-webkit-scrollbar-track {
+  background: var(--sl-color-gray-6, #272727);
+}
+
+html.dark::-webkit-scrollbar-thumb {
+  background: var(--sl-color-accent, #ffcfaa);
+  border: 3px solid var(--sl-color-gray-6, #272727);
+  border-radius: 9999px;
+}
+
+html.dark::-webkit-scrollbar-thumb:hover {
+  background: var(--sl-color-accent-low, #562800);
+}
+
+/* Pour Firefox - Mode clair par défaut */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sl-color-accent, #ffcfaa) #ffffff;
+}
+
+/* Firefox - Mode sombre */
+html.dark {
+  scrollbar-color: var(--sl-color-accent, #ffcfaa) var(--sl-color-gray-6, #272727);
+}
+
+/* Style global pour assurer que le défilement est fluide */
+html {
+  scroll-behavior: smooth;
+} 

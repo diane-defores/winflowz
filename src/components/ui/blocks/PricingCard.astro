@@ -1,0 +1,113 @@
+---
+interface Props {
+  name: string;
+  description: string;
+  price: string;
+  period: string;
+  features: string[];
+  cta: string;
+  popular?: boolean;
+}
+
+const { name, description, price, period, features, cta, popular = false } = Astro.props;
+---
+
+<div class:list={[
+  "relative flex flex-col rounded-xl shadow-sm",
+  popular ? "" : "bg-white dark:bg-neutral-800 p-8"
+]}>
+  {popular && (
+    <>
+      <!-- Rainbow border effect -->
+      <div class="absolute inset-0 rounded-xl bg-gradient-rainbow"></div>
+      <!-- Inner content with solid background -->
+      <div class="relative m-[3px] flex h-full w-full flex-col rounded-[10px] bg-neutral-900 p-8">
+        <span class="absolute top-0 right-0 rounded-tr-[10px] rounded-bl-xl bg-gradient-rainbow px-3 py-1.5 text-xs font-medium text-white">
+          Populaire
+        </span>
+
+        <div class="mb-6">
+          <h3 class="text-xl font-bold text-white lg:text-2xl">
+            {name}
+          </h3>
+          <p class="mt-2 text-neutral-300">
+            {description}
+          </p>
+        </div>
+
+        <div class="mb-6">
+          <span class="text-4xl font-bold text-white lg:text-5xl">
+            {price}
+          </span>
+          {period && (
+            <span class="text-neutral-400">
+              {period}
+            </span>
+          )}
+        </div>
+
+        <ul class="mb-6 space-y-2">
+          {features.map((feature) => (
+            <li class="flex items-center gap-x-2 text-neutral-300">
+              <svg class="flex-shrink-0 w-4 h-4 text-green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {feature}
+            </li>
+          ))}
+        </ul>
+
+        <div class="mt-auto">
+          <button type="button" class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg bg-gradient-rainbow text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none">
+            {cta}
+          </button>
+        </div>
+      </div>
+    </>
+  )}
+  
+  {!popular && (
+    <>
+      <span class="absolute top-0 right-0 rounded-tr-xl rounded-bl-xl bg-neutral-200 dark:bg-neutral-700 px-3 py-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-300">
+        Standard
+      </span>
+
+      <div class="mb-6">
+        <h3 class="text-xl font-bold text-neutral-800 dark:text-neutral-200 lg:text-2xl">
+          {name}
+        </h3>
+        <p class="mt-2 text-neutral-600 dark:text-neutral-400">
+          {description}
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <span class="text-4xl font-bold text-neutral-800 dark:text-neutral-200 lg:text-5xl">
+          {price}
+        </span>
+        {period && (
+          <span class="text-neutral-600 dark:text-neutral-400">
+            {period}
+          </span>
+        )}
+      </div>
+
+      <ul class="mb-6 space-y-2">
+        {features.map((feature) => (
+          <li class="flex items-center gap-x-2 text-neutral-600 dark:text-neutral-400">
+            <svg class="flex-shrink-0 w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {feature}
+          </li>
+        ))}
+      </ul>
+
+      <div class="mt-auto">
+        <button type="button" class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border-2 border-magenta text-magenta hover:bg-magenta hover:text-white transition-all disabled:opacity-50 disabled:pointer-events-none">
+          {cta}
+        </button>
+      </div>
+    </>
+  )}
+</div> 

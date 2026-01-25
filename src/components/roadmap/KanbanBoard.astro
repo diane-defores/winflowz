@@ -1,0 +1,106 @@
+---
+import type { Feature } from "@/types/roadmap";
+import FeatureCard from "./FeatureCard.astro";
+
+interface Props {
+  features: (Feature & { projectName?: string })[];
+  showProjectName?: boolean;
+  translations: {
+    planned: string;
+    inProgress: string;
+    completed: string;
+    considering: string;
+    rejected: string;
+    vote: string;
+    votes: string;
+    emptyMessages?: {
+      considering: string;
+      planned: string;
+      inProgress: string;
+      completed: string;
+      rejected: string;
+    };
+  };
+}
+
+const { features, showProjectName = false, translations } = Astro.props;
+
+// Grouper les features par status
+const featuresByStatus = {
+  considering: features.filter((f) => f.status === "considering"),
+  planned: features.filter((f) => f.status === "planned"),
+  inProgress: features.filter((f) => f.status === "in-development"),
+  completed: features.filter((f) => f.status === "completed"),
+  rejected: features.filter((f) => f.status === "rejected"),
+};
+
+// Configuration des colonnes
+const columns = [
+  {
+    id: "considering",
+    title: translations.considering,
+    features: featuresByStatus.considering,
+    color: "bg-purple-500",
+    emptyMessage: translations.emptyMessages?.considering ?? "No ideas yet"
+  },
+  {
+    id: "planned",
+    title: translations.planned,
+    features: featuresByStatus.planned,
+    color: "bg-blue-500",
+    emptyMessage: translations.emptyMessages?.planned ?? "No planned features"
+  },
+  {
+    id: "inProgress",
+    title: translations.inProgress,
+    features: featuresByStatus.inProgress,
+    color: "bg-orange-500",
+    emptyMessage: translations.emptyMessages?.inProgress ?? "No features in development"
+  },
+  {
+    id: "completed",
+    title: translations.completed,
+    features: featuresByStatus.completed,
+    color: "bg-green-500",
+    emptyMessage: translations.emptyMessages?.completed ?? "No completed features"
+  },
+  {
+    id: "rejected",
+    title: translations.rejected,
+    features: featuresByStatus.rejected,
+    color: "bg-red-500",
+    emptyMessage: translations.emptyMessages?.rejected ?? "No rejected features"
+  }
+];
+---
+
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-5">
+  {columns.map(column => (
+    <div class="flex flex-col rounded-lg border border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-900">
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">
+          {column.title}
+          <span class="ml-2 text-sm font-normal text-neutral-500">
+            ({column.features.length})
+          </span>
+        </h2>
+      </div>
+      
+      <div class="flex-1 space-y-4">
+        {column.features.length > 0 ? (
+          column.features.map(feature => (
+            <FeatureCard
+              feature={feature}
+              translations={translations}
+              showProjectName={showProjectName}
+            />
+          ))
+        ) : (
+          <div class="flex h-24 items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 bg-white p-4 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+            <p>{column.emptyMessage}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  ))}
+</div> 

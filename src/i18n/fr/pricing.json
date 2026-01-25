@@ -1,0 +1,48 @@
+{
+  "title": "Des prix simples et transparents",
+  "subtitle": "Choisissez le plan qui correspond à vos besoins",
+  "plans": [
+    {
+      "name": "Gratuit",
+      "description": "Parfait pour découvrir nos outils",
+      "price": "0€",
+      "period": "/mois",
+      "features": [
+        "Accès aux extensions de base",
+        "Documentation complète",
+        "Support communautaire",
+        "Mises à jour régulières"
+      ],
+      "cta": "Commencer gratuitement"
+    },
+    {
+      "name": "Pro",
+      "description": "Pour les utilisateurs avancés",
+      "price": "9.99€",
+      "period": "/mois",
+      "features": [
+        "Toutes les fonctionnalités gratuites",
+        "Extensions premium",
+        "Support prioritaire",
+        "Accès anticipé aux nouveautés",
+        "Formations exclusives"
+      ],
+      "cta": "Commencer l'essai",
+      "popular": true
+    },
+    {
+      "name": "Entreprise",
+      "description": "Vous avez besoin d'une solution sur mesure ?",
+      "price": "Sur mesure",
+      "period": "",
+      "features": [
+        "Toutes les fonctionnalités Pro",
+        "Déploiement personnalisé",
+        "Support dédié 24/7",
+        "Formation sur mesure",
+        "Intégrations spécifiques"
+      ],
+      "cta": "Contactez-nous"
+    }
+  ]
+} 

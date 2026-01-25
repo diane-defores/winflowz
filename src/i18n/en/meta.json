@@ -1,0 +1,18 @@
+{
+  "global": {
+    "siteName": "WinFlowz",
+    "siteDescription": "Digital productivity tools and training by a neurodivergent expert"
+  },
+  "home": {
+    "title": "WinFlowz - Digital Productivity Tools & Training",
+    "description": "Transform your digital workflow with powerful tools and training designed by a productivity-obsessed neurodivergent expert."
+  },
+  "products": {
+    "title": "Digital Productivity Tools | WinFlowz",
+    "description": "Discover our suite of productivity tools including Obsidian plugins and Chrome extensions designed to enhance your digital workflow."
+  },
+  "services": {
+    "title": "Digital Productivity Training & Services | WinFlowz",
+    "description": "Expert development and training services for digital productivity enhancement. Custom plugins, extensions, and personalized coaching."
+  }
+} 

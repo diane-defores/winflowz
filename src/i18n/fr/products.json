@@ -1,0 +1,69 @@
+{
+  "title": "Produits | WinFlowz",
+  "description": "Découvrez les outils de productivité numérique de WinFlowz, conçus pour les professionnels et les passionnés.",
+  "siteDescription": "WinFlowz propose des outils de productivité numérique premium et des services d'experts pour répondre à tous vos besoins.",
+  "subtitle": "Découvrez notre gamme d'outils de productivité conçus pour améliorer votre flux de travail numérique.",
+  "customerStories": "Témoignages Clients",
+  "features": {
+    "title": "Pourquoi Choisir WinFlowz ?",
+    "subtitle": "Transformez vos idées en résultats tangibles avec les outils WinFlowz. Que vous commenciez avec une esquisse ou plongiez dans un projet complet, nos outils sont conçus pour vous aider à construire en toute confiance.",
+    "benefits": [
+      "Des outils robustes et fiables pour une performance durable",
+      "Des solutions innovantes adaptées aux besoins de productivité modernes",
+      "Un support client dédié pour la réussite de votre projet"
+    ]
+  },
+  "testimonials": {
+    "title": "Ce Que Disent Nos Clients"
+  },
+  "products": {
+    "obsidianplugins": {
+      "title": "Plugins Obsidian",
+      "description": "Une collection de plugins pour améliorer votre expérience Obsidian",
+      "features": [
+        "Intégration transparente",
+        "Personnalisation avancée",
+        "Synchronisation automatique",
+        "Support premium"
+      ],
+      "price": "29,99",
+      "link": "/fr/produits/obsidian-plugins"
+    },
+    "chromeextensions": {
+      "title": "Extensions Chrome",
+      "description": "Des extensions puissantes pour optimiser votre navigation",
+      "features": [
+        "Productivité améliorée",
+        "Blocage des publicités",
+        "Gestionnaire de tâches",
+        "Synchronisation multi-appareils"
+      ],
+      "price": "19,99",
+      "link": "/fr/produits/chrome-extensions"
+    },
+    "windowsoptimization": {
+      "title": "Optimisation Windows",
+      "description": "Optimisez les performances de votre système Windows",
+      "features": [
+        "Nettoyage automatique",
+        "Optimisation en temps réel",
+        "Protection avancée",
+        "Sauvegarde intelligente"
+      ],
+      "price": "39,99",
+      "link": "/fr/produits/windows-optimization"
+    },
+    "productivitysuite": {
+      "title": "Suite Productivité",
+      "description": "Une suite complète d'outils pour maximiser votre productivité",
+      "features": [
+        "Tous les produits inclus",
+        "Mises à jour prioritaires",
+        "Support dédié 24/7",
+        "Formation personnalisée"
+      ],
+      "price": "79,99",
+      "link": "/fr/produits/productivity-suite"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+---
+import { getLangFromUrl, useTranslations } from "@/utils/i18n";
+
+const lang = getLangFromUrl(Astro.url);
+const t = await useTranslations(lang, "auth");
+
+interface Props {
+  title?: string;
+}
+
+const { title = t?.login?.button ?? "Log in" } = Astro.props;
+
+const baseClasses =
+  "flex items-center gap-x-2 font-medium text-neutral-600 ring-zinc-500 transition duration-300 focus-visible:ring outline-none";
+const hoverClasses = "hover:text-magenta dark:hover:text-magenta";
+const darkClasses =
+  "dark:border-neutral-700 dark:text-neutral-400 dark:ring-zinc-200 dark:focus:outline-none";
+const mdClasses = "md:my-6 md:border-s md:border-neutral-300 md:ps-6";
+const userSVG = `<svg
+      class="h-4 w-4 flex-shrink-0"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+  >
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>`;
+---
+
+<button
+  type="button"
+  class={`${baseClasses} ${hoverClasses} ${darkClasses} ${mdClasses}`}
+  data-hs-overlay="#hs-toggle-between-modals-login-modal"
+>
+  <Fragment set:html={userSVG} />
+  {title}
+</button>
