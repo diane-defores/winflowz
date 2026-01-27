@@ -30,7 +30,7 @@
     "@preline/collapse": "^2.6.0",
     "@preline/dropdown": "^2.6.0",
     "@preline/overlay": "^2.6.0",
-    "@preline/tabs": "^2.6.0",
+    "@preline/tabs": "^3.2.3",
     "@supabase/supabase-js": "^2.91.1",
     "@types/cors": "^2.8.19",
     "@vercel/nft": "^1.3.0",
