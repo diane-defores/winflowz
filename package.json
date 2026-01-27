@@ -26,7 +26,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/vercel": "^9.0.4",
     "@heroicons/react": "^2.2.0",
-    "@preline/accordion": "^2.6.0",
+    "@preline/accordion": "^3.2.3",
     "@preline/collapse": "^2.6.0",
     "@preline/dropdown": "^2.6.0",
     "@preline/overlay": "^2.6.0",
