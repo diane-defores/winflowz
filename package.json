@@ -29,7 +29,7 @@
     "@preline/accordion": "^2.6.0",
     "@preline/collapse": "^2.6.0",
     "@preline/dropdown": "^2.6.0",
-    "@preline/overlay": "^2.6.0",
+    "@preline/overlay": "^3.2.3",
     "@preline/tabs": "^2.6.0",
     "@supabase/supabase-js": "^2.91.1",
     "@types/cors": "^2.8.19",
