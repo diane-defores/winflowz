@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@astrojs/node": "^9.5.2",
-    "@astrojs/starlight": "^0.37.4",
+    "@astrojs/starlight": "^0.37.6",
     "@astrojs/starlight-tailwind": "^3.0.1",
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vue": "^5.1.4",
