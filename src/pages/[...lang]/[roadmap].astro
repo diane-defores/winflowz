@@ -5,12 +5,12 @@ import ProjectNav from '../../components/roadmap/ProjectNav.astro'
 import AddFeatureModal from '../../components/roadmap/AddFeatureModal.astro'
 import { projects } from '../../types/roadmap'
 import { getLangFromUrl, useTranslations } from '@/utils/i18n'
-import { supabase } from '../../lib/supabaseClient'
 import type { Language } from '@/types'
+
+export const prerender = true
 
 export function getStaticPaths() {
 	return [
-		// Routes en anglais
 		{
 			params: {
 				lang: undefined,
@@ -23,8 +23,6 @@ export function getStaticPaths() {
 				roadmap: `roadmap/${project.id}`,
 			},
 		})),
-
-		// Routes en français
 		{
 			params: {
 				lang: 'fr',
@@ -40,25 +38,15 @@ export function getStaticPaths() {
 	]
 }
 
-// Récupérer la langue et le projet actif
 const lang = getLangFromUrl(Astro.url)
 const t = await useTranslations(lang, 'roadmap')
 
-// Extraire l'ID du projet de l'URL
 const segments = Astro.url.pathname.split('/')
 const projectId =
 	segments[segments.length - 1] === 'roadmap'
 		? null
 		: segments[segments.length - 1]
 const project = projectId ? projects.find((p) => p.id === projectId) : null
-
-console.log('Page Debug:', {
-	pathname: Astro.url.pathname,
-	segments,
-	projectId,
-	project,
-	hasProject: !!project,
-})
 
 const defaultTranslations = {
 	planned: 'Planned',
@@ -80,29 +68,17 @@ const translations = {
 	votes: t?.feature?.votes ?? defaultTranslations.votes,
 }
 
-// Charger les features depuis Supabase
-let query = supabase
-	.from('features')
-	.select('*')
-	.order('votes', { ascending: false })
+// Features will come from Convex once connected
+const features: any[] = []
 
-// Si nous sommes sur une page de projet spécifique, filtrer les features
-if (project) {
-	query = query.eq('projectId', project.id)
-}
-
-const { data: features } = await query
-
-// Ajouter les noms des projets aux features
 const featuresWithProjectNames =
-	features?.map((feature) => ({
+	features?.map((feature: any) => ({
 		...feature,
 		projectName:
 			projects.find((p) => p.id === feature.projectId)?.name ??
 			feature.projectId,
 	})) ?? []
 
-// Définir le titre de la page
 const pageTitle: string = project
 	? `${project.name} - ${t?.title || 'Roadmap'}`
 	: t?.title || 'Roadmap'

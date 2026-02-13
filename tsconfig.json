@@ -12,7 +12,6 @@
       "@types/*": ["src/types/*"]
     },
     "jsx": "preserve",
-    "jsxImportSource": "astro",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "moduleResolution": "bundler",

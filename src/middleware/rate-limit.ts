@@ -18,7 +18,6 @@
 
 import type { MiddlewareHandler } from 'astro'
 import type { APIContext, MiddlewareNext } from 'astro'
-import { createServerSupabase } from '../lib/supabaseClient'
 
 /**
  * In-memory storage for rate limit tracking.

@@ -36,6 +36,11 @@
     "instagram": "#",
     "x": "#"
   },
+  "newsletterSection": {
+    "title": "This Week In Windows Productivity",
+    "description": "Weekly newsletter about Windows tooling and the productivity ecosystem.",
+    "privacy": "No spam, unsubscribe anytime. We respect your privacy."
+  },
   "footer": {
     "newsletter": {
       "title": "Stay up to date",

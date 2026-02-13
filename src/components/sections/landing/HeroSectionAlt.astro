@@ -1,8 +1,4 @@
 ---
-// Import the necessary dependencies
-import GithubBtn from "@/components/auth/GithubBtn.astro";
-
-// Define props from Astro
 const { title, subTitle, url } = Astro.props;
 
 const btnTitle = Astro.currentLocale === "fr" ? "Découvrir les formations" : "Discover";
@@ -132,11 +128,12 @@ interface Props {
       )
     }
   </div>
-  <!-- Github Button -->
   {
     url && (
       <div class="mt-6 flex justify-center gap-3 sm:mt-8">
-        <GithubBtn url={url} title={btnTitle}/>
+        <a href={url} class="inline-flex items-center rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-600">
+          {btnTitle}
+        </a>
       </div>
     )
   }

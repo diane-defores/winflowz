@@ -1,0 +1,48 @@
+---
+import '../assets/styles/global.css';
+
+interface Props {
+	lang?: string;
+	title?: string;
+}
+
+const { lang = 'en', title = 'WinFlowz — Ship faster. Scale smarter.' } = Astro.props;
+---
+
+<html lang={lang} class="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="The modern platform for teams who ship fast. Built for scale, designed for speed." />
+		<title>{title}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Manrope:wght@200..800&family=DM+Sans:opsz,wght@9..40,100..1000&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
+		<link rel="icon" type="image/png" href="/images/WinFlowz.png" />
+	</head>
+	<body class="landing-page font-sans antialiased bg-black text-white" style="font-family: 'Manrope', sans-serif;">
+		<div class="noise-overlay" aria-hidden="true"></div>
+		<slot />
+		<script src="/buildflowz-inspector.js" defer></script>
+		<script>
+			import Lenis from 'lenis';
+
+			const lenis = new Lenis({
+				duration: 1.2,
+				easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+				smoothWheel: true,
+			});
+
+			function raf(time) {
+				lenis.raf(time);
+				requestAnimationFrame(raf);
+			}
+
+			requestAnimationFrame(raf);
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	@import '../assets/styles/landing.css';
+</style>

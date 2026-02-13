@@ -2,6 +2,7 @@
 // Importing necessary components
 import Meta from '@/components/Meta.astro'
 import FooterSection from '@/components/sections/navbar&footer/FooterSection.astro'
+import NewsletterSection from '@/components/sections/newsletter/NewsletterSection.astro'
 import Navbar from '@/components/sections/navbar&footer/Navbar.astro'
 import { SITE } from '@/constants'
 import '../assets/styles/global.css'
@@ -37,6 +38,7 @@ interface Props {
 				<slot />
 			</main>
 		</div>
+		<NewsletterSection />
 		<FooterSection />
 		{
 			import.meta.env.PROD && (

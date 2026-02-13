@@ -3,6 +3,8 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import starlight from '@astrojs/starlight';
 import vercel from '@astrojs/vercel';
+import react from '@astrojs/react';
+// import clerk from '@clerk/astro'; // Re-enable when real Clerk API keys are configured
 import icon from "astro-icon";
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -11,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   site: "https://winflowz.com",
-  output: "static",
+  output: "server",
   adapter: vercel({
     webAnalytics: {
       enabled: true,
@@ -21,7 +23,7 @@ export default defineConfig({
   }),
   server: {
     host: true,
-    port: parseInt(process.env.PORT) || 3000
+    port: parseInt(process.env.PORT) || 3011
   },
   build: {
     inlineStylesheets: "auto"
@@ -40,7 +42,8 @@ export default defineConfig({
         '@assets': path.resolve(__dirname, './src/assets'),
         '@images': path.resolve(__dirname, './src/assets/images'),
         'nanoid/non-secure': 'nanoid/non-secure/index.js'
-      }
+      },
+      dedupe: ['react', 'react-dom'],
     },
     ssr: {
       noExternal: ['@astrojs/starlight/*']
@@ -117,17 +120,9 @@ export default defineConfig({
         }
       }
     }),
+    react({
+      include: ['**/components/react/**', '**/components/ui/**'],
+    }),
+    // clerk(), // Re-enable when real Clerk API keys are configured
   ],
-  middleware: [
-    {
-      name: 'rate-limit',
-      order: 1,
-      handler: './src/middleware/rate-limit.ts'
-    },
-    {
-      name: 'auth',
-      order: 2,
-      handler: './src/middleware/auth.ts'
-    }
-  ]
 });

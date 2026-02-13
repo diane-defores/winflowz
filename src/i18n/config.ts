@@ -63,7 +63,8 @@ export const routes: {
     'terms': 'terms',
     'disclaimer': 'disclaimer',
     'copyright': 'copyright',
-    'legal': 'legal'
+    'legal': 'legal',
+    'landing': 'landing'
   },
   fr: {
     'products': 'produits',
@@ -76,6 +77,7 @@ export const routes: {
     'terms': 'conditions-utilisation',
     'disclaimer': 'avertissement',
     'copyright': 'droits-auteur',
-    'legal': 'mentions-legales'
+    'legal': 'mentions-legales',
+    'landing': 'landing'
   }
 } 
