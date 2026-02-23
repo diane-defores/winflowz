@@ -31,7 +31,7 @@
     "@polar-sh/sdk": "^0.43.1",
     "@preline/accordion": "^2.6.0",
     "@preline/collapse": "^2.6.0",
-    "@preline/dropdown": "^2.6.0",
+    "@preline/dropdown": "^4.0.0",
     "@preline/overlay": "^2.6.0",
     "@preline/tabs": "^2.6.0",
     "@radix-ui/react-slot": "^1.2.4",
