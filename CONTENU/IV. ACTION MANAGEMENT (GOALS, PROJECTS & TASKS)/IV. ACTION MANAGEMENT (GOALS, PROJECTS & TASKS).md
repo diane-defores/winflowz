@@ -6,6 +6,19 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
+
+## ✅ MIGRÉ → module-4-actions/index.md
+
+- (Méthode Backwardation / GoalSumo — rêve → action du jour)
+- (Objectifs SMART — Spécifique, Mesurable, Atteignable, Relevant, Temporel)
+- (Loi de Parkinson — deadlines serrées + buffer 20%)
+- (Décomposer les gros projets — technique du retroplanning)
+- (Task Combining — une tâche cognitive + une tâche automatique)
+- (Fondamentaux du project management — documenter, prioriser, une tâche à la fois)
+- (Outils recommandés : Habitica, Kairo, Habitify, TheGist, Morgen Calendar)
+
+## 🔶 À TRIER
+
 ![](copyq_0009.webp)
 ![](copyq_0010.webp)
 ![|156](IV.%20GOALS,%20PROJECTS%20&%20TASKS%20MANAGEMENT-20240926232230501.webp)

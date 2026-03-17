@@ -7,6 +7,17 @@ imageNameKey: ""
 _priorité: ""
 ---
 
+## ✅ MIGRÉ → module-4-actions/motivation.md
+
+- (Science de la motivation — dopamine et anticipation)
+- (Motivation intrinsèque vs extrinsèque)
+- (3 ingrédients : auto-efficacité, curiosité, compétence)
+- (Toolkit des 3 Ms : Manage mood, Measure progress, Make it public)
+- (Momentum crée la motivation — règle des 2 minutes, Blitzit)
+- (Rester motivé sur les projets longs)
+
+## 🔶 À TRIER
+
 [Comment RETROUVER LA MOTIVATION - YouTube](https://www.youtube.com/watch?v=ZLWuHQj9xZQ)
 [00:11](https://www.youtube.com/watch?v=N9JHjDT1cd4&t=11#t=11.14)  
 # Ness Labs: The Self-Motivation Toolkit 🛠️

@@ -7,6 +7,15 @@ imageNameKey: ""
 _priorité: ""
 ---
 
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/creer.md`
+- ((écriture assistée par l'IA — Gobble Bot, Flot AI, Sider, Bearly))
+- ((PDF — PrintFriendly, conversion et outils))
+- ((Audio — Audacity, sauvegarde Cloud))
+- ((AI copilot everywhere — Bertha AI, Copilot, Triplo AI))
+- ((IA partout : Mavex.ai, Booltool))
+
+## 🔶 À TRIER
+
 Custom GPT
 [Gobble Bot - All your content digested into one text file](https://gobble.bot/?ref=producthunt)
 	

@@ -6,6 +6,17 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
+
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/retrouver.md`
+- ((CommandE — moteur de recherche personnel unifié))
+- ((Findr — AI search across all apps))
+- ((AnyTXT Searcher — recherche full-text sur fichiers locaux))
+- ((ueli — keystroke launcher))
+- ((Dropbox Dash — recherche universelle IA))
+- ((recherche dans le navigateur — extension Search Bookmarks))
+
+## 🔶 À TRIER
+
 [Custom engine example list | SearchJumper](https://search.hoothin.com/examples/)
 [ContextSearch web-ext - Chrome Web Store](https://chromewebstore.google.com/detail/contextsearch-web-ext/ddippghibegbgpjcaaijbacfhjjeafjh)
 

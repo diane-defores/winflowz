@@ -7,16 +7,21 @@ imageNameKey: ""
 _priorité: ""
 ---
 
-# CRM Personnel - N'Oubliez Plus Personne
+## ✅ MIGRÉ → module-7-social/relations-crm.md
 
-Dans cette section, nous résolvons le problème des relations professionnelles et personnelles qui se perdent faute de suivi. Transformez votre réseau en atout concret.
+- ((Objectifs : ne plus oublier de contacts, relations pro/perso de qualité, rappels auto, enrichissement réseau))
+- ((Problème : cartes de visite perdues, contacts éparpillés, opportunités ratées, anniversaires oubliés))
+- ((Clay CRM personnel : import universel Gmail/LinkedIn/iCloud, enrichissement temps réel, updates proactives changement de job, rappels intelligents, contexte always-on, segmentation tags))
+- ((Avant/après Clay : contacts chaotiques → import auto, enrichissement continu, rappels, contexte présent))
+- ((Cas d'usage : entrepreneurs/freelancers pipeline relationnel, professionnels en transition, networkers actifs scan cartes, vie perso anniversaires))
+- ((Setup Clay 30 min : import 10 min, enrichissement 10 min, organisation 10 min))
+- ((Workflows concrets : post-événement networking J+2 follow-up, gestion client/prospect review hebdo))
+- ((Philosophie : relations non transactionnelles mais intentionnelles, Clay pour être présent))
+- ((Erreurs courantes : tout migrer d'un coup, pas de contexte, ignorer rappels, sur-organiser, pas de review))
+- ((Résultats attendus : 1 mois top contacts à jour, 3 mois réseau actif 2x, 6 mois actif stratégique))
+- ((Exercice pratique 4 semaines : audit réseau → setup Clay → activation follow-ups → optimisation))
 
-## 🎯 Objectif de cette Section
-
-- Ne plus oublier de contacts importants
-- Maintenir des relations pro/perso de qualité
-- Automatiser les rappels de suivi
-- Enrichir intelligemment votre réseau
+## 🔶 À TRIER
 
 ---
 

@@ -7,6 +7,16 @@ imageNameKey: ""
 _priorité: ""
 ---
 
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/consommer-refleter.md`
+- ((optimisation YouTube — extensions recommandées, stratégie de consommation))
+- ((extensions vidéo : SuperYouTube, PocketTube, Video Speed Controller, Video Resumer))
+- ((RSS — Flipboard, Feedly, agrégation de flux))
+- ((consommation de podcasts — Pocket Casts, Poddycast))
+- ((lecture — Readsy, Otherweb, Modern for Hacker News))
+- ((PotPlayer — lecteur Windows avancé))
+
+## 🔶 À TRIER
+
 [Reverie - Effortless Daily Journaling](https://callreverie.com/) audio journal by auto calls
 
 ## Play videos better

@@ -6,6 +6,19 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
+
+## ✅ MIGRÉ → module-2-windows/navigateurs.md
+- (Vivaldi : Tab Stacking, Quick Commands, chaines de commandes, panneaux latéraux, personnalisation)
+- (Arc : barre latérale, espaces de contexte, onglets éphémères, Arc Max AI)
+- (Brave : bloqueur de pubs/trackers natif, HTTPS Everywhere)
+- (Tableau comparatif Vivaldi vs Arc vs Brave)
+- (Gestion des onglets : règle des 10, groupes thématiques, sessions, extensions)
+- (Raccourcis clavier navigateur Chromium essentiels)
+- (Installation d'extensions Chrome hors Web Store : .crx et sources)
+- (Optimisation performances navigateur)
+
+## 🔶 À TRIER
+
 [Getting started with Vivaldi for the first time - YouTube](https://www.youtube.com/watch?v=jYF7yZRK3qE)
 [Welcome to Vivaldi 101 - YouTube](https://www.youtube.com/watch?v=JoCgvhshDHE)
 
@@ -19,7 +32,7 @@ Little menu on the left
 
 # **Take area/fullpage screenshot**
 
-_Save them as PNG, JPEG, in a note, or copy them to the clipboard. See more [in official doc](https://help.vivaldi.com/desktop/tools/capture-a-screenshot/)_
+_Save them as PNG, JPEG, in a note, or copy them to the clipboard. See more [in official doc](https://help.vivaldi.com/desktop/tools/capture-a-screenshot/)_
 
 # **Forbid image to load**
 
@@ -39,7 +52,7 @@ Now I just need to type the shortcut in quick command to do all this, watch it i
 
 You can add a nickname when editing a bookmark
 
-Now if I launch Quick Command ad type pp + enter I’m redirected to Paypal. You can also go directly without ENTER key :
+Now if I launch Quick Command ad type pp + enter I'm redirected to Paypal. You can also go directly without ENTER key :
 
 Did you know you can also ‣ ?
 
@@ -63,7 +76,7 @@ As you can see, I have many ! You can choose panels to be sticky, or to disparea
 
 You can quickly access/collapse all panels with the bar :
 
-You’ll see notifications on your apps (you can disable them)
+You'll see notifications on your apps (you can disable them)
 
 What is really cool with panel is that you can choose between desktop and mobile version, and you can make a specific width for each panel !
 ## Vivaldi
@@ -71,51 +84,51 @@ What is really cool with panel is that you can choose between desktop and mobile
 
 ecouter de la musique
 
-You can transfer tabs to bookmarks easily by adding a bookmark panel and dragging and dropping one or multiple tabs. You can go inside folders for sub-folders if you want, which you can’t do with bookmarks bar.
+You can transfer tabs to bookmarks easily by adding a bookmark panel and dragging and dropping one or multiple tabs. You can go inside folders for sub-folders if you want, which you can't do with bookmarks bar.
 
 ![](II.b%20Browsers-20240722180536025.webp)
 ### Command bar
 
 This is your keyboard-base control center to any open tabs and reach opened one.
 
-The command bar will help you search and launch: 
-- use yt + Space to search the YouTube database, use nothing or “g " for Google (this special command comes handy when you’ve an automatically similar tab opened, or a technical search term when using google dorks for example, and it comes highlighted but that’s not the one you want)
+The command bar will help you search and launch:
+- use yt + Space to search the YouTube database, use nothing or "g " for Google (this special command comes handy when you've an automatically similar tab opened, or a technical search term when using google dorks for example, and it comes highlighted but that's not the one you want)
 - your bookmarks and their folders, your opened tabs and your closed tabs (history), workspaces, commands
 
-In the results, use Alt to switch section fast. Use the optional Maj + Enter to open in a new window, Ctrl + Enter to open in the background (doesn’t work for folders unfortunately, just for links) 
+In the results, use Alt to switch section fast. Use the optional Maj + Enter to open in a new window, Ctrl + Enter to open in the background (doesn't work for folders unfortunately, just for links)
 
 
 or do many things:
 LIST ACTIONS
 
-With the commands you can launch tabs by typing their adress or even better assgning them an “alias” (the Vivaldi-name of a command) 
-You can launch any bookmark or bookmark folder with a command that you customize, I recommend adding a wild character and 2 or 3 letters to recognize your command and remember enough of them easily without messing with them. 
+With the commands you can launch tabs by typing their adress or even better assgning them an "alias" (the Vivaldi-name of a command)
+You can launch any bookmark or bookmark folder with a command that you customize, I recommend adding a wild character and 2 or 3 letters to recognize your command and remember enough of them easily without messing with them.
 
-You’ll probably use them to launch website you open randomnly like social media or bank accounts. It comes handy to have the option to open the tied folder so can you launch certain complex workflow processes with one gesture (like visiting your bank accounts to transfer funds or visiting every social media to post something).
+You'll probably use them to launch website you open randomnly like social media or bank accounts. It comes handy to have the option to open the tied folder so can you launch certain complex workflow processes with one gesture (like visiting your bank accounts to transfer funds or visiting every social media to post something).
 
 ### Mouse control center
 You can also open all links and workflow folders by left double-clicking (and right clicking to open in the background).
 ![|441](II.b%20Browsers-20240722171239108.webp)
 Watching a video while browsing
 
-Vivaldi 5.0 is here! It’s designed to stand out on Android, whether you use portrait, landscape, or tablet mode. But we boost the beauty beyond skin deep by packing in ground-breaking features and flexibility. So you can do more, have fun doing it, and make Vivaldi on Android truly your own personal browser.
+Vivaldi 5.0 is here! It's designed to stand out on Android, whether you use portrait, landscape, or tablet mode. But we boost the beauty beyond skin deep by packing in ground-breaking features and flexibility. So you can do more, have fun doing it, and make Vivaldi on Android truly your own personal browser.
 
-Here’s what’s new:
+Here's what's new:
 
-🔥 Unique Two-Level Tab Stacks: A Vivaldi exclusive for mobile browsing, we’re bringing our double-decker tabs to our Android browser to help you manage your tab woes on the go!
+🔥 Unique Two-Level Tab Stacks: A Vivaldi exclusive for mobile browsing, we're bringing our double-decker tabs to our Android browser to help you manage your tab woes on the go!
 
 📁 Improved tab interface: You now have more ways to tweak the Tab Bar to your liking, including tabs that can appear as small as a favicon to give you more room and faster access.
 
 👀 New side Panel for Tablets and Chromebooks: Make the most of your tablet with a brand-new, super flexible design - including a side Panel - that lets you optimize your screen space.
 
-📔 Built-in Notes tool steps up a notch: Now you can quickly tack on chunks of text from a webpage to an existing note with an “Append to Note” option when highlighting text.
+📔 Built-in Notes tool steps up a notch: Now you can quickly tack on chunks of text from a webpage to an existing note with an "Append to Note" option when highlighting text.
 
 🔦 Shine a light in the dark: Once enabled in Settings, you can toggle from dark to light themes for any tab.
-**_Display real-time tab memory usage_****_:_** With the [Memory Saver](https://vivaldi.com/blog/vivaldi-on-desktop-6-7/) in the Tabs settings, you can automatically hibernate inactive tabs, so memory can be freed up for active tabs. This improves browser performance and keeps it running smoothly.
+**_Display real-time tab memory usage_****_:_** With the [Memory Saver](https://vivaldi.com/blog/vivaldi-on-desktop-6-7/) in the Tabs settings, you can automatically hibernate inactive tabs, so memory can be freed up for active tabs. This improves browser performance and keeps it running smoothly.
 
-In our latest update, you can hover over any tab to see how much memory it’s using in real time. Unlike some other browsers that only show the initial memory load, we keep it updated for you. This tooltip is on by default and will also tell you if a tab is hibernating.
+In our latest update, you can hover over any tab to see how much memory it's using in real time. Unlike some other browsers that only show the initial memory load, we keep it updated for you. This tooltip is on by default and will also tell you if a tab is hibernating.
 
-Want to dive deeper into the details? Just hit _SHIFT+ESC_ to bring up the Task Manager and get all the info you need.
+Want to dive deeper into the details? Just hit _SHIFT+ESC_ to bring up the Task Manager and get all the info you need.
 [5 ways to kill browsing distractions with ADHD | Vivaldi Browser](https://vivaldi.com/blog/kill-distractions-with-adhd/)
 
 - 🌐 Vivaldi est un navigateur Web personnalisable et respectueux de la vie privée, conçu pour s'adapter à vos besoins et non l'inverse.
@@ -175,23 +188,23 @@ Want to dive deeper into the details? Just hit _SHIFT+ESC_ to bring up the Tas
 
 ## What can users do for a faster browsing experience?[​](https://www.debugbear.com/blog/chrome-extensions-website-performance#what-can-users-do-for-a-faster-browsing-experience "Direct link to What can users do for a faster browsing experience?")
 
-As a Chrome user, you can review the extensions you’ve installed and remove or disable those you don’t actively use. You can also [look up the performance impact of the Chrome extensions you’ve installed](https://www.debugbear.com/chrome-extension-performance-lookup).
+As a Chrome user, you can review the extensions you've installed and remove or disable those you don't actively use. You can also [look up the performance impact of the Chrome extensions you've installed](https://www.debugbear.com/chrome-extension-performance-lookup).
 
-If you’ve installed a Chrome extension but only need it some of the time, you can restrict it to run on some websites or only when you click the extension icon.
+If you've installed a Chrome extension but only need it some of the time, you can restrict it to run on some websites or only when you click the extension icon.
 
 ![Chrome extension permissions menu|287](https://www.debugbear.com/dimg/c4bf5722bf417fb479ee820186441134.png)
-## 
-When it comes to web browsers, [Google Chrome](https://chrome.en.softonic.com/) and [Mozilla Firefox](https://mozilla-firefox.en.softonic.com/) reign. However, nowadays, more and more alternatives are released on the market, providing new features that focus on user security and privacy protection. You can find them on Softonic.
-**Gate Browser** is yet another player in the field. A Chromium-based utility, it **simplifies** browsers to a level where users need only a **couple of buttons** to work with it. This browsing application offers [private browsing](https://en.softonic.com/downloads/private-browser)—which, unlike regular browsing, is cleaner. It **does not save** history or cookies. Moreover, it protects users against cryptocurrency mining malware. The app is also very clean since it has **no add-ons** that make the browser heavy.
+##
+When it comes to web browsers, [Google Chrome](https://chrome.en.softonic.com/) and [Mozilla Firefox](https://mozilla-firefox.en.softonic.com/) reign. However, nowadays, more and more alternatives are released on the market, providing new features that focus on user security and privacy protection. You can find them on Softonic.
+**Gate Browser** is yet another player in the field. A Chromium-based utility, it **simplifies** browsers to a level where users need only a **couple of buttons** to work with it. This browsing application offers [private browsing](https://en.softonic.com/downloads/private-browser)—which, unlike regular browsing, is cleaner. It **does not save** history or cookies. Moreover, it protects users against cryptocurrency mining malware. The app is also very clean since it has **no add-ons** that make the browser heavy.
 Shariah-Certified Online Browser
 
 ## Arc
-Here’s what the internet is saying:
-- **"**It's really different, in a good way**. It makes you rethink how you browse the web**." - Zac Bowden, [Windows Central](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=dd4045094b&e=23fa3da4c9)  
-- "Arc isn't just about trying another browser. **It's about empowering users to look at the web browser as more than a tool**…one that goes out of its way to keep you organized.” - Jack Wallen, [ZDNet](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=881bf71a5d&e=23fa3da4c9)  
-- **“**How do you deal with this complexity of our lives? **We need tools that help us meet where we are, that’s what Arc is all about.**” - Tom Warren, [The Verge](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=8e12a14bf4&e=23fa3da4c9)
+Here's what the internet is saying:
+- **"**It's really different, in a good way**. It makes you rethink how you browse the web**." - Zac Bowden, [Windows Central](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=dd4045094b&e=23fa3da4c9)
+- "Arc isn't just about trying another browser. **It's about empowering users to look at the web browser as more than a tool**…one that goes out of its way to keep you organized." - Jack Wallen, [ZDNet](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=881bf71a5d&e=23fa3da4c9)
+- **"**How do you deal with this complexity of our lives? **We need tools that help us meet where we are, that's what Arc is all about.**" - Tom Warren, [The Verge](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=8e12a14bf4&e=23fa3da4c9)
 
-Don’t take their word for it! [**Download Arc today**](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=50d5a4b05b&e=23fa3da4c9) to try it for yourself.
+Don't take their word for it! [**Download Arc today**](https://company.us6.list-manage.com/track/click?u=73c2f0478f1b3cd8343ae8f45&id=50d5a4b05b&e=23fa3da4c9) to try it for yourself.
 
 Arc Max is a suite of AI-powered features integrated into the Arc browser that aims to enhance and streamline the web browsing experience, offering capabilities like on-page AI assistance, smart tab and download renaming, ChatGPT integration, and more.
 - Arc Max is a collection of AI-powered features designed to enhance the web browsing experience within the Arc browser.
@@ -221,12 +234,12 @@ Le texte parle de l'application "Shift" qui permet d'intégrer plusieurs comptes
 [(3) Save Memory Automatically | Vivaldi Browser - YouTube](https://www.youtube.com/watch?v=PjDNkGlsVUQ)
 
 [Private, Fast, Secure Web Browser - Sidekick Browser](https://www.meetsidekick.com/)
-Sidekick Browser is a private, fast, and secure web browser designed to enhance productivity and protect users' attention and data. It offers a focused work environment by eliminating distractions and speeding up workflow.  
-  
-Sidekick is known for its tab suspension and memory optimization, making it three times faster than Chrome. It blocks data-grabbing ads and trackers, ensuring user privacy, and provides quick access to apps, documents, messengers, and search within the browser.  
-  
-The browser offers features like turning favorite sites into apps, organizing tabs with sessions, quick search across apps and documents, split-view for multitasking, and a focus mode for a distraction-free experience. It also supports multiple accounts for various platforms and integrates web apps and extensions in one place.  
-  
+Sidekick Browser is a private, fast, and secure web browser designed to enhance productivity and protect users' attention and data. It offers a focused work environment by eliminating distractions and speeding up workflow.
+
+Sidekick is known for its tab suspension and memory optimization, making it three times faster than Chrome. It blocks data-grabbing ads and trackers, ensuring user privacy, and provides quick access to apps, documents, messengers, and search within the browser.
+
+The browser offers features like turning favorite sites into apps, organizing tabs with sessions, quick search across apps and documents, split-view for multitasking, and a focus mode for a distraction-free experience. It also supports multiple accounts for various platforms and integrates web apps and extensions in one place.
+
 Sidekick is developed with the aim of helping users regain focus, streamline their online work, and provide a secure browsing experience. The browser is founded by Dmitry Pushkarev and is funded by Kleiner Perkins. The browser has both a free version with basic features and a monthly paid plan with additional anti-distraction features.
 ## [Browser.lol](https://browser.lol/)
 Browser.lol is a web-based virtual browser that allows users to access websites safely and securely without the need for installation or configuration. It provides a sandboxed environment to explore the internet, visit blocked sites, and protect against viruses and trojans.
@@ -241,17 +254,17 @@ Browser.lol is a web-based virtual browser that allows users to access websites 
 - **Traffic Masking**: Ensure privacy of internet activities from local network users and ISPs.
 
 ## [Synth | The Research Browser](https://synth.app/)
-Synth is an innovative browser designed specifically for research purposes. With Synth, users can browse the web smartly and efficiently, enabling them to get things done quickly.  
-  
-The browser offers powerful features and tools that enhance the research experience, allowing users to gather information, organize their findings, and collaborate seamlessly.  
-  
+Synth is an innovative browser designed specifically for research purposes. With Synth, users can browse the web smartly and efficiently, enabling them to get things done quickly.
+
+The browser offers powerful features and tools that enhance the research experience, allowing users to gather information, organize their findings, and collaborate seamlessly.
+
 From its intelligent search capabilities to its intuitive interface, Synth is the ideal browser for researchers who are looking for a streamlined and productive browsing experience.
 
 ## [SigmaOS](https://sigmaos.com/)
-SigmaOS is a browser that offers a smart and organized browsing experience with features such as workspaces, vertical tabs, task-like tab management, split-screen multitasking, lazy search, contextual assistance, simplified website summaries, ad-blocking, focus mode, and more.  
-  
-It supports easy migration, multiple logins, single-key shortcuts, link preview, autosync, and integrates with Apple Keychain and popular Chromium extensions.  
-  
+SigmaOS is a browser that offers a smart and organized browsing experience with features such as workspaces, vertical tabs, task-like tab management, split-screen multitasking, lazy search, contextual assistance, simplified website summaries, ad-blocking, focus mode, and more.
+
+It supports easy migration, multiple logins, single-key shortcuts, link preview, autosync, and integrates with Apple Keychain and popular Chromium extensions.
+
 SigmaOS is built on WebKit and optimized for macOS, providing top-class performance and battery efficiency.
 
 
@@ -259,83 +272,83 @@ SigmaOS is built on WebKit and optimized for macOS, providing top-class performa
 
 ## Vivaldi
 - Vivaldi
-    
+
     CTRL N : Nouvelle fenêtre
-    
+
     CTRL SHIFT N : Nouvelle fenêtre privée
-    
+
     CTRL Q = commandes rapides
-    
+
     CTRL SHIFT E = Extensions
-    
+
     ALT SHIFT Q = Courrier
-    
-    CTRL SHIFT A = Ajouter un évènements à l’agenda
-    
+
+    CTRL SHIFT A = Ajouter un évènements à l'agenda
+
     CTRL SHIFT Q = Plein écran
-    
+
     CTRL SHIFT S = Barre de signets
-    
+
     ALT T = Thème suivant
-    
-    ALT D = Barre d’onglets
-    
-    CTRL ‘ = Activer le panneau
-    
+
+    ALT D = Barre d'onglets
+
+    CTRL ' = Activer le panneau
+
     ALT X = Afficher / masquer le panneau
-    
+
     ALT Q = Afficher / masquer le panneau sélectionné
-    
+
     ALT 5 = Panneau des signets
-    
+
     ALT 6 = Panneau de la liste de lecture
-    
+
     ALT 7 = Panneau historique
-    
+
     ALT 4 = Panneau de fenêtres
-    
+
     ALT 1 = Panneau web 1
-    
+
     CTRL T = Nouvel onglet
-    
+
     CTRL D = Dupliquer les onglets sélectionnés
-    
-    CTRL SHIFT 1 = Accrocher/Décrocher l’onglet
-    
-    CTRL W = Fermer l’onglet
-    
-    F2 = Renommer la pile d’onglets
-    
+
+    CTRL SHIFT 1 = Accrocher/Décrocher l'onglet
+
+    CTRL W = Fermer l'onglet
+
+    F2 = Renommer la pile d'onglets
+
     CTRL H = Mettre en hibernation les onglets en arrière plan
-    
-    ALT Z = Rouvrir l’onglet fermé
-    
+
+    ALT Z = Rouvrir l'onglet fermé
+
     CTRL SHIFT 2 = Empiler les onglets
-    
-    STRL SHIFT 3 = Défaire la pile d’onglets
-    
-    STRL SHIFT 4 = Retirer de la pile d’onglets
-    
-    CTRL SHIFT W = Fermer la pile d’onglets
-    
-    CTRL R = Recharger la pile d’onglets
-    
+
+    STRL SHIFT 3 = Défaire la pile d'onglets
+
+    STRL SHIFT 4 = Retirer de la pile d'onglets
+
+    CTRL SHIFT W = Fermer la pile d'onglets
+
+    CTRL R = Recharger la pile d'onglets
+
     CTRL L = Ajouter a la liste de lecture
-    
+
     Courrier
-    
+
     N = Rédiger un nouveau message
-    
+
     R = Répondre au message
-    
+
     T = Transférer le message
-    
+
     W = Supprimer définitivement
-    
+
     A = Déplacer dans les archives
-    
-    E = Afficher les messages de l’expéditeur
-    
+
+    E = Afficher les messages de l'expéditeur
+
     F = Afficher les fils de discussion
 ## What is the best Browser ?
 
@@ -368,10 +381,10 @@ Ce qui est vraiment cool avec les panneaux, c'est que tu peux choisir entre la v
 
 ## Tab management
 [Snooze Tabs - Snooze tabs, windows and todos for later](https://snoozetabs.com/)
-Snooze Tabs is a handy tool that allows users to snooze tabs, windows, and todos for later. With this tool, users can temporarily set aside tabs they don't need at the moment and schedule an alarm to bring them back when needed.  
-  
-It offers features like snoozing current or all tabs, preset times, custom date and time options, recurring snooze, keyboard shortcuts, and notifications.  
-  
+Snooze Tabs is a handy tool that allows users to snooze tabs, windows, and todos for later. With this tool, users can temporarily set aside tabs they don't need at the moment and schedule an alarm to bring them back when needed.
+
+It offers features like snoozing current or all tabs, preset times, custom date and time options, recurring snooze, keyboard shortcuts, and notifications.
+
 Snooze Tabs also provides a Todos tab, workspaces, group tabs title, and cloud sync and backup functionality. The tool offers both a free version with basic features and a Pro version with additional benefits such as unlimited snooze, sync and backup, notification sound, and more.
 
 
@@ -380,26 +393,26 @@ Snooze Tabs also provides a Todos tab, workspaces, group tabs title, and cloud s
 w
 Il vous est peut être déjà arrivé de tomber sur des extensions ou des codes sources d'extensions chrome qui sont hors du Web Store et de ne pas savoir comment les installer. Ou encore, dans le cas, où vous développez une extension chrome et que vous ne savez pas comment la tester, ce qui va suivre va vous intéresser.
 
-Si vous avez le fichier `.crx` de l'extension, c'est que vous possédez la version empaquetée de l'extension. Dans ce cas allez à la partie 1, sinon passez directement à la partie 2.
+Si vous avez le fichier `.crx` de l'extension, c'est que vous possédez la version empaquetée de l'extension. Dans ce cas allez à la partie 1, sinon passez directement à la partie 2.
 
 ## [](https://www.emmanuelgautier.fr/blog/installer-une-extension-chrome-hors-du-web-store#installer-%C3%A0-partir-de-lextension-empaquet%C3%A9)Installer à partir de l'extension empaqueté
 
 Pour installer une extension empaqueté, suivez les étapes suivantes :
 
-1. Télécharger l'extension au format `.crx` (si déjà fait passez au troisième point)
+1. Télécharger l'extension au format `.crx` (si déjà fait passez au troisième point)
 2. Si vous avez désactivé la protection contre les installations à partir de site hors du Chrome Web Store, l'installation devrait être automatique lors de l'ouverture du fichier.
-3. Sinon, ouvrez le gestionnaire d'extensions (Menu > Outils > Extensions) et faites-y un glisser/déposer du fichier `.crx`.
+3. Sinon, ouvrez le gestionnaire d'extensions (Menu > Outils > Extensions) et faites-y un glisser/déposer du fichier `.crx`.
 
 ## [](https://www.emmanuelgautier.fr/blog/installer-une-extension-chrome-hors-du-web-store#installer-%C3%A0-partir-des-sources)Installer à partir des sources
 
 Pour installer à partir des sources, suivez les étapes suivantes :
 
 1. Téléchargez le dossier contenant les sources
-2. Vérifiez que ce dossier contient le fichier `manifest.json`
+2. Vérifiez que ce dossier contient le fichier `manifest.json`
 3. Rendez-vous dans le gestionnaire d'extensions (Menu > Outils > Extensions)
 4. Passez en ' Mode développeur ' en cochant la case correspondante en haut à droite de votre écran.
-5. Trois boutons devraient apparaître. Cliquez sur ' Charger l'extension non empaquetée… ', puis choisissez le dossier contenant les codes sources et le précieux `manifest.json`.
+5. Trois boutons devraient apparaître. Cliquez sur ' Charger l'extension non empaquetée… ', puis choisissez le dossier contenant les codes sources et le précieux `manifest.json`.
 
 ## [](https://www.emmanuelgautier.fr/blog/installer-une-extension-chrome-hors-du-web-store#notes)Notes
 
-Ce tutoriel est compatible avec les navigateurs basés sur Chromium (Chrome, Opera, Edge, …). En cas d'erreur, vérifiez la présence de fichier `manifest.json` dans les sources et qu'il ne manque pas de fichier tel que des images ou des fichiers Javascript.
+Ce tutoriel est compatible avec les navigateurs basés sur Chromium (Chrome, Opera, Edge, …). En cas d'erreur, vérifiez la présence de fichier `manifest.json` dans les sources et qu'il ne manque pas de fichier tel que des images ou des fichiers Javascript.

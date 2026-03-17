@@ -7,6 +7,20 @@ imageNameKey: ""
 _priorité: ""
 ---
 
+## ✅ MIGRÉ → module-3-temps-energie/index.md
+
+- ((Time tracking & audit : ActivityWatch, RescueTime, Toggl, Clockify))
+- ((Audit quotidien d'activité — 5 min chaque soir))
+- ((Timeboxing & Time Blocking — 3 pièges : what-aboutism, ne pas itérer, réactance psychologique))
+- ((Loi de Parkinson — le travail s'étend pour remplir le temps disponible))
+- ((Biological Prime Time — pics et creux d'énergie))
+- ((Pauses réelles vs pauses stimulantes))
+- ((Éliminer le temps mort — Brian Holiday, transformer temps mort en temps vivant))
+- ((Métaphore Pilote / Avion / Ingénieur — 10% / 80% / 5-10%))
+- ((Crée ton système personnel — itération sur 3-4 cycles))
+
+## 🔶 À TRIER
+
 [00:06](https://www.youtube.com/watch?v=6o2tm00Ar8A&t=7#t=6.92)  
 [ActivityWatch - Open-source time tracker](https://activitywatch.net/)
 

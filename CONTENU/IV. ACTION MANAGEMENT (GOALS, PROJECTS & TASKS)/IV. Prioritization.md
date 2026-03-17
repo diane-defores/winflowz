@@ -6,6 +6,18 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
+
+## ✅ MIGRÉ → module-4-actions/priorisation.md
+
+- (Matrice d'Eisenhower — 4 quadrants urgence/importance)
+- (Scoring RICE — Reach × Impact × Confidence / Effort)
+- (Processus d'audit de tâches en 5 étapes)
+- (Bénéfices concrets de la priorisation)
+- (Concept OneTask — un seul objectif principal par période)
+- (Citation Oliver Burkeman — Four Thousand Weeks)
+
+## 🔶 À TRIER
+
 # [The art of priority. Action expresses priorities. | by Asbed Boymoushakian | Medium](https://medium.com/@asbedb/the-art-of-priority-a68999a424a7)
 
 ![](IV.%20Prioritization-202411230413.png)

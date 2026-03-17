@@ -6,6 +6,19 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
+
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/medias-fichiers.md`
+- ((Cloudzip — monter un zip distant sans tout télécharger))
+- ((Magic Copy — extraction d'objet d'image via Segment Anything))
+- ((qsv — manipulation de fichiers CSV en ligne de commande))
+- ((CubePDF Utility — éditeur PDF par vignettes))
+- ((GIF compression — ezgif.com, workflow d'optimisation))
+- ((FileRenamer — renommage en lot))
+- ((IrfanView — visionneuse et éditeur d'images))
+- ((opérations sur fichiers texte, PDF, vidéo, audio))
+
+## 🔶 À TRIER
+
 # Cloudzip - Montez un zip distant et accédez à ses fichiers sans tout télécharger
 
 Imaginons que vous ayez une énooorme archive zip stockée quelque part dans le cloud, disons sur un bucket S3, et vous avez besoin d’accéder à quelques fichiers précis à l’intérieur. Qu’est-ce que vous faites ? Et bien comme tout le monde, vous téléchargez les 32 Go en entier, vous dézippez le bazar et tout ça pour récupérer 3 malheureux fichiers…

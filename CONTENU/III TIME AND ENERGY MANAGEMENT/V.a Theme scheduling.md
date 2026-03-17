@@ -6,6 +6,17 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
+
+## ✅ MIGRÉ → module-3-temps-energie/theme-scheduling.md
+
+- ((Time Batching — regrouper tâches similaires, coût de switching 15-25 min))
+- ((Approche David Kadavy — 6 types de travail mental par charge cognitive))
+- ((Rythme circadien et Auto Dark Mode — lumière bleue, mélatonine))
+- ((Enregistrement de tâches — inbox unique, vider le cerveau))
+- ((Construis ta semaine type — blocs non négociables, pics d'énergie, 20% marge))
+
+## 🔶 À TRIER
+
 [Auto Dark Mode - Download and install on Windows | Microsoft Store](https://apps.microsoft.com/detail/xp8jk4hzbvf435?hl=en-US&gl=FR)
 
 

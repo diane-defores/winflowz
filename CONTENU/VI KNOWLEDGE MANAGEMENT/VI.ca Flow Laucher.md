@@ -7,7 +7,13 @@ datePublié: ""
 _priorité: ""
 ---
 
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/flow-launcher.md`
+- ((Flow Launcher — lanceur clavier open source pour Windows))
+- ((configuration portable, recherche de signets Vivaldi))
+- ((action keywords et priorités de plugins))
+- ((Everything/voidtools — recherche de fichiers ultra-rapide))
 
+## 🔶 À TRIER
 
 ![|353](Pasted%20image%2020240413124019.webp)
 ![](Pasted%20image%2020240413124035.webp)

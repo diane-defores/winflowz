@@ -7,6 +7,15 @@ imageNameKey: ""
 _priorité: ""
 ---
 
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/capturer.md`
+- ((Monolith — archiver le web en un seul fichier HTML))
+- ((Hoarder — bookmarking auto-hébergeable avec tagging IA))
+- ((ScreenPipe — enregistrement 24/7 écran + micro, intégration IA))
+- ((Curate better — capture d'abord, organise ensuite))
+- ((Tiago Forte — Building a second brain, friction de capture))
+
+## 🔶 À TRIER
+
 >  Forcing yourself to make decisions every time you capture something adds a lot of friction to the process. This makes the experience mentally taxing and thus less likely to happen in the first place.
 >  Tiago Forte - Building a second brain
 

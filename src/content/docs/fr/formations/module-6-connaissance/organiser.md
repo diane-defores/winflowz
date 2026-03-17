@@ -1,0 +1,111 @@
+---
+title: "Organiser & Gérer"
+description: "Maîtrise la gestion de fichiers, le tagging de métadonnées et l'organisation de tes actifs numériques."
+sidebar:
+  label: "Organiser"
+  order: 4
+---
+
+Sans organisation, ta base de connaissances devient un cimetière de fichiers. Organiser, ce n'est pas ranger pour le plaisir — c'est investir 5 minutes maintenant pour en gagner 30 plus tard.
+
+> Le meilleur système d'organisation est celui que tu utilises réellement. Simplicité > perfection.
+
+## Gestionnaires de fichiers avancés
+
+### TUIFIManager
+
+TUIFIManager est un gestionnaire de fichiers en mode terminal (TUI) qui combine vitesse et légèreté :
+
+- **Navigation au clavier** ultra-rapide
+- **Prévisualisation** des fichiers directement dans le terminal
+- **Opérations en lot** : renommer, déplacer, copier par sélection multiple
+- **Léger** — pas de dépendances lourdes, tourne partout
+
+### Q-Dir : l'alternative à l'Explorateur Windows
+
+Q-Dir affiche jusqu'à 4 dossiers côte à côte dans une seule fenêtre :
+
+| Fonction | Avantage |
+|----------|----------|
+| **4 panneaux simultanés** | Compare et déplace entre dossiers sans alt-tab |
+| **Filtres rapides** | Affiche uniquement les fichiers d'un type donné |
+| **Favoris** | Accès instantané à tes dossiers fréquents |
+| **Portable** | Fonctionne depuis une clé USB, rien à installer |
+
+---
+
+## Systèmes d'organisation de fichiers
+
+### La structure par domaine
+
+```
+📁 Documents/
+  📁 Projets/         → engagements actifs
+  📁 Domaines/        → responsabilités continues
+  📁 Ressources/      → matériel de référence
+  📁 Archives/        → projets terminés
+  📁 Inbox/           → tout arrive ici, trié chaque semaine
+```
+
+### Conventions de nommage
+
+- **Dates en préfixe** : `2026-03-08_rapport-client.pdf`
+- **Pas d'espaces** : utilise des tirets ou underscores
+- **Pas de caractères spéciaux** : évite les accents dans les noms de fichiers
+- **Version en suffixe** : `brief_v2.pdf` ou mieux, utilise Git
+
+### Tagging de métadonnées
+
+Les tags rendent tes fichiers retrouvables même si tu oublies où tu les as rangés :
+
+- **Utilise des tags cohérents** — crée une taxonomie de 15-20 tags maximum
+- **Catégories de tags** : projet, type, statut, priorité
+- **Outils** : TagSpaces (open source, multi-plateforme) ajoute des tags à n'importe quel fichier
+
+---
+
+## Empreinte numérique
+
+### Yorba
+
+Yorba t'aide à gérer ton empreinte numérique en centralisant tes comptes et données en ligne :
+
+- **Inventaire** de tous tes comptes en ligne
+- **Détection** des fuites de données te concernant
+- **Suppression guidée** des comptes inutilisés
+- **Vue d'ensemble** de ta présence numérique
+
+---
+
+## Organisation photo et vidéo
+
+### Immich
+
+Immich est une alternative auto-hébergée à Google Photos :
+
+| Fonction | Détail |
+|----------|--------|
+| **Sauvegarde auto** | Sync depuis ton téléphone |
+| **Reconnaissance faciale** | Regroupe les photos par personne |
+| **Carte** | Visualise tes photos par lieu |
+| **Partage** | Albums partagés avec famille/amis |
+| **Recherche IA** | Recherche par description ("plage au coucher du soleil") |
+
+### MoviePrint
+
+MoviePrint génère des planches contact à partir de vidéos — idéal pour cataloguer visuellement ta vidéothèque :
+
+- **Extraction automatique** de captures à intervalles réguliers
+- **Planches personnalisables** — nombre de colonnes, marges, en-têtes
+- **Export en image** haute résolution
+- **Utile pour** : cataloguer des tutoriels, repérer des scènes, documenter du contenu vidéo
+
+---
+
+## Bonnes pratiques
+
+1. **Vide ton Inbox chaque vendredi** — 15 minutes suffisent
+2. **Un fichier = un emplacement** — pas de doublons dans 3 dossiers
+3. **Archive plutôt que supprimer** — le stockage est bon marché, tes données non
+4. **Automatise ce qui peut l'être** — renommage en lot, tri par date, déplacement automatique
+5. **Revois ta structure tous les 3 mois** — adapte-la à tes projets actuels

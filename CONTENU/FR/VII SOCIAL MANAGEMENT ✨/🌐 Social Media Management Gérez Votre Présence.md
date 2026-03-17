@@ -6,15 +6,25 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
-Dans cette section, nous abordons la gestion efficace de votre présence sur les réseaux sociaux depuis Windows, sans perdre des heures à jongler entre plateformes.
 
-## 🎯 Objectif de cette Section
+## ✅ MIGRÉ → module-7-social/reseaux-sociaux.md
 
-- Publier sur plusieurs réseaux en un clic
-- Planifier votre contenu à l'avance
-- Analyser vos performances simplement
-- Gérer vos interactions efficacement
-- Garder le contrôle sans y passer 3h/jour
+- ((Objectifs : publier multi-réseaux en un clic, planifier, -60% temps social media))
+- ((Stratégie content batching + automation : 1 session 2h/semaine création + 15 min/jour engagement))
+- ((Outils essentiels avec tableau comparatif : Buffer simplicité, Hootsuite équipes/monitoring, Later Instagram/visuel, Metricool meilleur rapport qualité/prix, Canva Scheduling design+publication))
+- ((Détail Buffer : queue intelligente, composer unique multi-plateforme, plan gratuit 3 canaux))
+- ((Détail Hootsuite : streams monitoring, workflows approbation, analytics avancées, inbox unifié))
+- ((Détail Later : preview feed Instagram, Linkin.bio, hashtag suggestions))
+- ((Détail Metricool : analytics + competitor tracking + ads management, hidden gem))
+- ((Approche hybride desktop/mobile : planning sur desktop, engagement sur apps natives))
+- ((Stacks par profil : solopreneur <20€, professionnel 20-50€, agence 100€+))
+- ((Workflow complet 4 phases : stratégie mensuelle → création batch hebdo → engagement daily 15 min → analytics mensuel))
+- ((Techniques avancées : repurposing 1 contenu = 5 formats, ratio 70% evergreen / 30% timely))
+- ((Erreurs fatales : trop de plateformes, poster sans stratégie, négliger engagement, copier-coller, abandonner trop tôt))
+- ((KPIs : temps/semaine, engagement rate, CTR, conversions — objectif -60% temps +50% engagement))
+- ((Exercice pratique 4 semaines : audit → setup workflow → première semaine batched → optimization))
+
+## 🔶 À TRIER
 
 ---
 

@@ -6,7 +6,18 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
-forcing yourself to make decisions every time you capture something adds a lot of friction to the process. This makes the experience mentally taxing and thus less likely to happen in the first place. 
+
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/index.md`
+- ((PKM — Personal Knowledge Management, cycle Capturer → Organiser → Créer → Retrouver))
+- ((second cerveau, Digital Brain))
+- ((note-taking apps : Standard Notes, Nota, Notable, Obsidian, Roam Research, Heptabase))
+- ((Parsify — notepad-based calculator))
+- ((Zettlr — publication workbench, Zettelkasten))
+- ((information mastery — signal vs noise))
+
+## 🔶 À TRIER
+
+forcing yourself to make decisions every time you capture something adds a lot of friction to the process. This makes the experience mentally taxing and thus less likely to happen in the first place.
 
 
 

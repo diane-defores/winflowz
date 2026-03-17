@@ -6,6 +6,17 @@ datePublié: ""
 imageNameKey: ""
 _priorité: ""
 ---
+
+## ✅ MIGRÉ → `src/content/docs/fr/formations/module-6-connaissance/organiser.md`
+- ((TUIFIManager — gestionnaire de fichiers terminal))
+- ((Immich — sauvegarde auto-hébergée photos/vidéos))
+- ((Digital Asset Management — Eagle, métadonnées, tagging))
+- ((Q-Dir — explorateur Windows multi-panneaux))
+- ((Convention de nommage — système LATCH))
+- ((Gestion des actifs numériques — MoviePrint, TagSpaces))
+
+## 🔶 À TRIER
+
 # TUIFIManager - Le gestionnaire de fichiers en mode terminal
 
 Ah, les gestionnaires de fichiers ! On en a vu de toutes les couleurs, des plus simples aux plus complexes, avec des interfaces graphiques variées plus ou moins foirées. Mais aujourd’hui, je vais vous parler d’un gestionnaire de fichiers qui sort des sentiers battus : **TUIFIManager**. Ce petit bijou fonctionne dans le terminal et vous allez l’adorer !

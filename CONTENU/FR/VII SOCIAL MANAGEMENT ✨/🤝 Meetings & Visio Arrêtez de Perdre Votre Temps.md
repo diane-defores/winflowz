@@ -7,14 +7,21 @@ imageNameKey: ""
 _priorité: ""
 ---
 
-Dans cette section, nous explorons comment transformer vos réunions d'une perte de temps en sessions productives et bien documentées. Fini les réunions interminables sans suivi ni notes exploitables.
+## ✅ MIGRÉ → module-7-social/visio.md
 
-## 🎯 Objectifs de cette Section
+- ((Objectifs : -40% réunions inutiles, prise de notes IA auto, meilleure qualité visio, coordination multi-fuseaux))
+- ((3 questions avant planifier : but atteignable autrement ? tout le monde nécessaire ? durée réductible ?))
+- ((Should It Be a Meeting : questionnaire interactif + règle Loom 2 min))
+- ((Rallly : alternative open source à Doodle, votes temps réel, self-hosted Docker))
+- ((Plateformes visio : Around audio zéro écho + fenêtres flottantes, JumpChat zéro installation P2P))
+- ((Prise de notes IA : Otter.ai 600min/mois gratuit, tl;dv sales coaching GDPR, Fireflies.ai AskFred ChatGPT sur meetings, Superpowered zero recording privacy max))
+- ((Téléphonie pro : VoIPstudio call center cloud 100+ pays, PopTox backup gratuit navigateur))
+- ((Timezone Checker : visualisation fuseaux horaires équipe distribuée))
+- ((Workflows par niveau : débutant 0€, intermédiaire 20-40€, avancé enterprise))
+- ((Bonnes pratiques avant/pendant/après : agenda 24h, décisions, action items, notes partagées))
+- ((Exercice pratique 4 semaines : audit → setup → optimisation → consolidation))
 
-- Réduire le nombre de réunions inutiles de 40%
-- Automatiser la prise de notes et le suivi
-- Améliorer la qualité technique de vos visioconférences
-- Faciliter la planification et la coordination
+## 🔶 À TRIER
 
 ---
 

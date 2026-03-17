@@ -1,3 +1,13 @@
+## ✅ MIGRÉ → module-2-windows/tiling.md
+- (FancyZones (PowerToys) : création de zones, dispositions recommandées par taille d'écran, raccourcis Shift+drag)
+- (AquaSnap : snap amélioré, coins, fenêtres aimantées, redimensionnement simultané, transparence)
+- (Outils alternatifs : WindowGrid, MaxTo, Divvy, GlazeWM, Komorebi — tableau comparatif)
+- (Tiling automatique vs manuel : comparaison Linux i3/Sway vs Windows)
+- (Workflow clavier complet : lancer, placer, basculer, changer de bureau sans souris)
+- (Raccourcis natifs Windows : snap gauche/droite, quart d'écran, maximiser, minimiser, déplacer entre écrans)
+
+## 🔶 À TRIER
+
 Il n'y a pas d'équivalent **direct et parfait** à Hyprland sur Windows, car le concept de gestionnaire de fenêtres en "tiling" n'est pas nativement intégré ni aussi central au fonctionnement de Windows que sur Linux.
 
 Windows est conçu autour d'un gestionnaire de fenêtres "flottant" où les utilisateurs déplacent, redimensionnent et organisent les fenêtres manuellement avec la souris.

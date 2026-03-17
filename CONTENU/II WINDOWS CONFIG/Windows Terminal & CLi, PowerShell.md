@@ -7,6 +7,16 @@ imageNameKey: ""
 _priorité: ""
 ---
 
+## ✅ MIGRÉ → module-2-windows/terminal.md
+- (Windows Terminal : onglets, panneaux, profils, raccourcis essentiels)
+- (PowerShell 7 vs CMD : comparatif âge, sorties objet, cross-platform, autocomplétion)
+- (WSL : Windows Subsystem for Linux, installation et usage)
+- (Outils CLI modernes : ripgrep, fd, bat, eza, zoxide, fzf — tableau comparatif)
+- (Émulateurs de terminal alternatifs : WezTerm, Alacritty, Tabby, Hyper)
+- (Navigation PowerShell dans les dossiers avec espaces : Tab, guillemets, astérisques)
+
+## 🔶 À TRIER
+
 Les principales limites de Bash, particulièrement dans notre contexte Windows, sont :
 
 1. **Compatibilité Windows** :
@@ -72,7 +82,6 @@ Invite de commande (CMD) :
 - Parfois plus rapide pour des commandes basiques
 
 
-    
 ## Commandes
 ### Copier le fichier courant dans le PP
 ```
@@ -325,7 +334,6 @@ Citations:
 [6] https://github.com/scottpeterman/tkwinterm
 [7] https://github.com/cdleon/awesome-terminals
 [8] https://www.youtube.com/watch?v=WxzYtdIcHnQ
-
 
 
 

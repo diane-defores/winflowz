@@ -1,10 +1,18 @@
+## ✅ MIGRÉ → module-7-social/messagerie.md
 
-## 🎯 Objectif de cette Section
+- ((Objectifs : centraliser messages, iMessage sur Windows, <5 changements d'app/jour, zero message manqué))
+- ((Problème : 15-20 changements d'app/jour, 23 min de reconcentration par switch))
+- ((Texts inbox universel : 10+ plateformes dont iMessage, keyboard-first Ctrl+K/Ctrl+J, snooze, folders, recherche globale, multi-compte, privacy end-to-end))
+- ((Avant/après : 8-10 apps → 1 seule, navigation clavier, notifications centralisées))
+- ((iMessage sur Windows avec AirMessage : Mac serveur relais, setup 30 min, open source gratuit))
+- ((Combo ultime : AirMessage + Texts pour tout dans une interface))
+- ((Solutions à éviter : Franz/Rambox wrappers RAM-heavy, apps séparées))
+- ((Workflow recommandé : setup initial 30 min, routine matin 5 min / journée mode focus / soir 10 min))
+- ((Raccourcis essentiels Texts : Ctrl+K, Ctrl+J, Ctrl+/, Esc, flèches))
+- ((Résultats attendus : 30-45 min gagnées/jour, -90% messages manqués))
+- ((Exercice pratique 4 semaines : diagnostic → installation → transition → optimisation))
 
-- Centraliser tous vos messages dans une seule interface
-- Accéder à iMessage depuis Windows
-- Réduire le temps perdu à changer d'application
-- Ne plus manquer de messages importants
+## 🔶 À TRIER
 
 ---
 
