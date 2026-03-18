@@ -1,0 +1,242 @@
+package expo.modules.floatingoverlay
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Intent
+import android.graphics.PixelFormat
+import android.os.Build
+import android.os.IBinder
+import android.provider.Settings
+import android.view.Gravity
+import android.view.MotionEvent
+import android.view.WindowManager
+
+class FloatingOverlayService : Service() {
+
+    companion object {
+        const val CHANNEL_ID = "voiceflowz_overlay"
+        const val NOTIFICATION_ID = 1001
+        var instance: FloatingOverlayService? = null
+        var overlayModule: FloatingOverlayModule? = null
+    }
+
+    private var windowManager: WindowManager? = null
+    private var overlayView: OverlayView? = null
+    private var layoutParams: WindowManager.LayoutParams? = null
+    private var isShowing = false
+
+    // Drag tracking
+    private var initialX = 0
+    private var initialY = 0
+    private var initialTouchX = 0f
+    private var initialTouchY = 0f
+    private var isDragging = false
+    private var longPressRunnable: Runnable? = null
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        instance = this
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        createNotificationChannel()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            "SHOW" -> showOverlay()
+            "HIDE" -> hideOverlay()
+            else -> showOverlay()
+        }
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        hideOverlay()
+        instance = null
+        super.onDestroy()
+    }
+
+    private fun showOverlay() {
+        if (isShowing) return
+        if (!Settings.canDrawOverlays(this)) return
+
+        // Start as foreground service
+        val notification = createNotification()
+        startForeground(NOTIFICATION_ID, notification)
+
+        // Create overlay view
+        overlayView = OverlayView(this).apply {
+            onBubbleTap = { overlayModule?.emitBubbleTap() }
+            onRecordStop = { overlayModule?.emitRecordStop() }
+            onRecordCancel = { overlayModule?.emitRecordCancel() }
+        }
+
+        // Window layout params
+        val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            @Suppress("DEPRECATION")
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+
+        layoutParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            type,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+            x = resources.displayMetrics.widthPixels - 200
+            y = (resources.displayMetrics.heightPixels * 0.6).toInt()
+            alpha = 0.92f // Android 12+ requires >= 0.8
+        }
+
+        // Touch listener for drag
+        overlayView?.setOnTouchListener { view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialX = layoutParams!!.x
+                    initialY = layoutParams!!.y
+                    initialTouchX = event.rawX
+                    initialTouchY = event.rawY
+                    isDragging = false
+
+                    // Long press detection
+                    longPressRunnable = Runnable {
+                        overlayModule?.emitBubbleLongPress()
+                    }
+                    view.postDelayed(longPressRunnable, 500)
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = event.rawX - initialTouchX
+                    val dy = event.rawY - initialTouchY
+                    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+                        isDragging = true
+                        longPressRunnable?.let { view.removeCallbacks(it) }
+                    }
+                    if (isDragging) {
+                        layoutParams?.x = initialX + dx.toInt()
+                        layoutParams?.y = initialY + dy.toInt()
+                        windowManager?.updateViewLayout(overlayView, layoutParams)
+                    }
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    longPressRunnable?.let { view.removeCallbacks(it) }
+                    if (isDragging) {
+                        // Snap to nearest edge
+                        snapToEdge()
+                    }
+                    // If not dragging, the click goes to OverlayView's internal handlers
+                    if (!isDragging) {
+                        overlayView?.performClick()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
+        windowManager?.addView(overlayView, layoutParams)
+        isShowing = true
+    }
+
+    private fun hideOverlay() {
+        if (!isShowing) return
+        try {
+            windowManager?.removeView(overlayView)
+        } catch (_: Exception) {}
+        overlayView = null
+        isShowing = false
+        stopForeground(STOP_FOREGROUND_REMOVE)
+    }
+
+    private fun snapToEdge() {
+        val params = layoutParams ?: return
+        val screenWidth = resources.displayMetrics.widthPixels
+        val viewWidth = overlayView?.width ?: 160
+
+        val targetX = if (params.x + viewWidth / 2 < screenWidth / 2) {
+            16 // Snap left
+        } else {
+            screenWidth - viewWidth - 16 // Snap right
+        }
+
+        params.x = targetX
+        windowManager?.updateViewLayout(overlayView, params)
+    }
+
+    fun setOverlayState(state: String) {
+        overlayView?.post { overlayView?.setState(state) }
+        // When recording, make overlay focusable to capture button taps
+        layoutParams?.let { params ->
+            params.flags = if (state == "collapsed") {
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            } else {
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            }
+            try {
+                windowManager?.updateViewLayout(overlayView, params)
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun updateMeterLevel(level: Float) {
+        overlayView?.post { overlayView?.updateMeter(level) }
+    }
+
+    fun setResultText(text: String) {
+        overlayView?.post { overlayView?.showResult(text) }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "VoiceFlowz Overlay",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Keeps the floating voice button active"
+                setShowBadge(false)
+            }
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.createNotificationChannel(channel)
+        }
+    }
+
+    private fun createNotification(): Notification {
+        // Launch app when notification tapped
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, launchIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(this, CHANNEL_ID)
+                .setContentTitle("VoiceFlowz")
+                .setContentText("Tap the floating button to dictate")
+                .setSmallIcon(android.R.drawable.ic_btn_speak_now)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .build()
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(this)
+                .setContentTitle("VoiceFlowz")
+                .setContentText("Tap the floating button to dictate")
+                .setSmallIcon(android.R.drawable.ic_btn_speak_now)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .build()
+        }
+    }
+}
