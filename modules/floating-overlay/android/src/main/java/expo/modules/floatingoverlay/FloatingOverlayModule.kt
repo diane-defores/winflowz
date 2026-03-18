@@ -19,7 +19,7 @@ class FloatingOverlayModule : Module() {
         Events("onBubbleTap", "onRecordStop", "onRecordCancel", "onBubbleLongPress")
 
         Function("showBubble") {
-            val context = appContext.reactContext ?: return@Function
+            val context = appContext.reactContext ?: return@Function null
             FloatingOverlayService.overlayModule = this@FloatingOverlayModule
             val intent = Intent(context, FloatingOverlayService::class.java).apply {
                 action = "SHOW"
@@ -29,23 +29,26 @@ class FloatingOverlayModule : Module() {
             } else {
                 context.startService(intent)
             }
+            null
         }
 
         Function("hideBubble") {
-            val context = appContext.reactContext ?: return@Function
+            val context = appContext.reactContext ?: return@Function null
             val intent = Intent(context, FloatingOverlayService::class.java).apply {
                 action = "HIDE"
             }
             context.startService(intent)
+            null
         }
 
         Function("destroy") {
-            val context = appContext.reactContext ?: return@Function
+            val context = appContext.reactContext ?: return@Function null
             context.stopService(Intent(context, FloatingOverlayService::class.java))
+            null
         }
 
         Function("startRecordingService") {
-            val context = appContext.reactContext ?: return@Function
+            val context = appContext.reactContext ?: return@Function null
             val intent = Intent(context, FloatingOverlayService::class.java).apply {
                 action = "START_RECORDING"
             }
@@ -54,26 +57,31 @@ class FloatingOverlayModule : Module() {
             } else {
                 context.startService(intent)
             }
+            null
         }
 
         Function("stopRecordingService") {
-            val context = appContext.reactContext ?: return@Function
+            val context = appContext.reactContext ?: return@Function null
             val intent = Intent(context, FloatingOverlayService::class.java).apply {
                 action = "STOP_RECORDING"
             }
             context.startService(intent)
+            null
         }
 
         Function("setOverlayState") { state: String ->
             FloatingOverlayService.instance?.setOverlayState(state)
+            null
         }
 
         Function("updateMeterLevel") { level: Double ->
             FloatingOverlayService.instance?.updateMeterLevel(level.toFloat())
+            null
         }
 
         Function("setResultText") { text: String ->
             FloatingOverlayService.instance?.setResultText(text)
+            null
         }
 
         AsyncFunction("injectText") { text: String, promise: Promise ->
@@ -106,7 +114,6 @@ class FloatingOverlayModule : Module() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)
-            // User must manually grant — we can't await the result directly
             promise.resolve(false)
         }
 
@@ -116,11 +123,12 @@ class FloatingOverlayModule : Module() {
         }
 
         Function("openAccessibilitySettings") {
-            val context = appContext.reactContext ?: return@Function
+            val context = appContext.reactContext ?: return@Function null
             val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)
+            null
         }
     }
 
