@@ -120,11 +120,21 @@ class FloatingOverlayService : Service() {
             gravity = Gravity.TOP or Gravity.START
             x = resources.displayMetrics.widthPixels - 200
             y = (resources.displayMetrics.heightPixels * 0.6).toInt()
-            alpha = 0.92f // Android 12+ requires >= 0.8
+            alpha = 0.8f // Semi-transparent when idle, Android 12+ requires >= 0.8
         }
 
-        // Touch listener for drag + tap on the whole overlay
+        // Touch: press-and-hold to record, release to stop.
+        // Drag to reposition (only when collapsed).
+        var isHoldRecording = false
+
         overlayView?.setOnTouchListener { _, event ->
+            val state = overlayView?.getCurrentState() ?: "collapsed"
+
+            // When expanded (recording/processing), let child buttons handle touches
+            if (state != "collapsed") {
+                return@setOnTouchListener false
+            }
+
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     initialX = layoutParams!!.x
@@ -132,12 +142,17 @@ class FloatingOverlayService : Service() {
                     initialTouchX = event.rawX
                     initialTouchY = event.rawY
                     isDragging = false
+                    isHoldRecording = false
 
-                    // Long press detection
+                    // After a short delay, start recording (press-and-hold)
                     longPressRunnable = Runnable {
-                        overlayModule?.emitBubbleLongPress()
+                        if (!isDragging) {
+                            isHoldRecording = true
+                            Log.d("VoiceFlowz", "Hold-to-record: started")
+                            overlayModule?.emitBubbleTap()
+                        }
                     }
-                    overlayView?.postDelayed(longPressRunnable, 500)
+                    overlayView?.postDelayed(longPressRunnable, 200)
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -145,6 +160,7 @@ class FloatingOverlayService : Service() {
                     val dy = event.rawY - initialTouchY
                     if (!isDragging && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
                         isDragging = true
+                        isHoldRecording = false
                         longPressRunnable?.let { overlayView?.removeCallbacks(it) }
                     }
                     if (isDragging) {
@@ -160,9 +176,15 @@ class FloatingOverlayService : Service() {
                     longPressRunnable?.let { overlayView?.removeCallbacks(it) }
                     if (isDragging) {
                         snapToEdge()
+                    } else if (isHoldRecording) {
+                        // Release after hold = stop recording
+                        Log.d("VoiceFlowz", "Hold-to-record: released — stopping")
+                        overlayModule?.emitRecordStop()
+                        isHoldRecording = false
                     } else {
-                        // Not a drag = tap. Dispatch to the overlay view.
-                        overlayView?.performClick()
+                        // Quick tap (< 200ms) = also start recording (tap mode)
+                        Log.d("VoiceFlowz", "Quick tap: starting recording")
+                        overlayModule?.emitBubbleTap()
                     }
                     true
                 }
@@ -234,13 +256,16 @@ class FloatingOverlayService : Service() {
 
     fun setOverlayState(state: String) {
         overlayView?.post { overlayView?.setState(state) }
-        // When recording, make overlay focusable to capture button taps
         layoutParams?.let { params ->
-            params.flags = if (state == "collapsed") {
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            // When collapsed: not focusable (touches pass through), semi-transparent
+            // When recording/processing: focusable (capture button taps), fully opaque
+            if (state == "collapsed") {
+                params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                params.alpha = 0.8f
             } else {
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                params.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                params.alpha = 1.0f
             }
             try {
                 windowManager?.updateViewLayout(overlayView, params)

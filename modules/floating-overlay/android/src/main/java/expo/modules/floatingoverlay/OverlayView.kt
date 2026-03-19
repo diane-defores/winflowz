@@ -28,11 +28,11 @@ class OverlayView(context: Context) : FrameLayout(context) {
     private val handler = Handler(Looper.getMainLooper())
 
     // Dimensions
-    private val fabSize = dpToPx(56f)
-    private val expandedWidth = dpToPx(220f)
-    private val expandedHeight = dpToPx(56f)
-    private val buttonSize = dpToPx(36f)
-    private val cornerRadius = dpToPx(28f)
+    private val fabSize = dpToPx(44f)
+    private val expandedWidth = dpToPx(200f)
+    private val expandedHeight = dpToPx(48f)
+    private val buttonSize = dpToPx(32f)
+    private val cornerRadius = dpToPx(24f)
 
     // Colors
     private val primaryColor = Color.parseColor("#6366f1")   // Indigo
@@ -53,7 +53,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
         fabView = TextView(context).apply {
             layoutParams = LayoutParams(fabSize, fabSize)
             text = "🎙"
-            textSize = 24f
+            textSize = 20f
             gravity = Gravity.CENTER
             visibility = VISIBLE
         }
@@ -114,6 +114,8 @@ class OverlayView(context: Context) : FrameLayout(context) {
             onBubbleTap?.invoke()
         }
     }
+
+    fun getCurrentState(): String = currentState
 
     fun setState(state: String) {
         currentState = state
