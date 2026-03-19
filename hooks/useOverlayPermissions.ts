@@ -1,12 +1,14 @@
-import { useState, useCallback, useEffect } from "react";
-import { Platform } from "react-native";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { Platform, AppState } from "react-native";
 
 // Dynamic import — module only available after native build
 let FloatingOverlay: typeof import("@/modules/floating-overlay/index") | null =
   null;
 
 try {
-  FloatingOverlay = require("@/modules/floating-overlay/index");
+  if (Platform.OS === "android") {
+    FloatingOverlay = require("@/modules/floating-overlay/index");
+  }
 } catch {
   // Native module not available (e.g. Expo Go, web, iOS)
 }
@@ -27,17 +29,36 @@ export interface OverlayPermissions {
 export function useOverlayPermissions(): OverlayPermissions {
   const isAvailable = Platform.OS === "android" && FloatingOverlay != null;
   const [hasOverlayPermission, setHasOverlayPermission] = useState(false);
-  const [hasAccessibilityPermission, setHasAccessibilityPermission] = useState(false);
+  const [hasAccessibilityPermission, setHasAccessibilityPermission] =
+    useState(false);
   const [overlayEnabled, setOverlayEnabled] = useState(false);
+  const appStateRef = useRef(AppState.currentState);
 
   const refreshPermissions = useCallback(() => {
     if (!isAvailable || !FloatingOverlay) return;
     setHasOverlayPermission(FloatingOverlay.hasOverlayPermission());
-    setHasAccessibilityPermission(FloatingOverlay.hasAccessibilityPermission());
+    setHasAccessibilityPermission(
+      FloatingOverlay.hasAccessibilityPermission()
+    );
   }, [isAvailable]);
 
+  // Refresh on mount
   useEffect(() => {
     refreshPermissions();
+  }, [refreshPermissions]);
+
+  // Refresh when app returns from background (user was in Android settings)
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (nextState) => {
+      if (
+        appStateRef.current.match(/inactive|background/) &&
+        nextState === "active"
+      ) {
+        refreshPermissions();
+      }
+      appStateRef.current = nextState;
+    });
+    return () => sub.remove();
   }, [refreshPermissions]);
 
   const requestOverlayPermission = useCallback(async (): Promise<boolean> => {
@@ -53,10 +74,15 @@ export function useOverlayPermissions(): OverlayPermissions {
   }, []);
 
   const showBubble = useCallback(() => {
-    if (!FloatingOverlay || !hasOverlayPermission) return;
+    if (!FloatingOverlay) return;
+    // Re-check permission right before showing
+    if (!FloatingOverlay.hasOverlayPermission()) {
+      setHasOverlayPermission(false);
+      return;
+    }
     FloatingOverlay.showBubble();
     setOverlayEnabled(true);
-  }, [hasOverlayPermission]);
+  }, []);
 
   const hideBubble = useCallback(() => {
     if (!FloatingOverlay) return;

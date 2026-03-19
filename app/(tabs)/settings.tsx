@@ -109,79 +109,149 @@ export default function SettingsScreen() {
           />
         </View>
 
-        {/* Floating Button */}
+        {/* Floating Button — Guided Setup */}
         <View style={styles.section}>
-          <Text style={styles.label}>Floating Button</Text>
+          <Text style={styles.label}>Floating Voice Button</Text>
           <Text style={styles.hint}>
-            Show a recording button over other apps (Android only)
+            Dictate text anywhere on your phone — even in other apps.
+            A small microphone button floats on your screen.
           </Text>
 
           {overlay.isAvailable ? (
-            <View style={{ gap: 8 }}>
-              {/* Overlay permission */}
-              <Pressable
-                onPress={
-                  overlay.hasOverlayPermission
-                    ? overlay.showBubble
-                    : overlay.requestOverlayPermission
-                }
+            <View style={{ gap: 10 }}>
+              {/* Step 1: Overlay permission */}
+              <View style={styles.stepCard}>
+                <View style={styles.stepHeader}>
+                  <Text style={styles.stepNumber}>
+                    {overlay.hasOverlayPermission ? "✓" : "1"}
+                  </Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.stepTitle}>
+                      Display over other apps
+                    </Text>
+                    <Text style={styles.stepHint}>
+                      {overlay.hasOverlayPermission
+                        ? "Permission granted"
+                        : "Android needs your permission to show the floating button over other apps."}
+                    </Text>
+                  </View>
+                </View>
+                {!overlay.hasOverlayPermission && (
+                  <Pressable
+                    onPress={overlay.requestOverlayPermission}
+                    style={styles.stepBtn}
+                  >
+                    <Text style={styles.stepBtnText}>
+                      Open Android Settings
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+
+              {/* Step 2: Activate overlay */}
+              <View
                 style={[
-                  styles.toggleBtn,
-                  overlay.hasOverlayPermission && styles.toggleBtnActive,
+                  styles.stepCard,
+                  !overlay.hasOverlayPermission && styles.stepCardDisabled,
                 ]}
               >
-                <Text
-                  style={[
-                    styles.toggleBtnText,
-                    !overlay.hasOverlayPermission && {
-                      color: colors.primaryLight,
-                    },
-                  ]}
-                >
-                  {overlay.hasOverlayPermission
-                    ? "Show Floating Button"
-                    : "Enable Overlay Permission"}
-                </Text>
-              </Pressable>
-
-              {/* Accessibility service (optional) */}
-              {overlay.hasOverlayPermission && (
-                <Pressable
-                  onPress={
-                    overlay.hasAccessibilityPermission
-                      ? undefined
-                      : overlay.openAccessibilitySettings
-                  }
-                  style={[
-                    styles.toggleBtn,
-                    overlay.hasAccessibilityPermission &&
-                      styles.toggleBtnActive,
-                  ]}
-                >
-                  <Text
+                <View style={styles.stepHeader}>
+                  <Text style={styles.stepNumber}>
+                    {overlay.overlayEnabled ? "✓" : "2"}
+                  </Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.stepTitle}>
+                      Start floating button
+                    </Text>
+                    <Text style={styles.stepHint}>
+                      {overlay.overlayEnabled
+                        ? "The button is active! Switch to another app to see it."
+                        : "A small microphone button will appear on your screen. You can drag it anywhere."}
+                    </Text>
+                  </View>
+                </View>
+                {overlay.hasOverlayPermission && (
+                  <Pressable
+                    onPress={
+                      overlay.overlayEnabled
+                        ? overlay.hideBubble
+                        : overlay.showBubble
+                    }
                     style={[
-                      styles.toggleBtnText,
-                      !overlay.hasAccessibilityPermission && {
-                        color: colors.primaryLight,
-                      },
+                      styles.stepBtn,
+                      overlay.overlayEnabled && styles.stepBtnDanger,
                     ]}
                   >
-                    {overlay.hasAccessibilityPermission
-                      ? "Text Injection: Enabled"
-                      : "Enable Text Injection (optional)"}
+                    <Text
+                      style={[
+                        styles.stepBtnText,
+                        overlay.overlayEnabled && styles.stepBtnTextDanger,
+                      ]}
+                    >
+                      {overlay.overlayEnabled
+                        ? "Hide Floating Button"
+                        : "Show Floating Button"}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+
+              {/* Step 3: Text injection (optional) */}
+              <View
+                style={[
+                  styles.stepCard,
+                  !overlay.hasOverlayPermission && styles.stepCardDisabled,
+                ]}
+              >
+                <View style={styles.stepHeader}>
+                  <Text style={styles.stepNumber}>
+                    {overlay.hasAccessibilityPermission ? "✓" : "3"}
                   </Text>
-                </Pressable>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.stepTitle}>
+                      Auto-paste text (optional)
+                    </Text>
+                    <Text style={styles.stepHint}>
+                      {overlay.hasAccessibilityPermission
+                        ? "Text will be injected directly into the active text field."
+                        : "Without this, text is copied to clipboard and you paste manually. Enable the VoiceFlowz accessibility service to auto-paste."}
+                    </Text>
+                  </View>
+                </View>
+                {overlay.hasOverlayPermission &&
+                  !overlay.hasAccessibilityPermission && (
+                    <Pressable
+                      onPress={overlay.openAccessibilitySettings}
+                      style={styles.stepBtn}
+                    >
+                      <Text style={styles.stepBtnText}>
+                        Open Accessibility Settings
+                      </Text>
+                    </Pressable>
+                  )}
+              </View>
+
+              {/* How to use */}
+              {overlay.overlayEnabled && (
+                <View style={styles.howToUse}>
+                  <Text style={styles.howToUseTitle}>How to use</Text>
+                  <Text style={styles.howToUseText}>
+                    1. Open any app (WhatsApp, Chrome, Gmail...){"\n"}
+                    2. Tap the floating microphone button{"\n"}
+                    3. Speak — you'll see the waveform{"\n"}
+                    4. Tap the checkmark when done{"\n"}
+                    5. Text is copied to clipboard (or auto-pasted)
+                  </Text>
+                </View>
               )}
             </View>
           ) : (
-            <Pressable
-              style={[styles.toggleBtn, styles.toggleBtnActive]}
-              disabled
-            >
-              <Text style={styles.toggleBtnText}>
-                In-app FAB active
+            <View style={styles.stepCard}>
+              <Text style={styles.stepHint}>
+                System overlay is only available on Android.
+                The in-app floating button is active on all platforms.
               </Text>
-            </Pressable>
+            </View>
           )}
         </View>
 
@@ -295,23 +365,79 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-  toggleBtn: {
+  stepCard: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    borderRadius: 12,
+    padding: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    alignItems: "center",
   },
-  toggleBtnActive: {
-    borderColor: colors.success,
-    backgroundColor: colors.success + "18",
+  stepCardDisabled: {
+    opacity: 0.4,
   },
-  toggleBtnText: {
-    color: colors.success,
+  stepHeader: {
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "flex-start",
+  },
+  stepNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.primary + "20",
+    color: colors.primaryLight,
+    fontSize: 14,
+    fontWeight: "700",
+    textAlign: "center",
+    lineHeight: 28,
+    overflow: "hidden",
+  },
+  stepTitle: {
+    color: colors.text,
     fontSize: 14,
     fontWeight: "600",
+    marginBottom: 2,
+  },
+  stepHint: {
+    color: colors.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  stepBtn: {
+    marginTop: 10,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  stepBtnText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  stepBtnDanger: {
+    backgroundColor: colors.danger + "18",
+  },
+  stepBtnTextDanger: {
+    color: colors.danger,
+  },
+  howToUse: {
+    backgroundColor: colors.primary + "10",
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: colors.primary + "30",
+  },
+  howToUseTitle: {
+    color: colors.primaryLight,
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 6,
+  },
+  howToUseText: {
+    color: colors.textSecondary,
+    fontSize: 13,
+    lineHeight: 20,
   },
   saveBtn: {
     backgroundColor: colors.primary,
