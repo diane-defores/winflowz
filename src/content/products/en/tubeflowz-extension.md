@@ -1,6 +1,7 @@
 ---
 title: "TubeFlowz"
 description: "Advanced YouTube Bookmarking Chrome Extension"
+status: "beta"
 main:
   id: 1
   content: |
@@ -22,8 +23,8 @@ longDescription:
   title: "Transform Your YouTube Learning Experience"
   subTitle: |
     TubeFlowz brings professional-grade bookmarking capabilities to YouTube, helping you organize and navigate through educational content with ease. Whether you're studying, researching, or simply want to keep track of important moments in videos, TubeFlowz makes it effortless.
-  btnTitle: "Install Extension"
-  btnURL: "#"
+  btnTitle: "Join the Beta"
+  btnURL: "/contact"
 descriptionList:
   - title: "Advanced Bookmarking"
     subTitle: "Create timestamped bookmarks with custom notes, navigate between them instantly, and never lose track of important video moments."

@@ -1,6 +1,7 @@
 ---
 title: "GoalFlowz"
 description: "Supercharge Your Goal Achievement with Strategic Planning"
+status: "coming_soon"
 main:
   id: 2
   content: |

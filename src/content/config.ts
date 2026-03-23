@@ -28,7 +28,7 @@ const courseSchema = docsSchema({
       components: z.array(
         z.object({
           type: z.enum(['video', 'quiz', 'exercise', 'resources']),
-          data: z.record(z.any()),
+          data: z.record(z.string(), z.any()),
         })
       ).optional(),
     }).optional(),
@@ -40,6 +40,7 @@ const productsCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    status: z.enum(['available', 'beta', 'coming_soon']).optional(),
     main: z.object({
       id: z.number(),
       content: z.string(),

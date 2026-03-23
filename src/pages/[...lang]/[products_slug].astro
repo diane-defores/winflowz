@@ -38,6 +38,27 @@ export async function getStaticPaths() {
 const { product } = Astro.props
 
 const pageTitle: string = `${product.data.title} | ${SITE.title}`
+const pageLang = product.id.startsWith('fr/') ? 'fr' : 'en'
+const status = product.data.status ?? 'available'
+const statusLabel =
+	pageLang === 'fr'
+		? {
+				available: 'Disponible',
+				beta: 'BETA',
+				coming_soon: 'A VENIR',
+			}[status]
+		: {
+				available: 'Available',
+				beta: 'BETA',
+				coming_soon: 'Coming Soon',
+			}[status]
+const statusClasses =
+	{
+		available: 'bg-green/15 text-green ring-1 ring-green/30',
+		beta: 'bg-cyan/15 text-cyan ring-1 ring-cyan/30',
+		coming_soon: 'bg-yellow/15 text-yellow ring-1 ring-yellow/30',
+	}[status]
+const isPurchasable = status === 'available'
 ---
 
 <MainLayout title={pageTitle}>
@@ -55,6 +76,11 @@ const pageTitle: string = `${product.data.title} | ${SITE.title}`
 			class="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0"
 		>
 			<div class="w-full sm:w-1/2">
+				<div class="mb-4">
+					<span class={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] ${statusClasses}`}>
+						{statusLabel}
+					</span>
+				</div>
 				<h1
 					class="block text-4xl font-bold tracking-tighter text-neutral-800 dark:text-neutral-200 sm:text-5xl md:text-6xl lg:text-7xl"
 				>
@@ -112,10 +138,18 @@ const pageTitle: string = `${product.data.title} | ${SITE.title}`
 								{product.data.longDescription.subTitle}
 							</p>
 							<p class="mt-5">
-								<PrimaryCTA
-									title={product.data.longDescription.btnTitle}
-									url={product.data.longDescription.btnURL}
-								/>
+								{
+									isPurchasable ? (
+										<PrimaryCTA
+											title={product.data.longDescription.btnTitle}
+											url={product.data.longDescription.btnURL}
+										/>
+									) : (
+										<span class="inline-flex w-full items-center justify-center rounded-xl border border-neutral-300 bg-neutral-100 px-6 py-2.5 font-bold text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 sm:w-auto sm:px-8 sm:py-3">
+											{statusLabel}
+										</span>
+									)
+								}
 							</p>
 						</div>
 

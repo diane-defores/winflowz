@@ -11,8 +11,6 @@ description: Discover the technological advances that could make brain hacking p
 
 Technological advances in brain-machine interfaces raise many ethical questions...
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-
 ## État actuel de la technologie
 
 Les interfaces cerveau-machine (ICM) ont fait des progrès remarquables ces dernières années. Des entreprises comme Neuralink, Kernel et Synchron développent activement des technologies permettant une communication directe entre le cerveau et les ordinateurs.
@@ -38,23 +36,23 @@ Les interfaces cerveau-machine (ICM) ont fait des progrès remarquables ces dern
 
 ## Timeline prévisionnelle
 
-<Tabs>
-  <TabItem label="2025-2030">
-    - Premiers implants commerciaux pour applications médicales
-    - Communication basique cerveau-machine pour patients paralysés
-    - Contrôle simple d'appareils par la pensée
-  </TabItem>
-  <TabItem label="2030-2040">
-    - Interfaces plus sophistiquées
-    - Applications grand public non invasives
-    - Début de la "télépathie" numérique basique
-  </TabItem>
-  <TabItem label="2040+">
-    - Possibilité de lecture/écriture directe de pensées
-    - Augmentation cognitive significative
-    - Fusion potentielle cerveau-IA
-  </TabItem>
-</Tabs>
+### 2025-2030
+
+- Premiers implants commerciaux pour applications médicales
+- Communication basique cerveau-machine pour patients paralysés
+- Contrôle simple d'appareils par la pensée
+
+### 2030-2040
+
+- Interfaces plus sophistiquées
+- Applications grand public non invasives
+- Début de la "télépathie" numérique basique
+
+### 2040+
+
+- Possibilité de lecture/écriture directe de pensées
+- Augmentation cognitive significative
+- Fusion potentielle cerveau-IA
 
 ## Implications éthiques et sécuritaires
 

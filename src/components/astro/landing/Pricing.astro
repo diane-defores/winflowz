@@ -215,8 +215,6 @@ const pricingText = lang === 'fr'
           {plan.priceMonthly > 0 ? (
             <a
               href={plan.href}
-              data-polar-checkout
-              data-polar-checkout-product-id={plan.highlighted ? "pro" : undefined}
               data-track={`pricing-${plan.highlighted ? 'pro' : 'paid'}-cta`}
             >
               <button

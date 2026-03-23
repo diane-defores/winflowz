@@ -100,16 +100,12 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Welcome',
-          translations: {
-            fr: 'Bienvenue'
-          },
           autogenerate: {
             directory: 'Welcome'
           }
         },
         {
           label: 'Formations',
-          translations: { fr: 'Formations' },
           items: [
             { label: 'Vue d\'ensemble', link: '/fr/formations/' },
             {

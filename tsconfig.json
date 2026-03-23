@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "~/*": ["src/*"],
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
@@ -17,5 +18,6 @@
     "moduleResolution": "bundler",
     "allowJs": true,
     "strict": true
-  }
+  },
+  "exclude": ["convex", "idees", "public", "dist", "node_modules"]
 }

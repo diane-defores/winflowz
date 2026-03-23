@@ -1,6 +1,7 @@
 ---
 title: "PluginFlowz"
 description: "Gestionnaire Avancé de Plugins pour Obsidian"
+status: "coming_soon"
 main:
   id: 7
   content: |

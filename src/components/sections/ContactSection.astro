@@ -1,5 +1,13 @@
 ---
 const { t } = Astro.props;
+
+interface SupportItem {
+  title: string;
+  description: string;
+  link: string;
+}
+
+const supportItems = (t.support?.items ?? []) as SupportItem[];
 ---
 
 <section class="py-16 sm:py-24">
@@ -154,7 +162,7 @@ const { t } = Astro.props;
             {t.support.title}
           </h2>
           <ul class="mt-4 space-y-4">
-            {t.support.items.map((item) => (
+            {supportItems.map((item: SupportItem) => (
               <li>
                 <a
                   href={item.link}

@@ -1,6 +1,7 @@
 ---
 title: "TubeFlowz"
 description: "Extension Chrome avancée pour les marque-pages YouTube"
+status: "beta"
 main:
   id: 1
   content: |
@@ -22,8 +23,8 @@ longDescription:
   title: "Transformez votre expérience d'apprentissage sur YouTube"
   subTitle: |
     TubeFlowz apporte des capacités de marque-pages professionnelles à YouTube, vous aidant à organiser et naviguer facilement dans le contenu éducatif. Que vous soyez en train d'étudier, de faire des recherches ou simplement de suivre des moments importants dans les vidéos, TubeFlowz rend tout cela sans effort.
-  btnTitle: "Installer l'extension"
-  btnURL: "#"
+  btnTitle: "Rejoindre la beta"
+  btnURL: "/fr/contact"
 descriptionList:
   - title: "Marque-pages Avancés"
     subTitle: "Créez des marque-pages horodatés avec des notes personnalisées, naviguez instantanément entre eux et ne perdez plus jamais les moments importants des vidéos."

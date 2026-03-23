@@ -1,6 +1,7 @@
 ---
 title: "WinFlowz"
 description: "Optimisez votre flux de travail Windows"
+status: "available"
 main:
   id: 1
   content: "WinFlowz est une suite d'outils Windows conçue pour optimiser votre flux de travail quotidien."
@@ -10,8 +11,8 @@ main:
 longDescription:
   title: "Améliorez votre productivité avec WinFlowz"
   subTitle: "WinFlowz est une suite d'outils Windows conçue pour optimiser votre flux de travail quotidien. Avec des fonctionnalités puissantes et une interface intuitive, WinFlowz vous aide à travailler plus efficacement."
-  btnTitle: "Commencer"
-  btnURL: "/fr/produits/winflowz"
+  btnTitle: "Acceder a la formation"
+  btnURL: "/fr/formations/"
 descriptionList:
   - title: "Interface intuitive"
     subTitle: "Une interface utilisateur moderne et intuitive qui s'intègre parfaitement à Windows."

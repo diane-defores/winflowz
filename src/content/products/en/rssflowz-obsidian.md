@@ -1,6 +1,7 @@
 ---
 title: "RSSFlowz"
 description: "Advanced RSS Reader with AI for Obsidian"
+status: "coming_soon"
 main:
   id: 6
   content: |

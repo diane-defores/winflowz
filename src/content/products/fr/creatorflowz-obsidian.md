@@ -1,6 +1,7 @@
 ---
 title: "CreatorFlowz"
 description: "Plugin de gestion de médias avancé pour Obsidian"
+status: "coming_soon"
 main:
   id: 4
   content: |

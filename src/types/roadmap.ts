@@ -2,7 +2,7 @@ export type Feature = {
   id: string;
   title: string;
   description: string;
-  status: "in-development" | "planned" | "considering" | "completed";
+  status: "in-development" | "planned" | "considering" | "completed" | "rejected";
   votes: number;
   project?: string;
 };

@@ -23,12 +23,6 @@ export default defineConfig({
     include: ['./tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['./tests/auth/e2e/**/*'],
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: true,
-        isolate: false
-      }
-    },
     sequence: {
       shuffle: false,
       concurrent: false

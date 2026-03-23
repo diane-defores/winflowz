@@ -1,6 +1,7 @@
 ---
 title: "WinFlowz"
 description: "Optimize your Windows workflow"
+status: "available"
 main:
   id: 1
   content: "WinFlowz is a Windows toolkit designed to optimize your daily workflow."
@@ -10,8 +11,8 @@ main:
 longDescription:
   title: "Boost your productivity with WinFlowz"
   subTitle: "WinFlowz is a Windows toolkit designed to optimize your daily workflow. With powerful features and an intuitive interface, WinFlowz helps you work more efficiently."
-  btnTitle: "Get Started"
-  btnURL: "/en/products/winflowz"
+  btnTitle: "Access the Course"
+  btnURL: "/en/formations/"
 descriptionList:
   - title: "Intuitive Interface"
     subTitle: "A modern and intuitive user interface that seamlessly integrates with Windows."

@@ -1,6 +1,7 @@
 ---
 title: "MediaFlowz"
 description: "Advanced Media Management Plugin for Obsidian"
+status: "coming_soon"
 main:
   id: 5
   content: |

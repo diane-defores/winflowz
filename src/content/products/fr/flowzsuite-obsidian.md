@@ -1,6 +1,7 @@
 ---
 title: "FlowzSuite pour Obsidian"
 description: "Transformez votre Obsidian en un puissant espace créatif"
+status: "coming_soon"
 main:
   id: 1
   content: |

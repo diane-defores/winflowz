@@ -4,8 +4,6 @@ description: Une analyse approfondie des facteurs psychologiques, comportementau
 image: /images/exploding-head-much-work.gif
 ---
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-
 ![Tête qui explose de travail](/images/exploding-head-much-work.gif)
 
 # Pourquoi la plupart des gens échouent à atteindre leurs objectifs ?
@@ -56,26 +54,26 @@ La clé de la réussite dans la vie est de gagner la journée. Répétitivement.
 
 ## Les phases critiques
 
-<Tabs>
-  <TabItem label="Phase initiale">
-    - Enthousiasme excessif
-    - Planification irréaliste
-    - Manque de systèmes de soutien
-    - Absence de mesures de progrès
-  </TabItem>
-  <TabItem label="Phase intermédiaire">
-    - Perte de motivation
-    - Obstacles imprévus
-    - Fatigue décisionnelle
-    - Distractions quotidiennes
-  </TabItem>
-  <TabItem label="Phase finale">
-    - Perte de vue de l'objectif initial
-    - Changement de priorités
-    - Épuisement des ressources
-    - Manque de persévérance
-  </TabItem>
-</Tabs>
+### Phase initiale
+
+- Enthousiasme excessif
+- Planification irréaliste
+- Manque de systèmes de soutien
+- Absence de mesures de progrès
+
+### Phase intermédiaire
+
+- Perte de motivation
+- Obstacles imprévus
+- Fatigue décisionnelle
+- Distractions quotidiennes
+
+### Phase finale
+
+- Perte de vue de l'objectif initial
+- Changement de priorités
+- Épuisement des ressources
+- Manque de persévérance
 
 ## Solutions scientifiquement prouvées
 
