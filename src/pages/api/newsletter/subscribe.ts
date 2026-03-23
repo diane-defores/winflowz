@@ -14,7 +14,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     const body = await request.json();
-    const { email, source } = body;
+    const { email } = body;
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
       return new Response(

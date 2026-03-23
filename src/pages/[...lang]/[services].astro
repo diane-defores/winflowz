@@ -3,9 +3,7 @@ export const prerender = true
 import MainLayout from '@/layouts/MainLayout.astro'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types'
-import { routes } from '@/i18n/config'
 import { getCollection } from 'astro:content'
-import { Image } from 'astro:assets'
 import MainSection from '@components/ui/blocks/MainSection.astro'
 import LeftSection from '@components/ui/blocks/LeftSection.astro'
 import RightSection from '@components/ui/blocks/RightSection.astro'
@@ -34,15 +32,6 @@ interface Article {
 	imgOneAlt?: string
 	imgTwo?: any
 	imgTwoAlt?: string
-}
-
-interface ServiceFrontmatter {
-	title: string
-	description: string
-	icon: string
-	image?: string
-	imageAlt?: string
-	features?: string[]
 }
 
 interface TranslatedArticle {

@@ -13,7 +13,7 @@
  * @module utils/i18n
  */
 
-import type { Language, Translation, MetaTranslations } from '@/types/i18n';
+import type { Language, Translation } from '@/types/i18n';
 
 /**
  * Extracts the current language from a URL pathname.

@@ -4,13 +4,11 @@ export const prerender = true
 import MainLayout from "@/layouts/MainLayout.astro";
 import CardBlog from "@/components/ui/cards/CardBlog.astro";
 import CardBlogRecent from "@/components/ui/cards/CardBlogRecent.astro";
-import CardInsight from "@/components/ui/cards/CardInsight.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import { SITE } from "@/constants";
 import { getCurrentLocale } from "@/utils/i18n";
 import type { Language } from "@/types";
-import { useTranslations } from '@/utils/i18n';
 
 // Import translations
 import enTranslations from "@/i18n/en/blog.json";

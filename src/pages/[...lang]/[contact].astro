@@ -4,7 +4,7 @@ import MainLayout from '@/layouts/MainLayout.astro'
 import ContactSection from '@/components/sections/ContactSection.astro'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types'
-import { generateStaticPaths, getLocalizedPath } from '@/utils/routing'
+import { generateStaticPaths } from '@/utils/routing'
 
 export const getStaticPaths = () => generateStaticPaths('contact')
 

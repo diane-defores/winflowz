@@ -2,7 +2,6 @@
 export const prerender = true
 import MainLayout from '@/layouts/MainLayout.astro'
 import { getLangFromUrl, useTranslations } from '@/utils/i18n'
-import type { Language } from '@/types'
 
 export function getStaticPaths() {
 	return [

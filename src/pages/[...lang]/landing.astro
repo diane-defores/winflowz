@@ -35,11 +35,6 @@ const t = await useTranslations(lang, 'home')
 const featuresData = await useTranslations(lang, 'features')
 const metaDescription = t.meta?.description ?? ''
 
-interface FeatureItem {
-	title: string
-	description: string
-}
-
 const features = Object.entries(featuresData).map(([key, value]) => ({
 	heading: value.title,
 	content: value.description,

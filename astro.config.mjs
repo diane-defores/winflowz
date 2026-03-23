@@ -108,46 +108,46 @@ export default defineConfig({
         {
           label: 'Formations',
           items: [
-            { label: 'Vue d\'ensemble', link: '/fr/formations/' },
+            { label: 'Vue d\'ensemble', link: '/formations/' },
             {
               label: 'I — La Productivité',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-1-productivite' }
+              autogenerate: { directory: 'formations/module-1-productivite' }
             },
             {
               label: 'II — Windows',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-2-windows' }
+              autogenerate: { directory: 'formations/module-2-windows' }
             },
             {
               label: 'III — Temps & Énergie',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-3-temps-energie' }
+              autogenerate: { directory: 'formations/module-3-temps-energie' }
             },
             {
               label: 'IV — Gestion des Actions',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-4-actions' }
+              autogenerate: { directory: 'formations/module-4-actions' }
             },
             {
               label: 'V — Consommer',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-5-consommer' }
+              autogenerate: { directory: 'formations/module-5-consommer' }
             },
             {
               label: 'VI — Connaissances',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-6-connaissance' }
+              autogenerate: { directory: 'formations/module-6-connaissance' }
             },
             {
               label: 'VII — Social',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-7-social' }
+              autogenerate: { directory: 'formations/module-7-social' }
             },
             {
               label: 'VIII — Raccourcis',
               collapsed: true,
-              autogenerate: { directory: 'fr/formations/module-8-raccourcis' }
+              autogenerate: { directory: 'formations/module-8-raccourcis' }
             },
           ]
         },
