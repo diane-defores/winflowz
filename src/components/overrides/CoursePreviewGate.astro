@@ -5,6 +5,8 @@ interface Props {
 	entry: {
 		slug: string
 		body: string
+		title: string
+		description?: string
 	}
 	headings: { text: string; slug: string; depth: number }[]
 	isAuthenticated: boolean
@@ -13,51 +15,74 @@ interface Props {
 
 const { entry, headings, isAuthenticated, hasAccess } = Astro.props
 const lang = entry.slug.startsWith('fr/') ? 'fr' : 'en'
-const previewParagraphs = extractCoursePreview(entry.body)
+const previewParagraphs = extractCoursePreview(entry.body, 3)
 const unlockUrl = getCourseCheckoutPath(entry.slug, lang)
 const privateUrl = getPrivateCoursePath(entry.slug)
 const headingPreview = headings.filter((heading) => heading.depth <= 2).slice(0, 6)
+const formationHubUrl = lang === 'fr' ? '/fr/formations/' : '/en/formations/'
 
 const labels =
 	lang === 'fr'
 		? {
 				privateLabel: 'Lecon privee',
-				previewTitle: 'Apercu public',
+				previewEyebrow: 'Apercu public',
 				previewText:
-					'Cette page reste visible pour le SEO et pour te montrer la promesse du module. Le contenu complet est reserve a la version debloquee.',
-				outlineTitle: 'Dans cette lecon',
+					'Tu peux lire un extrait pour evaluer la promesse de la lecon. La version complete, exploitable et structurée, reste reservee a l espace prive.',
+				outlineTitle: 'Ce que couvre la lecon complete',
+				outlineText:
+					'Voici les sections principales disponibles dans la version debloquee.',
 				unlockTitle: 'Debloquer la lecon complete',
 				unlockText:
-					'Tu peux acheter l acces puis etre redirigee vers la version privee du module.',
-				unlockCta: 'Voir l offre',
+					'Apres achat, tu es redirigee vers la version privee de cette lecon dans le dashboard. Tu gardes une lecture propre, sans blocage artificiel du navigateur.',
+				unlockCta: 'Debloquer cette lecon',
 				openPrivateCta: 'Ouvrir la version privee',
-				signinHint: 'Connecte-toi avec le compte acheteur pour ouvrir la lecon privee apres achat.',
+				signinHint: 'Connecte-toi avec le compte acheteur pour retrouver ensuite la lecon privee.',
+				hubCta: 'Voir toutes les formations',
+				includesTitle: 'Ce que tu obtiens',
+				includes: [
+					'La version complete de la lecon dans le dashboard prive',
+					'Un parcours de lecture plus propre que la preview publique',
+					'Un acces coherent avec le reste de la formation',
+				],
 			}
 		: {
 				privateLabel: 'Private lesson',
-				previewTitle: 'Public preview',
+				previewEyebrow: 'Public preview',
 				previewText:
-					'This page stays public for SEO and discovery. The full lesson is reserved for the unlocked version.',
-				outlineTitle: 'In this lesson',
+					'You can read a short excerpt to evaluate the lesson. The complete, fully usable version stays inside the private course area.',
+				outlineTitle: 'What the full lesson covers',
+				outlineText:
+					'These are the main sections available in the unlocked version.',
 				unlockTitle: 'Unlock the full lesson',
 				unlockText:
-					'You can purchase access and then be redirected to the private version of this lesson.',
-				unlockCta: 'View offer',
+					'After checkout, you are redirected to the private version of this lesson inside the dashboard. The goal is access control, not browser lockouts.',
+				unlockCta: 'Unlock this lesson',
 				openPrivateCta: 'Open private lesson',
 				signinHint: 'Sign in with the buyer account to open the private lesson after purchase.',
+				hubCta: 'Browse all courses',
+				includesTitle: 'What you get',
+				includes: [
+					'The full lesson inside the private dashboard',
+					'A cleaner reading flow than the public preview',
+					'Access aligned with the rest of the training',
+				],
 			}
 ---
 
 <div class="course-preview space-y-8">
-	<div class="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
+	<div class="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
 		<div class="mb-4 flex flex-wrap items-center gap-3">
 			<span class="inline-flex rounded-full bg-yellow/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-yellow ring-1 ring-yellow/30">
 				{labels.privateLabel}
 			</span>
-			<h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-				{labels.previewTitle}
-			</h2>
+			<p class="text-xs font-bold uppercase tracking-[0.18em] text-magenta">{labels.previewEyebrow}</p>
 		</div>
+		<h2 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+			{entry.title}
+		</h2>
+		{entry.description && (
+			<p class="mt-3 max-w-3xl text-base text-neutral-600 dark:text-neutral-400">{entry.description}</p>
+		)}
 		<p class="mb-6 text-neutral-600 dark:text-neutral-400">{labels.previewText}</p>
 		<div class="space-y-4">
 			{previewParagraphs.map((paragraph) => <p>{paragraph}</p>)}
@@ -66,10 +91,11 @@ const labels =
 
 	{
 		headingPreview.length > 0 && (
-			<div class="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-950">
+			<div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-800 dark:bg-neutral-950">
 				<h3 class="mb-4 text-xl font-bold text-neutral-900 dark:text-neutral-100">
 					{labels.outlineTitle}
 				</h3>
+				<p class="mb-5 text-sm text-neutral-600 dark:text-neutral-400">{labels.outlineText}</p>
 				<ul class="space-y-3">
 					{headingPreview.map((heading) => (
 						<li class="text-neutral-700 dark:text-neutral-300">{heading.text}</li>
@@ -79,19 +105,39 @@ const labels =
 		)
 	}
 
-	<div class="rounded-2xl border border-magenta/30 bg-magenta/5 p-6 dark:border-magenta/20 dark:bg-magenta/10">
-		<h3 class="mb-3 text-xl font-bold text-neutral-900 dark:text-neutral-100">
-			{labels.unlockTitle}
-		</h3>
-		<p class="mb-6 text-neutral-700 dark:text-neutral-300">{labels.unlockText}</p>
-		<div class="flex flex-wrap gap-3">
-			<a
-				href={hasAccess ? privateUrl : unlockUrl}
-				class="inline-flex items-center justify-center rounded-xl bg-neutral-900 px-6 py-3 font-bold text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
-			>
-				{hasAccess ? labels.openPrivateCta : labels.unlockCta}
-			</a>
-			{!isAuthenticated && <p class="self-center text-sm text-neutral-500 dark:text-neutral-400">{labels.signinHint}</p>}
+	<div class="grid gap-6 lg:grid-cols-[1.4fr_minmax(0,1fr)]">
+		<div class="rounded-3xl border border-magenta/30 bg-gradient-to-br from-magenta/10 via-white to-yellow/10 p-6 shadow-sm dark:border-magenta/20 dark:from-magenta/12 dark:via-neutral-950 dark:to-yellow/10">
+			<h3 class="mb-3 text-xl font-bold text-neutral-900 dark:text-neutral-100">
+				{labels.unlockTitle}
+			</h3>
+			<p class="mb-6 max-w-2xl text-neutral-700 dark:text-neutral-300">{labels.unlockText}</p>
+			<div class="flex flex-wrap gap-3">
+				<a
+					href={hasAccess ? privateUrl : unlockUrl}
+					class="inline-flex items-center justify-center rounded-xl bg-neutral-900 px-6 py-3 font-bold text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
+				>
+					{hasAccess ? labels.openPrivateCta : labels.unlockCta}
+				</a>
+				<a
+					href={formationHubUrl}
+					class="inline-flex items-center justify-center rounded-xl border border-neutral-300 bg-white px-6 py-3 font-semibold text-neutral-800 transition hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-600 dark:hover:bg-neutral-800"
+				>
+					{labels.hubCta}
+				</a>
+			</div>
+			{!isAuthenticated && <p class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">{labels.signinHint}</p>}
+		</div>
+
+		<div class="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+			<h3 class="mb-4 text-lg font-bold text-neutral-900 dark:text-neutral-100">{labels.includesTitle}</h3>
+			<ul class="space-y-3">
+				{labels.includes.map((item) => (
+					<li class="flex items-start gap-3 text-sm text-neutral-700 dark:text-neutral-300">
+						<span class="mt-1 inline-block h-2 w-2 rounded-full bg-magenta"></span>
+						<span>{item}</span>
+					</li>
+				))}
+			</ul>
 		</div>
 	</div>
 </div>

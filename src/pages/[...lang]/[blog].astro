@@ -23,15 +23,12 @@ export function getStaticPaths() {
 }
 
 const { lang } = Astro.params;
-console.log("Raw lang param:", lang);
 
 // Get current locale
 const currentLang = getCurrentLocale(Astro.url) as Language;
-console.log("Current locale:", currentLang);
 
 // Get translations based on language
 const t = currentLang === "fr" ? frTranslations : enTranslations;
-console.log("Loaded translations:", t);
 
 // Get all blogs post in current language, filter drafts and future posts
 const now = new Date();

@@ -76,23 +76,8 @@ const siteUrl = lang === 'fr' ? 'https://winflowz.com/fr' : 'https://winflowz.co
 				<script is:inline async src="https://cdn.onthe.io/io.js/YyAMWtaLLPUi" />
 			)
 		}
-		<script is:inline src="/buildflowz-inspector.js" defer></script>
 		<!-- CTA click tracking -->
 		<script>
-			(() => {
-				const blockEvent = (event: Event) => event.preventDefault();
-				document.addEventListener('copy', blockEvent);
-				document.addEventListener('cut', blockEvent);
-				document.addEventListener('contextmenu', blockEvent);
-				document.addEventListener('selectstart', blockEvent);
-				document.addEventListener('dragstart', blockEvent);
-				document.addEventListener('keydown', (event) => {
-					if (!(event.ctrlKey || event.metaKey)) return;
-					const key = event.key.toLowerCase();
-					if (['a', 'c', 'u', 'x'].includes(key)) event.preventDefault();
-				});
-			})();
-
 			document.addEventListener('click', (e) => {
 				const target = (e.target as HTMLElement).closest('[data-track]') as HTMLElement | null;
 				if (!target) return;
@@ -135,10 +120,6 @@ const siteUrl = lang === 'fr' ? 'https://winflowz.com/fr' : 'https://winflowz.co
 			}, { rootMargin: '-80px' });
 			document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 		</script>
-	  <!-- shipflow-inspector -->
-  <script is:inline src="/shipflow-inspector.js" defer></script>
-  <!-- shipflow-eruda -->
-  <script is:inline src="/shipflow-eruda.js" defer></script>
 </body>
 </html>
 

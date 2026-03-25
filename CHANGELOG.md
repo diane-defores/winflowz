@@ -21,10 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Update Clerk sign-in flow so `next` can return to checkout or the private lesson
 - Update purchase success page copy and redirect behavior for course unlocks
 - Extend Convex Polar handlers to link customers and grant training access after payment
+- Remove global anti-copy / anti-select behavior from public layouts and `/bio`
+- Add a real index page for the French Module V training section
+- Improve public lesson previews with clearer titles, value framing, and unlock CTAs
+- Rewrite homepage and core product copy to match the real WinFlowz offer more closely
+- Make the English training hub honest about the current EN content state
+- Update public-facing contact email references to `hello@winflowz.com`
 
 ### Fixed
 - Fix course gating so the unlock flow persists access after payment instead of relying only on subscription state
 - Fix sign-in redirect handling by disabling prerender on the sign-in page
+- Remove public inspector/debug script injections and delete unused inspector assets
+- Remove public blog and alert debug logs
 
 ### Removed
 - Remove GUIDELINES.md

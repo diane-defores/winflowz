@@ -1,16 +1,16 @@
 {
   "title": "Products | WinFlowz",
-  "description": "Explore WinFlowz's digital productivity tools, designed for both professionals and enthusiasts.",
-  "siteDescription": "WinFlowz offers premium digital productivity tools and expert services to meet all your project needs.",
-  "subtitle": "Discover our range of productivity tools designed to enhance your digital workflow.",
+  "description": "Explore WinFlowz's Windows training, Obsidian plugins, and browser tools built around real productivity workflows.",
+  "siteDescription": "WinFlowz focuses on practical Windows training, Obsidian plugins, and browser tools for note-taking, media, and YouTube workflows.",
+  "subtitle": "Browse the WinFlowz ecosystem: a Windows training path plus tools for Obsidian, YouTube, and content review workflows.",
   "customerStories": "Customer Stories",
   "features": {
-    "title": "Why Choose WinFlowz?",
-    "subtitle": "Transform your ideas into tangible results with WinFlowz tools. Whether you're starting with a sketch or diving into a complete project, our tools are designed to help you build with confidence.",
+    "title": "Why WinFlowz?",
+    "subtitle": "The offer is built around the problems the site already teaches: focus, Windows setup, information capture, and knowledge reuse.",
     "benefits": [
-      "Robust and reliable tools for lasting performance",
-      "Innovative solutions adapted to modern productivity needs",
-      "Dedicated customer support for your project's success"
+      "Windows-focused training with practical workflows instead of generic productivity advice",
+      "Obsidian plugins for RSS, plugin management, media handling, and knowledge workflows",
+      "Chrome tools for YouTube bookmarking and goal tracking, plus a course-first learning path"
     ]
   },
   "testimonials": {
@@ -19,51 +19,51 @@
   "products": {
     "obsidianplugins": {
       "title": "Obsidian Plugins",
-      "description": "A collection of plugins to enhance your Obsidian experience",
+      "description": "Obsidian plugins for RSS, plugin management, media, and knowledge workflows",
       "features": [
-        "Seamless integration",
-        "Advanced customization",
-        "Automatic synchronization",
-        "Premium support"
+        "RSS and feed workflows inside Obsidian",
+        "Plugin and media management tools",
+        "Knowledge capture built for Markdown",
+        "Designed to fit a real Obsidian workflow"
       ],
       "price": "29.99",
       "link": "/products/obsidian-plugins"
     },
     "chromeextensions": {
-      "title": "Chrome Extensions",
-      "description": "Powerful extensions to optimize your browsing",
+      "title": "Chrome Tools",
+      "description": "Chrome extensions for YouTube bookmarking and goal tracking",
       "features": [
-        "Enhanced productivity",
-        "Ad blocking",
-        "Task management",
-        "Multi-device sync"
+        "Timestamped YouTube bookmarks and notes",
+        "Goal tracking for personal workflows",
+        "Keyboard-first interaction",
+        "Exportable notes and bookmarks"
       ],
       "price": "19.99",
       "link": "/products/chrome-extensions"
     },
     "windowsoptimization": {
-      "title": "Windows Optimization",
-      "description": "Optimize your Windows system performance",
+      "title": "Windows Training",
+      "description": "A practical Windows productivity guide for faster daily workflows",
       "features": [
-        "Automatic cleanup",
-        "Real-time optimization",
-        "Advanced protection",
-        "Smart backup"
+        "Workflow setup and configuration",
+        "Shortcuts, window management, and automation",
+        "Focus and time-saving habits",
+        "Built from the course content"
       ],
       "price": "39.99",
       "link": "/products/windows-optimization"
     },
     "productivitysuite": {
-      "title": "Productivity Suite",
-      "description": "A complete suite of tools to maximize your productivity",
+      "title": "WinFlowz Bundle",
+      "description": "The full WinFlowz ecosystem: training plus the core tools",
       "features": [
-        "All products included",
-        "Priority updates",
-        "24/7 dedicated support",
-        "Custom training"
+        "Windows training and course content",
+        "Obsidian plugins and browser tools in one offer",
+        "Best value if you want the full stack",
+        "Built around the same workflow system"
       ],
       "price": "79.99",
       "link": "/products/productivity-suite"
     }
   }
-} 
+}

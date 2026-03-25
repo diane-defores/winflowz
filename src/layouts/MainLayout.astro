@@ -72,29 +72,9 @@ interface Props {
 			)
 		}
 		<script>
-		(() => {
-			const blockEvent = (event: Event) => event.preventDefault();
-			document.addEventListener('copy', blockEvent);
-			document.addEventListener('cut', blockEvent);
-			document.addEventListener('contextmenu', blockEvent);
-			document.addEventListener('selectstart', blockEvent);
-			document.addEventListener('dragstart', blockEvent);
-			document.addEventListener('keydown', (event) => {
-				if (!(event.ctrlKey || event.metaKey)) return;
-				const key = event.key.toLowerCase();
-				if (['a', 'c', 'u', 'x'].includes(key)) event.preventDefault();
-			});
-		})();
-
 		import '@/assets/scripts/preline'
 		import '@/assets/scripts/lenisSmoothScroll'
 		import '@/assets/scripts/modal'
 		</script>
-	  <!-- buildflowz-inspector -->
-  <script is:inline src="/buildflowz-inspector.js" defer></script>
-  <!-- shipflow-inspector -->
-  <script is:inline src="/shipflow-inspector.js" defer></script>
-  <!-- shipflow-eruda -->
-  <script is:inline src="/shipflow-eruda.js" defer></script>
 </body>
 </html>

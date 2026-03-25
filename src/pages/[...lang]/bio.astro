@@ -208,33 +208,9 @@ const langPrefix = isEn ? '' : '/fr'
 			margin-top: 1rem;
 		}
 
-		*,
-		*::before,
-		*::after {
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-		}
-
 	</style>
 </head>
 <body>
-	<script>
-		(() => {
-			const blockEvent = (event: Event) => event.preventDefault();
-			document.addEventListener("copy", blockEvent);
-			document.addEventListener("cut", blockEvent);
-			document.addEventListener("contextmenu", blockEvent);
-			document.addEventListener("selectstart", blockEvent);
-			document.addEventListener("dragstart", blockEvent);
-			document.addEventListener("keydown", (event) => {
-				if (!(event.ctrlKey || event.metaKey)) return;
-				const key = event.key.toLowerCase();
-				if (["a", "c", "u", "x"].includes(key)) event.preventDefault();
-			});
-		})();
-	</script>
 	<div class="bio-container">
 		<div class="bio-avatar">
 			<img src="/images/WinFlowz.png" alt="WinFlowz" width="96" height="96" />

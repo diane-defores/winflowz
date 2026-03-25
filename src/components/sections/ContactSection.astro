@@ -106,7 +106,7 @@ const supportItems = (t.support?.items ?? []) as SupportItem[];
             const subject = (document.getElementById('contact-subject') as HTMLInputElement)?.value || '';
             const message = (document.getElementById('contact-message') as HTMLTextAreaElement)?.value || '';
 
-            const mailtoUrl = `mailto:contact@winflowz.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
+            const mailtoUrl = `mailto:hello@winflowz.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
             window.location.href = mailtoUrl;
 
             const successEl = document.getElementById('contact-success');

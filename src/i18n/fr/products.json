@@ -1,16 +1,16 @@
 {
   "title": "Produits | WinFlowz",
-  "description": "Découvrez les outils de productivité numérique de WinFlowz, conçus pour les professionnels et les passionnés.",
-  "siteDescription": "WinFlowz propose des outils de productivité numérique premium et des services d'experts pour répondre à tous vos besoins.",
-  "subtitle": "Découvrez notre gamme d'outils de productivité conçus pour améliorer votre flux de travail numérique.",
+  "description": "Découvrez la formation Windows, les plugins Obsidian et les outils navigateur WinFlowz, construits autour de vrais workflows.",
+  "siteDescription": "WinFlowz se concentre sur une formation Windows pratique, des plugins Obsidian et des outils navigateur pour la prise de notes, les médias et YouTube.",
+  "subtitle": "Parcourez l'écosystème WinFlowz: une formation Windows et des outils pour Obsidian, YouTube et la veille de contenu.",
   "customerStories": "Témoignages Clients",
   "features": {
-    "title": "Pourquoi Choisir WinFlowz ?",
-    "subtitle": "Transformez vos idées en résultats tangibles avec les outils WinFlowz. Que vous commenciez avec une esquisse ou plongiez dans un projet complet, nos outils sont conçus pour vous aider à construire en toute confiance.",
+    "title": "Pourquoi WinFlowz ?",
+    "subtitle": "L'offre est pensée pour les besoins déjà présents dans le site: focus, configuration Windows, capture d'information et réutilisation des connaissances.",
     "benefits": [
-      "Des outils robustes et fiables pour une performance durable",
-      "Des solutions innovantes adaptées aux besoins de productivité modernes",
-      "Un support client dédié pour la réussite de votre projet"
+      "Une formation Windows orientée pratique, pas des conseils génériques",
+      "Des plugins Obsidian pour RSS, gestion de plugins, médias et connaissances",
+      "Des outils Chrome pour YouTube et le suivi d'objectifs, avec une logique de parcours"
     ]
   },
   "testimonials": {
@@ -19,48 +19,48 @@
   "products": {
     "obsidianplugins": {
       "title": "Plugins Obsidian",
-      "description": "Une collection de plugins pour améliorer votre expérience Obsidian",
+      "description": "Plugins Obsidian pour RSS, gestion de plugins, médias et workflows de connaissances",
       "features": [
-        "Intégration transparente",
-        "Personnalisation avancée",
-        "Synchronisation automatique",
-        "Support premium"
+        "Workflows RSS directement dans Obsidian",
+        "Outils de gestion des plugins et des médias",
+        "Capture de connaissances pensée pour Markdown",
+        "Conçu pour un usage réel d'Obsidian"
       ],
       "price": "29,99",
       "link": "/fr/produits/obsidian-plugins"
     },
     "chromeextensions": {
-      "title": "Extensions Chrome",
-      "description": "Des extensions puissantes pour optimiser votre navigation",
+      "title": "Outils Chrome",
+      "description": "Extensions Chrome pour le marquage YouTube et le suivi d'objectifs",
       "features": [
-        "Productivité améliorée",
-        "Blocage des publicités",
-        "Gestionnaire de tâches",
-        "Synchronisation multi-appareils"
+        "Marque-pages YouTube avec timestamps et notes",
+        "Suivi d'objectifs pour vos routines personnelles",
+        "Usage orienté clavier",
+        "Notes et marque-pages exportables"
       ],
       "price": "19,99",
       "link": "/fr/produits/chrome-extensions"
     },
     "windowsoptimization": {
-      "title": "Optimisation Windows",
-      "description": "Optimisez les performances de votre système Windows",
+      "title": "Formation Windows",
+      "description": "Un guide pratique de productivité Windows pour vos workflows quotidiens",
       "features": [
-        "Nettoyage automatique",
-        "Optimisation en temps réel",
-        "Protection avancée",
-        "Sauvegarde intelligente"
+        "Configuration et mise en place du poste",
+        "Raccourcis, gestion des fenêtres et automatisation",
+        "Habitudes de focus et gain de temps",
+        "Basé sur le contenu de la formation"
       ],
       "price": "39,99",
       "link": "/fr/produits/windows-optimization"
     },
     "productivitysuite": {
-      "title": "Suite Productivité",
-      "description": "Une suite complète d'outils pour maximiser votre productivité",
+      "title": "Pack WinFlowz",
+      "description": "L'écosystème WinFlowz complet: formation et outils principaux",
       "features": [
-        "Tous les produits inclus",
-        "Mises à jour prioritaires",
-        "Support dédié 24/7",
-        "Formation personnalisée"
+        "Formation Windows et contenu du cours",
+        "Plugins Obsidian et outils navigateur réunis",
+        "Le meilleur choix pour l'offre complète",
+        "Une logique de workflow commune"
       ],
       "price": "79,99",
       "link": "/fr/produits/productivity-suite"

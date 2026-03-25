@@ -8,8 +8,6 @@ interface Props {
 
 const { type = "info", title, message, show = true } = Astro.props;
 
-console.log("Alert props:", { type, title, message, show });
-
 const styles = {
 	success: {
 		bg: "bg-green/10 dark:bg-green/10",
@@ -75,4 +73,3 @@ const currentStyle = styles[type];
 		</div>
 	)
 }
-

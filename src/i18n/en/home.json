@@ -1,11 +1,11 @@
 {
   "title": "WinFlowz - Tools and Training for Productivity",
   "meta": {
-    "description": "Transform your digital workflow with powerful tools and training designed by a neurodivergent expert passionate about productivity."
+    "description": "WinFlowz combines Windows productivity training, Obsidian plugins, and Chrome tools for YouTube and workflow research."
   },
   "hero": {
     "title": "<span class=\"relative inline-flex sm:inline\"><span class=\"relative text-magenta\">Productivity</span><span class=\"absolute inset-0 h-full w-full bg-gradient-rainbow opacity-30 blur-lg filter\"></span></span> Plugins & <span class=\"text-yellow\">Windows</span> Training",
-    "subTitle": "Your digital workspace is a mess. No structure, no process – just chaos. Chrome extensions for YouTube, Obsidian plugins (RSS, plugin management), and complete Windows productivity guide with 200+ tested tips.",
+    "subTitle": "Chrome tools for YouTube workflows, Obsidian plugins for content curation, and a Windows productivity course built around practical lessons.",
     "primaryBtn": "Testimonials",
     "primaryBtnURL": "/products#testimonials",
     "secondaryBtn": "Buy Now",
@@ -16,33 +16,33 @@
     }
   },
   "clients": {
-    "title": "Trusted by Leaders",
-    "subTitle": "Join entrepreneurs, freelancers, and professionals who have transformed their productivity with WinFlowz"
+    "title": "Built for real workflows",
+    "subTitle": "For people who want one place for Windows habits, note-taking tools, and content workflows they actually use."
   },
   "features": {
-    "title": "Redefining Digital Productivity",
-    "subTitle": "As someone with ADHD and autism, I've struggled a lot with self-awareness and discipline. So I created tools that make it unreasonable and impossible not to achieve our goals👌"
+    "title": "Tools and training that fit together",
+    "subTitle": "WinFlowz combines course content, browser tools, and Obsidian workflows so the site teaches the same system it helps you use."
   },
   "workflow": {
-    "title": "Customize <span class=\"text-yellow\">Your Workflowz</span> to perfectly match your personality and build your best life",
+    "title": "A workflow stack built from the ground up",
     "tabs": [
       {
         "heading": "ObsiFlowz",
-        "content": "I currently use Obsidian as my note-taking app, so I'm designing amazing plugins to boost your Obsidian experience. Transform your content curation with RSSFlowz and optimize your plugin search management with PluginFlowz."
+        "content": "Obsidian plugins for content curation, plugin search, and note-taking workflows that stay close to markdown and local files."
       },
       {
         "heading": "TubeFlowz",
-        "content": "Revolutionize your YouTube searches with a powerful Chrome extension for annotation and bookmarking. Never lose valuable content again."
+        "content": "A Chrome extension for YouTube research, bookmarking, and annotation so useful videos turn into reusable knowledge."
       },
       {
         "heading": "Windows Mastery",
-        "content": "Unlock the full potential of Windows with over 200 tested and approved productivity tips and tools. Work smarter, not harder."
+        "content": "A Windows productivity course with 8 modules, 39 French lessons, and practical guidance for focus, time, actions, and shortcuts."
       }
     ]
   },
   "testimonials": {
-    "title": "Accelerate Your Projects",
-    "subTitle": "We ensure you get maximum value with minimum investment and effort.",
+    "title": "What the offer includes",
+    "subTitle": "Three product lines, one training path, and a site that keeps the tools and the course connected.",
     "main": {
       "content": "Congratulations, Diane! I just spent 20 minutes in it and I'm already wondering what I've been doing with my life until now :)) Lots of goodies to improve my work. I love it!",
       "author": "Florin Muresan",
@@ -50,25 +50,25 @@
     },
     "statistics": [
       {
-        "count": "70k+",
-        "description": "lessons completed — from freelancers to power users"
+        "count": "8",
+        "description": "training modules in the Windows course"
       },
       {
-        "count": "35%",
-        "description": "efficiency increase with WinFlowz tools"
+        "count": "39",
+        "description": "French lessons currently published"
       },
       {
-        "count": "15.3%",
-        "description": "cost reduction reported by loyal clients"
+        "count": "3",
+        "description": "core product lines: Windows, Obsidian, and YouTube workflows"
       },
       {
-        "count": "2x",
-        "description": "faster thanks to our innovative solutions"
+        "count": "2",
+        "description": "site languages: English and French"
       }
     ]
   },
   "cta": {
-    "title": "Let's Build Together",
-    "subTitle": "WinFlowz is a productivity ecosystem, meticulously designed by Diane Defores."
+    "title": "Build a system you can actually use",
+    "subTitle": "Start with the free module preview, then unlock the training and tools that match your workflow."
   }
-} 
+}
