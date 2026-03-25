@@ -38,6 +38,7 @@ const newsletterDesc =
 const craftedBy = t.footer?.crafted || 'Crafted by'
 const githubUrl = t.socialLinks?.github || 'https://github.com/dianedef/winflowz'
 const currentYear = new Date().getFullYear()
+const backToTopLabel = lang === 'fr' ? '↑ Retour en haut' : '↑ Back to top'
 
 const footerClass = forceDark
 	? 'border-t border-zinc-800 bg-black'
@@ -145,6 +146,12 @@ const dividerClass = forceDark
 					class={footerLinkClass}
 				>
 					Contact
+				</a>
+				<a
+					href="#top"
+					class={footerLinkClass}
+				>
+					{backToTopLabel}
 				</a>
 			</div>
 		</div>

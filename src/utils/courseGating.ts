@@ -19,6 +19,21 @@ export function isFormationSlug(slug: string) {
 	)
 }
 
+export function isFreeFormationSlug(slug: string) {
+	const normalized = slug.replace(/^\/+|\/+$/g, '')
+
+	return (
+		normalized === 'formations' ||
+		normalized === 'fr/formations' ||
+		normalized === 'en/formations' ||
+		normalized.includes('/formations/module-1-productivite')
+	)
+}
+
+export function isPremiumFormationSlug(slug: string) {
+	return isFormationSlug(slug) && !isFreeFormationSlug(slug)
+}
+
 export function getPrivateCoursePath(slug: string) {
 	return `/dashboard/docs/${slug.replace(/^\/+/, '')}`
 }

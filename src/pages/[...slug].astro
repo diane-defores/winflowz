@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import CoursePreviewGate from '@/components/overrides/CoursePreviewGate.astro';
 import { buildDocTree, getDocLang, getDocPager } from '@/utils/docs';
-import { isFormationSlug } from '@/utils/courseGating';
+import { isPremiumFormationSlug } from '@/utils/courseGating';
 
 export const prerender = true;
 
@@ -28,7 +28,7 @@ const { Content, headings } = await entry.render();
 const lang = getDocLang(entry.slug);
 const sidebar = buildDocTree(docs, lang);
 const pager = getDocPager(docs, lang, entry.slug);
-const isFormationPage = isFormationSlug(entry.slug);
+const isPremiumFormationPage = isPremiumFormationSlug(entry.slug);
 ---
 
 <DocsLayout
@@ -41,7 +41,7 @@ const isFormationPage = isFormationSlug(entry.slug);
   pager={pager}
 >
   {
-    isFormationPage ? (
+    isPremiumFormationPage ? (
       <CoursePreviewGate
         entry={{
           slug: entry.slug,

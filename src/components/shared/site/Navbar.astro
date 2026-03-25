@@ -84,6 +84,8 @@ const signInLabel = lang === 'fr' ? 'Connexion' : 'Sign In'
 const ctaLabel = lang === 'fr' ? 'Commencer' : 'Get Started'
 const signInUrl = lang === 'fr' ? '/fr/connexion' : '/signin'
 const ctaUrl = lang === 'fr' ? '/fr/produits' : '/products'
+const mobileTagline =
+	lang === 'fr' ? 'Plugins Productivite & Formation Windows' : 'Productivity Plugins & Windows Training'
 
 const navShellClass = forceDark
 	? 'relative flex items-center justify-between rounded-full border border-zinc-800 bg-zinc-950/88 px-4 py-3 shadow-none backdrop-blur-md'
@@ -114,6 +116,10 @@ const ctaButtonClass = forceDark
 				<div class="glow-effect"></div>
 			</div>
 		</a>
+
+		<p class="mx-4 hidden flex-1 text-center text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-neutral-600 dark:text-zinc-400 sm:text-[0.7rem] max-md:block">
+			{mobileTagline}
+		</p>
 
 		<div class="hidden items-center gap-1 md:flex">
 			{

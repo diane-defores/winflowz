@@ -6,7 +6,7 @@ import {
 	getCourseCheckoutPath,
 	getPrivateCoursePath,
 	getPublicCoursePath,
-	isFormationSlug,
+	isPremiumFormationSlug,
 } from '@/utils/courseGating'
 
 type CheckoutUser = {
@@ -21,7 +21,7 @@ export const GET: APIRoute = async ({ url, locals, redirect }) => {
 	const lesson = url.searchParams.get('lesson')
 	const lang = url.searchParams.get('lang') === 'fr' ? 'fr' : 'en'
 
-	if (!lesson || !isFormationSlug(lesson)) {
+	if (!lesson || !isPremiumFormationSlug(lesson)) {
 		return new Response('Invalid lesson', { status: 400 })
 	}
 

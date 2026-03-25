@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Server checkout route for training unlocks at `/api/polar/checkout`
 - Signed Polar webhook route at `/api/polar/webhook`
 - Persistent course entitlements on Convex users via `courseEntitlements`
+- Full English translation set for the 8 WinFlowz training modules
 
 ### Changed
 - Clean up unused docs and legacy files (AUTH_ANALYSIS, BRANDING_SPECIFICATION, copilot-instructions)
@@ -27,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Rewrite homepage and core product copy to match the real WinFlowz offer more closely
 - Make the English training hub honest about the current EN content state
 - Update public-facing contact email references to `hello@winflowz.com`
+- Restore the English training hub as a full course index now that all EN lessons exist
+- Gate only premium training lessons while keeping Module I publicly accessible
 
 ### Fixed
 - Fix course gating so the unlock flow persists access after payment instead of relying only on subscription state
