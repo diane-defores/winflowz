@@ -38,9 +38,31 @@ After five or six well-spaced reviews, the information moves into long-term memo
 
 ## Chunking (Barbara Oakley)
 
-Your brain can only hold about **4 chunks** of information in working memory at once. When working memory fills up, you have two options: forget something to make space, or move it into long-term memory. With the right tools - spaced repetition and active recall - you can reach **90% long-term retention** instead of 10% without a system.
+Barbara Oakley explains a core idea very well: working memory is tiny. You cannot keep many elements active at once, especially if those elements are still unstructured.
 
-Chunking means grouping several pieces of information into one coherent block. A 10-digit phone number is impossible to remember digit by digit, but easy in three groups. Apply that idea everywhere: look for patterns, create categories, connect concepts.
+**Chunking** is the skill of turning scattered pieces of information into a more stable mental block. That block becomes easier to manipulate, remember, and reuse.
+
+Simple example:
+- remembering `7 4 9 2 1 8 6 3` digit by digit is hard
+- remembering `749 / 218 / 63` is already easier
+- remembering a pattern, a category, or a structure is easier still than memorizing isolated units
+
+The same applies to complex topics:
+- a list of tools stays fuzzy
+- a mind map with 3 categories becomes memorable
+- a concept linked to a concrete example becomes reusable
+
+Chunking is not just about compressing information. It is about **understanding the structure of a subject**.
+
+### How to build real chunks
+
+1. **Look for patterns** - what repeats?
+2. **Group by function** - tools, steps, mistakes, principles
+3. **Attach an example** - abstract ideas stick better when tied to a concrete case
+4. **Explain it in your own words** - if you can rephrase it, the chunk is starting to exist
+5. **Reuse it quickly** - chunks consolidate when you use them, not when you stare at them
+
+The trap is thinking reading alone creates chunks. It does not. Chunks mostly emerge through practice, retrieval, and repetition.
 
 ## Active recall
 

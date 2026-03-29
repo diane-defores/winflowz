@@ -23,7 +23,7 @@ RSS is the most underrated protocol on the web. It lets you follow any site with
 
 ---
 
-## Feedboard: Your Stream Dashboard
+## [Feedboard](https://feedboard.app/) : Your Stream Dashboard
 
 Feedboard lets you visualize all of your RSS feeds in one dashboard, organized by thematic columns.
 
@@ -53,10 +53,10 @@ Your browser is your main work tool. Set it up like a pro.
 
 | Extension | Function |
 |-----------|----------|
-| **uBlock Origin** | Ad and tracker blocker - non-negotiable |
-| **Dark Reader** | Universal dark mode - visual comfort |
-| **Bitwarden** | Open source password manager |
-| **Tab Stash** | Bulk-save tabs for later |
+| **[uBlock Origin](https://ublockorigin.com/)** | Ad and tracker blocker - non-negotiable |
+| **[Dark Reader](https://darkreader.org/)** | Universal dark mode - visual comfort |
+| **[Bitwarden](https://bitwarden.com/)** | Open source password manager |
+| **[Tab Stash](https://addons.mozilla.org/en-US/firefox/addon/tab-stash/)** | Bulk-save tabs for later |
 
 ### Tab Organization
 
@@ -67,9 +67,9 @@ Your browser is your main work tool. Set it up like a pro.
 
 ### Browser Choice
 
-- **Vivaldi**: extreme customization, side panels, tab stacks, built-in feed reader
-- **Firefox**: privacy-focused, powerful extensions, containers
-- **Brave**: built-in blocker, fast, Chromium-based
+- **[Vivaldi](https://vivaldi.com/)**: extreme customization, side panels, tab stacks, built-in feed reader
+- **[Firefox](https://www.mozilla.org/firefox/)**: privacy-focused, powerful extensions, containers
+- **[Brave](https://brave.com/)**: built-in blocker, fast, Chromium-based
 
 ---
 

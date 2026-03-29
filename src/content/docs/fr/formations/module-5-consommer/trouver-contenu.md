@@ -46,7 +46,7 @@ Avant de consommer un contenu, vérifie qu'il remplit au moins un critère :
 
 ## Outils de curation
 
-### Antiquoted
+### [Antiquoted](https://antiquoted.com/)
 
 Antiquoted te permet de découvrir du contenu de qualité en dehors des circuits algorithmiques classiques. L'outil agrège des sources indépendantes et te propose du contenu basé sur la pertinence, pas l'engagement.
 
@@ -54,10 +54,10 @@ Antiquoted te permet de découvrir du contenu de qualité en dehors des circuits
 
 | Outil | Fonction |
 |-------|----------|
-| **Pocket** | Sauvegarde d'articles pour lecture différée |
-| **Raindrop.io** | Gestionnaire de signets visuel et organisé |
-| **Refind** | Curation quotidienne personnalisée par email |
-| **Readwise** | Centralise tes highlights de toutes tes sources |
+| Pocket | Sauvegarde d'articles pour lecture différée |
+| **[Raindrop.io](https://raindrop.io/)** | Gestionnaire de signets visuel et organisé |
+| **[Refind](https://refind.com/)** | Curation quotidienne personnalisée par email |
+| **[Readwise](https://readwise.io/)** | Centralise tes highlights de toutes tes sources |
 
 ---
 
@@ -88,7 +88,7 @@ Le doom-scrolling, c'est cette boucle où tu scrolles sans but, passant d'un con
 ### Comment en sortir
 
 - **Supprime les apps de réseaux sociaux** de ton téléphone — utilise-les uniquement sur desktop
-- **Installe un bloqueur de feed** (News Feed Eradicator)
+- **Installe un bloqueur de feed** ([News Feed Eradicator](https://west.io/news-feed-eradicator/))
 - **Remplace le réflexe** : quand tu attrapes ton téléphone sans raison, ouvre une app de lecture (Kindle, Pocket) au lieu de Twitter
 - **Fixe une limite quotidienne** : 30 min de scroll max, chrono en main
 - **Pose-toi la question** : "Est-ce que je cherche quelque chose de précis ?" — si non, repose le téléphone

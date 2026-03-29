@@ -15,6 +15,7 @@ import tools from '@/assets/images/WinFlowz.png'
 import dashboard from '@/assets/images/WinFlowz.png'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types/i18n'
+import { getLocalizedSiteUrl } from '@/constants'
 
 interface FeatureItem {
 	title: string
@@ -93,8 +94,8 @@ if (!hasValidStats) {
 	structuredData={{
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
-		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr' : ''}`,
-		url: `https://winflowz.com/${lang === 'fr' ? 'fr' : ''}`,
+		'@id': getLocalizedSiteUrl(lang, '/'),
+		url: getLocalizedSiteUrl(lang, '/'),
 		name: t.title,
 		description: t.meta.description,
 		inLanguage: lang,
@@ -171,4 +172,3 @@ if (!hasValidStats) {
 		url={`/${lang === 'fr' ? 'fr/' : ''}produits`}
 	/>
 </MainLayout>
-

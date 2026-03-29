@@ -21,7 +21,7 @@ Le cout reel est enorme : relations professionnelles perdues, opportunites busin
 
 ## Clay : le CRM pour ta vie
 
-**Clay** est bien plus qu'un carnet d'adresses. C'est une plateforme intelligente qui t'aide a entretenir authentiquement tes relations professionnelles et personnelles.
+**[Clay](https://clay.com/)** est bien plus qu'un carnet d'adresses. C'est une plateforme intelligente qui t'aide a entretenir authentiquement tes relations professionnelles et personnelles.
 
 ### Fonctionnalites cles
 

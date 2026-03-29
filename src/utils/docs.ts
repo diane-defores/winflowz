@@ -65,7 +65,7 @@ export function buildDocTree(entries: DocEntry[], lang: 'en' | 'fr') {
   for (const entry of localeEntries) {
     const segments = entry.slug.split('/').slice(1);
     let current = root;
-    let currentPath = lang;
+    let currentPath: string = lang;
 
     for (const segment of segments) {
       currentPath = `${currentPath}/${segment}`;

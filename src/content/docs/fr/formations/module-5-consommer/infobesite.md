@@ -36,9 +36,9 @@ L'idée est simple : externalise ta mémoire dans un système fiable. Ton cervea
 
 | Outil | Points forts | Idéal pour |
 |-------|-------------|------------|
-| **Standard Notes** | Chiffrement de bout en bout, open source | Notes privées, journaling sécurisé |
-| **Nota** | Léger, markdown natif, rapide | Prises de notes rapides, développeurs |
-| **Notable** | Interface claire, tags puissants, markdown | Organisation par tags, gros volumes |
+| **[Standard Notes](https://standardnotes.com/)** | Chiffrement de bout en bout, open source | Notes privées, journaling sécurisé |
+| **[Nota](https://www.nota-sync.com/)** | Léger, markdown natif, rapide | Prises de notes rapides, développeurs |
+| **[Notable](https://notable.app/)** | Interface claire, tags puissants, markdown | Organisation par tags, gros volumes |
 
 ### Ce qui compte dans un éditeur markdown
 

@@ -18,11 +18,11 @@ YouTube est une bibliothèque immense polluée par du clickbait. Ces extensions 
 
 | Extension | Fonction |
 |-----------|----------|
-| **DeArrow** | Remplace les titres clickbait par des titres factuels (crowdsourcé) |
-| **SponsorBlock** | Saute automatiquement les segments sponsorisés |
-| **Unhook** | Supprime le feed de recommandations, la sidebar, les commentaires |
-| **Return YouTube Dislike** | Restaure le compteur de dislikes pour évaluer la qualité |
-| **Video Speed Controller** | Contrôle précis de la vitesse (0.1x incréments) |
+| [DeArrow](https://dearrow.ajay.app/) | Remplace les titres clickbait par des titres factuels (crowdsourcé) |
+| [SponsorBlock](https://sponsor.ajay.app/) | Saute automatiquement les segments sponsorisés |
+| [Unhook](https://unhook.app/) | Supprime le feed de recommandations, la sidebar, les commentaires |
+| [Return YouTube Dislike](https://returnyoutubedislike.com/) | Restaure le compteur de dislikes pour évaluer la qualité |
+| [Video Speed Controller](https://github.com/igrigorik/videospeed) | Contrôle précis de la vitesse (0.1x incréments) |
 
 ### Stratégie de consommation YouTube
 
@@ -35,7 +35,7 @@ YouTube est une bibliothèque immense polluée par du clickbait. Ces extensions 
 
 ## Lecteurs RSS
 
-### Flipboard
+### [Flipboard](https://flipboard.com/)
 
 Flipboard transforme tes flux en magazine visuel :
 
@@ -44,7 +44,7 @@ Flipboard transforme tes flux en magazine visuel :
 - **Partage social** — recommande des articles à ta communauté
 - **Multi-plateforme** — mobile, tablette, web
 
-### Feedly
+### [Feedly](https://feedly.com/)
 
 Feedly est le lecteur RSS le plus complet pour la veille professionnelle :
 
@@ -60,7 +60,7 @@ Feedly est le lecteur RSS le plus complet pour la veille professionnelle :
 
 - **Flipboard** si tu privilégies le confort de lecture et la découverte
 - **Feedly** si tu as besoin de puissance, de filtres et d'intégrations pro
-- **Feedboard** (vu dans le module précédent) si tu veux un tableau de bord visuel simple
+- **[Feedboard](https://feedboard.app/)** (vu dans le module précédent) si tu veux un tableau de bord visuel simple
 
 ---
 

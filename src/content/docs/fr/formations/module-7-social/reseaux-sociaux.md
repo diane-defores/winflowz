@@ -30,11 +30,11 @@ Resultat : 2h de creation concentree remplacent 10h eparpillees, avec une presen
 
 | Outil | Meilleur pour | Prix/mois | Monitoring |
 |-------|--------------|-----------|------------|
-| **Buffer** | Simplicite, solopreneurs | Gratuit a 6 euros | Non |
-| **Hootsuite** | Equipes, agences, veille | 49 euros+ | Oui |
-| **Later** | Instagram et plateformes visuelles | Gratuit a 25 euros | Non |
-| **Metricool** | Rapport qualite/prix, analytics | Gratuit a 12 euros | Oui |
-| **Canva Scheduling** | Design + publication integres | 13 euros | Non |
+| **[Buffer](https://buffer.com/)** | Simplicite, solopreneurs | Gratuit a 6 euros | Non |
+| **[Hootsuite](https://hootsuite.com/)** | Equipes, agences, veille | 49 euros+ | Oui |
+| **[Later](https://later.com/)** | Instagram et plateformes visuelles | Gratuit a 25 euros | Non |
+| **[Metricool](https://metricool.com/)** | Rapport qualite/prix, analytics | Gratuit a 12 euros | Oui |
+| **[Canva Scheduling](https://www.canva.com/)** | Design + publication integres | 13 euros | Non |
 
 ### Buffer : le classique fiable
 
@@ -111,21 +111,6 @@ Vise 70 % de contenu evergreen (conseils, frameworks, best practices) repostable
 **Performance** : croissance followers, taux d'engagement, CTR vers ton site, conversions attribuees.
 
 **Objectifs Winflowz** : reduire le temps de 60 %, consistency a 100 %, engagement rate en hausse de 50 %.
-
-## Outils de prospection LinkedIn
-
-Si tu utilises LinkedIn pour generer des leads, ces outils te font gagner un temps considerable :
-
-| Outil | Usage |
-|-------|-------|
-| **Hunter.io** | Trouver les emails professionnels a partir d'un nom de domaine |
-| **LinkedIn Sales Navigator** | Recherche avancee et filtres pour identifier tes prospects ideaux |
-| **LinkedIn Helper** | Automatisation des invitations et messages (attention aux limites LinkedIn) |
-| **Anyleads** | Generation de leads et verification d'emails |
-
-:::caution[Limites LinkedIn]
-LinkedIn impose des quotas stricts sur les invitations et messages automatises. Utilise ces outils avec moderation pour eviter les restrictions sur ton compte.
-:::
 
 :::note[Exercice pratique]
 Semaine 1 : audite ta presence actuelle et choisis 2-3 plateformes. Semaine 2 : installe ton outil et configure les horaires optimaux. Semaine 3 : premiere semaine de content batching. Semaine 4 : analyse les resultats et ajuste.

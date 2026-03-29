@@ -18,10 +18,9 @@ L'IA ne remplace pas ta pensée — elle accélère l'exécution. Tu fournis les
 
 | Outil | Spécialité | Points forts |
 |-------|-----------|-------------|
-| **Gobble Bot** | Résumé et synthèse | Transforme de longs documents en résumés exploitables |
-| **Flot AI** | Assistant d'écriture contextuel | S'intègre dans n'importe quelle app, copilote flottant |
-| **Sider** | Extension navigateur IA | Chat, résumé, traduction directement dans le navigateur |
-| **Bearly** | Lecture et écriture IA | Résume les PDF, génère du contenu à partir de tes sources |
+| [Flot AI](https://flot.ai/) | Assistant d'écriture contextuel | S'intègre dans n'importe quelle app, copilote flottant |
+| [Sider](https://sider.ai/) | Extension navigateur IA | Chat, résumé, traduction directement dans le navigateur |
+| [Bearly](https://bearly.ai/) | Lecture et écriture IA | Résume les PDF, génère du contenu à partir de tes sources |
 
 ### Comment bien utiliser l'IA pour écrire
 
@@ -35,7 +34,7 @@ L'IA ne remplace pas ta pensée — elle accélère l'exécution. Tu fournis les
 
 ## Outils PDF
 
-### PrintFriendly
+### [PrintFriendly](https://www.printfriendly.com/)
 
 PrintFriendly nettoie les pages web avant impression ou conversion en PDF :
 
@@ -48,15 +47,15 @@ PrintFriendly nettoie les pages web avant impression ou conversion en PDF :
 
 | Outil | Fonction |
 |-------|----------|
-| **Stirling PDF** | Suite complète open source : fusion, découpe, OCR, conversion |
-| **PDF Arranger** | Réorganise les pages par glisser-déposer |
-| **OCRmyPDF** | Ajoute une couche de texte cherchable aux PDF scannés |
+| [Stirling PDF](https://stirlingpdf.io/) | Suite complète open source : fusion, découpe, OCR, conversion |
+| [PDF Arranger](https://github.com/pdfarranger/pdfarranger) | Réorganise les pages par glisser-déposer |
+| [OCRmyPDF](https://ocrmypdf.readthedocs.io/) | Ajoute une couche de texte cherchable aux PDF scannés |
 
 ---
 
 ## Outils audio
 
-### Audacity
+### [Audacity](https://www.audacityteam.org/)
 
 Audacity reste la référence open source pour l'édition audio :
 

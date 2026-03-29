@@ -18,11 +18,11 @@ YouTube is an enormous library polluted by clickbait. These extensions make it u
 
 | Extension | Function |
 |-----------|----------|
-| **DeArrow** | Replaces clickbait titles with factual titles (crowdsourced) |
-| **SponsorBlock** | Automatically skips sponsored segments |
-| **Unhook** | Removes the recommendations feed, sidebar, and comments |
-| **Return YouTube Dislike** | Restores the dislike counter so you can judge quality |
-| **Video Speed Controller** | Precise speed control (0.1x increments) |
+| [DeArrow](https://dearrow.ajay.app/) | Replaces clickbait titles with factual titles (crowdsourced) |
+| [SponsorBlock](https://sponsor.ajay.app/) | Automatically skips sponsored segments |
+| [Unhook](https://unhook.app/) | Removes the recommendations feed, sidebar, and comments |
+| [Return YouTube Dislike](https://returnyoutubedislike.com/) | Restores the dislike counter so you can judge quality |
+| [Video Speed Controller](https://github.com/igrigorik/videospeed) | Precise speed control (0.1x increments) |
 
 ### YouTube consumption strategy
 
@@ -35,7 +35,7 @@ YouTube is an enormous library polluted by clickbait. These extensions make it u
 
 ## RSS readers
 
-### Flipboard
+### [Flipboard](https://flipboard.com/)
 
 Flipboard turns your feeds into a visual magazine:
 
@@ -44,7 +44,7 @@ Flipboard turns your feeds into a visual magazine:
 - **Social sharing** - recommend articles to your community
 - **Cross-platform** - mobile, tablet, web
 
-### Feedly
+### [Feedly](https://feedly.com/)
 
 Feedly is the most complete RSS reader for professional monitoring:
 
@@ -60,7 +60,7 @@ Feedly is the most complete RSS reader for professional monitoring:
 
 - **Flipboard** if you value reading comfort and discovery
 - **Feedly** if you need power, filters, and pro integrations
-- **Feedboard** (from the previous module) if you want a simple visual dashboard
+- **[Feedboard](https://feedboard.app/)** (from the previous module) if you want a simple visual dashboard
 
 ---
 

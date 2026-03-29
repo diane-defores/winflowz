@@ -23,7 +23,7 @@ Le RSS est le protocole le plus sous-estimé du web. Il te permet de suivre n'im
 
 ---
 
-## Feedboard : ton tableau de bord de flux
+## [Feedboard](https://feedboard.app/) : ton tableau de bord de flux
 
 Feedboard te permet de visualiser tous tes flux RSS sur un tableau de bord unique, organisé par colonnes thématiques.
 
@@ -53,10 +53,10 @@ Ton navigateur est ton outil de travail principal. Configure-le comme un pro.
 
 | Extension | Fonction |
 |-----------|----------|
-| **uBlock Origin** | Bloqueur de pubs et trackers — non négociable |
-| **Dark Reader** | Mode sombre universel — confort visuel |
-| **Bitwarden** | Gestionnaire de mots de passe open source |
-| **Tab Stash** | Sauvegarde groupée d'onglets pour plus tard |
+| **[uBlock Origin](https://ublockorigin.com/)** | Bloqueur de pubs et trackers — non négociable |
+| **[Dark Reader](https://darkreader.org/)** | Mode sombre universel — confort visuel |
+| **[Bitwarden](https://bitwarden.com/)** | Gestionnaire de mots de passe open source |
+| **[Tab Stash](https://addons.mozilla.org/en-US/firefox/addon/tab-stash/)** | Sauvegarde groupée d'onglets pour plus tard |
 
 ### Organisation des onglets
 
@@ -67,9 +67,9 @@ Ton navigateur est ton outil de travail principal. Configure-le comme un pro.
 
 ### Le choix du navigateur
 
-- **Vivaldi** : personnalisation extrême, panneaux latéraux, piles d'onglets, lecteur de flux intégré
-- **Firefox** : respect de la vie privée, extensions puissantes, containers
-- **Brave** : bloqueur intégré, rapide, basé Chromium
+- **[Vivaldi](https://vivaldi.com/)** : personnalisation extrême, panneaux latéraux, piles d'onglets, lecteur de flux intégré
+- **[Firefox](https://www.mozilla.org/firefox/)** : respect de la vie privée, extensions puissantes, containers
+- **[Brave](https://brave.com/)** : bloqueur intégré, rapide, basé Chromium
 
 ---
 

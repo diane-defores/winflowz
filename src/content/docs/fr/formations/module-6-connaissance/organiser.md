@@ -12,7 +12,7 @@ Sans organisation, ta base de connaissances devient un cimetière de fichiers. O
 
 ## Gestionnaires de fichiers avancés
 
-### TUIFIManager
+### [TUIFIManager](https://github.com/GiorgosXou/TUIFIManager)
 
 TUIFIManager est un gestionnaire de fichiers en mode terminal (TUI) qui combine vitesse et légèreté :
 
@@ -21,7 +21,7 @@ TUIFIManager est un gestionnaire de fichiers en mode terminal (TUI) qui combine 
 - **Opérations en lot** : renommer, déplacer, copier par sélection multiple
 - **Léger** — pas de dépendances lourdes, tourne partout
 
-### Q-Dir : l'alternative à l'Explorateur Windows
+### [Q-Dir](https://www.q-dir.com/) : l'alternative à l'Explorateur Windows
 
 Q-Dir affiche jusqu'à 4 dossiers côte à côte dans une seule fenêtre :
 
@@ -60,13 +60,24 @@ Les tags rendent tes fichiers retrouvables même si tu oublies où tu les as ran
 
 - **Utilise des tags cohérents** — crée une taxonomie de 15-20 tags maximum
 - **Catégories de tags** : projet, type, statut, priorité
-- **Outils** : TagSpaces (open source, multi-plateforme) ajoute des tags à n'importe quel fichier
+- **Outils** : [TagSpaces](https://www.tagspaces.org/) (open source, multi-plateforme) ajoute des tags à n'importe quel fichier
+
+### Exemple : [Webscape](https://webscape.co.za/)
+
+Webscape est un bon exemple d'outil qui ne se contente pas de stocker l'information, mais qui aide aussi à la rendre exploitable.
+
+- **Collections** pour catégoriser rapidement ce que tu gardes
+- **Workspaces** pour séparer les contextes de travail
+- **Recherche full-text** pour retrouver une ressource même si tu as oublié où elle est
+- **Commandes rapides** pour transformer une information en action
+
+Le point important n'est pas l'outil lui-même. C'est le principe : ton système de connaissance doit t'aider à **capturer, retrouver et réutiliser** l'information, pas seulement à l'empiler.
 
 ---
 
 ## Empreinte numérique
 
-### Yorba
+### [Yorba](https://yorba.co/)
 
 Yorba t'aide à gérer ton empreinte numérique en centralisant tes comptes et données en ligne :
 
@@ -79,7 +90,7 @@ Yorba t'aide à gérer ton empreinte numérique en centralisant tes comptes et d
 
 ## Organisation photo et vidéo
 
-### Immich
+### [Immich](https://immich.app/)
 
 Immich est une alternative auto-hébergée à Google Photos :
 
@@ -91,7 +102,27 @@ Immich est une alternative auto-hébergée à Google Photos :
 | **Partage** | Albums partagés avec famille/amis |
 | **Recherche IA** | Recherche par description ("plage au coucher du soleil") |
 
-### MoviePrint
+### Choisir son cloud, ce n'est pas seulement choisir un prix
+
+Quand tu stockes tes fichiers, tes photos ou tes documents chez un grand acteur, tu achètes souvent en même temps :
+- de la commodité
+- de la collaboration
+- une présence partout
+
+Mais tu acceptes aussi une dépendance :
+- à un fournisseur
+- à son interface
+- à ses changements de conditions
+- à sa manière de traiter tes données et tes métadonnées
+
+Si tu veux plus de contrôle, tu as plusieurs niveaux possibles :
+- **auto-héberger** une partie de ton système avec des outils comme Immich
+- choisir un fournisseur davantage orienté confidentialité
+- garder une architecture mixte au lieu de tout centraliser chez le même acteur
+
+Une option à connaître dans cette logique est [Internxt](https://internxt.com/), qui se positionne comme alternative cloud européenne orientée confidentialité. Ce n'est pas une raison pour tout migrer automatiquement. C'est surtout un rappel utile : organiser ton savoir et tes fichiers, c'est aussi choisir où ils vivent et à quel point tu restes libre d'en sortir.
+
+### [MoviePrint](https://www.movieprint.org/)
 
 MoviePrint génère des planches contact à partir de vidéos — idéal pour cataloguer visuellement ta vidéothèque :
 

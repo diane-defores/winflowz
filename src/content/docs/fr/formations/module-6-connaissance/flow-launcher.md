@@ -6,7 +6,7 @@ sidebar:
   order: 6
 ---
 
-Flow Launcher est le lanceur de productivité open source pour Windows qui remplace la recherche du menu Démarrer, le gestionnaire de fichiers et une dizaine de clics par jour.
+[Flow Launcher](https://www.flowlauncher.com/) est le lanceur de productivité open source pour Windows qui remplace la recherche du menu Démarrer, le gestionnaire de fichiers et une dizaine de clics par jour.
 
 > Une fois que tu as goûté à un lanceur clavier, revenir à la souris pour ouvrir une app te semblera aussi archaïque qu'un modem 56k.
 
@@ -31,7 +31,7 @@ Flow Launcher est un lanceur d'applications au clavier : tu appuies sur un racco
 
 ### Installation
 
-1. Télécharge depuis [flow-launcher.com](https://www.flow-launcher.com/)
+1. Télécharge depuis [flow-launcher.com](https://www.flowlauncher.com/)
 2. Installe et lance — Flow Launcher démarre avec Windows
 3. Le raccourci par défaut est `Alt + Espace`
 
@@ -46,12 +46,12 @@ Flow Launcher est un lanceur d'applications au clavier : tu appuies sur un racco
 
 ## Intégration avec les signets Vivaldi
 
-L'un des super-pouvoirs de Flow Launcher : accéder à tes signets Vivaldi directement depuis le lanceur.
+L'un des super-pouvoirs de [Flow Launcher](https://www.flowlauncher.com/) : accéder à tes signets Vivaldi directement depuis le lanceur.
 
 ### Configuration
 
 1. Installe le plugin **Bookmarks** dans Flow Launcher (Settings → Plugin Store)
-2. Pointe-le vers le fichier de signets Vivaldi :
+2. Pointe-le vers le fichier de signets [Vivaldi](https://vivaldi.com/) :
    `%LOCALAPPDATA%\Vivaldi\User Data\Default\Bookmarks`
 3. Définis un préfixe d'action : `b` (pour bookmarks)
 
@@ -69,7 +69,7 @@ L'un des super-pouvoirs de Flow Launcher : accéder à tes signets Vivaldi direc
 
 | Plugin | Préfixe | Fonction |
 |--------|---------|----------|
-| **Everything** | aucun | Recherche de fichiers ultra-rapide |
+| [Everything](https://www.voidtools.com/) | aucun | Recherche de fichiers ultra-rapide |
 | **Bookmarks** | `b` | Accès aux signets du navigateur |
 | **Calculator** | aucun | Calculs directs dans la barre |
 | **Shell** | `>` | Exécute des commandes terminal |
@@ -116,4 +116,4 @@ Mais le vrai gain n'est pas le temps — c'est le **flow**. Tu ne quittes jamais
 2. **Désactive les plugins inutiles** — moins de bruit dans les résultats
 3. **Utilise les raccourcis web** — `yt [terme]` pour YouTube, `gh [repo]` pour GitHub
 4. **Épingle les résultats fréquents** — ils apparaîtront en premier
-5. **Combine avec Everything** — Flow Launcher + Everything = recherche instantanée totale
+5. **Combine avec [Everything](https://www.voidtools.com/)** — Flow Launcher + Everything = recherche instantanée totale

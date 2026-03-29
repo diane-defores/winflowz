@@ -40,7 +40,18 @@ The most useful task is often the hardest. Tackle the toughest task **first** ev
 
 > Too often, we spend our time on trivial things that do not move the business forward - because real value requires stepping out of our comfort zone.
 
+The frog is not just "the unpleasant task." Very often, it is the highest-leverage task you avoid because it exposes you. It forces you to think clearly, make a real choice, face the market, produce something visible, or risk concrete failure. That is exactly why it matters.
+
+It also helps to remember this: a frog repeated often stops feeling like a mountain. The brain learns. What felt extremely costly at first can become more accessible as you build the right circuits, cues, and automatic patterns.
+
 **Concrete example**: an e-commerce seller spends the day installing apps, hunting trending products, and polishing the favicon - while the real leverage is elsewhere: site conversion, market understanding, trust, and compelling messaging. Facebook ads bring traffic, but the game-changer is the site itself. The frog is the conversion work - not the 12th Shopify app.
+
+A good test is to ask yourself:
+- which task would move the situation forward the most if it were actually done well?
+- which task matters enough to make me feel a little vulnerable?
+- which task am I replacing with clean, easy, reassuring busywork?
+
+Very often, your real frog is right there.
 
 ### ICE in action
 
@@ -64,7 +75,32 @@ The verdict is clear - invest your energy in the high-score actions. Weight effo
 - **RICE Framework** - Reach, Impact, Confidence, Effort to score projects
 - **Untools** - a collection of thinking tools: Minto Pyramid, Ishikawa, Six Thinking Hats
 - **Visual thinking** - Diagramify, MyMap.AI to map your ideas with AI
-- **Fluidwave** - takes deadlines, priorities, and time into account, and sorts tasks automatically
+- **Fluidwave** - an example of a tool that helps prioritize based on deadlines, impact, and time required, reducing decision fatigue
+
+### Visual thinking
+
+Not everything becomes clear through linear text. Some situations become much easier to understand when you turn them into something visual: a diagram, mind map, decision tree, timeline, comparison table, or flowchart.
+
+Visual thinking is useful when:
+- you have too many variables in your head
+- you cannot see the dependencies between elements anymore
+- you are stuck in a looping problem
+- you want to compare several options without getting lost
+
+Its value is simple: it spatializes reasoning. Instead of holding everything in working memory, you externalize it. And as soon as you externalize it, you see more clearly:
+- the gaps in your reasoning
+- the unnecessary steps
+- the bottlenecks
+- the real priorities
+
+You can use it to:
+- prepare a launch
+- map a conversion funnel
+- structure a complex project
+- break a problem into sub-parts
+- model a personal or business system
+
+If you want help, tools like **Diagramify** or **MyMap.AI** can speed this up. But the real leverage is not the tool. It is the shift from vague thinking to visible structure.
 
 ### The AARRR funnel: optimize like a growth hacker
 

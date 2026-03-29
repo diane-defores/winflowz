@@ -1,5 +1,6 @@
 ---
 import type { Language } from '@/types'
+import { getLocalizedSiteUrl } from '@/constants'
 
 export const prerender = true
 
@@ -27,8 +28,7 @@ const title = isEn ? 'WinFlowz | Links' : 'WinFlowz | Liens'
 const description = isEn
 	? 'Chrome extensions, Obsidian plugins & Windows productivity guide with 200+ tested tips.'
 	: 'Extensions Chrome, plugins Obsidian et guide de productivité Windows avec 200+ astuces testées.'
-const siteUrl = 'https://winflowz.com'
-const langPrefix = isEn ? '' : '/fr'
+const canonical = getLocalizedSiteUrl(lang, '/bio')
 ---
 
 <!DOCTYPE html>
@@ -39,15 +39,15 @@ const langPrefix = isEn ? '' : '/fr'
 	<title>{title}</title>
 	<meta name="description" content={description} />
 	<meta name="robots" content="index, follow" />
-	<link rel="canonical" href={`${siteUrl}${langPrefix}/bio`} />
+	<link rel="canonical" href={canonical} />
 
-	<link rel="alternate" hreflang="en" href={`${siteUrl}/bio`} />
-	<link rel="alternate" hreflang="fr" href={`${siteUrl}/fr/bio`} />
-	<link rel="alternate" hreflang="x-default" href={`${siteUrl}/bio`} />
+	<link rel="alternate" hreflang="en" href={getLocalizedSiteUrl('en', '/bio')} />
+	<link rel="alternate" hreflang="fr" href={getLocalizedSiteUrl('fr', '/bio')} />
+	<link rel="alternate" hreflang="x-default" href={getLocalizedSiteUrl('en', '/bio')} />
 
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
-	<meta property="og:url" content={`${siteUrl}${langPrefix}/bio`} />
+	<meta property="og:url" content={canonical} />
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="WinFlowz" />
 	<meta property="og:locale" content={isEn ? 'en_US' : 'fr_FR'} />
@@ -226,20 +226,20 @@ const langPrefix = isEn ? '' : '/fr'
 		</p>
 
 		<div class="bio-links">
-			<a href={`${siteUrl}${langPrefix}/landing`} class="bio-link">
+			<a href={getLocalizedSiteUrl(lang, '/landing')} class="bio-link">
 				{isEn ? 'Homepage' : 'Accueil'}
 			</a>
-			<a href={`${siteUrl}${langPrefix}/produits`} class="bio-link">
+			<a href={getLocalizedSiteUrl(lang, lang === 'fr' ? '/produits' : '/products')} class="bio-link">
 				{isEn ? 'Products' : 'Produits'}
 			</a>
-			<a href={`${siteUrl}${langPrefix}/blog`} class="bio-link">Blog</a>
-			<a href={`${siteUrl}${langPrefix}/pricing`} class="bio-link">
+			<a href={getLocalizedSiteUrl(lang, '/blog')} class="bio-link">Blog</a>
+			<a href={getLocalizedSiteUrl(lang, '/pricing')} class="bio-link">
 				{isEn ? 'Pricing' : 'Tarifs'}
 			</a>
-			<a href={`${siteUrl}${langPrefix}/landing`} class="bio-link cta">
+			<a href={getLocalizedSiteUrl(lang, '/landing')} class="bio-link cta">
 				{isEn ? 'Get Started Free' : 'Commencer Gratuitement'}
 			</a>
-			<a href={`${siteUrl}${langPrefix}/contact`} class="bio-link">Contact</a>
+			<a href={getLocalizedSiteUrl(lang, '/contact')} class="bio-link">Contact</a>
 		</div>
 
 		<div class="bio-socials">

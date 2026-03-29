@@ -36,6 +36,20 @@ Ton cerveau ne fait pas deux choses à la fois — il alterne rapidement. Résul
 
 Les deux sont nécessaires. Trop de macro sans micro = planification sans résultat. Trop de micro sans macro = agitation sans direction.
 
+Une autre erreur fréquente consiste à croire que la productivité augmente quand on ouvre plus de fronts. En réalité, c'est souvent l'inverse : plus tu disperses ton énergie, plus tu ralentis.
+
+La vitesse vient rarement d'un champ d'action plus large. Elle vient d'un champ d'action plus étroit, plus clair, plus exigeant. Réduire le nombre de priorités n'est pas se limiter. C'est concentrer sa force.
+
+> "Not choosing is the worst thing you can do because now you're compromising everything."
+
+Autrement dit : ne pas choisir, ce n'est pas rester flexible. C'est diluer ta force sur trop de fronts et affaiblir tout le système.
+
+Une autre confusion fréquente consiste à vouloir tout optimiser selon le même critère. Or ce n'est pas parce qu'une activité est importante qu'elle doit être évaluée uniquement à la performance. Certaines choses servent la profondeur, la cohérence, la créativité ou la vérité d'un projet. D'autres servent l'efficacité, la vitesse, la distribution ou le revenu.
+
+Si tu demandes à une tâche de sens de performer comme une tâche d'acquisition, tu la déformes. Et si tu traites une tâche de performance comme un espace d'exploration libre, tu la rends floue. Une productivité mature sait donc distinguer les fonctions.
+
+Toutes les tâches n'ont pas besoin de maximiser la même chose. Certaines doivent aller vite. D'autres doivent aller juste. Certaines doivent convertir. D'autres doivent clarifier. Savoir cela évite beaucoup de frustration inutile.
+
 ## Les piliers de cette formation
 
 Cette formation est structurée autour de 8 modules complémentaires :
@@ -69,6 +83,8 @@ La productivité repose sur trois axes indépendants — tu peux exceller dans l
 
 Ces 3 axes sont indépendants. Un créateur brillant peut être catastrophique en admin. Un stratège redoutable peut négliger sa création de contenu. Identifie tes points forts et tes angles morts pour construire un système qui compense.
 
+Mais à l'intérieur de chaque axe, la règle reste la même : n'essaie pas de mener trop de batailles à la fois. Une productivité mature consiste aussi à **rétrécir le front d'action** pour augmenter la vitesse, la qualité et la constance.
+
 ---
 
 ## Planifier le pire scénario
@@ -87,37 +103,49 @@ Le paradoxe : plus tu planifies le pire, moins tu stresses — et plus tu perfor
 
 ---
 
-## Pour aller plus loin
+## Réduire la charge cognitive
 
-| Auteur | Livre clé |
-|--------|-----------|
-| David Allen | *Getting Things Done* (GTD) |
-| Stephen Covey | *Les 7 Habitudes* |
-| Tim Ferriss | *La Semaine de 4 Heures* |
-| Cal Newport | *Deep Work* |
-| Brian Tracy | *Eat That Frog* |
-| Charles Duhigg | *The Power of Habit* |
-| Angela Duckworth | *Grit* |
+Un bon système de productivité ne sert pas seulement à aller plus vite. Il sert surtout à **penser moins souvent aux mauvaises choses**.
+
+Dans la nature, les systèmes les plus robustes reposent rarement sur l'improvisation permanente. Les marées, les saisons, les cycles biologiques ou les migrations suivent des rythmes, des contraintes et des règles. La productivité durable fonctionne pareil : elle repose moins sur l'héroïsme du moment que sur un cadre fiable que tu peux répéter.
+
+- Une tâche capturée, c'est une boucle mentale fermée.
+- Une règle décidée une fois, c'est une centaine de micro-décisions évitées.
+- Des données propres, c'est un système qui te montre vite les erreurs, les oublis et les priorités réelles.
+
+En pratique, un système utile te permet de :
+- scanner au lieu de relire dix fois les mêmes informations
+- voir les problèmes plus tôt
+- garder ta bande passante mentale pour créer, décider et exécuter
+
+> Une décision prise une fois dans un système vaut mieux que cent décisions improvisées.
+
+## Personnalise ton système
+
+N'essaie pas de copier le système d'un créateur YouTube, d'un freelance senior ou d'un entrepreneur ultra-visible si ta vie, ton énergie et tes objectifs sont différents.
+
+Personnalise :
+- tes outils
+- tes horaires
+- ton niveau de structure
+- tes routines
+- tes critères de priorité
+
+Ce qui compte, ce n'est pas d'avoir le système le plus impressionnant. C'est d'avoir **un système qui colle à tes objectifs et à ta réalité**.
+
+Expérimente, itère, garde ce qui fonctionne, jette le reste.
 
 ---
 
-## La productivité comme système naturel
+## Reste disponible
 
-Les systèmes les plus efficaces existent déjà dans la nature : le ratio d'or, les marées, les migrations. La productivité repose sur le même principe — **des systèmes avec des processus et des règles**, pas de l'héroïsme individuel.
+Une productivité mature ne remplit pas chaque minute de tâches utiles. Elle garde aussi de la place pour l'imprévu, l'exploration, l'association d'idées et les détours fertiles.
 
-> "It's taking action first. Not motion, not research."
+Être disponible ne veut pas dire être passif. Cela veut dire ne pas enfermer complètement ton esprit dans un agenda trop serré, trop utilitaire, trop mécanique. Certaines intuitions importantes naissent dans des moments qui n'ont pas d'objectif immédiat : une marche, une lecture latérale, une conversation non planifiée, un moment de flottement bien utilisé.
 
-Une décision prise une fois et intégrée dans un système vaut mieux que mille décisions prises à la volée. Organisation = scanner au lieu de lire. Données propres = erreurs visibles immédiatement.
+Pour un indépendant, un créatif ou un entrepreneur, cette disponibilité est précieuse. Elle permet de sortir des rails, d'observer autrement, et de rencontrer des idées qu'un planning trop rigide aurait étouffées.
 
-**Personnalise ton système** : customise tes processus, outils et stratégies selon *tes* objectifs. Ce qui marche pour un influenceur YouTube ne marchera pas pour un développeur freelance. Expérimente, itère, garde ce qui fonctionne.
-
----
-
-## Sois disponible (André Breton)
-
-Le concept de **disponibilité** — se promener sans but, être ouvert à l'imprévu — semble contradictoire avec la productivité. Mais c'est un super-pouvoir de l'indépendant : sortir des sentiers battus, explorer, tomber sur des idées que tu n'aurais jamais trouvées en planifiant.
-
-Aménage du temps dans ta semaine pour explorer sans objectif. Pas du scrolling — de la vraie exploration : un café dans un quartier inconnu, un livre sur un sujet qui ne "sert à rien", une conversation avec quelqu'un hors de ton cercle.
+La bonne productivité ne consiste donc pas seulement à éliminer le chaos. Elle consiste aussi à laisser une part d'ouverture.
 
 ---
 
@@ -128,3 +156,10 @@ Un système qui :
 - Hiérarchise intelligemment ce qui compte
 - S'occupe des petites choses pour que tu puisses te concentrer sur les grandes
 - **Te rend ton temps** — pour les gens que tu aimes et ce qui te fait vibrer
+
+<details>
+  <summary>Pour aller plus loin</summary>
+
+  - [Vidéo / épisode Frank Slootman — The Knowledge Project](https://fs.blog/knowledge-project-podcast/frank-slootman/) — sur la concentration stratégique, les standards élevés et le coût réel de la dispersion
+  - [Résumé / notes sur *Amp It Up*](https://www.ricklindquist.com/notes/amp-it-up) — synthèse utile de sa philosophie d'exécution
+</details>

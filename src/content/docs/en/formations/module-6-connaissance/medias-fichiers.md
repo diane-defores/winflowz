@@ -12,7 +12,7 @@ Media and file operations are the boring tasks everyone does manually. With the 
 
 ## Cloud archives
 
-### Cloudzip
+### [Cloudzip](https://cloudzip.net/)
 
 Cloudzip lets you work with archives (ZIP, RAR, 7z) directly in the cloud without downloading them in full:
 
@@ -27,7 +27,7 @@ Cloudzip lets you work with archives (ZIP, RAR, 7z) directly in the cloud withou
 
 ## Image manipulation
 
-### Magic Copy
+### [Magic Copy](https://chromewebstore.google.com/detail/magic-copy/nnifclicibdhgakebbnbfmomniihfmkg)
 
 Magic Copy uses AI to extract elements from an image in one click:
 
@@ -40,16 +40,16 @@ Magic Copy uses AI to extract elements from an image in one click:
 
 | Tool | Function |
 |-------|----------|
-| **ShareX** | Advanced screenshots + annotation + automatic upload |
-| **GIMP** | Full-featured open-source image editor |
-| **Squoosh** | Web image compression (Google, online) |
-| **XnConvert** | Batch image conversion and processing |
+| [ShareX](https://getsharex.com/) | Advanced screenshots + annotation + automatic upload |
+| [GIMP](https://www.gimp.org/) | Full-featured open-source image editor |
+| [Squoosh](https://github.com/GoogleChromeLabs/squoosh) | Web image compression (Google, online) |
+| [XnConvert](https://www.xnview.com/en/xnconvert/) | Batch image conversion and processing |
 
 ---
 
 ## CSV and tabular data tools
 
-### Qsv
+### [Qsv](https://github.com/dathere/qsv)
 
 Qsv is an ultra-fast command-line tool for handling CSV files:
 
@@ -80,16 +80,16 @@ qsv stats data.csv
 
 | Tool | Type | Advantage |
 |-------|------|----------|
-| **PowerRename** (PowerToys) | GUI | Built into Windows Explorer, regex supported |
-| **Bulk Rename Utility** | GUI | The most complete option, dozens of settings |
+| [PowerRename](https://learn.microsoft.com/en-us/windows/powertoys/powerrename) (PowerToys) | GUI | Built into Windows Explorer, regex supported |
+| [Bulk Rename Utility](https://www.bulkrenameutility.co.uk/) | GUI | The most complete option, dozens of settings |
 | **rename** (CLI) | Terminal | Extremely flexible Perl-based scripting |
 
 ### Batch conversion
 
-- **FFmpeg** for video and audio (any format to any format)
-- **ImageMagick** for images (`mogrify -format webp *.png`)
-- **Pandoc** for documents (markdown -> PDF, DOCX -> HTML, etc.)
-- **LibreOffice CLI** for Office files in batch
+- **[FFmpeg](https://www.ffmpeg.org/)** for video and audio (any format to any format)
+- **[ImageMagick](https://imagemagick.org/)** for images (`mogrify -format webp *.png`)
+- **[Pandoc](https://pandoc.org/)** for documents (markdown -> PDF, DOCX -> HTML, etc.)
+- **[LibreOffice CLI](https://www.libreoffice.org/)** for Office files in batch
 
 ---
 

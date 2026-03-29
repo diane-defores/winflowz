@@ -12,7 +12,7 @@ Without organization, your knowledge base becomes a graveyard of files. Organizi
 
 ## Advanced file managers
 
-### TUIFIManager
+### [TUIFIManager](https://github.com/GiorgosXou/TUIFIManager)
 
 TUIFIManager is a terminal-based file manager (TUI) that combines speed and lightness:
 
@@ -21,7 +21,7 @@ TUIFIManager is a terminal-based file manager (TUI) that combines speed and ligh
 - **Batch operations**: rename, move, copy with multi-selection
 - **Lightweight** - no heavy dependencies, runs everywhere
 
-### Q-Dir: the alternative to Windows Explorer
+### [Q-Dir](https://www.q-dir.com/): the alternative to Windows Explorer
 
 Q-Dir displays up to four folders side by side in a single window:
 
@@ -60,13 +60,13 @@ Tags make files retrievable even when you forget where you stored them:
 
 - **Use consistent tags** - build a taxonomy of 15-20 tags max
 - **Tag categories**: project, type, status, priority
-- **Tools**: TagSpaces (open source, cross-platform) adds tags to any file
+- **Tools**: [TagSpaces](https://www.tagspaces.org/) (open source, cross-platform) adds tags to any file
 
 ---
 
 ## Digital footprint
 
-### Yorba
+### [Yorba](https://yorba.co/)
 
 Yorba helps you manage your digital footprint by centralizing your online accounts and data:
 
@@ -79,7 +79,7 @@ Yorba helps you manage your digital footprint by centralizing your online accoun
 
 ## Photo and video organization
 
-### Immich
+### [Immich](https://immich.app/)
 
 Immich is a self-hosted alternative to Google Photos:
 
@@ -91,7 +91,27 @@ Immich is a self-hosted alternative to Google Photos:
 | **Sharing** | Shared albums with family and friends |
 | **AI search** | Search by description ("beach at sunset") |
 
-### MoviePrint
+### Choosing a cloud is not only choosing a price
+
+When you store your files, photos, or documents with a large provider, you are usually also buying:
+- convenience
+- collaboration
+- presence across every device
+
+But you also accept a dependency:
+- on a provider
+- on its interface
+- on its policy changes
+- on the way it handles your data and metadata
+
+If you want more control, you have several possible levels:
+- **self-host** part of your system with tools like Immich
+- choose a provider that is more privacy-oriented
+- keep a mixed architecture instead of centralizing everything with one actor
+
+One option worth knowing in that context is [Internxt](https://internxt.com/), which positions itself as a European privacy-oriented cloud alternative. That does not mean you should migrate everything automatically. The useful lesson is broader: organizing your knowledge and files also means choosing where they live and how free you remain to leave.
+
+### [MoviePrint](https://www.movieprint.org/)
 
 MoviePrint generates contact sheets from videos - ideal for visually cataloging your video library:
 

@@ -6,7 +6,9 @@ sidebar:
   order: 1
 ---
 
-Les raccourcis clavier, c'est le **superpower silencieux** de tout utilisateur efficace. Chaque seconde gagnée s'accumule : sur une année, tu récupères littéralement des heures de travail. Ce module te donne les raccourcis essentiels à connaître par cœur.
+Les raccourcis clavier, c'est le **superpower silencieux** de tout utilisateur efficace. Chaque seconde gagnée s'accumule, mais le vrai bénéfice n'est pas seulement le temps : c'est la continuité mentale. Moins tu interromps ton geste pour aller chercher la souris, plus ton attention reste dans la tâche.
+
+Le but de ce module n'est donc pas de te faire mémoriser 200 combinaisons. Le but est de te donner quelques **noyaux de pilotage** qui changent réellement ton rapport à Windows, au navigateur, à Gmail, à YouTube et à Notion.
 
 ## Raccourcis Windows indispensables
 
@@ -24,6 +26,17 @@ Les raccourcis clavier, c'est le **superpower silencieux** de tout utilisateur e
 | `Win + A` | Centre de notifications |
 | `Win + P` | Options de projection (écrans) |
 | `Alt + Tab` | Basculer entre les fenêtres |
+
+### Noyau Windows à intégrer en premier
+
+Si tu veux un vrai gain rapide sur Windows, commence par :
+- `Win + R` pour lancer vite une commande, un dossier, un outil système
+- `Win + X` pour accéder aux fonctions avancées sans chercher
+- `Win + ←/→/↑/↓` pour placer les fenêtres sans drag-and-drop
+- `Alt + Tab` pour naviguer entre les contextes actifs
+- `Win + Ctrl + ←/→` pour changer de bureau virtuel proprement
+
+Ce noyau suffit déjà à faire sentir la différence entre "utiliser Windows" et "piloter ton poste".
 
 ### Manipulation de texte
 
@@ -43,19 +56,73 @@ Tu n'as pas besoin de relâcher `Ctrl` entre deux raccourcis enchaînés. Par ex
 
 ## Raccourcis navigateur
 
+La plupart des navigateurs Chromium modernes (Chrome, Edge, Brave, Vivaldi, Arc) partagent l'essentiel de ces raccourcis. C'est donc un bon socle transversal.
+
 | Raccourci | Action |
 |-----------|--------|
 | `Ctrl + T` | Nouvel onglet |
 | `Ctrl + Maj + T` | Rouvrir le dernier onglet fermé |
 | `Ctrl + W` | Fermer l'onglet actif |
 | `Ctrl + L` | Sélectionner la barre d'adresse |
-| `Ctrl + Maj + E` | Gestionnaire d'extensions |
-| `/` | Focus sur la barre de recherche (Google, YouTube) |
-| `Tab → Entrée → Entrée` | Ouvrir le premier résultat Google |
+| `Ctrl + Tab` / `Ctrl + Maj + Tab` | Onglet suivant / précédent |
+| `Ctrl + 1...8` / `Ctrl + 9` | Aller à un onglet précis / au dernier |
+| `Alt + ←` / `Alt + →` | Page précédente / suivante |
+| `Ctrl + F` | Rechercher dans la page |
+| `Ctrl + J` | Téléchargements |
+| `Ctrl + H` | Historique |
+| `Ctrl + D` | Ajouter la page aux favoris |
+| `Ctrl + Maj + B` | Afficher / masquer la barre de favoris |
+| `Ctrl + Maj + Delete` | Effacer les données de navigation |
+| `F11` | Plein écran |
+| `/` | Focus sur la barre de recherche dans certaines apps web (Google, YouTube) |
+| `Tab → Entrée → Entrée` | Ouvrir très vite le premier résultat Google |
+
+:::tip[Le noyau à automatiser en premier]
+Si tu veux une vraie montée en puissance immédiate dans le navigateur, commence par :
+- `Ctrl + T`
+- `Ctrl + W`
+- `Ctrl + L`
+- `Ctrl + Tab`
+- `Ctrl + Maj + T`
+- `Ctrl + F`
+
+Avec ces six-là, tu supprimes déjà une énorme partie des clics inutiles.
+:::
+
+### Ce que ces raccourcis changent vraiment
+
+Le vrai saut de qualité dans le navigateur, ce n'est pas d'aller "plus vite" de manière abstraite. C'est de :
+- ouvrir sans hésiter
+- fermer sans accumulation
+- retrouver sans fouiller
+- naviguer entre les onglets sans te perdre
+
+Autrement dit, les raccourcis navigateur réduisent surtout la **dette d'onglets** et la **friction de recherche**.
+
+:::note[Sources officielles]
+- [Google Chrome Help - Chrome keyboard shortcuts](https://support.google.com/chrome/answer/157179?hl=en&co=GENIE.Platform%3DDesktop)
+:::
 
 ## Raccourcis Gmail (détail)
 
 Gmail a un système de raccourcis complet qu'il faut **activer manuellement** : Paramètres → Général → Raccourcis clavier → Activer.
+
+Tu peux aussi aller plus loin et **personnaliser certains raccourcis** dans les paramètres Gmail, une fois l'option dédiée activée. Le bon réflexe n'est pas de tout réécrire, mais d'ajuster uniquement les actions que tu fais vraiment souvent.
+
+Tu peux aussi **personnaliser une partie des raccourcis** dans les paramètres de Gmail une fois l'option dédiée activée. C'est utile, mais il ne faut pas tout réinventer : modifie surtout les actions que tu fais très souvent, sinon tu perds le bénéfice d'un standard simple à mémoriser.
+
+Ce point compte beaucoup : Gmail devient vraiment plus agréable quand tu sors de la logique "je clique partout". Les raccourcis ne servent pas seulement à aller plus vite. Ils servent aussi à :
+- traiter plus de messages sans casser ton rythme
+- réduire les allers-retours souris
+- transformer l'email en flux d'actions plutôt qu'en interface à subir
+
+Les plus rentables à intégrer en premier sont ceux qui te permettent de :
+- naviguer
+- archiver
+- supprimer
+- répondre
+- rechercher
+- déplacer ou labelliser rapidement
 
 ### Navigation et actions
 
@@ -75,6 +142,11 @@ Gmail a un système de raccourcis complet qu'il faut **activer manuellement** : 
 | `!` | Signaler comme spam |
 | `/` | Rechercher |
 | `Shift + ?` | Aide raccourcis |
+| `x` | Sélectionner une conversation |
+| `m` | Mettre une conversation en sourdine |
+| `Shift + I` | Marquer comme lu |
+| `]` / `[` | Archiver puis aller à la conversation suivante / précédente |
+| `Shift + T` | Ajouter la conversation à Tasks |
 
 ### Organisation
 
@@ -84,6 +156,50 @@ Gmail a un système de raccourcis complet qu'il faut **activer manuellement** : 
 | `G puis K` | Aller aux Tâches |
 | `G puis I` | Aller à la boîte de réception |
 | `G puis S` | Aller aux messages suivis |
+| `G puis A` | Aller à Tous les messages |
+| `V` | Ouvrir le menu "Déplacer vers" |
+| `L` | Ouvrir le menu "Libellé" |
+| `* puis A` | Sélectionner toutes les conversations |
+
+### Composition
+
+| Raccourci | Action |
+|-----------|--------|
+| `Ctrl + Entrée` | Envoyer |
+| `Ctrl + Maj + C` | Ajouter un champ Cc |
+| `Ctrl + Maj + B` | Ajouter un champ Cci |
+| `Ctrl + K` | Insérer un lien |
+
+:::tip[Par quoi commencer]
+Si tu veux un vrai gain rapide dans Gmail, commence par ce noyau :
+- `c` pour composer
+- `e` pour archiver
+- `r` pour répondre
+- `#` pour supprimer
+- `j` / `k` pour naviguer
+- `/` pour rechercher
+- `u` pour revenir à la boîte de réception
+
+Avec ça, tu changes déjà ton rapport quotidien à l'email.
+:::
+
+### Noyau Gmail : traiter au lieu de consulter
+
+La plupart des gens "consultent" Gmail. Les bons raccourcis te font plutôt **traiter** Gmail.
+
+Le changement important est là :
+- `j` / `k` pour avancer sans te disperser
+- `e` pour archiver sans état d'âme
+- `r` pour répondre immédiatement
+- `#` pour supprimer ce qui ne mérite pas ton système
+- `/` pour retrouver sans scroller
+
+Une inbox devient plus légère dès que tu remplaces le réflexe `ouvrir / lire / refermer` par `voir / décider / agir`.
+
+:::note[Sources officielles]
+- [Google Help - Keyboard shortcuts for Gmail](https://support.google.com/mail/answer/6594?hl=en)
+- [Google Help - Customize keyboard shortcuts in Gmail](https://support.google.com/mail/answer/6594?hl=en#zippy=%2Ccustomise-keyboard-shortcuts)
+:::
 
 ## Raccourcis YouTube
 
@@ -95,16 +211,78 @@ Gmail a un système de raccourcis complet qu'il faut **activer manuellement** : 
 | `f` | Plein écran |
 | `/` | Rechercher |
 | `Shift + >` / `<` | Vitesse + / - |
+| `0` à `9` | Aller à 0% à 90% de la vidéo |
+| `c` | Activer / désactiver les sous-titres |
+| `Home` / `End` | Aller au début / à la fin |
+
+YouTube a un comportement un peu différent des autres outils : la meilleure manière de vérifier les raccourcis disponibles reste souvent d'ouvrir **l'aide intégrée du lecteur** avec `Shift + ?`. C'est utile parce que l'overlay reflète ce que le produit expose réellement au moment où tu l'utilises.
+
+:::tip[Le vrai gain YouTube]
+Les raccourcis les plus rentables sur YouTube ne sont pas forcément les plus nombreux. `j`, `k`, `l`, `c`, `m` et `Shift + >/<` suffisent déjà pour regarder, apprendre, réviser et accélérer proprement sans casser ton attention.
+:::
+
+### Noyau YouTube : apprendre sans casser le flux
+
+Sur YouTube, les raccourcis servent surtout à transformer un visionnage passif en apprentissage actif.
+
+Le cœur utile est simple :
+- `k` pour arrêter et relancer instantanément
+- `j` / `l` pour revoir un passage sans viser la timeline
+- `c` pour activer les sous-titres
+- `Shift + >/<` pour ajuster la vitesse selon la densité du contenu
+
+Si tu apprends souvent avec des vidéos, ces quatre gestes changent plus ton expérience que dix réglages secondaires.
 
 ## Raccourcis Notion
 
+Notion est l'un des outils où les raccourcis changent vraiment l'expérience. Sans eux, tu manipules des blocs. Avec eux, tu sculptes ton espace de travail.
+
 | Raccourci | Action |
 |-----------|--------|
-| `Ctrl + P` | Recherche rapide |
-| `Ctrl + D` | Dupliquer un bloc |
-| `Ctrl + Maj + ↑/↓` | Déplacer un bloc |
-| `Ctrl + Maj + P` | Déplacer vers une autre page |
-| `Maj + /` | Insérer un nouveau type de bloc |
+| `Ctrl + P` ou `Ctrl + K` | Ouvrir la recherche / aller à une page récente |
+| `Ctrl + F` | Rechercher dans la page courante |
+| `Ctrl + [` / `Ctrl + ]` | Revenir / avancer dans la navigation |
+| `Ctrl + Shift + L` | Basculer entre mode clair et sombre |
+| `Ctrl + N` | Nouvelle page |
+| `Ctrl + Shift + N` | Nouvelle fenêtre Notion |
+| `Ctrl + T` | Nouvel onglet Notion |
+| `Ctrl + D` | Dupliquer le ou les blocs sélectionnés |
+| `Ctrl + Shift + ↑/↓` | Déplacer un bloc sélectionné |
+| `Ctrl + /` | Modifier ou changer un bloc sélectionné |
+| `Tab` / `Shift + Tab` | Indenter / désindenter un bloc |
+| `Ctrl + Entrée` | Ouvrir une page, cocher une todo, ouvrir/fermer un toggle |
+| `/` | Ouvrir le menu des blocs |
+| `[[` | Lier une page |
+| `@` | Mentionner une page, une date ou une personne |
+
+:::tip[Le noyau Notion à apprendre]
+Si tu veux aller vite sans te noyer, commence par :
+- `Ctrl + P`
+- `/`
+- `Tab` / `Shift + Tab`
+- `Ctrl + D`
+- `Ctrl + Shift + ↑/↓`
+- `Ctrl + /`
+
+Ce noyau suffit déjà à te faire sentir la différence entre "utiliser Notion" et "le piloter".
+:::
+
+### Noyau Notion : penser en blocs, pas en pages figées
+
+Le gain principal dans Notion vient du moment où tu cesses de voir la page comme un document statique.
+
+Les raccourcis les plus importants te font passer à une logique de construction :
+- `/` pour créer vite
+- `Tab` / `Shift + Tab` pour structurer
+- `Ctrl + D` pour dupliquer ce qui sert déjà
+- `Ctrl + Shift + ↑/↓` pour réorganiser sans casser le flux
+- `Ctrl + /` pour transformer un bloc au lieu de le refaire
+
+À partir de là, Notion devient beaucoup plus malléable, donc beaucoup plus rapide à utiliser intelligemment.
+
+:::note[Source officielle]
+- [Notion Help Center - Keyboard shortcuts](https://www.notion.com/help/keyboard-shortcuts)
+:::
 
 ## Apprendre ses raccourcis efficacement
 
@@ -114,6 +292,18 @@ La clé n'est pas de tout mémoriser d'un coup, mais d'**intégrer 2-3 raccourci
 2. **Cherche** le raccourci correspondant
 3. **Force-toi** à l'utiliser pendant 3 jours — même si c'est plus lent au début
 4. **Passe** au raccourci suivant une fois que c'est automatique
+
+### La bonne méthode d'adoption
+
+N'essaie pas d'apprendre un outil entier d'un coup. Adopte plutôt un **noyau par contexte** :
+- Windows : 3 à 5 raccourcis système
+- Navigateur : 5 à 6 raccourcis de navigation
+- Gmail : 5 à 7 raccourcis de triage
+- Notion : 5 à 6 raccourcis de construction
+
+Le bon test est simple :
+- si tu dois encore réfléchir au raccourci, il n'est pas intégré
+- s'il sort sans effort, il fait déjà partie de ton système
 
 :::note[Ressources cheatsheets]
 - [UseTheKeyboard](https://usethekeyboard.com/) — raccourcis pour des centaines d'apps (Mac et Windows)

@@ -21,7 +21,7 @@ The real cost is huge: lost professional relationships, missed business opportun
 
 ## Clay: CRM for your life
 
-**Clay** is much more than an address book. It's an intelligent platform that helps you maintain authentic professional and personal relationships.
+**[Clay](https://clay.com/)** is much more than an address book. It's an intelligent platform that helps you maintain authentic professional and personal relationships.
 
 ### Key features
 

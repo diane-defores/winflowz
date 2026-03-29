@@ -12,7 +12,7 @@ La capture est la première étape du PKM. Si tu ne captures pas, tu oublies. Et
 
 ## Archivage web
 
-### Monolith
+### [Monolith](https://github.com/Y2Z/monolith)
 
 Monolith sauvegarde une page web complète en un seul fichier HTML — images, CSS et scripts inclus. Pas de dépendance externe, pas de lien cassé.
 
@@ -23,7 +23,7 @@ Monolith sauvegarde une page web complète en un seul fichier HTML — images, C
 | **Ligne de commande** | Automatisable dans tes scripts |
 | **Fidélité** | Rendu quasi identique à la page originale |
 
-### Webscape
+### [Webscape](https://webscape.co.za/)
 
 Webscape est un hub central pour organiser tout ce que tu captures :
 
@@ -32,7 +32,7 @@ Webscape est un hub central pour organiser tout ce que tu captures :
 - **Recherche full-text** dans tout ton contenu sauvegardé
 - **Commandes rapides** — crée un événement Google, envoie un message LinkedIn, le tout sans quitter l'outil
 
-### Hoarder
+### [Hoarder](https://karakeep.app/)
 
 Hoarder est un outil de bookmarking auto-hébergeable qui va au-delà du simple signet :
 
@@ -45,7 +45,7 @@ Hoarder est un outil de bookmarking auto-hébergeable qui va au-delà du simple 
 
 ## Enregistrement d'écran
 
-### Screenpipe
+### [Screenpipe](https://screenpi.pe/)
 
 Screenpipe enregistre en continu tout ce qui se passe sur ton écran et le rend recherchable. C'est une mémoire visuelle de ton travail.
 
@@ -62,15 +62,15 @@ Avant de stocker, compresse. Un fichier plus léger, c'est un disque qui respire
 
 | Outil | Type | Usage |
 |-------|------|-------|
-| **FFmpeg** | Vidéo/audio | Compression, conversion, extraction de pistes |
-| **ImageMagick** | Images | Redimensionnement, conversion en lot |
-| **7-Zip** | Archives | Compression maximale, format ouvert |
+| [FFmpeg](https://www.ffmpeg.org/) | Vidéo/audio | Compression, conversion, extraction de pistes |
+| [ImageMagick](https://imagemagick.org/) | Images | Redimensionnement, conversion en lot |
+| [7-Zip](https://www.7-zip.org/) | Archives | Compression maximale, format ouvert |
 
 ---
 
 ## Lecteurs de médias
 
-### Thorium Reader
+### [Thorium Reader](https://thorium.edrlab.org/en/)
 
 Thorium Reader est un lecteur d'ebooks open source qui supporte EPUB, PDF et audiobooks :
 
@@ -83,7 +83,7 @@ Thorium Reader est un lecteur d'ebooks open source qui supporte EPUB, PDF et aud
 
 ## Gestion de photos
 
-### Tonfotos
+### [Tonfotos](https://tonfotos.com/)
 
 Tonfotos organise ta photothèque avec reconnaissance faciale et géolocalisation, le tout en local :
 

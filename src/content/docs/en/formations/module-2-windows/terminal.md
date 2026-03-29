@@ -120,3 +120,19 @@ If Windows Terminal is not for you:
 ## Your first terminal reflex
 
 The next time you need to perform an operation on multiple files, resist the urge to reach for the mouse. Look for the command-line equivalent. After a week of practice, you will never go back for those tasks.
+
+## Official resources
+
+- [Windows Terminal](https://github.com/microsoft/terminal) - the central hub if you stay with Microsoft's app.
+- [PowerShell 7](https://github.com/PowerShell/PowerShell) - the modern shell to prioritize.
+- [WSL](https://learn.microsoft.com/windows/wsl/) - Linux inside Windows.
+- [ripgrep](https://github.com/BurntSushi/ripgrep) - ultra-fast text search.
+- [fd](https://github.com/sharkdp/fd) - simple and fast file search.
+- [bat](https://github.com/sharkdp/bat) - a readable `cat`.
+- [eza](https://github.com/eza-community/eza) - the modern `ls`.
+- [zoxide](https://github.com/ajeetdsouza/zoxide) - smart folder navigation.
+- [fzf](https://github.com/junegunn/fzf) - interactive fuzzy search.
+- [WezTerm](https://wezterm.org/) - the powerful, scriptable terminal.
+- [Alacritty](https://alacritty.org/) - the minimalist fast terminal.
+- [Tabby](https://github.com/Eugeny/tabby) - the full terminal with SSH and serial clients.
+- [Hyper](https://hyper.is/) - the Electron-based, customizable terminal.

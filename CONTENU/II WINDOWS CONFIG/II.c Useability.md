@@ -31,7 +31,7 @@ _priorité: ""
 
 - Replace the old Windows files explorer 🏷
 
-- [Manage files better](https://www.notion.so/aef87435376a4c01b9fbab20592c12e1?pvs=21) and be sure to [Find better](https://www.notion.so/a1737a5adde340bdb62b996315ff933e?pvs=21) especially for [Slapdash: work at the speed of thought](https://www.notion.so/683691b6cf974d198eae83918c938a2c?pvs=21), the Windows' "Spotlight" !
+- [Manage files better](https://www.notion.so/aef87435376a4c01b9fbab20592c12e1?pvs=21) and be sure to [Find better](https://www.notion.so/a1737a5adde340bdb62b996315ff933e?pvs=21)
 
 - Microsoft PowerToys
 
@@ -47,216 +47,25 @@ _priorité: ""
 
 - [Preme for Windows](https://www.notion.so/6a389a291a2e4d108284d49ab8e96e72?pvs=21) is a small app I love and use everyday for 3 features : controling volume with mouse scrolling on Windows Taskbar, and expanding and minimizing a windows by scrolling on its navbar. But it has some other great time-saving features. The last version is from 2017. I haven't found any bug but I guess it's not a great practice to use such an old release, if you know about something similar, I'm eager to know !
 
-- If you want a custom Mac-like deck, try [RocketDock](https://www.notion.so/253a3ffe4a3b4ac1a9f789559a095def?pvs=21)
-
-    - Alternatives :
-        - [HyperDock](https://bahoom.com/hyperdock/)
-        - [Stardock Tiles: A control center for managing your running applications](https://www.stardock.com/products/tiles/)
-        - [VirtuaWin – Multiple virtual desktops download | SourceForge.net](https://sourceforge.net/projects/virtuawin/)
-
 ### **Organize it : Find your best way to manage those windows 🚩**
 
-- I you want a great window manager, [MaxTo will to the job.](https://maxto.net/en)
-- Did you know some software allows you to [fix custom grids for your apps](https://github.com/jgpaiva/GridMove) so that you can make them snap to a position ? [WindowGrid](http://windowgrid.net/) and [Gridmove](https://github.com/jgpaiva/GridMove) do this
-- [Groupy: Tabs for Windows](https://www.notion.so/6dcf3115e3b343e8ba75a1529faccac8?pvs=21) can make tabs of your apps, it's also a great way to organise.
-
 ### **Find the perfect clipboard 🏷**
-
-- I formerly used [CopyQ](https://www.notion.so/953528133c9f49379d0bcc6539042985?pvs=21) because it handles images. Now I use [Clipboard History Pro](https://www.notion.so/82bce3c2e62a47419d3cca0145d0e657?pvs=21) even though it doesn't
-- [Slapdash: work at the speed of thought](https://www.notion.so/683691b6cf974d198eae83918c938a2c?pvs=21) has one too, in the paid version I think
-- Alternatives might be : Clipclip, Clipjump, Ditto, 1clipboard, Nucleo, Saveme, Nimbusnote
 
 ### **Make it beautiful and relaxing**
 
 - [Simplify & clean](https://www.notion.so/856bd82fbf6c4f2c89c113d8d1d1ae54?pvs=21) your experience
 - Automatically switches between the dark and light theme of Windows 10 with [AutoDarkMode](https://www.notion.so/10a4c2f33938497ab589a5cc70f5150c?pvs=21)
 - [f.lux: software to make your life better](https://www.notion.so/6c5788f1a502496b9e5e8e09c4e7a227?pvs=21) adapts the luminescence of your screen thoughout the day
-- [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) can make live wallpaper to freshen your desk. It supports 3D, Video, you can visualize your music, create you own wallpaper, share them on Steam…
 
 ### **Troubleshoot**
 
-- **Control-Alt-Delete** (often abbreviated to **Ctrl+Alt+Del)**, is invoked by pressing the [Delete key](https://en.wikipedia.org/wiki/Delete_key) while holding the [Control](https://en.wikipedia.org/wiki/Control_key) and [Alt](https://en.wikipedia.org/wiki/Alt_key) keys. This key combination generally interrupts or facilitates interrupting a function. For instance, in pre-boot environment (before an [operating system](https://en.wikipedia.org/wiki/Operating_system) starts) the key combination [reboots](https://en.wikipedia.org/wiki/Reboot_(computing)) the computer. Starting with [Windows 95](https://en.wikipedia.org/wiki/Windows_95), the key combination invokes a [task manager](https://en.wikipedia.org/wiki/Task_manager) or security related component that facilitates ending a Windows session or killing a [frozen](https://en.wikipedia.org/wiki/Hang_(computing)) application. When an app stops working properly, you can easily kill with the task manager instead of restarting the whole computer.
-
-    ![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/fe1c9a71-78c0-4688-a587-98afa80e906f/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/fe1c9a71-78c0-4688-a587-98afa80e906f/Untitled.png)
-
 - window management
-
-Looking to boost your productivity on Windows? 🚀 **TidyTabs**, the tabbed window manager from Nurgo Software, might be your answer. With TidyTabs, you can **group windows from all your applications into tabbed groups**, similar to the way web browsers organize tabs. This means no more cluttered desktops or hunting for the right window.
-
-One standout feature of TidyTabs is its **auto-grouping** capability, allowing you to save your optimal layout and streamline your workflow with just one click. Additionally, TidyTabs is **fully customizable** to suit your needs, with every function configurable or disable-able. Plus, it's **discreet and smart**, automatically hiding tabs when not in use to minimize visual noise. TidyTabs also plays well with AquaSnap, another productivity tool, making it easy to snap, dock, and tile tabbed groups. And the best part? **It's free for personal use**! Give TidyTabs a try and experience a new level of window management efficiency. 🪟
-
-## Use multiple virtual Desktops in Windows
-Using multiple virtual desktops can be very helpful, and is easy to set up and use in Windows 10. If you keep a lot of applications open at one time, this can be a convenient way to keep organized.
-
-- **Add a new desktop**
-    - Open up the Task View pane by clicking the **Task View button**, or by pressing the **Windows Key + Tab**
-    - Click **New Desktop**.
-- **Switch between desktops**
-    - Open the **Task View** pane and click on the desktop you would like to switch to.
-    - You can also quickly switch between desktops with the keyboard shortcuts **Windows key + Ctrl + Left Arrow** and **Windows key + Ctrl + Right Arrow**
-- **Move windows between desktops:**
-    - Open the **Task View** pane and hover your cursor over the desktop containing the window that you want to move, the windows on the selected desktop will pop up
-        - Find the window that you want to move, **right-click** it, select **Move to**, and choose the desktop you want to move the window to
-        - You can also drag and drop windows to the desired desktop
-- C**lose desktops:**
-    - Open the Task View pane, hover over the desktop that you want to close, and click the small **X** that appears in the top-right corner
-    - You can also close desktops with the keyboard shortcut **Windows Key + Ctrl + F4**
-
 
 ## Switching apps
 ### Native task views
 Task view is included as a button on the taskbar. To use it just press the Win+Tab combination and the open windows will be shown with a timescale. You can remove it in the settings of the taskbar.
 ### WinXCorners
-*Free and Open-Source*
-![How To Be More Productive With Hot Corners In Windows Winx Settings](https://www.maketecheasier.com/assets/uploads/2022/03/how-to-be-more-productive-with-hot-corners-in-windows-winx-settings.jpg)
-There is a beta version from 2019 that works very well. It does not need installation as such since it is a compressed file, you just have to unzip it and run it in any folder.
-1. Download the version from this [link](https://github.com/vhanla/winxcorners)
-2. Assign the action for each corner: All windows, Show desktop, Start Screen saver, Monitor off, Action center, Hide Other Windows.
-	For example, you can set the top-right corner to "All Windows." This will give you a birds-eye view of all your open windows and virtual desktops whenever you move your mouse to that corner.
-	Once you are satisfied, you can test if it is working by moving your cursor to the edges. For me, everything worked just fine, except the screensaver option, which did not seem to trigger anything.
-3. After running, WinXCorners is placed on the taskbar
-4. Using the context menu you can go to the advanced options: set the speed of the animations or add custom commands, for example to launch a particular applicadtion.
-5. Use advanced settings, such as a delay.You may want to set a delay in the top-right corner to exit open windows. Otherwise, your corner setting immediately goes into effect.
-
-![How To Be More Productive With Hot Corners In Windows 10 Winxcorners Advanced](https://www.maketecheasier.com/assets/uploads/2021/05/how-to-be-more-productive-with-hot-corners-in-windows-10-winxcorners-advanced.jpg)
-
-You can also make the app run automatically on startup by right-clicking its icon and selecting "Start with windows."
-
-![How To Be More Productive With Hot Corners In Windows Winx Settings Start](https://www.maketecheasier.com/assets/uploads/2022/03/how-to-be-more-productive-with-hot-corners-in-windows-winx-settings-start.jpg)
-
-👎 - limited support for multiple monitors
-👍 You can open a specific app using WinXCorners
-
-ℹ WinXCorners will not work under the following circumstances:
-- If you focus an app running with administrator privileges
-- If you have a multi-monitor setup, it won't work on secondary monitors
-
-#### ♾ Other Hot Corner Apps to Try
-
-While WinXCorners does a great job, it's not the only app available. One of the more popular alternatives is [♾ HotCorners](https://sourceforge.net/projects/hotcorners/), which works similarly and was last updated in 2020.
-	♾ [Tiny Hot Corners](https://github.com/taviso/hotcorner)
-	♾ [HotCornersApp](https://sites.google.com/site/bytecar/home/hotcornersapp/hotcornersapprelease15) (hasn't been updated in a while but still works)
-	♾ [HotCorners WX](https://download.cnet.com/HotCorners-WX/3000-2072_4-76429507.html)
-
-
 ## Taskbar
-You cannot change its position from the bottom to other sides nor resize the icons like you could on Windows 10. But you can still customize it a bit.
-
-1. To open taskbar settings quickly from any screen, right-click on the taskbar and select "Taskbar settings" from the menu.
-2. Change Taskbar Alignment if you prefer to move the icons to the left as present in Windows 10 and earlier versions
-3. Pin Apps to Taskbar: Windows 11 doesn't support dragging and dropping apps to the taskbar. There are three other ways:
-	- From Taskbar: If an app is open, right-click on its icon in the taskbar and select "Pin to taskbar."
-	- From Desktop: If the app icon is present on the desktop, right-click on its icon. Select "More options" from the menu followed by "Pin to taskbar."
-	- From the start menu, look for your app. Right-click on the app to pin and select "Pin to taskbar." If you don't see the option, right-click and choose More, then press "Pin to taskbar."
-4. Pin Web Pages to Taskbar: Just as with apps, you can pin web pages and progressive web apps (PWA) to the taskbar.
-	- From Desktop: First, create a desktop shortcut for the web page. To do so, open the website in Chrome using any browser. Click on the three-dot icon at the top and go to "More tools → Create shortcut." Once the shortcut appears on the desktop, right-click on it and select "Show more options" followed by "Pin to taskbar."
-	- Using Microsoft Edge: (the drawback is that the pages will open in Microsoft Edge only)Launch Edge and open the website you would like pinned. Click on the three-dot icon at the top, go to "More tools" followed by "Pin to taskbar."
-	- Open the web page you want to pin in the browser and close it. Right-click on the browser's icon in the taskbar. You will see the web page listed under the "Recently closed" section. Hover your mouse pointer over the web page and click on the Pin icon.
-
-
-5. Pin Custom Folders to Taskbar
-	- Right-click on the Desktop and select "New → Shortcut." Select the location of the folder you want to pin using the Browse button. Once the location shows up in the text field, type "Explorer" before the location and press the "Next" button. Give a name to your shortcut and click on the "Finish" button. The shortcut will be created on the Desktop. Right-click on it and go to "Show more options" followed by "Pin to taskbar."
-6. Reorder Icons in Taskbar: By default, the app icons will show up on the taskbar in the order they were pinned or opened. However, you can change their position to suit your needs. by long-pressing on the app icon with the mouse and dragging it to the new position.
-
-To unpin Apps From Taskbar, Right-click on the pinned app in the taskbar and select "Unpin from taskbar." You can also right-click on the app in Start Menu and choose "Unpin from taskbar."
-
-8. Open Grouped Apps from Taskbar
-----------
-
-Windows 11 took multitasking to a new level using snap layouts. When you snap windows, you can open them quickly from the taskbar. Hover the mouse pointer over either of the app's icons on the taskbar and click on the grouped apps to view them.
-
-9. Add Apps to Taskbar Corner
-----------
-
-In addition to pinning apps to the taskbar, you can add some apps and features in the right corner of the taskbar. Instead of staying in the overflow menu (up arrow), these items can be accessed directly from the taskbar.
-
-**Tip**: pin some apps and add other apps to the taskbar corner if you want many apps on the taskbar.
-
-To do so, open Taskbar settings and expand the Taskbar corner overflow section. Enable the toggle next to the items to show them on the taskbar.
-
-**Note**: you cannot hide, rearrange, or ungroup icons like battery, sound, or Wi-Fi from the taskbar corner.
-
-
-10. Show or Hide Taskbar Items
-----------
-
-If you want to add more apps to the taskbar, you should hide items like the Search icon (magnifying glass), Task view, Widgets, and Chat from the taskbar. These are the icons that show up between the Start Menu and pinned items.
-
-1. Open "Taskbar settings."
-2. Expand the Taskbar items section.
-3. Turn off the toggle next to the items you want to remove from the taskbar.
-
-11. Show or Hide Taskbar Corner Icons
-----------
-
-Another way to increase the space on the taskbar is by hiding the corner icons like Pen menu, Touch keyboard, and Virtual touchpad.
-
-1. Go to "Taskbar settings."
-2. Expand the Taskbar corner icons section.
-3. Disable the toggle for the desired items.
-
-
-12. Hide Taskbar When Not in Use
-----------
-
-If the continuous presence of the taskbar keeps distracting you from your work, enable a setting that will hide the taskbar when it's not in focus. The taskbar will show up only when you hover your mouse over it.
-
-1. To do so, open "Taskbar settings."
-2. Under the Taskbar behaviors section, check the box next to "Automatically hide the taskbar."
-
-13. Show Notification Badges on Taskbar
-----------
-
-Just like smartphones, you can enable notification badges for supported apps in the taskbar. This makes it simple to determine whether you have a new message.
-
-1. Open "Taskbar settings."
-2. Check the box next to "Show badges on taskbar apps" under the "Taskbar behaviors" section.
-
-14. Enable or Disable Desktop View
-----------
-
-Just as with previous versions of Windows, you can minimize all apps and open the desktop instantly using the Show desktop button on the extreme right corner of the taskbar.
-
-1. To activate this feature, access "Taskbar settings → Taskbar behaviors section."
-2. Check the box next to "Select the far corner of the taskbar to show the desktop."
-
-15. Show Taskbar on All External Monitors
-----------
-
-When using multiple displays, you can decide whether the taskbar should show up on other monitors or not. You can also customize how and when the taskbar apps should show up.
-
-1. Open "Taskbar settings."
-2. Enable the toggle for "Show my taskbar on all displays."
-3. Once enabled, you can choose where the taskbar should appear from the drop-down box next to "When using multiple displays, show my taskbar apps on."
-
-**Also read:**[How to Use Multiple Monitors in Windows 10](https://www.maketecheasier.com/use-multiple-monitors-windows10/)
-
-16. Make Taskbar Transparent
-----------
-
-You can make the taskbar translucent with a default setting present on your computer.
-
-1. Go to "Windows Settings → Personalization → Colors."
-2. Enable the toggle next to "Transparency effects."
-
-However, if you want to make the taskbar completely transparent, you should install [TranslucentTB](https://www.microsoft.com/store/productId/9PF4KZ2VN4W9), a third-party app available at the Microsoft Store.
-
-17. Change Color of Taskbar
-----------
-
-By default, your taskbar can use either light or dark theme colors. However, with certain modifications, you can apply any color to the taskbar.
-
-To do so, follow these steps:
-
-1. Open "Windows Settings → Personalization → Colors."
-2. Choose "Custom" from the drop-down box next to "Choose your mode."
-
-1. Select Dark from "Choose your default Windows mode."
-2. Scroll down and enable the toggle next to "Show accent color on Start and taskbar."
-
-1. Scroll up and select the accent color, which will be used as the taskbar color.
-
-**Note:** the accent color will apply to the Start Menu as well.
 
 18. Open Task Manager from Taskbar
 ----------
@@ -383,32 +192,6 @@ Toggle the items to off that you don't want to appear on the Start menu. You can
 Like Xbox
 ## Desktop
 
-[DesktopOK 11.21 Save and restore the desktop icon positions.](https://www.softwareok.com/?seite=Freeware/DesktopOK)
-- creating a backup of the desktop icons at regular intervals!
-- arrange the icons on your desktop however you want, instead of automatically arranging them in a grid arrangement
-- positioning icons freely can easily lead to clutter. It can be difficult to find specific icons when they are scattered all over the desktop
-- maintain clarity
-- The number of icons you can place on your desktop depends on the screen resolution and size. If your screen is smaller, you have less space for positioning icons.
-- You can also hide certain desktop icons if you don't need them temporarily
-
-[AutoHideDesktopIcons 6.12 Auto Hide Desktop Icons Portable Win-App.](https://www.softwareok.com/?seite=Microsoft/AutoHideDesktopIcons)
-	- 💡 Auto Hide Desktop Icons is a lightweight portable Windows program.
-	- 🔄 It helps users see desktop wallpapers clearly by hiding icons.
-	- 🖥️ The program is compatible with various Windows versions, including Windows 11, 10, 8.1, and 7.
-	- 🌟 Version 6.12 brings fixes for issues with multiple monitors and improved functionality on Windows 11.
-	- 🌐 The program is available in multiple languages, making it accessible globally.
-	- ⏰ Features include an adjustable timer for desktop icons and optional auto-hide/show for the taskbar.
-	- 🆓 Auto Hide Desktop Icons is freeware and requires no installation.
-	- 🖱️ Users can customize when to show desktop icons, ensuring a clutter-free desktop experience.
-	- 🌈 The program supports a wide range of languages, thanks to various translators worldwide.
-
-
-A noter que cet utilitaire se loge dans la zone de notification de la barre des tâches, à côté de l'horloge.
-[BingSnap - Carthago Software](https://www.carthagosoft.net/BingSnap.php)
-	Le célèbre moteur de recherche de Microsoft, [**Bing**](https://www.bing.com/), affiche de magnifiques photos pour égayer sa page d'accueil. Tous les jours, une photo différente y est diffusée.
-	Disponible **gratuitement**, BingSnap est **un utilitaire permettant de récupérer et d'afficher automatiquement cette photo quotidienne et éphémère de _Bing_ comme fond d'écran/arrière-plan pour votre ordinateur**.
-	Vous souhaitez en savoir plus sur une photo ? En cliquant avec le bouton droit de la souris sur l'icône de _BingSnap_ dans la zone de notification, **les informations sur cette photo sont affichées** : lieu de la photo, son auteur, etc.
-	Pratique, vous pouvez choisir dans les paramètres de ce logiciel **d'enregistrer tous ces fonds d'écran afin de les conserver**. Pour cela, cliquez avec le bouton droit de la souris sur l'icône de _BingSnap_ dans la zone de notification (à côté de l'horloge dans la barre des tâches de Windows) puis cliquez sur **Options**. Cochez alors la case **Save all downloaded images in** puis indiquez en dessous un dossier de stockage, par exemple **Images** et cliquez sur **OK**.
 [GitHub - RamonUnch/AltSnap: Maintained continuation of Stefan Sundin's AltDrag](https://github.com/RamonUnch/AltSnap?tab=readme-ov-file)
 	**Léger**, disponible **gratuitement**, **en français** et **ne nécessitant même pas d'installation** (application portable), _AltSnap_ est **un utilitaire permettant de gérer plus facilement vos fenêtres sur votre ordinateur**.
 	Habituellement, pour déplacer une fenêtre ou la redimensionner, vous devez cliquer sur sa barre de titre. Avec _AltSnap_, il suffit d'appuyer sur la touche **Alt** de votre clavier et d'effectuer un clic gauche pour **la déplacer**, un clic droit pour **la redimensionner**, un clic sur le bouton central de la souris pour **afficher son menu d'actions** (toujours afficher au-dessus, minimiser, maximiser, centrer, etc.), faire défiler la molette pour **modifier sa transparence**, etc.

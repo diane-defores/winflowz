@@ -5,10 +5,33 @@ export const SITE = {
   title: 'WinFlowz - Productivity Plugins & Windows Training',
   description: 'Transform your digital workflow with Chrome extensions for YouTube, Obsidian plugins for content management, and a complete Windows productivity guide with 200+ tested tips.',
   author: 'Diane Defores',
+  authorName: 'Diane Defores',
   url: 'https://winflowz.com',
+  domain: 'winflowz.com',
   githubUrl: 'https://github.com/dianedef/winflowz',
-  ogImage: '/images/WinFlowz.png'
+  ogImage: '/images/WinFlowz.png',
+  emails: {
+    contact: 'hello@winflowz.com',
+    support: 'support@winflowz.com',
+    legal: 'legal@winflowz.com',
+    privacy: 'privacy@winflowz.com',
+    copyright: 'copyright@winflowz.com',
+    newsletter: 'newsletter@winflowz.com',
+  },
 };
+
+export function getSiteUrl(path = '/') {
+  return new URL(path, SITE.url).toString();
+}
+
+export function getLocalizedSiteUrl(lang: 'en' | 'fr', path = '/') {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  if (lang === 'fr') {
+    return getSiteUrl(`/fr${normalizedPath === '/' ? '' : normalizedPath}`);
+  }
+
+  return getSiteUrl(normalizedPath);
+}
 
 export const SEO = {
   title: SITE.title,

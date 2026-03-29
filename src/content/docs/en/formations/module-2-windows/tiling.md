@@ -111,3 +111,13 @@ The ultimate goal: never touch the mouse to organize your windows. Here is a typ
 3. Force yourself to use `Shift + drag` for a week
 4. Add keyboard shortcuts gradually
 5. Once it feels natural, explore GlazeWM if you want to go further
+
+## Official resources
+
+- [Microsoft PowerToys](https://github.com/microsoft/PowerToys) - FancyZones and PowerToys Run in one suite.
+- [AquaSnap](https://www.nurgo-software.com/products/aquasnap) - the simpler alternative to native tiling.
+- [WindowGrid](https://windowgrid.net/) - precise click-to-grid placement.
+- [MaxTo](https://maxto.net/) - predefined regions per display.
+- [Divvy](https://mizage.com/divvy/) - grid-based window placement.
+- [GlazeWM](https://glazewm.com/) - automatic tiling on Windows, i3-style.
+- [Komorebi](https://github.com/LGUG2Z/komorebi) - the scriptable tiling manager for Windows.

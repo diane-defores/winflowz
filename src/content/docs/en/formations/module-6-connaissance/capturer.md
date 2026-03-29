@@ -12,7 +12,7 @@ Capture is the first step in PKM. If you do not capture it, you will forget it. 
 
 ## Web archiving
 
-### Monolith
+### [Monolith](https://github.com/Y2Z/monolith)
 
 Monolith saves a complete web page as a single HTML file - images, CSS, and scripts included. No external dependencies, no broken links.
 
@@ -23,7 +23,7 @@ Monolith saves a complete web page as a single HTML file - images, CSS, and scri
 | **Command line** | Easy to automate in scripts |
 | **Fidelity** | Rendering is almost identical to the original page |
 
-### Webscape
+### [Webscape](https://webscape.co.za/)
 
 Webscape is a central hub for organizing everything you capture:
 
@@ -32,7 +32,7 @@ Webscape is a central hub for organizing everything you capture:
 - **Full-text search** across all your saved content
 - **Quick actions** - create a Google Calendar event, send a LinkedIn message, all without leaving the app
 
-### Hoarder
+### [Hoarder](https://karakeep.app/)
 
 Hoarder is a self-hostable bookmarking tool that goes beyond simple bookmarks:
 
@@ -45,7 +45,7 @@ Hoarder is a self-hostable bookmarking tool that goes beyond simple bookmarks:
 
 ## Screen recording
 
-### Screenpipe
+### [Screenpipe](https://screenpi.pe/)
 
 Screenpipe continuously records everything happening on your screen and makes it searchable. It is a visual memory of your work.
 
@@ -62,15 +62,15 @@ Before you store anything, compress it. A lighter file is a healthier disk.
 
 | Tool | Type | Use |
 |-------|------|-----|
-| **FFmpeg** | Video/audio | Compression, conversion, track extraction |
-| **ImageMagick** | Images | Resizing, batch conversion |
-| **7-Zip** | Archives | Maximum compression, open format |
+| [FFmpeg](https://www.ffmpeg.org/) | Video/audio | Compression, conversion, track extraction |
+| [ImageMagick](https://imagemagick.org/) | Images | Resizing, batch conversion |
+| [7-Zip](https://www.7-zip.org/) | Archives | Maximum compression, open format |
 
 ---
 
 ## Media readers
 
-### Thorium Reader
+### [Thorium Reader](https://thorium.edrlab.org/en/)
 
 Thorium Reader is an open-source ebook reader that supports EPUB, PDF, and audiobooks:
 
@@ -83,7 +83,7 @@ Thorium Reader is an open-source ebook reader that supports EPUB, PDF, and audio
 
 ## Photo management
 
-### Tonfotos
+### [Tonfotos](https://tonfotos.com/)
 
 Tonfotos organizes your photo library with face recognition and geolocation, all locally:
 

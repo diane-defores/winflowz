@@ -30,11 +30,11 @@ Result: 2 hours of focused creation replace 10 scattered hours, with a professio
 
 | Tool | Best for | Monthly price | Monitoring |
 |------|----------|---------------|------------|
-| **Buffer** | Simplicity, solopreneurs | Free to 6 euros | No |
-| **Hootsuite** | Teams, agencies, monitoring | 49 euros+ | Yes |
-| **Later** | Instagram and visual platforms | Free to 25 euros | No |
-| **Metricool** | Price/performance, analytics | Free to 12 euros | Yes |
-| **Canva Scheduling** | Integrated design and publishing | 13 euros | No |
+| **[Buffer](https://buffer.com/)** | Simplicity, solopreneurs | Free to 6 euros | No |
+| **[Hootsuite](https://hootsuite.com/)** | Teams, agencies, monitoring | 49 euros+ | Yes |
+| **[Later](https://later.com/)** | Instagram and visual platforms | Free to 25 euros | No |
+| **[Metricool](https://metricool.com/)** | Price/performance, analytics | Free to 12 euros | Yes |
+| **[Canva Scheduling](https://www.canva.com/)** | Integrated design and publishing | 13 euros | No |
 
 ### Buffer: the reliable classic
 
@@ -111,21 +111,6 @@ Aim for 70% evergreen content (advice, frameworks, best practices) that can be r
 **Performance**: follower growth, engagement rate, CTR to your site, attributed conversions.
 
 **WinFlowz targets**: reduce time by 60%, consistency at 100%, engagement rate up by 50%.
-
-## LinkedIn prospecting tools
-
-If you use LinkedIn to generate leads, these tools save a lot of time:
-
-| Tool | Use |
-|------|-----|
-| **Hunter.io** | Find professional emails from a domain |
-| **LinkedIn Sales Navigator** | Advanced search and filters to identify ideal prospects |
-| **LinkedIn Helper** | Automates invites and messages, with LinkedIn limits in mind |
-| **Anyleads** | Lead generation and email verification |
-
-:::caution[LinkedIn limits]
-LinkedIn enforces strict quotas on invitations and automated messages. Use these tools carefully to avoid account restrictions.
-:::
 
 :::note[Practical exercise]
 Week 1: audit your current presence and choose 2-3 platforms. Week 2: install your tool and configure optimal posting times. Week 3: run your first week of content batching. Week 4: analyze the results and adjust.

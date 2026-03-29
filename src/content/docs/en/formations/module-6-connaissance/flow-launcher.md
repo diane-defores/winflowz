@@ -6,7 +6,7 @@ sidebar:
   order: 6
 ---
 
-Flow Launcher is the open-source productivity launcher for Windows that replaces Start menu search, the file manager, and a dozen daily clicks.
+[Flow Launcher](https://www.flowlauncher.com/) is the open-source productivity launcher for Windows that replaces Start menu search, the file manager, and a dozen daily clicks.
 
 > Once you get used to a keyboard launcher, going back to the mouse just to open an app feels as archaic as a 56k modem.
 
@@ -31,7 +31,7 @@ Flow Launcher is a keyboard-based application launcher: you press a shortcut, ty
 
 ### Installation
 
-1. Download it from [flow-launcher.com](https://www.flow-launcher.com/)
+1. Download it from [flow-launcher.com](https://www.flowlauncher.com/)
 2. Install and launch - Flow Launcher starts with Windows
 3. The default shortcut is `Alt + Space`
 
@@ -46,12 +46,12 @@ Flow Launcher is a keyboard-based application launcher: you press a shortcut, ty
 
 ## Integration with Vivaldi bookmarks
 
-One of Flow Launcher's superpowers: access your Vivaldi bookmarks directly from the launcher.
+One of [Flow Launcher](https://www.flowlauncher.com/)'s superpowers: access your Vivaldi bookmarks directly from the launcher.
 
 ### Setup
 
 1. Install the **Bookmarks** plugin in Flow Launcher (Settings -> Plugin Store)
-2. Point it to the Vivaldi bookmarks file:
+2. Point it to the [Vivaldi](https://vivaldi.com/) bookmarks file:
    `%LOCALAPPDATA%\\Vivaldi\\User Data\\Default\\Bookmarks`
 3. Set an action prefix: `b` (for bookmarks)
 
@@ -69,7 +69,7 @@ One of Flow Launcher's superpowers: access your Vivaldi bookmarks directly from 
 
 | Plugin | Prefix | Function |
 |--------|--------|----------|
-| **Everything** | none | Ultra-fast file search |
+| [Everything](https://www.voidtools.com/) | none | Ultra-fast file search |
 | **Bookmarks** | `b` | Access browser bookmarks |
 | **Calculator** | none | Direct calculations in the bar |
 | **Shell** | `>` | Run terminal commands |
@@ -116,4 +116,4 @@ But the real gain is not time - it is **flow**. You never leave the keyboard, an
 2. **Disable unused plugins** - less noise in the results
 3. **Use web shortcuts** - `yt [term]` for YouTube, `gh [repo]` for GitHub
 4. **Pin frequent results** - they will appear first
-5. **Combine it with Everything** - Flow Launcher + Everything = total instant search
+5. **Combine it with [Everything](https://www.voidtools.com/)** - Flow Launcher + Everything = total instant search

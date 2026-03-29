@@ -59,15 +59,45 @@ The research is clear: mindfulness reduces stress, burnout, and emotional exhaus
 - Less anxiety and depression
 
 **Where to start:**
-A **Vipassana** meditation retreat (10 days, free, centers everywhere in France on dhamma.org) is one of the most powerful investments you can make in your wellbeing and productivity.
+A simple, regular practice is already enough to produce real effects. If you want to go much deeper, a 10-day **Vipassana** retreat can be one of the most powerful ways to recentre yourself and rebuild attention.
 
-### What happens in Vipassana (and why it is transformative)
+### What Vipassana teaches productivity
 
-75 people, separated by gender. Wake-up at 4:00 AM, meditation from 4:30 to 6:30 AM (recommended), mandatory from 8:00 to 9:00 AM. No exercise, no notebook, no reading, no phone. The area is limited to 150m x 50m. Returning students do not eat after noon.
+The point of Vipassana is not to "do a retreat." It is to go through a radical reduction of mental noise.
 
-**Why this matters for productivity**: it is the total removal of distractions taken to the extreme. No stimuli, no escape route. Your brain is *forced* to process what has been left hanging - and after 10 days, you come out with a mental clarity you have never known before.
+For ten days, the structure is intentionally stripped down: silence, a fixed timetable, long practice blocks, very little stimulation, no phone, no reading, no notebook. This is not spiritual theater. It is an attention laboratory.
 
-**The business lesson**: the Vipassana system (founded by Goenka) is free, has no advertising, runs on voluntary donations after the course, and the centers are full all the time. A product so good it does not need marketing - it survives on word of mouth alone. If your product needs aggressive advertising to sell, maybe the product is the problem.
+When you remove external distractions, you quickly discover the internal ones:
+- restlessness
+- impatience
+- craving for novelty
+- the urge to escape discomfort
+- the compulsion to keep commenting on everything in your own head
+
+That is where the link to productivity becomes powerful. In real work, most people do not lose time only because of bad tools or interruptions. They lose time because they do not know how to stay present when a task becomes demanding.
+
+Vipassana trains several capacities that transfer directly to work:
+
+- **Observe without reacting immediately** - notice an emotion, urge, or thought without obeying it in the next second
+- **Tolerate discomfort** - stop escaping into distraction the moment work becomes difficult
+- **Return to the object of attention** - just as you return to breath or body sensations, you learn to return to the work that matters
+- **Separate signal from noise** - not every thought has the same value, and not every mental urgency deserves action
+- **Create space before acting** - respond with more discernment instead of functioning on autopilot
+
+In practical terms, this changes the way you work:
+- you open fewer refuge tabs
+- you interrupt your own momentum less often
+- you stay in deep focus longer
+- you make better decisions because you react less impulsively
+- you regain stability instead of being pushed around by every notification or mood
+
+Research on mindfulness practices does not say meditation magically turns you into a machine. What it does suggest is plausible benefit for stress, sleep, self-regulation, attention, and some aspects of executive function. That is already significant, because those are exactly the invisible building blocks of sustainable productivity.
+
+The deeper lesson is this: better productivity does not come only from a better external system. It also comes from a better quality of attention.
+
+### Going further
+
+If the subject speaks to you, 10-day Vipassana retreats in the Goenka tradition exist in many countries and operate on donation. They are not required for progress, but they can be a powerful experience for people who want to explore their relationship to attention, stress, and themselves in depth.
 
 ---
 
@@ -77,8 +107,12 @@ Food is one of the first drivers of health. A few principles:
 
 - **If you do not have time to cook**: a balanced meal kit is better than fast food
 - **If you cook**: keep the pleasure, remove the mental load (meal planning, automatic timers)
-- **Coffee alternatives**: explore adaptogenic mushroom drinks (Lion's Mane, Cordyceps, Chaga) - stable energy without the side effects. Brands like Bonjour, Space Tea, and Rainbow Dust offer accessible adaptogenic blends
+- **Coffee alternatives**: you can explore gentler options such as tea, matcha, some cocoa-based drinks, or, with caution, certain so-called adaptogenic blends. Just do not expect them to compensate for poor sleep or weak habits
+- **Supplements and "energy" products**: keep a sane hierarchy. First sleep, morning light, hydration, movement, decent food, and a good routine. Only then, if there is a real need, consider simple options such as a reasonable multivitamin or a targeted supplement recommended by a professional in case of deficiency
+- **Useful warning signs**: persistent fatigue, low sun exposure, poor recovery, chaotic eating, chronic stress. In those cases, it is better to fix the causes and check the basics than to collect miracle powders
 - **Useful tools**: Dishi (meal-prep timer app), BooksByMood (find books based on your mood - useful for breaks)
+
+The key point is this: if you want to become the best version of yourself, treat your body like performance infrastructure. Energy, immunity, mental clarity, mood, and recovery are not separate from productivity. They are its biological foundation.
 
 ---
 
@@ -90,6 +124,22 @@ Even if you crush every task, if your goals are not aligned with your values, yo
 
 Many creators live with a tension between creative passion and the need to sell. The result: exhausting cycles between "sales mode" and "authenticity mode".
 
+The pattern is usually the same:
+- when you push sales too hard, you may make more money in the short term, but you lose part of your creative momentum
+- when you return to something more sincere, you breathe better, but you may feel less structured, less focused, or less commercially viable
+- you end up alternating between two identities that drain each other: the efficient seller you do not fully like being, and the authentic creator who does not always build a viable system
+
+This dissonance destroys productivity because it creates a permanent leak of energy. You are not only tired from work itself. You are tired from not recognizing yourself in the way you work.
+
+The warning signs are often the same:
+- you procrastinate on commercial tasks even though you know they matter
+- you produce content that "works" but leaves you empty
+- you tell yourself you have to choose between integrity and growth
+- you change your positioning, offer, or tone too often because nothing feels fully right
+- you live in cycles of sprint, disgust, withdrawal, and then a forced return to selling
+
+The real problem is not only marketing. It is psychological and energetic misalignment. A business can be profitable and still make you inwardly incoherent. Over time, that incoherence shows up as more friction, less consistency, and lower-quality work.
+
 **The solution is not to alternate - it is to reinvent your approach** so that creation, selling, and integrity can coexist:
 
 - Eliminate aggressive sales tactics
@@ -97,7 +147,13 @@ Many creators live with a tension between creative passion and the need to sell.
 - Serve first, sell second
 - Prioritize retention over mass acquisition
 
+The goal is not to become "pure" or "perfect." The goal is to build a way of working you can sustain for a long time without betraying yourself. Premium productivity is not only fast. It is sustainable, credible, and aligned.
+
 ### 12 principles for an aligned business
+
+If your work constantly forces you to act against yourself, you will eventually pay the price in focus, consistency, and mental health. These principles are not there to sound inspiring. They are there to help you build an activity you can grow without inwardly disintegrating.
+
+The point is not to reach some abstract moral ideal. The point is to reduce the contradictions that drain your energy and keep you from doing your best work over the long term.
 
 | Principle | Instead of... |
 |-----------|---------------|
@@ -114,6 +170,8 @@ Many creators live with a tension between creative passion and the need to sell.
 | **Service** - value first | Sell first |
 | **Agility** - continuous experimentation | Rigidity and 5-year plans |
 
+You will not apply all 12 principles perfectly overnight. But the closer your way of working gets to them, the more stable, credible, and breathable your productivity becomes.
+
 ### Build your life philosophy
 
 Draw from philosophies that resonate with you:
@@ -122,6 +180,29 @@ Draw from philosophies that resonate with you:
 - **Emerson** - personal freedom, rejection of imposed norms
 
 The goal: a personal philosophy that cultivates appreciation, presence, and freedom - not frustrating, unreachable ideals.
+
+### Accept randomness and failure
+
+One of the biggest productivity mistakes is believing that a good system should make you linear, constant, and always high-performing. That is not how a human being works.
+
+There are cycles. Periods of momentum. Periods of confusion. Phases where everything feels simple, then others where even a small effort costs more. Trying to eliminate that reality completely means going to war against your own nature.
+
+> No king rules forever.
+
+In other words: no peak lasts forever, but no low lasts forever either. That matters because it protects you from two costly mistakes:
+
+- believing your bad days define your value
+- believing your good days will sustain themselves without maintenance
+
+Mature productivity does not rely on the illusion of total control. It relies on the ability to remain functional, lucid, and grounded even when energy drops, plans break, mistakes happen, or a project goes worse than expected.
+
+That changes your relationship to work:
+- you stop dramatizing every dip in performance
+- you build systems with margin
+- you create plan B options instead of depending on an idealized version of yourself
+- you learn to restart faster after setbacks
+
+The real higher level is not "never falling." It is falling without turning every fall into an identity crisis.
 
 ---
 

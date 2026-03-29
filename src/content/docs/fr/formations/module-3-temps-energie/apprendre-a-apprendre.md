@@ -38,9 +38,31 @@ Après 5-6 révisions bien espacées, l'information passe en mémoire à long te
 
 ## Le chunking (Barbara Oakley)
 
-Ton cerveau ne peut gerer que **4 "chunks" d'information** en memoire de travail simultanement. Quand ta memoire de travail est pleine, tu as deux strategies : effacer pour faire de la place, ou transferer vers la memoire long terme. Avec les bonnes techniques (repetition espacee + rappel actif), tu peux atteindre **90% de retention a long terme** — contre 10% sans systeme.
+Barbara Oakley popularise très bien une idée essentielle : la mémoire de travail est minuscule. Tu ne peux pas garder beaucoup d'éléments actifs à la fois, surtout si ces éléments ne sont pas encore organisés.
 
-Le chunking, c'est regrouper plusieurs informations en un seul "bloc" coherent. Un numero de telephone a 10 chiffres est impossible a retenir chiffre par chiffre, mais facile en 3 groupes. Applique ce principe a tout ce que tu apprends : cherche les patterns, cree des categories, relie les concepts entre eux.
+Le **chunking**, c'est précisément l'art de transformer plusieurs informations dispersées en un seul bloc mental plus stable. Ce bloc devient ensuite plus facile à manipuler, à retenir et à réutiliser.
+
+Exemple simple :
+- retenir `7 4 9 2 1 8 6 3` chiffre par chiffre est pénible
+- retenir `749 / 218 / 63` est déjà plus facile
+- retenir encore mieux une logique, une catégorie ou un pattern devient plus simple que mémoriser des unités isolées
+
+Le même principe vaut pour un sujet complexe :
+- une liste d'outils reste une liste confuse
+- une carte mentale avec 3 catégories devient mémorisable
+- un concept relié à un exemple concret devient réutilisable
+
+Le chunking ne consiste donc pas seulement à "compacter". Il consiste à **comprendre la structure d'un sujet**.
+
+### Comment créer de vrais chunks
+
+1. **Cherche les patterns** — qu'est-ce qui se répète ?
+2. **Regroupe par fonction** — outils, étapes, erreurs, principes
+3. **Relie à un exemple** — une idée abstraite colle mieux avec un cas concret
+4. **Réexplique avec tes mots** — si tu peux reformuler, le chunk commence à exister
+5. **Réutilise rapidement** — un chunk se consolide quand tu t'en sers, pas quand tu le regardes passivement
+
+Le piège, c'est de croire que lire suffit à créer des chunks. Ce n'est pas vrai. Les chunks naissent surtout de la pratique, du rappel actif et de la répétition.
 
 ## Le rappel actif (Active Recall)
 

@@ -81,10 +81,56 @@ Au lieu de jongler entre 5 projets, choisis **un seul objectif principal** par p
 
 Ta to-do list devrait répondre à une seule question chaque matin : **"Quelle est LA tâche qui, si elle est faite, rend tout le reste plus facile ou inutile ?"**
 
-## Outils de priorisation automatique
+## [Beeminder](https://www.beeminder.com/) : quand l'engagement devient réel
 
-| Outil | Ce qu'il fait |
-|-------|--------------|
-| **Fluidwave** | Prend en compte échéances, priorités et temps des tâches, les classe automatiquement. Tu sais toujours exactement sur quoi te concentrer ensuite. |
-| **Focuster** | Planification automatique des tâches dans ton calendrier selon tes priorités — tes tâches deviennent des blocs concrets dans ta journée. |
-| **Beeminder** | Engagement financier sur tes objectifs — tu payes si tu ne respectes pas ton plan. Radical, mais redoutablement efficace pour ceux qui ont du mal à tenir leurs engagements. |
+La plupart des systèmes de productivité échouent au même endroit : au moment où ton toi du présent reprend la main sur le toi du futur. Tu avais décidé de faire du sport, d'écrire, de coder, de prospecter. Puis l'instant arrive, et tu négocies avec toi-même.
+
+Beeminder est intéressant parce qu'il traite ce problème à la racine. Ce n'est pas juste un gestionnaire de tâches. C'est un **commitment device** : tu définis une trajectoire, tu mets de l'argent en jeu, et tu paies si tu dérailles.
+
+### Pourquoi c'est puissant
+
+Le concept repose sur une idée psychologique très forte : nous sommes souvent prêts à sacrifier le long terme pour un soulagement immédiat. Beeminder combat cela en rendant la conséquence du relâchement plus concrète, plus proche, plus douloureuse.
+
+En pratique :
+- tu définis un objectif mesurable
+- Beeminder trace une ligne rouge à respecter
+- si tu passes en dessous, tu "derail"
+- un montant est alors prélevé selon ton niveau d'engagement
+
+Cette logique est particulièrement utile si tu souffres de l'un de ces problèmes :
+- tu sais exactement quoi faire, mais tu ne le fais pas régulièrement
+- tu tiens quelques jours puis tu t'auto-négocies une exception
+- tu es très bon pour te raconter des histoires intelligentes sur ton manque de temps
+- tu as besoin d'une conséquence externe pour casser les compromis mous
+
+### Ce qui rend Beeminder plus intelligent qu'une simple punition
+
+Beeminder n'est pas seulement "tu rates, tu paies". Leur système inclut des garde-fous conceptuellement intéressants :
+
+- **Pledge schedule** : les montants montent progressivement, au lieu de te jeter d'emblée dans une pénalité absurde
+- **Akrasia horizon** : tu ne peux pas rendre ton objectif plus facile immédiatement; beaucoup de changements qui te relâchent ne prennent effet qu'après 7 jours
+- **Pledge caps** : tu peux limiter jusqu'où la mise grimpe pour éviter de transformer l'outil en stress toxique
+- **Intégrations automatiques** : le concept devient encore plus fort quand la donnée remonte automatiquement, par exemple via RescueTime, Fitbit, Duolingo ou d'autres sources
+
+L'idée de l'**akrasia horizon** est particulièrement brillante : si tu pouvais rendre ton engagement plus facile au moment même où tu veux l'abandonner, tout le système s'effondrerait. Beeminder protège donc l'engagement contre tes humeurs du moment.
+
+### Quand l'utiliser
+
+Beeminder est très bon pour :
+- écrire tous les jours
+- faire du sport régulièrement
+- limiter un usage distrayant
+- tenir un rythme de production
+- imposer une discipline minimale sur une habitude déjà claire
+
+Il est moins bon si :
+- ton objectif est mal défini
+- la mesure est floue ou facilement trichable
+- ton problème principal est stratégique, pas comportemental
+- tu es déjà dans une phase de fragilité où la punition financière risque d'ajouter surtout de la honte ou du stress
+
+### La bonne manière de l'utiliser
+
+Commence petit. Ne choisis pas un montant héroïque pour te prouver que tu es sérieux. Le but est de trouver ton **niveau d'engagement crédible**, celui qui te pousse vraiment à agir sans transformer ta vie en tribunal permanent.
+
+Beeminder ne remplace ni la clarté, ni la priorisation, ni la motivation profonde. Mais pour certaines personnes, c'est l'outil qui transforme enfin une bonne intention en contrainte réelle.

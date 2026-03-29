@@ -7,6 +7,7 @@ import CardBlogRecent from "@/components/ui/cards/CardBlogRecent.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import { SITE } from "@/constants";
+import { getLocalizedSiteUrl } from "@/constants";
 import { getCurrentLocale } from "@/utils/i18n";
 import type { Language } from "@/types";
 
@@ -21,8 +22,6 @@ export function getStaticPaths() {
 		{ params: { lang: "fr", blog: "blog" } },  // Pour /fr/blog
 	];
 }
-
-const { lang } = Astro.params;
 
 // Get current locale
 const currentLang = getCurrentLocale(Astro.url) as Language;
@@ -49,7 +48,7 @@ const mostRecentPost = blogPosts.length > 0 ? blogPosts[0] : null;
 const otherPosts = blogPosts.length > 0 ? blogPosts.slice(1) : [];
 
 const pageTitle = `Blog | ${SITE.title}`;
-const baseUrl = currentLang === "fr" ? "https://winflowz.com/fr" : "https://winflowz.com";
+const baseUrl = getLocalizedSiteUrl(currentLang, currentLang === "fr" ? "" : "/").replace(/\/$/, "");
 
 // Ensure we have the translations before using them
 const description = t?.meta?.description || "";
@@ -64,12 +63,12 @@ const siteDescription = t?.meta?.siteDescription || "";
 		"@type": "WebPage",
 		"@id": `${baseUrl}/blog`,
 		url: `${baseUrl}/blog`,
-		name: "Blog | WinFlowz",
+		name: `Blog | ${SITE.name}`,
 		description: description,
 		isPartOf: {
 			"@type": "WebSite",
 			url: baseUrl,
-			name: "WinFlowz",
+			name: SITE.name,
 			description: siteDescription,
 		},
 		inLanguage: currentLang === "fr" ? "fr" : "en",

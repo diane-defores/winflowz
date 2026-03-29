@@ -36,6 +36,20 @@ Your brain does not do two things at once - it switches rapidly between them. Th
 
 You need both. Too much macro without micro = planning without results. Too much micro without macro = motion without direction.
 
+Another common mistake is thinking productivity increases when you open more fronts. In reality, the opposite is often true: the more you spread your energy, the slower you become.
+
+Speed rarely comes from a wider field of action. It comes from a narrower, clearer, more demanding one. Reducing the number of priorities is not a limitation. It is concentration of force.
+
+> "Not choosing is the worst thing you can do because now you're compromising everything."
+
+In other words: not choosing is not flexibility. It is dilution.
+
+Another common confusion is trying to optimize everything according to the same criterion. But an activity being important does not mean it should be judged only by performance. Some things serve depth, coherence, creativity, or the truth of a project. Others serve efficiency, speed, distribution, or revenue.
+
+If you ask a meaning-driven task to perform like an acquisition task, you distort it. And if you treat a performance task like a space for free exploration, you make it vague. Mature productivity knows how to distinguish functions.
+
+Not every task needs to maximize the same thing. Some must move fast. Others must be accurate. Some must convert. Others must clarify. Knowing this prevents a lot of unnecessary frustration.
+
 ## The pillars of this course
 
 This course is built around 8 complementary modules:
@@ -119,6 +133,10 @@ The idea of **availability** - walking with no fixed destination, staying open t
 
 Make room in your week to explore without an objective. Not mindless scrolling - real exploration: a coffee in an unfamiliar neighborhood, a book on a topic that does not "serve" a direct goal, a conversation with someone outside your usual circle.
 
+Availability does not mean passivity. It means refusing to seal your mind inside an agenda that is too tight, too utilitarian, too mechanical. Some of the most valuable intuitions appear in moments with no immediate objective: a walk, side reading, an unplanned conversation, a well-used stretch of mental looseness.
+
+Good productivity is not only about removing chaos. It is also about preserving openness.
+
 ---
 
 ## What productivity really gives you
@@ -128,3 +146,10 @@ A system that:
 - Prioritizes what matters intelligently
 - Handles the small stuff so you can focus on the big stuff
 - **Gives you your time back** - for the people you love and the things that make you feel alive
+
+<details>
+  <summary>Go further</summary>
+
+  - [Frank Slootman video / episode - The Knowledge Project](https://fs.blog/knowledge-project-podcast/frank-slootman/) - strong follow-up on strategic concentration, high standards, and the real cost of spreading yourself too thin
+  - [Amp It Up - reading notes](https://www.ricklindquist.com/notes/amp-it-up) - useful written summary of his execution philosophy
+</details>

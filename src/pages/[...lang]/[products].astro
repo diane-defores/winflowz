@@ -6,6 +6,7 @@ import type { Language } from '@/types'
 import ProductsSection from '@/components/sections/products/ProductsSection.astro'
 import { getCollection } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
+import { getLocalizedSiteUrl } from '@/constants'
 
 export function getStaticPaths() {
 	return [
@@ -59,8 +60,8 @@ const productPageTranslations = t as {
 	structuredData={{
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
-		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}${lang === 'fr' ? 'produits' : 'products'}`,
-		url: `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}${lang === 'fr' ? 'produits' : 'products'}`,
+		'@id': getLocalizedSiteUrl(lang, lang === 'fr' ? '/produits' : '/products'),
+		url: getLocalizedSiteUrl(lang, lang === 'fr' ? '/produits' : '/products'),
 		name: t.title,
 		description: t.description || t.siteDescription,
 		inLanguage: lang,

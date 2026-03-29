@@ -14,6 +14,7 @@
  */
 
 import type { Language, Translation } from '@/types/i18n';
+import { getSiteUrl } from '@/constants';
 
 /**
  * Extracts the current language from a URL pathname.
@@ -124,8 +125,8 @@ export async function getAlternateLinks(currentPath: string): Promise<Array<{hre
   const frPath = await getLocalizedPath('fr', currentPath);
 
   return [
-    { href: `https://winflowz.com${enPath}`, hreflang: 'en' },
-    { href: `https://winflowz.com${frPath}`, hreflang: 'fr' }
+    { href: getSiteUrl(enPath), hreflang: 'en' },
+    { href: getSiteUrl(frPath), hreflang: 'fr' }
   ];
 }
 

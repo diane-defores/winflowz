@@ -36,9 +36,9 @@ The idea is simple: externalize your memory into a reliable system. Your brain i
 
 | Tool | Strengths | Best for |
 |-------|-----------|----------|
-| **Standard Notes** | End-to-end encryption, open source | Private notes, secure journaling |
-| **Nota** | Lightweight, native markdown, fast | Quick note-taking, developers |
-| **Notable** | Clean interface, powerful tags, markdown | Tag-based organization, large volumes |
+| **[Standard Notes](https://standardnotes.com/)** | End-to-end encryption, open source | Private notes, secure journaling |
+| **[Nota](https://www.nota-sync.com/)** | Lightweight, native markdown, fast | Quick note-taking, developers |
+| **[Notable](https://notable.app/)** | Clean interface, powerful tags, markdown | Tag-based organization, large volumes |
 
 ### What matters in a markdown editor
 

@@ -12,18 +12,7 @@ Your entire knowledge base is worthless if you cannot find what you need in unde
 
 ## Personal search engines
 
-### CommandE
-
-CommandE unifies search across all your apps and files from a single keyboard shortcut:
-
-| Function | Detail |
-|----------|--------|
-| **Unified search** | Files, emails, Slack, Drive, Notion - everything in one place |
-| **Single shortcut** | One hotkey for all search |
-| **Instant results** | Local indexing, no waiting |
-| **Multiple connections** | Connects to your cloud and local apps |
-
-### Findr
+### [Findr](https://www.usefindr.io/)
 
 Findr is an alternative that indexes your work apps and makes everything searchable:
 
@@ -32,11 +21,31 @@ Findr is an alternative that indexes your work apps and makes everything searcha
 - **Contextual results** - shows where and when information was shared
 - **Privacy** - local processing whenever possible
 
+### [Curiosity](https://curiosity.ai/app)
+
+Curiosity is another credible option if you want **unified search** across:
+- local files
+- emails
+- calendars
+- cloud apps
+
+Its value is that it brings several layers of your work closer together in one search interface without forcing you to remember exactly where the information lives.
+
+It becomes interesting if:
+- you work across several tools in parallel
+- you keep wasting time wondering "was that in an email, a doc, Slack, or a folder?"
+- you want to retrieve quickly without mentally rebuilding the whole path
+
+The right use is not to replace all organization with "I'll search later." The right use is:
+- decent organization
+- plus genuinely strong cross-tool search
+
+
 ---
 
 ## Keyboard launchers
 
-### ueli
+### [ueli](https://ueli.app/)
 
 ueli is an ultra-fast app and file launcher for Windows:
 
@@ -57,7 +66,7 @@ Multiply that by 50 actions a day, and you save **10 minutes of friction per day
 
 ## File search
 
-### AnyTXT Searcher
+### [AnyTXT Searcher](https://anytxt.net/)
 
 AnyTXT Searcher is a lightning-fast full-text search engine for local files:
 
@@ -68,7 +77,7 @@ AnyTXT Searcher is a lightning-fast full-text search engine for local files:
 | **Fast indexing** | Results in milliseconds even on large volumes |
 | **Advanced filters** | By date, size, type, folder |
 
-### Everything (bonus)
+### [Everything](https://www.voidtools.com/) (bonus)
 
 Everything indexes all file names on your PC in real time - instant results from the first letter you type. Essential on Windows.
 
@@ -78,13 +87,13 @@ Everything indexes all file names on your PC in real time - instant results from
 
 | Extension | Function |
 |-----------|----------|
-| **Vimium** | Keyboard navigation in the browser - never touch the mouse |
-| **Quick Tabs** | Search your open tabs by title |
-| **History Search** | Advanced search in your browsing history |
+| [Vimium](https://vimium.github.io/) | Keyboard navigation in the browser - never touch the mouse |
+| [Quick Tabs](https://chromewebstore.google.com/detail/quick-tabs/jnjfeinjfmenlddahdjdmgpbokiacbbb) | Search your open tabs by title |
+| **Native `@history` / `@tabs` search** | Search browsing history and open tabs directly from the address bar |
 
 ---
 
-## Search in Vivaldi
+## Search in [Vivaldi](https://vivaldi.com/)
 
 If you use Vivaldi, you already have a powerful built-in search stack:
 
@@ -99,7 +108,7 @@ If you use Vivaldi, you already have a powerful built-in search stack:
 
 1. **Start with the launcher** (ueli, Flow Launcher) for apps and recent files
 2. **Move to full-text search** (AnyTXT) for file contents
-3. **Use unified search** (CommandE, Findr) for cloud apps
+3. **Use unified search** (Findr or an equivalent tool) for cloud apps
 4. **As a last resort**: manual navigation through folders
 
 If you cannot find it in 30 seconds, your organization system needs improvement.

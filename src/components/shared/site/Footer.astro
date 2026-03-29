@@ -1,5 +1,6 @@
 ---
 import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+import { SITE } from '@/constants'
 
 interface FooterLink {
 	name: string
@@ -79,12 +80,12 @@ const dividerClass = forceDark
 			<div class="col-span-2 md:col-span-1">
 				<a href={homeUrl} class="mb-4 flex items-center gap-2 no-hover-animation">
 					<div class="text-logo" style="font-size: 1.25rem;">
-						<span class="text">WinFlowz</span>
+						<span class="text">{SITE.name}</span>
 						<div class="glow-effect"></div>
 					</div>
 				</a>
 				<p class={footerTextClass}>
-					Productivity plugins & Windows training by Diane Defores.
+					Productivity plugins & Windows training by {SITE.authorName}.
 				</p>
 				<div class="mb-4">
 					<p class={footerLabelClass}>
@@ -130,7 +131,7 @@ const dividerClass = forceDark
 
 		<div class={dividerClass}>
 			<p class={footerTextClass}>
-				&copy; {currentYear} WinFlowz. {craftedBy} Diane Defores.
+				&copy; {currentYear} {SITE.name}. {craftedBy} {SITE.authorName}.
 			</p>
 			<div class="flex items-center gap-6">
 				<a
@@ -142,7 +143,7 @@ const dividerClass = forceDark
 					GitHub
 				</a>
 				<a
-					href="mailto:hello@winflowz.com"
+					href={`mailto:${SITE.emails.contact}`}
 					class={footerLinkClass}
 				>
 					Contact

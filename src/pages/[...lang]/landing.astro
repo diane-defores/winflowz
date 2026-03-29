@@ -10,6 +10,7 @@ import PricingSection from '@components/sections/pricing/PricingSection.astro'
 import FAQ from '@components/sections/misc/FAQ.astro'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types'
+import { getLocalizedSiteUrl } from '@/constants'
 
 export const prerender = true
 
@@ -70,8 +71,8 @@ const hasValidStats = Array.isArray(statistics) && statistics.length > 0
 	structuredData={{
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
-		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}landing`,
-		url: `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}landing`,
+		'@id': getLocalizedSiteUrl(lang, '/landing'),
+		url: getLocalizedSiteUrl(lang, '/landing'),
 		name: t.title,
 		description: metaDescription,
 		inLanguage: lang,

@@ -1,4 +1,6 @@
 ---
+import { SITE } from '@/constants';
+
 const { t } = Astro.props;
 
 interface SupportItem {
@@ -8,6 +10,7 @@ interface SupportItem {
 }
 
 const supportItems = (t.support?.items ?? []) as SupportItem[];
+const contactEmail = SITE.emails.contact;
 ---
 
 <section class="py-16 sm:py-24">
@@ -24,7 +27,7 @@ const supportItems = (t.support?.items ?? []) as SupportItem[];
     <div class="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-8 sm:mt-20 lg:grid-cols-2">
       <!-- Formulaire de Contact -->
       <div class="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <form id="contact-form" class="space-y-6">
+        <form id="contact-form" class="space-y-6" data-contact-email={contactEmail}>
           <div>
             <label for="name" class="block font-medium text-neutral-900 dark:text-white">
               {t.form.name.label}
@@ -101,12 +104,13 @@ const supportItems = (t.support?.items ?? []) as SupportItem[];
           const form = document.getElementById('contact-form') as HTMLFormElement | null;
           form?.addEventListener('submit', (e) => {
             e.preventDefault();
+            const contactEmail = form.dataset.contactEmail || '';
             const name = (document.getElementById('contact-name') as HTMLInputElement)?.value || '';
             const email = (document.getElementById('contact-email') as HTMLInputElement)?.value || '';
             const subject = (document.getElementById('contact-subject') as HTMLInputElement)?.value || '';
             const message = (document.getElementById('contact-message') as HTMLTextAreaElement)?.value || '';
 
-            const mailtoUrl = `mailto:hello@winflowz.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
+            const mailtoUrl = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
             window.location.href = mailtoUrl;
 
             const successEl = document.getElementById('contact-success');

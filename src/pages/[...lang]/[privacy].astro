@@ -2,6 +2,7 @@
 export const prerender = true
 import MainLayout from '@/layouts/MainLayout.astro'
 import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+import { SITE, getLocalizedSiteUrl } from '@/constants'
 
 export function getStaticPaths() {
 	return [
@@ -24,9 +25,9 @@ const sections = (t.sections ?? {}) as Record<
 	structuredData={{
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
-		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr/confidentialite' : 'privacy'}`,
-		url: `https://winflowz.com/${lang === 'fr' ? 'fr/confidentialite' : 'privacy'}`,
-		name: `${t.title} | WinFlowz`,
+		'@id': getLocalizedSiteUrl(lang, lang === 'fr' ? '/confidentialite' : '/privacy'),
+		url: getLocalizedSiteUrl(lang, lang === 'fr' ? '/confidentialite' : '/privacy'),
+		name: `${t.title} | ${SITE.name}`,
 		description: t.intro,
 		inLanguage: lang,
 	}}

@@ -21,7 +21,7 @@ Le constat est brutal : 15 a 20 changements d'application par jour, des notifica
 
 ## Texts : l'inbox universel
 
-**Texts** est un client de messagerie unifie qui regroupe toutes tes conversations dans une interface unique, pensee pour le clavier.
+**[Texts](https://texts.com/)** est un client de messagerie unifie qui regroupe toutes tes conversations dans une interface unique, pensee pour le clavier.
 
 ### Plateformes supportees
 
@@ -54,7 +54,7 @@ Le constat est brutal : 15 a 20 changements d'application par jour, des notifica
 
 ## iMessage sur Windows avec AirMessage
 
-Si tu as un iPhone et un PC Windows, **AirMessage** te donne acces a iMessage depuis ton ordinateur. Le principe : un vieux Mac sert de serveur relais, et tu accedes a tes messages depuis n'importe quel appareil.
+Si tu as un iPhone et un PC Windows, **[AirMessage](https://airmessage.org/)** te donne acces a iMessage depuis ton ordinateur. Le principe : un vieux Mac sert de serveur relais, et tu accedes a tes messages depuis n'importe quel appareil.
 
 ### Setup en 30 minutes
 
@@ -74,6 +74,19 @@ Combine AirMessage + Texts pour avoir iMessage, WhatsApp, Telegram, Slack, Disco
 | Franz / Rambox | Simples wrappers web, consommation RAM excessive |
 | Apps separees ouvertes | Defait completement l'objectif de centralisation |
 | Notifications partout | Chaos garanti, zero concentration |
+
+## Alternative secondaire : [Caprine](https://sindresorhus.com/caprine/)
+
+Si tu utilises encore beaucoup l'ecosysteme Messenger et que tu veux une application desktop plus legere, plus configurable et plus respectueuse de ta concentration, **Caprine** peut rester interessante.
+
+Contexte important : l'application desktop officielle **Messenger pour Windows et macOS a ete arretee le 15 decembre 2025**. Et a partir d'avril 2026, l'acces web standalone via `messenger.com` semble lui aussi etre progressivement replie vers l'experience de messagerie integree a Facebook. Autrement dit : Messenger existe encore comme service, mais **plus comme client desktop officiel autonome**.
+
+Il faut cependant la lire pour ce qu'elle est :
+- une **app non officielle**
+- utile surtout si tu veux isoler Messenger dans une interface plus propre
+- secondaire par rapport a une vraie logique de centralisation comme Texts
+
+Son interet principal n'est pas de revolutionner ta communication. C'est de te donner un client plus sobre, avec quelques options de privacy et de personnalisation, quand tu veux garder Messenger sans subir tout le bruit du navigateur ou d'un setup plus encombre.
 
 ## Workflow recommande
 

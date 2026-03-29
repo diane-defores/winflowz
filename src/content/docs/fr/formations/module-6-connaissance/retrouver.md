@@ -12,18 +12,7 @@ Toute ta base de connaissances ne vaut rien si tu ne peux pas retrouver ce dont 
 
 ## Moteurs de recherche personnels
 
-### CommandE
-
-CommandE unifie la recherche dans toutes tes apps et fichiers depuis un seul raccourci clavier :
-
-| Fonction | Détail |
-|----------|--------|
-| **Recherche unifiée** | Fichiers, emails, Slack, Drive, Notion — tout en un |
-| **Raccourci unique** | Un seul shortcut pour tout chercher |
-| **Résultats instantanés** | Indexation locale, pas d'attente |
-| **Connexions multiples** | Se branche sur tes apps cloud et locales |
-
-### Findr
+### [Findr](https://www.usefindr.io/)
 
 Findr est une alternative qui indexe tes apps de travail et rend tout cherchable :
 
@@ -32,11 +21,31 @@ Findr est une alternative qui indexe tes apps de travail et rend tout cherchable
 - **Résultats contextuels** — montre où et quand l'information a été partagée
 - **Vie privée** — traitement local quand possible
 
+### [Curiosity](https://curiosity.ai/app)
+
+Curiosity est une autre option crédible si tu veux une **recherche unifiée** entre :
+- fichiers locaux
+- emails
+- calendriers
+- apps cloud
+
+Son intérêt est de rapprocher plusieurs couches de ton travail dans une seule interface de recherche, sans te forcer à te souvenir où l'information vit exactement.
+
+Il devient intéressant si :
+- tu travailles dans plusieurs outils en parallèle
+- tu perds du temps à te demander "c'était dans un mail, un doc, Slack, ou un dossier ?"
+- tu veux retrouver vite sans reconstituer mentalement tout le chemin
+
+Le bon usage n'est pas de remplacer toute ton organisation par "je chercherai plus tard". Le bon usage est :
+- une organisation correcte
+- plus une recherche transversale vraiment bonne
+
+
 ---
 
 ## Lanceurs de clavier
 
-### ueli
+### [ueli](https://ueli.app/)
 
 ueli est un lanceur d'applications et de fichiers ultra-rapide pour Windows :
 
@@ -57,7 +66,7 @@ Multiplie ça par 50 actions par jour, et tu gagnes **10 minutes quotidiennes** 
 
 ## Recherche de fichiers
 
-### AnyTXT Searcher
+### [AnyTXT Searcher](https://anytxt.net/)
 
 AnyTXT Searcher est un moteur de recherche full-text pour tes fichiers locaux :
 
@@ -68,7 +77,7 @@ AnyTXT Searcher est un moteur de recherche full-text pour tes fichiers locaux :
 | **Indexation rapide** | Résultats en millisecondes même sur de gros volumes |
 | **Filtres avancés** | Par date, taille, type, dossier |
 
-### Everything (bonus)
+### [Everything](https://www.voidtools.com/) (bonus)
 
 Everything indexe tous les noms de fichiers de ton PC en temps réel — résultats instantanés dès la première lettre tapée. Indispensable sur Windows.
 
@@ -78,13 +87,13 @@ Everything indexe tous les noms de fichiers de ton PC en temps réel — résult
 
 | Extension | Fonction |
 |-----------|----------|
-| **Vimium** | Navigation au clavier dans le navigateur — jamais toucher la souris |
-| **Quick Tabs** | Recherche dans tes onglets ouverts par titre |
-| **History Search** | Recherche avancée dans ton historique de navigation |
+| [Vimium](https://vimium.github.io/) | Navigation au clavier dans le navigateur — jamais toucher la souris |
+| [Quick Tabs](https://chromewebstore.google.com/detail/quick-tabs/jnjfeinjfmenlddahdjdmgpbokiacbbb) | Recherche dans tes onglets ouverts par titre |
+| **Recherche native `@history` / `@tabs`** | Cherche rapidement dans ton historique et tes onglets depuis la barre d'adresse |
 
 ---
 
-## Recherche dans Vivaldi
+## Recherche dans [Vivaldi](https://vivaldi.com/)
 
 Si tu utilises Vivaldi, tu as déjà un arsenal de recherche intégré :
 
@@ -99,7 +108,7 @@ Si tu utilises Vivaldi, tu as déjà un arsenal de recherche intégré :
 
 1. **Commence par le lanceur** (ueli, Flow Launcher) pour les apps et fichiers récents
 2. **Passe à la recherche full-text** (AnyTXT) pour les contenus dans les fichiers
-3. **Utilise la recherche unifiée** (CommandE, Findr) pour les apps cloud
+3. **Utilise la recherche unifiée** (Findr ou équivalent) pour les apps cloud
 4. **En dernier recours** : navigation manuelle dans l'arborescence
 
 Si tu ne trouves pas en 30 secondes, ton système d'organisation a besoin d'être amélioré.

@@ -1,6 +1,7 @@
 ---
 import '../assets/styles/global.css';
 import CookieConsent from '@components/ui/banners/CookieConsent.astro';
+import { SITE, getLocalizedSiteUrl, getSiteUrl } from '@/constants';
 
 interface Props {
 	lang?: string;
@@ -13,8 +14,8 @@ const description = lang === 'fr'
 	? 'Transformez votre flux de travail numerique avec des extensions Chrome, plugins Obsidian et un guide complet de productivite Windows avec 200+ astuces testees.'
 	: 'Transform your digital workflow with Chrome extensions for YouTube, Obsidian plugins for content management, and a complete Windows productivity guide with 200+ tested tips.';
 
-const ogImage = 'https://winflowz.com/images/WinFlowz.png';
-const siteUrl = lang === 'fr' ? 'https://winflowz.com/fr' : 'https://winflowz.com';
+const ogImage = getSiteUrl(SITE.ogImage);
+const siteUrl = getLocalizedSiteUrl(lang === 'fr' ? 'fr' : 'en');
 ---
 
 <html lang={lang} class="scroll-pt-16">
@@ -33,7 +34,7 @@ const siteUrl = lang === 'fr' ? 'https://winflowz.com/fr' : 'https://winflowz.co
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="600" />
 		<meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_US'} />
-		<meta property="og:site_name" content="WinFlowz" />
+		<meta property="og:site_name" content={SITE.name} />
 
 		<!-- Twitter -->
 		<meta name="twitter:card" content="summary_large_image" />
@@ -42,8 +43,8 @@ const siteUrl = lang === 'fr' ? 'https://winflowz.com/fr' : 'https://winflowz.co
 		<meta name="twitter:image" content={ogImage} />
 
 		<!-- Alternate languages -->
-		<link rel="alternate" hreflang="en" href="https://winflowz.com/" />
-		<link rel="alternate" hreflang="fr" href="https://winflowz.com/fr" />
+		<link rel="alternate" hreflang="en" href={getLocalizedSiteUrl('en')} />
+		<link rel="alternate" hreflang="fr" href={getLocalizedSiteUrl('fr')} />
 		<link rel="canonical" href={siteUrl} />
 
 		<link rel="preconnect" href="https://fonts.googleapis.com" />

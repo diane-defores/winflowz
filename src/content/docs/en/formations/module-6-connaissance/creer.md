@@ -18,10 +18,9 @@ AI does not replace your thinking - it speeds up execution. You bring the ideas,
 
 | Tool | Specialty | Strengths |
 |-------|-----------|-----------|
-| **Gobble Bot** | Summaries and synthesis | Turns long documents into usable summaries |
-| **Flot AI** | Contextual writing assistant | Works inside any app as a floating copilot |
-| **Sider** | AI browser extension | Chat, summarize, and translate directly in the browser |
-| **Bearly** | AI reading and writing | Summarizes PDFs, generates content from your sources |
+| [Flot AI](https://flot.ai/) | Contextual writing assistant | Works inside any app as a floating copilot |
+| [Sider](https://sider.ai/) | AI browser extension | Chat, summarize, and translate directly in the browser |
+| [Bearly](https://bearly.ai/) | AI reading and writing | Summarizes PDFs, generates content from your sources |
 
 ### How to use AI well for writing
 
@@ -35,7 +34,7 @@ AI does not replace your thinking - it speeds up execution. You bring the ideas,
 
 ## PDF tools
 
-### PrintFriendly
+### [PrintFriendly](https://www.printfriendly.com/)
 
 PrintFriendly cleans up web pages before printing or converting them to PDF:
 
@@ -48,15 +47,15 @@ PrintFriendly cleans up web pages before printing or converting them to PDF:
 
 | Tool | Function |
 |-------|----------|
-| **Stirling PDF** | Full open-source suite: merge, split, OCR, convert |
-| **PDF Arranger** | Reorder pages with drag and drop |
-| **OCRmyPDF** | Adds a searchable text layer to scanned PDFs |
+| [Stirling PDF](https://stirlingpdf.io/) | Full open-source suite: merge, split, OCR, convert |
+| [PDF Arranger](https://github.com/pdfarranger/pdfarranger) | Reorder pages with drag and drop |
+| [OCRmyPDF](https://ocrmypdf.readthedocs.io/) | Adds a searchable text layer to scanned PDFs |
 
 ---
 
 ## Audio tools
 
-### Audacity
+### [Audacity](https://www.audacityteam.org/)
 
 Audacity remains the open-source reference for audio editing:
 

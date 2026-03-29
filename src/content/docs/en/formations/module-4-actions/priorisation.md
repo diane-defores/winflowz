@@ -81,10 +81,56 @@ Instead of juggling five projects, choose **one main objective** per period (wee
 
 Your to-do list should answer one question every morning: **"What is the one task that, if done, makes everything else easier or unnecessary?"**
 
-## Automatic prioritization tools
+## [Beeminder](https://www.beeminder.com/): when commitment becomes real
 
-| Tool | What it does |
-|------|--------------|
-| **Fluidwave** | Uses deadlines, priorities, and task time to rank work automatically. You always know exactly what to focus on next. |
-| **Focuster** | Automatically schedules tasks into your calendar based on priority, turning tasks into real blocks in your day. |
-| **Beeminder** | Uses financial commitment to keep you on track - you pay if you fail your plan. Harsh, but extremely effective for people who struggle to stick with commitments. |
+Most productivity systems fail at the same point: the moment your present self takes back control from your future self. You decided to work out, write, code, or do outreach. Then the moment arrives, and you start negotiating with yourself.
+
+Beeminder is interesting because it attacks that problem directly. It is not just a task manager. It is a **commitment device**: you define a path, put money on the line, and pay if you derail.
+
+### Why it is powerful
+
+The concept rests on a strong psychological truth: we are often willing to sacrifice the long term for immediate relief. Beeminder counters that by making the cost of backing out more concrete, more immediate, and harder to rationalize away.
+
+In practice:
+- you define a measurable goal
+- Beeminder draws a red line you have to stay above
+- if you go below it, you derail
+- a pledge is charged based on your current stake
+
+This is especially useful if one of these patterns sounds familiar:
+- you know exactly what to do, but you do not do it consistently
+- you stay on track for a few days and then negotiate an exception with yourself
+- you are very good at inventing intelligent stories about why "this week is different"
+- you need an external consequence to break soft compromises
+
+### What makes it smarter than simple punishment
+
+Beeminder is not just "fail and pay." Its system includes safeguards that make the concept much more interesting:
+
+- **Pledge schedule**: the stakes rise gradually instead of throwing you into an absurd penalty immediately
+- **Akrasia horizon**: you cannot make your goal easier right away; many easing changes only take effect 7 days later
+- **Pledge caps**: you can limit how high the stake goes so the tool does not become toxic stress
+- **Automatic integrations**: the concept becomes even stronger when the data is pulled in automatically, for example from RescueTime, Fitbit, Duolingo, and similar sources
+
+The idea of the **akrasia horizon** is especially smart: if you could make the commitment easier at the exact moment you wanted to escape it, the whole system would collapse. Beeminder protects the commitment from your mood in the moment.
+
+### When to use it
+
+Beeminder is excellent for:
+- writing every day
+- exercising consistently
+- limiting a distracting behavior
+- maintaining a production rhythm
+- enforcing a minimum standard on a habit that is already clearly defined
+
+It is less useful if:
+- your goal is poorly defined
+- the metric is vague or easy to game
+- your main problem is strategic, not behavioral
+- you are already in a fragile phase where financial punishment would add mostly shame or stress
+
+### The right way to use it
+
+Start small. Do not choose a dramatic amount of money just to prove you are serious. The goal is to find your **credible commitment level**: strong enough to move you, not so strong that it turns your life into a constant tribunal.
+
+Beeminder does not replace clarity, prioritization, or deep motivation. But for some people, it is the tool that finally turns a good intention into a real constraint.

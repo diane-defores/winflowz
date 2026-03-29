@@ -23,20 +23,19 @@ Before every meeting, ask yourself three questions:
 2. **Does everyone need to be there?** (required vs optional)
 3. **Can we shorten it?** (25 minutes instead of 30)
 
-The **Should It Be a Meeting** tool gives you an interactive questionnaire to make the call. The WinFlowz rule: if the goal can be achieved with a 2-minute Loom video, it is not a meeting.
+The **[Should It Be a Meeting](https://shoulditbeameeting.com/)** tool gives you an interactive questionnaire to make the call. The WinFlowz rule: if the goal can be achieved with a 2-minute Loom video, it is not a meeting.
 
 ## Collaborative scheduling
 
-**Rallly** is the open-source alternative to Doodle: clean interface, no sign-in required for participants, real-time voting on proposed times. Available as SaaS or self-hosted with Docker for full control over your data.
+**[Rallly](https://rallly.co/)** is the open-source alternative to Doodle: clean interface, no sign-in required for participants, real-time voting on proposed times. Available as SaaS or self-hosted with Docker for full control over your data.
 
 ## Video call platforms
 
 | Tool | Strength | Price |
 |------|----------|-------|
-| **Around** | Zero-echo audio, floating windows, hybrid teams | Paid |
-| **JumpChat** | No install, P2P encryption, starts in 10 seconds | Free |
+| **Google Meet / Zoom / Teams** | Standard tools, easy to deploy, broadly compatible | Variable |
 
-Around is ideal for daily standups and virtual co-working thanks to its excellent audio quality. JumpChat is perfect for spontaneous calls with external people who do not use your company's tools.
+When you choose a video platform, prioritize deployment simplicity, compatibility with the people you talk to, and technical reliability.
 
 ## AI note-taking: the game changer
 
@@ -44,10 +43,10 @@ No more meetings without follow-up. AI assistants join your calls, transcribe th
 
 | Tool | Specialty | Privacy | Price |
 |------|-----------|---------|-------|
-| **Otter.ai** | Real-time transcription, 30+ languages, CRM integrations | Standard | Freemium |
-| **tl;dv** | Sales coaching, cross-meeting insights, GDPR compliant | High (EU) | Freemium |
-| **Fireflies.ai** | AskFred (ChatGPT for your meetings), content generation | Standard | Freemium |
-| **Superpowered** | No recording, local transcription, SOC-2 | Maximum | Paid |
+| **[Otter.ai](https://otter.ai/)** | Real-time transcription, 30+ languages, CRM integrations | Standard | Freemium |
+| **[tl;dv](https://tldv.io/)** | Sales coaching, cross-meeting insights, GDPR compliant | High (EU) | Freemium |
+| **[Fireflies.ai](https://fireflies.ai/)** | AskFred (ChatGPT for your meetings), content generation | Standard | Freemium |
+| **[Superpowered](https://superpowered.me/)** | No recording, local transcription, SOC-2 | Maximum | Paid |
 
 :::tip[Choose based on your need]
 - **General use**: Otter.ai (600 free min/month)
@@ -66,11 +65,11 @@ No more meetings without follow-up. AI assistants join your calls, transcribe th
 
 ## Workflow by level
 
-**Beginner (0 euros/month)**: Should It Be a Meeting + Rallly + Google Meet + free Otter.ai. Filter out bad meetings, schedule easily, and get AI notes on every call.
+**Beginner (0 euros/month)**: [Should It Be a Meeting](https://shoulditbeameeting.com/) + [Rallly](https://rallly.co/) + Google Meet + [Otter.ai](https://otter.ai/) free. Filter out bad meetings, schedule easily, and get AI notes on every call.
 
-**Intermediate (20-40 euros/month)**: Rallly + Around + Otter.ai Pro or tl;dv + Timezone Checker. Better video quality, cross-meeting insights, and international coordination.
+**Intermediate (20-40 euros/month)**: [Rallly](https://rallly.co/) + Google Meet or Zoom + [Otter.ai](https://otter.ai/) Pro or [tl;dv](https://tldv.io/) + [Timezone Checker](https://www.timezonechecker.app/). Better video quality, cross-meeting insights, and international coordination.
 
-**Advanced (variable)**: VoIPstudio + Around + tl;dv Enterprise + Superpowered + self-hosted Rallly. Call center, team coaching, maximum confidentiality.
+**Advanced (variable)**: [VoIPstudio](https://voipstudio.com/) + Zoom or Google Meet + [tl;dv](https://tldv.io/) Enterprise + [Superpowered](https://superpowered.me/) + self-hosted [Rallly](https://rallly.co/). Call center, team coaching, maximum confidentiality.
 
 ## Best practices
 

@@ -28,7 +28,7 @@ Even if you are not a developer, the idea is the same:
 
 Before optimizing, you have to clean up. A cluttered disk slows everything down: startup, file search, installs. That is the first step in this module.
 
-### Czkawka: the smart cleaner
+### [Czkawka](https://github.com/qarmin/czkawka): the smart cleaner
 
 Czkawka (pronounced "ch-kafka") is an open-source tool that detects duplicate files, similar images, forgotten temporary files, and empty folders. Unlike shady commercial "cleaners", it is transparent, fast, and does nothing without your approval.
 

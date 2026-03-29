@@ -12,7 +12,7 @@ Les opérations sur fichiers et médias sont les tâches ingrates que tout le mo
 
 ## Archives cloud
 
-### Cloudzip
+### [Cloudzip](https://cloudzip.net/)
 
 Cloudzip te permet de manipuler des archives (ZIP, RAR, 7z) directement dans le cloud sans les télécharger entièrement :
 
@@ -27,7 +27,7 @@ Cloudzip te permet de manipuler des archives (ZIP, RAR, 7z) directement dans le 
 
 ## Manipulation d'images
 
-### Magic Copy
+### [Magic Copy](https://chromewebstore.google.com/detail/magic-copy/nnifclicibdhgakebbnbfmomniihfmkg)
 
 Magic Copy utilise l'IA pour extraire des éléments d'une image en un clic :
 
@@ -40,16 +40,16 @@ Magic Copy utilise l'IA pour extraire des éléments d'une image en un clic :
 
 | Outil | Fonction |
 |-------|----------|
-| **ShareX** | Capture d'écran avancée + annotation + upload automatique |
-| **GIMP** | Édition d'images complète, open source |
-| **Squoosh** | Compression d'images web (Google, en ligne) |
-| **XnConvert** | Conversion et traitement d'images en lot |
+| [ShareX](https://getsharex.com/) | Capture d'écran avancée + annotation + upload automatique |
+| [GIMP](https://www.gimp.org/) | Édition d'images complète, open source |
+| [Squoosh](https://github.com/GoogleChromeLabs/squoosh) | Compression d'images web (Google, en ligne) |
+| [XnConvert](https://www.xnview.com/en/xnconvert/) | Conversion et traitement d'images en lot |
 
 ---
 
 ## Outils CSV et données tabulaires
 
-### Qsv
+### [Qsv](https://github.com/dathere/qsv)
 
 Qsv est un outil en ligne de commande ultra-rapide pour manipuler des fichiers CSV :
 
@@ -80,16 +80,16 @@ qsv stats data.csv
 
 | Outil | Type | Avantage |
 |-------|------|----------|
-| **PowerRename** (PowerToys) | GUI | Intégré à l'explorateur Windows, regex supporté |
-| **Bulk Rename Utility** | GUI | Le plus complet, des dizaines d'options |
+| [PowerRename](https://learn.microsoft.com/en-us/windows/powertoys/powerrename) (PowerToys) | GUI | Intégré à l'explorateur Windows, regex supporté |
+| [Bulk Rename Utility](https://www.bulkrenameutility.co.uk/) | GUI | Le plus complet, des dizaines d'options |
 | **rename** (CLI) | Terminal | Script Perl ultra-flexible |
 
 ### Conversion en lot
 
-- **FFmpeg** pour la vidéo et l'audio (tout format vers tout format)
-- **ImageMagick** pour les images (`mogrify -format webp *.png`)
-- **Pandoc** pour les documents (markdown → PDF, DOCX → HTML, etc.)
-- **LibreOffice CLI** pour les fichiers Office en lot
+- **[FFmpeg](https://www.ffmpeg.org/)** pour la vidéo et l'audio (tout format vers tout format)
+- **[ImageMagick](https://imagemagick.org/)** pour les images (`mogrify -format webp *.png`)
+- **[Pandoc](https://pandoc.org/)** pour les documents (markdown → PDF, DOCX → HTML, etc.)
+- **[LibreOffice CLI](https://www.libreoffice.org/)** pour les fichiers Office en lot
 
 ---
 

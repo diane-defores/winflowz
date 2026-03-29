@@ -5,6 +5,7 @@ import ContactSection from '@/components/sections/ContactSection.astro'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types'
 import { generateStaticPaths } from '@/utils/routing'
+import { getLocalizedSiteUrl } from '@/constants'
 
 export const getStaticPaths = () => generateStaticPaths('contact')
 
@@ -30,8 +31,8 @@ const description: string =
 	structuredData={{
 		'@context': 'https://schema.org',
 		'@type': 'ContactPage',
-		'@id': `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}contact`,
-		url: `https://winflowz.com/${lang === 'fr' ? 'fr/' : ''}contact`,
+		'@id': getLocalizedSiteUrl(lang, '/contact'),
+		url: getLocalizedSiteUrl(lang, '/contact'),
 		name: title,
 		description: description,
 		inLanguage: lang,

@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro'
 import { ConvexHttpClient } from 'convex/browser'
+import { SITE } from '@/constants'
 
 type CourseUser = {
 	role?: string
@@ -60,7 +61,7 @@ export function isSafeCourseCheckoutPath(pathname: string | null) {
 	}
 
 	try {
-		const url = new URL(pathname, 'https://winflowz.com')
+		const url = new URL(pathname, SITE.url)
 		const lesson = url.searchParams.get('lesson')
 		return (
 			url.pathname === '/api/polar/checkout' &&

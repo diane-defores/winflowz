@@ -23,20 +23,19 @@ Avant chaque reunion, pose-toi trois questions :
 2. **Tout le monde doit-il etre la ?** (optionnel vs requis)
 3. **Peut-on reduire la duree ?** (25 min au lieu de 30)
 
-L'outil **Should It Be a Meeting** propose un questionnaire interactif pour trancher. Regle Winflowz : si l'objectif peut etre atteint par une video Loom de 2 minutes, ce n'est pas une reunion.
+L'outil **[Should It Be a Meeting](https://shoulditbeameeting.com/)** propose un questionnaire interactif pour trancher. Regle Winflowz : si l'objectif peut etre atteint par une video Loom de 2 minutes, ce n'est pas une reunion.
 
 ## Planification collaborative
 
-**Rallly** est l'alternative open source a Doodle : interface epuree, aucune inscription requise pour les participants, votes en temps reel sur les creneaux proposes. Disponible en SaaS ou self-hosted via Docker pour un controle total sur tes donnees.
+**[Rallly](https://rallly.co/)** est l'alternative open source a Doodle : interface epuree, aucune inscription requise pour les participants, votes en temps reel sur les creneaux proposes. Disponible en SaaS ou self-hosted via Docker pour un controle total sur tes donnees.
 
 ## Plateformes de visioconference
 
 | Outil | Point fort | Prix |
 |-------|-----------|------|
-| **Around** | Audio zero echo, fenetres flottantes, equipes hybrides | Payant |
-| **JumpChat** | Zero installation, chiffrement P2P, demarrage en 10 secondes | Gratuit |
+| **Google Meet / Zoom / Teams** | Outils standards, simples a deployer, assez universels | Variable |
 
-Around est ideal pour les standups quotidiens et le co-working virtuel grace a son audio revolutionnaire. JumpChat convient parfaitement aux appels spontanes avec des externes qui n'ont pas ton outil d'entreprise.
+Quand tu choisis une plateforme de visio, cherche d'abord la simplicite de deploiement, la compatibilite avec tes interlocuteurs, et la stabilite technique.
 
 ## Prise de notes IA : le game-changer
 
@@ -44,10 +43,10 @@ Fini les reunions sans suivi. Les assistants IA rejoignent tes calls, transcrive
 
 | Outil | Specialite | Privacy | Prix |
 |-------|-----------|---------|------|
-| **Otter.ai** | Transcription temps reel, 30+ langues, integrations CRM | Standard | Freemium |
-| **tl;dv** | Sales coaching, insights cross-meeting, GDPR compliant | Elevee (EU) | Freemium |
-| **Fireflies.ai** | AskFred (ChatGPT sur tes meetings), generation de contenu | Standard | Freemium |
-| **Superpowered** | Aucun enregistrement, transcription locale, SOC-2 | Maximale | Payant |
+| **[Otter.ai](https://otter.ai/)** | Transcription temps reel, 30+ langues, integrations CRM | Standard | Freemium |
+| **[tl;dv](https://tldv.io/)** | Sales coaching, insights cross-meeting, GDPR compliant | Elevee (EU) | Freemium |
+| **[Fireflies.ai](https://fireflies.ai/)** | AskFred (ChatGPT sur tes meetings), generation de contenu | Standard | Freemium |
+| **[Superpowered](https://superpowered.me/)** | Aucun enregistrement, transcription locale, SOC-2 | Maximale | Payant |
 
 :::tip[Choisis selon ton besoin]
 - **Generaliste** : Otter.ai (600 min/mois gratuites)
@@ -66,11 +65,11 @@ Fini les reunions sans suivi. Les assistants IA rejoignent tes calls, transcrive
 
 ## Workflow par niveau
 
-**Debutant (0 euros/mois)** : Should It Be a Meeting + Rallly + Google Meet + Otter.ai gratuit. Filtre les reunions inutiles, planifie facilement, obtiens des notes IA sur chaque call.
+**Debutant (0 euros/mois)** : [Should It Be a Meeting](https://shoulditbeameeting.com/) + [Rallly](https://rallly.co/) + Google Meet + [Otter.ai](https://otter.ai/) gratuit. Filtre les reunions inutiles, planifie facilement, obtiens des notes IA sur chaque call.
 
-**Intermediaire (20-40 euros/mois)** : Rallly + Around + Otter.ai Pro ou tl;dv + Timezone Checker. Meilleure qualite visio, insights cross-meeting, coordination internationale.
+**Intermediaire (20-40 euros/mois)** : [Rallly](https://rallly.co/) + Google Meet ou Zoom + [Otter.ai](https://otter.ai/) Pro ou [tl;dv](https://tldv.io/) + [Timezone Checker](https://www.timezonechecker.app/). Meilleure qualite visio, insights cross-meeting, coordination internationale.
 
-**Avance (variable)** : VoIPstudio + Around + tl;dv Enterprise + Superpowered + Rallly self-hosted. Call center, coaching equipe, confidentialite maximale.
+**Avance (variable)** : [VoIPstudio](https://voipstudio.com/) + Zoom ou Google Meet + [tl;dv](https://tldv.io/) Enterprise + [Superpowered](https://superpowered.me/) + [Rallly](https://rallly.co/) self-hosted. Call center, coaching equipe, confidentialite maximale.
 
 ## Bonnes pratiques
 

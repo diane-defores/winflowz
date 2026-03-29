@@ -21,7 +21,7 @@ The reality is harsh: 15 to 20 app switches a day, notifications coming from eve
 
 ## Texts: the universal inbox
 
-**Texts** is a unified messaging client that brings all your conversations into a single keyboard-first interface.
+**[Texts](https://texts.com/)** is a unified messaging client that brings all your conversations into a single keyboard-first interface.
 
 ### Supported platforms
 
@@ -54,7 +54,7 @@ The reality is harsh: 15 to 20 app switches a day, notifications coming from eve
 
 ## iMessage on Windows with AirMessage
 
-If you have an iPhone and a Windows PC, **AirMessage** gives you access to iMessage from your computer. The setup: an old Mac acts as the relay server, and you access messages from any device.
+If you have an iPhone and a Windows PC, **[AirMessage](https://airmessage.org/)** gives you access to iMessage from your computer. The setup: an old Mac acts as the relay server, and you access messages from any device.
 
 ### 30-minute setup
 
@@ -74,6 +74,19 @@ Combine AirMessage + Texts to have iMessage, WhatsApp, Telegram, Slack, Discord,
 | Franz / Rambox | Just web wrappers, heavy RAM usage |
 | Separate apps left open | Completely defeats centralization |
 | Notifications everywhere | Guaranteed chaos, zero focus |
+
+## Secondary alternative: [Caprine](https://sindresorhus.com/caprine/)
+
+If you still rely heavily on the Messenger ecosystem and want a desktop app that is lighter, more configurable, and easier on your attention, **Caprine** can still be relevant.
+
+Important context: the official **Messenger desktop app for Windows and macOS was shut down on December 15, 2025**. And from April 2026 onward, standalone web access through `messenger.com` also appears to be getting folded back into Facebook's integrated messaging experience. In other words: Messenger still exists as a service, but **not as a standalone official desktop client anymore**.
+
+It is important to frame it correctly:
+- it is an **unofficial app**
+- it mainly makes sense if you want Messenger isolated in a cleaner interface
+- it stays secondary compared with a true centralization layer such as Texts
+
+Its main value is not to reinvent communication. It is to give you a calmer client with a few privacy and customization benefits when you want to keep Messenger without inheriting all the noise of a browser-first setup.
 
 ## Recommended workflow
 

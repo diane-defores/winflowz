@@ -61,6 +61,32 @@ Ton énergie fluctue selon des cycles biologiques. Le **Biological Prime Time**,
 
 Pour le découvrir : note ton niveau d'énergie (1-10) toutes les heures pendant 2 semaines. Le pattern apparaîtra.
 
+## Travaille par thème et respecte ton énergie
+
+Toutes les heures ne se valent pas. Toutes les tâches non plus. Une grosse partie de la productivité vient du fait d'arrêter de demander à ton cerveau de faire le mauvais type d'effort au mauvais moment.
+
+Deux questions simples :
+- quelles tâches exigent ton meilleur niveau de clarté mentale ?
+- à quels moments de la journée es-tu naturellement le plus lucide ?
+
+Quand tu relies les deux, tu réduis la friction et tu récupères de l'élan. Le travail créatif et stratégique doit aller dans tes pics. L'administratif et la maintenance vont beaucoup mieux dans les creux.
+
+Tu peux aussi regrouper ta semaine par grands thèmes : création, production, communication, administration, apprentissage. Cela évite le switch permanent et donne à chaque journée une intention claire.
+
+Le but n'est pas de rendre ton agenda rigide. Le but est d'arrêter de gaspiller ton énergie la plus précieuse sur des tâches qui pourraient être faites plus tard.
+
+## Poser des limites pour protéger ton focus
+
+Si tu dis oui à tout, ton agenda devient celui des autres. Poser des limites n'est pas un luxe, c'est une condition de la concentration durable.
+
+Quelques limites utiles :
+- réserver tes meilleures heures au travail profond
+- ne pas répondre instantanément à tous les messages
+- regrouper les rendez-vous au lieu de les disperser
+- protéger des créneaux sans réunions ni notifications
+
+Prendre soin de ton focus n'est pas être égoïste. C'est protéger la ressource qui te permet ensuite d'être utile, créatif et fiable.
+
 ## Pauses réelles vs. pauses stimulantes
 
 Scroller Instagram n'est **pas** une pause. Ton cerveau reste en mode consommation. Une vraie pause restaure ton énergie :
