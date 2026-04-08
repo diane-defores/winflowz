@@ -1,48 +1,42 @@
 {
   "title": "Des prix simples et transparents",
-  "subtitle": "Choisissez le plan qui correspond à vos besoins",
+  "subtitle": "Accède à 8 modules de formation Windows en productivité. Tarif de lancement disponible pour une durée limitée.",
   "plans": [
     {
       "name": "Gratuit",
-      "description": "Parfait pour découvrir nos outils",
+      "description": "Découvre la formation gratuitement",
       "price": "0€",
-      "period": "/mois",
+      "period": "",
       "features": [
-        "Accès aux extensions de base",
-        "Documentation complète",
+        "Module I — Productivité (complet)",
+        "Aperçu complet du cours",
         "Support communautaire",
-        "Mises à jour régulières"
+        "Sans carte bancaire"
       ],
       "cta": "Commencer gratuitement"
     },
     {
-      "name": "Pro",
-      "description": "Pour les utilisateurs avancés",
-      "price": "9.99€",
-      "period": "/mois",
+      "name": "Formation complète",
+      "description": "Les 8 modules, accès à vie",
+      "price": "49€",
+      "period": "paiement unique",
+      "strikethrough": "97€",
       "features": [
-        "Toutes les fonctionnalités gratuites",
-        "Extensions premium",
-        "Support prioritaire",
-        "Accès anticipé aux nouveautés",
-        "Formations exclusives"
+        "Les 8 modules de formation",
+        "Contenu FR + EN",
+        "Accès à vie & mises à jour",
+        "Tableau de bord avec suivi",
+        "Support prioritaire"
       ],
-      "cta": "Commencer l'essai",
+      "cta": "Accéder à la formation",
       "popular": true
     },
     {
-      "name": "Entreprise",
-      "description": "Vous avez besoin d'une solution sur mesure ?",
-      "price": "Sur mesure",
-      "period": "",
-      "features": [
-        "Toutes les fonctionnalités Pro",
-        "Déploiement personnalisé",
-        "Support dédié 24/7",
-        "Formation sur mesure",
-        "Intégrations spécifiques"
-      ],
-      "cta": "Contactez-nous"
+      "name": "Bundle",
+      "description": "Formation + SocialFlow à vie + 1 an TubeFlow Pro",
+      "price": "149€",
+      "period": "paiement unique",
+      "cta": "Voir le bundle"
     }
   ]
-} 
+}
