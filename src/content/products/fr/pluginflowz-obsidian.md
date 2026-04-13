@@ -23,8 +23,8 @@ longDescription:
   title: "Optimisez la Gestion de vos Plugins Obsidian"
   subTitle: |
     PluginFlowz apporte une gestion professionnelle des plugins à Obsidian, vous permettant d'organiser et d'évaluer efficacement vos extensions. Que vous gériez quelques plugins ou des dizaines, PluginFlowz rend tout cela simple et efficace avec son interface intuitive et ses fonctionnalités avancées.
-  btnTitle: "Installer le Plugin"
-  btnURL: "#"
+  btnTitle: "Me prevenir du lancement"
+  btnURL: "/fr/contact"
 descriptionList:
   - title: "Gestion Intelligente"
     subTitle: "Vue d'ensemble complète de vos plugins installés, système d'activation/désactivation facile, et organisation par tags personnalisables."

@@ -24,8 +24,8 @@ longDescription:
   title: "Transformez vos Rêves en Réalité Concrète"
   subTitle: |
     GoalFlowz apporte une méthodologie professionnelle de planification stratégique, basée sur la méthode 1/5/10 Planasy. Notre application décompose vos objectifs ambitieux en étapes réalisables, du plan décennal jusqu'aux tâches quotidiennes.
-  btnTitle: "Commencer Gratuitement"
-  btnURL: "#"
+  btnTitle: "Me prevenir du lancement"
+  btnURL: "/fr/contact"
 descriptionList:
   - title: "Goal-Chaining Révolutionnaire"
     subTitle: "Transformez vos objectifs à long terme en actions quotidiennes grâce à notre système unique de chaînage d'objectifs."

@@ -23,8 +23,8 @@ longDescription:
   title: "Transform Your Dreams into Tangible Reality"
   subTitle: |
     GoalFlowz brings professional strategic planning methodology, based on the 1/5/10 Planasy method. Our application breaks down your ambitious goals into achievable steps, from ten-year plans to daily tasks.
-  btnTitle: "Start Free"
-  btnURL: "#"
+  btnTitle: "Notify me at launch"
+  btnURL: "/contact"
 descriptionList:
   - title: "Revolutionary Goal-Chaining"
     subTitle: "Transform your long-term goals into daily actions with our unique goal-chaining system."

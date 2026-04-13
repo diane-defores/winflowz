@@ -1,6 +1,7 @@
 ---
 title: "GoalFlowz"
 description: "Extension Chrome Avancée de Suivi des Objectifs"
+status: "beta"
 main:
   id: 1
   content: |
@@ -22,8 +23,8 @@ longDescription:
   title: "Transformez Votre Parcours d'Atteinte des Objectifs"
   subTitle: |
     GoalFlowz vous permet de définir, suivre et atteindre vos objectifs avec facilité. Que vous gériez des projets personnels, des tâches académiques ou des objectifs professionnels, GoalFlowz simplifie le processus et vous garde motivé.
-  btnTitle: "Installer l'Extension"
-  btnURL: "#"
+  btnTitle: "Rejoindre la beta"
+  btnURL: "/fr/contact"
 descriptionList:
   - title: "Définition Avancée des Objectifs"
     subTitle: "Créez des objectifs spécifiques et mesurables avec des délais, et suivez votre progression sans effort."

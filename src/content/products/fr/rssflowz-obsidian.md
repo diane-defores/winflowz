@@ -23,8 +23,8 @@ longDescription:
   title: "Transformez Votre Veille avec l'IA dans Obsidian"
   subTitle: |
     RSSFlowz apporte une gestion intelligente des flux RSS à Obsidian, vous permettant d'optimiser votre veille informationnelle. Que vous suiviez l'actualité, fassiez de la recherche ou organisiez votre contenu, RSSFlowz rend tout cela simple et efficace avec l'aide de l'IA.
-  btnTitle: "Installer le Plugin"
-  btnURL: "#"
+  btnTitle: "Me prevenir du lancement"
+  btnURL: "/fr/contact"
 descriptionList:
   - title: "Organisation Intelligente"
     subTitle: "Créez des groupes pour organiser vos flux RSS, choisissez entre un fichier par article ou un fichier unique par flux, avec une interface intuitive."

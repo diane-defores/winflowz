@@ -1,6 +1,7 @@
 ---
 title: "GoalFlowz"
 description: "Advanced Goal Tracking Chrome Extension"
+status: "beta"
 main:
   id: 1
   content: |
@@ -22,8 +23,8 @@ longDescription:
   title: "Transform Your Goal Achievement Journey"
   subTitle: |
     GoalFlowz empowers you to set, track, and achieve your goals with ease. Whether you're managing personal projects, academic tasks, or professional objectives, GoalFlowz simplifies the process and keeps you motivated.
-  btnTitle: "Install Extension"
-  btnURL: "#"
+  btnTitle: "Join the beta"
+  btnURL: "/contact"
 descriptionList:
   - title: "Advanced Goal Setting"
     subTitle: "Create specific, measurable goals with deadlines, and track your progress effortlessly."

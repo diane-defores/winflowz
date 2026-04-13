@@ -23,8 +23,8 @@ longDescription:
   title: "Transformez Votre Gestion des Médias dans Obsidian"
   subTitle: |
     MediaFlowz apporte une gestion professionnelle des médias à Obsidian, vous permettant d'optimiser votre flux de travail créatif. Que vous gériez des images, des GIFs ou organisiez vos ressources médias, MediaFlowz rend tout cela simple et efficace.
-  btnTitle: "Installer le Plugin"
-  btnURL: "#"
+  btnTitle: "Me prevenir du lancement"
+  btnURL: "/fr/contact"
 descriptionList:
   - title: "Gestion Intelligente des Images"
     subTitle: "Importez, organisez et recherchez facilement vos images et GIFs avec une interface intuitive et des fonctionnalités de balisage avancées."

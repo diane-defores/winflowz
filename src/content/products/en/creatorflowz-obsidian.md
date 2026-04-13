@@ -23,8 +23,8 @@ longDescription:
   title: "Transform Your Obsidian into a Creative Powerhouse"
   subTitle: |
     CreatorFlowz brings professional-grade media management and project organization to Obsidian, helping you streamline your creative workflow. Whether you're creating content, managing projects, or organizing resources, CreatorFlowz makes it effortless.
-  btnTitle: "Install Plugin"
-  btnURL: "#"
+  btnTitle: "Notify me at launch"
+  btnURL: "/contact"
 descriptionList:
   - title: "Advanced Media Management"
     subTitle: "Search and download media from multiple platforms (Giphy, Pexels, Unsplash, YouTube) with integrated preview and automatic organization."

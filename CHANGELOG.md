@@ -13,14 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Dedicated bilingual Windows sales-page funnel at `/fr/maitrise-windows` and `/windows-mastery`
 - Funnel strategy documents under `CONTENU/xxxTunnel/` covering messaging spine, avatar matrix, landing wireframe, sales-page draft, and email campaign copy
 - Reusable FR/EN Windows Mastery email campaign assets under `idees/emails/winflowz-windows-mastery/`
+- `.env.example` documenting the current Clerk, Polar, Convex, Resend, and app configuration variables
+- `GUIDELINES.md` to capture project-specific engineering and funnel maintenance rules
 
 ### Changed
 - Redirect homepage hero, final CTA, and paid pricing CTA into the new Windows sales page while keeping the free plan linked to the course preview hub
 - Point the WinFlowz product entry and product listing links to the dedicated Windows sales page
 - Continue consolidating `CONTENU/` source notes into compact future-source briefs and align additional FR/EN premium lesson files with the published course
+- Refresh `README.md` so routes, scripts, environment variables, and project structure match the live codebase
+- Route newsletter welcome emails toward the Windows sales page and tighten the copy around the current offer
+- Turn product catalog `beta` / `coming_soon` entries into real contact or waitlist CTAs instead of dead-end placeholders
+- Localize review links and purchase success follow-up links so FR and EN users stay in the right funnel
+- Remove the dead third tab from product detail pages and keep only the rendered panels
 
 ### Fixed
 - Keep paid funnel entry points aligned across homepage, pricing, product copy, and dedicated sales-page routes in both French and English
+- Restore a working hero purchase CTA on the landing page
+- Prevent `GoalFlowz` and other non-available products from appearing directly purchasable with broken links
 
 ### Added
 - Server checkout route for training unlocks at `/api/polar/checkout`
@@ -71,7 +80,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add Clerk webhook signature verification (svix HMAC) — was previously unprotected
 
 ### Removed
-- Remove GUIDELINES.md
 - Remove legacy TASKS.md content
 - Remove PostHog analytics script from MainLayout
 - Remove analytics opt-out UI from the privacy page

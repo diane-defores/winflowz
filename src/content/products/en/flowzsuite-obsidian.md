@@ -23,8 +23,8 @@ longDescription:
   title: "Your All-in-One Creative Suite for Obsidian"
   subTitle: |
     Stop juggling between different tools and browser tabs. FlowzSuite brings everything you need directly into Obsidian. Whether you're a content creator, researcher, writer, or knowledge worker, our suite of plugins streamlines your workflow and boosts your productivity. Experience the power of integrated tools designed to work seamlessly together.
-  btnTitle: "Get FlowzSuite Now"
-  btnURL: "#"
+  btnTitle: "Join the waitlist"
+  btnURL: "/contact"
 descriptionList:
   - title: "8 Premium Plugins, 1 Unified Experience"
     subTitle: "CreatorFlowz, TubeFlowz, MediaFlowz, EditorFlowz, RSSFlowz, PluginFlowz, MailingFlowz, and LinkFlowz – each meticulously crafted to enhance your Obsidian workflow."

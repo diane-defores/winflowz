@@ -35,6 +35,8 @@ const { lang } = Astro.props
 const t = await useTranslations(lang, 'home')
 const featuresData = await useTranslations(lang, 'features')
 const metaDescription = t.meta?.description ?? ''
+const windowsMasteryUrl = lang === 'fr' ? '/fr/maitrise-windows' : '/windows-mastery'
+const productsUrl = lang === 'fr' ? '/fr/produits' : '/products'
 
 const features = Object.entries(featuresData).map(([key, value]) => ({
 	heading: value.title,
@@ -84,6 +86,7 @@ const hasValidStats = Array.isArray(statistics) && statistics.length > 0
 		primaryBtn={t.hero.primaryBtn}
 		primaryBtnURL={t.hero.primaryBtnURL}
 		secondaryBtn={t.hero.secondaryBtn}
+		secondaryBtnURL={windowsMasteryUrl}
 		withReview={true}
 		avatars={avatarSrcs}
 		rating={t.hero.rating}
@@ -146,6 +149,6 @@ const hasValidStats = Array.isArray(statistics) && statistics.length > 0
 	<HeroSectionAlt
 		title={t.cta.title}
 		subTitle={t.cta.subTitle}
-		url={`/${lang === 'fr' ? 'fr/' : ''}produits`}
+		url={productsUrl}
 	/>
 </MainLayout>

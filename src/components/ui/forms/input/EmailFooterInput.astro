@@ -16,7 +16,7 @@ const successMsg = Astro.currentLocale === "fr" ? "Merci ! Vous etes inscrit(e).
 const errorMsg = Astro.currentLocale === "fr" ? "Erreur. Veuillez reessayer." : "Something went wrong. Please try again.";
 ---
 
-<form id="newsletter-form" class="mt-4 flex flex-col items-center gap-2 rounded-lg bg-neutral-200 p-2 dark:bg-neutral-800 sm:flex-row sm:gap-3">
+<form id="newsletter-form" data-lang={Astro.currentLocale === "fr" ? "fr" : "en"} class="mt-4 flex flex-col items-center gap-2 rounded-lg bg-neutral-200 p-2 dark:bg-neutral-800 sm:flex-row sm:gap-3">
   <div class="w-full">
     <label for={id} class="sr-only">{label}</label>
     <input
@@ -48,6 +48,7 @@ const errorMsg = Astro.currentLocale === "fr" ? "Erreur. Veuillez reessayer." : 
     const successEl = document.getElementById('newsletter-success');
     const errorEl = document.getElementById('newsletter-error');
     const submitBtn = newsletterForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const currentLang = newsletterForm.dataset.lang === 'fr' ? 'fr' : 'en';
 
     if (!email) return;
 
@@ -59,7 +60,7 @@ const errorMsg = Astro.currentLocale === "fr" ? "Erreur. Veuillez reessayer." : 
       const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'footer' }),
+        body: JSON.stringify({ email, source: 'footer', lang: currentLang }),
       });
 
       if (res.ok) {

@@ -5,9 +5,29 @@ import { isSafePrivateCoursePath } from '@/utils/courseGating'
 const auth = Astro.locals.auth()
 const nextUrl = Astro.url.searchParams.get('next')
 const safeNextUrl = isSafePrivateCoursePath(nextUrl) ? nextUrl : null
+const lang = safeNextUrl?.includes('/dashboard/docs/fr/') ? 'fr' : 'en'
+const labels =
+	lang === 'fr'
+		? {
+				title: 'Achat confirme',
+				body: 'Votre acces a la formation a ete debloque. Vous pouvez ouvrir la lecon privee maintenant.',
+				openLesson: 'Ouvrir la lecon',
+				goToDashboard: 'Aller au dashboard',
+				signIn: 'Se connecter pour acceder',
+				viewProducts: 'Voir les produits',
+			}
+		: {
+				title: 'Purchase Confirmed',
+				body: 'Your training access has been unlocked. You can open the private lesson now.',
+				openLesson: 'Open Lesson',
+				goToDashboard: 'Go to Dashboard',
+				signIn: 'Sign In to Access',
+				viewProducts: 'View Products',
+			}
+const productsUrl = lang === 'fr' ? '/fr/produits' : '/products'
 ---
 
-<MainLayout title="Purchase Confirmed">
+<MainLayout title={labels.title}>
 	<div class="flex min-h-[60vh] items-center justify-center py-12">
 		<div class="mx-auto max-w-lg text-center">
 			<div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green/10">
@@ -16,25 +36,23 @@ const safeNextUrl = isSafePrivateCoursePath(nextUrl) ? nextUrl : null
 				</svg>
 			</div>
 
-			<h1 class="mb-4 text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-				Purchase Confirmed!
-			</h1>
+			<h1 class="mb-4 text-3xl font-bold text-neutral-900 dark:text-neutral-100">{labels.title}</h1>
 			<p class="mb-8 text-lg text-neutral-500 dark:text-neutral-400">
-				Your training access has been unlocked. You can open the private lesson now.
+				{labels.body}
 			</p>
 
 			<div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
 				{auth.userId ? (
 					<a href={safeNextUrl || '/dashboard'} class="inline-flex items-center justify-center rounded-lg bg-magenta px-6 py-3 font-medium text-white hover:opacity-90 transition-opacity">
-						{safeNextUrl ? 'Open Lesson' : 'Go to Dashboard'}
+						{safeNextUrl ? labels.openLesson : labels.goToDashboard}
 					</a>
 				) : (
 					<a href={safeNextUrl ? `/signin?next=${encodeURIComponent(safeNextUrl)}` : '/signin'} class="inline-flex items-center justify-center rounded-lg bg-magenta px-6 py-3 font-medium text-white hover:opacity-90 transition-opacity">
-						Sign In to Access
+						{labels.signIn}
 					</a>
 				)}
-				<a href="/products" class="inline-flex items-center justify-center rounded-lg border border-neutral-300 px-6 py-3 font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors">
-					View Products
+				<a href={productsUrl} class="inline-flex items-center justify-center rounded-lg border border-neutral-300 px-6 py-3 font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors">
+					{labels.viewProducts}
 				</a>
 			</div>
 		</div>

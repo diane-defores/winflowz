@@ -23,8 +23,8 @@ longDescription:
   title: "Votre Suite Créative Tout-en-Un pour Obsidian"
   subTitle: |
     Arrêtez de jongler entre différents outils et onglets du navigateur. FlowzSuite intègre tout ce dont vous avez besoin directement dans Obsidian. Que vous soyez créateur de contenu, chercheur, rédacteur ou travailleur du savoir, notre suite de plugins optimise votre flux de travail et booste votre productivité. Découvrez la puissance d'outils intégrés conçus pour fonctionner harmonieusement ensemble.
-  btnTitle: "Obtenir FlowzSuite Maintenant"
-  btnURL: "#"
+  btnTitle: "Rejoindre la liste d'attente"
+  btnURL: "/fr/contact"
 descriptionList:
   - title: "8 Plugins Premium, 1 Expérience Unifiée"
     subTitle: "CreatorFlowz, TubeFlowz, MediaFlowz, EditorFlowz, RSSFlowz, PluginFlowz, MailingFlowz et LinkFlowz – chacun méticuleusement conçu pour enrichir votre flux de travail Obsidian."

@@ -23,8 +23,8 @@ longDescription:
   title: "Transform Your Information Monitoring with AI in Obsidian"
   subTitle: |
     RSSFlowz brings intelligent RSS feed management to Obsidian, helping you optimize your information monitoring. Whether you're following news, doing research, or organizing content, RSSFlowz makes it simple and efficient with AI assistance.
-  btnTitle: "Install Plugin"
-  btnURL: "#"
+  btnTitle: "Notify me at launch"
+  btnURL: "/contact"
 descriptionList:
   - title: "Smart Organization"
     subTitle: "Create groups to organize your RSS feeds, choose between one file per article or one file per feed, with an intuitive interface."

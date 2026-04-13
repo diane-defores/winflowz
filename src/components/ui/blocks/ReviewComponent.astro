@@ -3,6 +3,7 @@ import Avatar from "@components/ui/avatars/Avatar.astro";
 import FullStar from "@components/ui/stars/FullStar.astro";
 
 const { avatars, starCount = 0, rating, reviews } = Astro.props;
+const productsUrl = Astro.currentLocale === "fr" ? "/fr/produits#testimonials" : "/products#testimonials";
 
 interface Props {
   avatars?: Array<string>;
@@ -12,7 +13,7 @@ interface Props {
 }
 ---
 
-<a href="/products#testimonials" class="mt-6 lg:mt-10 no-hover-animation">
+<a href={productsUrl} class="mt-6 lg:mt-10 no-hover-animation">
   <div class="py-5">
     <div class="text-center sm:flex sm:items-center sm:text-start">
       <div class="flex-shrink-0 pb-5 sm:flex sm:pb-0 sm:pe-5">

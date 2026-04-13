@@ -4,6 +4,7 @@ export const prerender = true
 import MainLayout from '@/layouts/MainLayout.astro'
 import { getLangFromUrl } from '@/utils/i18n'
 import { SITE, getLocalizedSiteUrl } from '@/constants'
+import { getCourseCheckoutPath } from '@/utils/courseGating'
 
 export function getStaticPaths() {
 	return [
@@ -16,6 +17,11 @@ const lang = getLangFromUrl(Astro.url)
 
 const salesPath = lang === 'fr' ? '/maitrise-windows' : '/windows-mastery'
 const courseHubUrl = lang === 'fr' ? '/fr/formations/' : '/en/formations/'
+const premiumEntryLesson =
+	lang === 'fr'
+		? 'fr/formations/module-2-windows/'
+		: 'en/formations/module-2-windows/'
+const checkoutUrl = getCourseCheckoutPath(premiumEntryLesson, lang)
 const bundleUrl =
 	lang === 'fr' ? '/fr/produits/productivity-suite' : '/products/productivity-suite'
 
@@ -129,6 +135,8 @@ const page =
 				offerBullets: ['8 modules', 'FR + EN', 'acces a vie', 'mises a jour', 'support prioritaire'],
 				offerBody:
 					"Cette offre est faite pour vous si vous voulez une amelioration concrete de votre environnement de travail Windows sans devoir tout re-decouvrir seul.",
+				checkoutNote:
+					'Connexion si necessaire, puis checkout securise et acces debloque vers le parcours premium.',
 				bundleTitle: 'Et si vous voulez aller plus loin',
 				bundleBody:
 					"Le Pack WinFlowz existe pour les profils qui veulent aussi les outils complementaires. Il apparait ici comme montee en valeur, pas comme message principal.",
@@ -271,6 +279,8 @@ const page =
 				offerBullets: ['8 modules', 'FR + EN', 'lifetime access', 'updates', 'priority support'],
 				offerBody:
 					'This offer is for you if you want a concrete improvement to your Windows work environment without having to rediscover everything alone.',
+				checkoutNote:
+					'Sign in if needed, then go through secure checkout and unlock the premium path directly.',
 				bundleTitle: 'If you want to go further',
 				bundleBody:
 					'The WinFlowz bundle exists for people who also want the complementary tools. It appears here as an upsell, not as the primary message.',
@@ -342,7 +352,7 @@ const page =
 					{page.heroBody.map((paragraph) => <p>{paragraph}</p>)}
 				</div>
 				<div class="mt-8 flex flex-col gap-4 sm:flex-row">
-					<a href={courseHubUrl} class="inline-flex items-center justify-center rounded-xl bg-neutral-950 px-6 py-3 font-semibold text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200">
+					<a href={checkoutUrl} class="inline-flex items-center justify-center rounded-xl bg-neutral-950 px-6 py-3 font-semibold text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200">
 						{page.primaryCta}
 					</a>
 					<a href="#modules" class="inline-flex items-center justify-center rounded-xl border border-neutral-300 px-6 py-3 font-semibold text-neutral-800 transition hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-900">
@@ -502,9 +512,10 @@ const page =
 						</li>
 					))}
 				</ul>
-				<a href={courseHubUrl} class="mt-8 inline-flex items-center justify-center rounded-xl bg-gradient-rainbow px-6 py-3 font-bold text-white transition hover:opacity-90">
+				<a href={checkoutUrl} class="mt-8 inline-flex items-center justify-center rounded-xl bg-gradient-rainbow px-6 py-3 font-bold text-white transition hover:opacity-90">
 					{page.primaryCta}
 				</a>
+				<p class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">{page.checkoutNote}</p>
 			</div>
 			<div class="rounded-3xl border border-neutral-200 bg-neutral-50 p-8 dark:border-neutral-800 dark:bg-neutral-900/60">
 				<h3 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">{page.bundleTitle}</h3>
