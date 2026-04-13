@@ -3,7 +3,7 @@
 import { getLangFromUrl } from '@/utils/i18n'
 
 const lang = getLangFromUrl(Astro.url)
-const productsUrl = lang === 'fr' ? '/fr/produits' : '/products'
+const windowsMasteryUrl = lang === 'fr' ? '/fr/maitrise-windows' : '/windows-mastery'
 
 const avatars = [
   "/professional-headshot-1.png",
@@ -29,20 +29,20 @@ const stats = lang === 'fr'
 
 const heroText = lang === 'fr'
   ? {
-      badge: "Plugins Productivite & Formation Windows",
-      h1Line1: "Redefinir la Productivite",
-      h1Line2: "Numerique.",
-      sub: "Extensions Chrome pour YouTube, plugins Obsidian pour la gestion de contenu et un guide complet de productivite Windows avec 200+ astuces testees. Travaillez plus intelligemment.",
-      cta: "Decouvrir nos outils",
+      badge: "Formation Windows & outils de workflow",
+      h1Line1: "Moins de friction.",
+      h1Line2: "Plus de travail utile.",
+      sub: "WinFlowz vous aide a reprendre le controle d'un environnement Windows trop bruyant, trop fragmente et trop fatigant. Commencez par la page dediee a la formation Windows.",
+      cta: "Voir la formation Windows",
       testimonials: "Temoignages",
       reviews: "sur 6 avis",
     }
   : {
-      badge: "Productivity Plugins & Windows Training",
-      h1Line1: "Redefining Digital",
-      h1Line2: "Productivity.",
-      sub: "Chrome extensions for YouTube, Obsidian plugins for content management, and a complete Windows productivity guide with 200+ tested tips. Work smarter, not harder.",
-      cta: "Explore Our Tools",
+      badge: "Windows training & workflow tools",
+      h1Line1: "Less friction.",
+      h1Line2: "More real work.",
+      sub: "WinFlowz helps you regain control over a Windows environment that is too noisy, too fragmented, and too tiring. Start with the dedicated Windows course page.",
+      cta: "See the Windows course",
       testimonials: "Testimonials",
       reviews: "from 6 reviews",
     }
@@ -86,7 +86,7 @@ const heroText = lang === 'fr'
 
     <!-- CTAs -->
     <div class="hero-fade flex flex-col sm:flex-row items-center justify-center gap-4 mb-16" style="animation-delay: 0.6s;">
-      <a href={productsUrl} data-track="hero-primary-cta">
+      <a href={windowsMasteryUrl} data-track="hero-primary-cta">
         <button class="shimmer-btn inline-flex h-12 items-center justify-center gap-2 rounded-full bg-neutral-950 px-8 text-base font-medium text-white shadow-lg shadow-neutral-950/10 hover:bg-neutral-800 dark:bg-white dark:text-zinc-950 dark:shadow-white/10 dark:hover:bg-zinc-200">
           {heroText.cta}
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

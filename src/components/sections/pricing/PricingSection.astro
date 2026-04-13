@@ -4,6 +4,8 @@ import SecondaryCTA from "@components/ui/buttons/SecondaryCTA.astro";
 
 const lang = getLangFromUrl(Astro.url);
 const t = await useTranslations(lang, "pricing");
+const courseHubUrl = lang === "fr" ? "/fr/formations/" : "/en/formations/";
+const windowsMasteryUrl = lang === "fr" ? "/fr/maitrise-windows" : "/windows-mastery";
 ---
 
 <section class="mx-auto max-w-[85rem] px-3 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
@@ -47,7 +49,7 @@ const t = await useTranslations(lang, "pricing");
       </ul>
 
       <a
-        href={lang === "fr" ? "/fr/produits" : "/products"}
+        href={courseHubUrl}
         class="block rounded-lg bg-gradient-rainbow px-6 py-2.5 text-center text-sm font-bold text-white outline-none ring-magenta transition duration-100 hover:opacity-90 focus-visible:ring active:opacity-80 sm:px-8 sm:py-3 md:text-base"
         data-track="pricing-free-cta"
       >
@@ -93,7 +95,7 @@ const t = await useTranslations(lang, "pricing");
         </ul>
 
         <a
-          href={lang === "fr" ? "/fr/produits" : "/products"}
+          href={windowsMasteryUrl}
           class="block rounded-lg bg-gradient-rainbow px-6 py-2.5 text-center text-sm font-bold text-white outline-none ring-magenta transition duration-100 hover:opacity-90 focus-visible:ring active:opacity-80 sm:px-8 sm:py-3 md:text-base"
           data-track="pricing-pro-cta"
         >

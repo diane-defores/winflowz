@@ -9,15 +9,18 @@ _priorité: ""
 
 ## ✅ MIGRÉ → module-1-productivite/discipline.md
 
-- ((Habitudes durables — une à la fois, 66 jours, plan clair, tracker))
-- ((Modifier son environnement — architecte pas victime, friction positive/négative))
-- ((Habit stacking — empilage d'habitudes sur existantes))
-- ((6 habitudes toxiques à remplacer — inquiétude→méditation, blâme→aide, réseaux→activité, plainte→gratitude, overthinking→action, faux amis→mentors))
-- ((Pourquoi les résolutions échouent — 12% de succès, pas de plan, pas de raison profonde))
-- ((Routines pas résolutions — partir du principe que tu le feras toute ta vie))
-- ((Outils habitudes — Habitica, Polar Habits, Habits Garden))
-- ((Journaling — journal vocal matinal, 4 questions quotidiennes Nicolas Cole, digital vs papier))
-- ((Bullet Journal — rapid logging, index, collections, sync avec numérique))
-- ((Journal vocal hack — 5-10 min en marchant, structurer pensée, dissiper brouillard))
+- ((discipline = réduire la négociation intérieure, pas renforcer la dureté morale))
+- ((cadre de décision : ambition, déclencheur, environnement, récompense, reprise après écart))
+- ((faire tenir une habitude : version minimale, contexte stable, répétition soutenable))
+- ((empilage d'habitudes comme logique de déclencheur))
+- ((environnement = rendre le bon comportement visible et le mauvais plus coûteux))
+- ((neuroplasticité gardée en version courte : la répétition réduit la friction))
+- ((remplacer plutôt que simplement supprimer les mauvais réflexes))
+- ((reprise après écart : récupération, pas culpabilité))
+- ((outils gardés mais secondaires : Habitica, Polar Habits, Habits Garden, Bullet Journal))
+- ((journaling gardé seulement comme support de clarté et de revue))
 
 ## 🔶 À TRIER
+
+- anciens blocs anecdotiques ou pseudo-scientifiques à ne pas réinjecter tels quels
+- anciens dumps longs sur journaling, Tim Ferriss, business journaling, etc.

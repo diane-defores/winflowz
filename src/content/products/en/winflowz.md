@@ -11,8 +11,8 @@ main:
 longDescription:
   title: "Learn Windows workflows that actually save time"
   subTitle: "WinFlowz is the training hub for people who want a faster Windows setup, better focus habits, and a clearer way to work each day."
-  btnTitle: "Browse the Training"
-  btnURL: "/en/formations/"
+  btnTitle: "See the sales page"
+  btnURL: "/windows-mastery"
 descriptionList:
   - title: "Practical Windows Setup"
     subTitle: "Configure your desktop, windows, and browser so your tools support your work instead of fighting it."

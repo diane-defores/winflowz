@@ -9,13 +9,13 @@ _priorité: ""
 
 ## ✅ MIGRÉ → module-1-productivite/index.md
 
-- ((Règle 90/90/1 — Robin Sharma, 90 jours, 90 premières minutes))
-- ((Mythes de la productivité — 3 mythes : pas le temps, pas la motivation, multitasking))
-- ((Microproductivité vs. Macroproductivité — tableau, exercice 45 min, combinaison))
-- ((Définition de la productivité — efficacité × impact, reprendre contrôle temps/énergie))
-- ((Les piliers / structure de la formation — 8 modules))
-- ((Système productif — capture, hiérarchise, s'occupe des petites choses, rend le temps))
-- ((Ce n'est pas du capitalisme — réaliser ses rêves plus rapidement))
-- ((Introduction to the course — welcome, productivity = purpose + intention))
+- ((définition centrale : productivité = choix + attention + énergie + exécution))
+- ((cadre de décision : problème de choix, d'environnement, d'énergie ou d'exécution))
+- ((distinction nette : profondeur, vitesse, et choses à ignorer))
+- ((règle centrale : choisir avant d'optimiser))
+- ((structure du cours en 8 modules comme système complet))
+- ((productivité comme récupération de bande passante et de temps, pas culte de la vitesse))
 
 ## 🔶 À TRIER
+
+- anciens blocs 90/90/1, mythes, taxonomies annexes et citations à ne pas remettre au centre de l'intro

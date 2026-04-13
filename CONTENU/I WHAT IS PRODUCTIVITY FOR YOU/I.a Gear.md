@@ -9,17 +9,17 @@ _priorité: ""
 
 ## ✅ MIGRÉ → module-1-productivite/materiel.md
 
-- ((Plantes & productivité — APA, qualité air, concentration, plantes basse maintenance))
-- ((Lumière naturelle — sommeil, santé physique))
-- ((Feng Shui — aménagement, harmonie espace, optimisation habitat))
-- ((Souris gaming — précision, boutons custom, ergonomie, durabilité))
-- ((Paramètres souris Windows — sensibilité, défilement, double-clic, précision))
-- ((Outils souris — AutoHideMouseCursor, AutoScroll, SmoothScroll))
-- ((Logitech MX Master — gesture button, keystroke assignment, custom per app))
-- ((Son & anti-bruit — Krisp, casque ANC Bose QC, Calmer Flare Audio, panneaux acoustiques))
-- ((Écrans — LightBulb, Monitorian, Twinkle Tray, filtre lumière bleue))
-- ((Clavier & frappe — Keybr, TypingClub, Monkeytype, Ratatype, Nitro Type))
-- ((Ticktime Cube — chronomètre physique, Pomodoro sans téléphone))
-- ((Cartes tâches Cali — écriture physique, anti-procrastination))
+- ((cadre de décision : douleur, distraction, bruit, fatigue visuelle, lenteur))
+- ((espace physique d'abord : lisibilité, lumière correcte, désencombrement utile))
+- ((souris et pointeur : ergonomie et réglages avant achat))
+- ((Swiftpoint ProPoint gardée comme recommandation crédible et singulière))
+- ((son et bruit : Krisp, ANC, traitement simple de la pièce, Calmer pour profils sensibles))
+- ((écrans et confort visuel : LightBulb, Monitorian, Twinkle Tray, Auto Dark Mode, Luciole))
+- ((clavier et fluidité de frappe : Keybr, Monkeytype, Ratatype))
+- ((gadgets seulement en dernier : Ticktime Cube, Supernote))
+- ((principe central : réduire les coûts cachés du travail quotidien, pas construire un setup Pinterest))
 
 ## 🔶 À TRIER
+
+- anciens blocs plantes / Feng Shui / gadgets faibles à ne pas réinjecter tels quels
+- anciens dumps de marques ou d'accessoires trop shopping-list

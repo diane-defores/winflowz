@@ -3,23 +3,23 @@
 import { getLangFromUrl } from '@/utils/i18n'
 
 const lang = getLangFromUrl(Astro.url)
-const productsUrl = lang === 'fr' ? '/fr/produits' : '/products'
 const contactUrl = lang === 'fr' ? '/fr/contact' : '/contact'
+const windowsMasteryUrl = lang === 'fr' ? '/fr/maitrise-windows' : '/windows-mastery'
 
 const ctaText = lang === 'fr'
   ? {
-      title: "Construisons Ensemble",
-      sub: "WinFlowz est un ecosysteme de productivite, meticuleusement concu par Diane Defores. Rejoignez des milliers d'utilisateurs Windows qui ont transforme leur flux de travail.",
-      cta: "Decouvrir nos outils",
+      title: "Commencez par la formation Windows",
+      sub: "Si votre vrai probleme est la friction numerique, commencez par la page dediee a la formation WinFlowz. Le reste de l'ecosysteme pourra venir ensuite.",
+      cta: "Voir la page de vente",
       consult: "Planifier une consultation",
-      note: "Gratuit pour les particuliers. Plans Pro a partir de 9,99$/mois.",
+      note: "Formation complete a 49€ • bundle disponible plus loin dans le parcours.",
     }
   : {
-      title: "Let's Build Together",
-      sub: "WinFlowz is a productivity ecosystem, meticulously designed by Diane Defores. Join thousands of Windows users who have transformed their workflow.",
-      cta: "Explore Our Tools",
+      title: "Start with the Windows course",
+      sub: "If your real problem is digital friction, start with the dedicated WinFlowz sales page. The rest of the ecosystem can come later.",
+      cta: "See the sales page",
       consult: "Schedule a Consultation",
-      note: "Free forever for individuals. Pro plans start at $9.99/month.",
+      note: "Complete course at $49 • bundle available later in the path.",
     }
 ---
 
@@ -36,7 +36,7 @@ const ctaText = lang === 'fr'
     </p>
 
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-      <a href={productsUrl} data-track="final-cta-products">
+      <a href={windowsMasteryUrl} data-track="final-cta-products">
         <button class="shimmer-btn inline-flex h-14 items-center justify-center gap-2 rounded-full bg-neutral-950 px-8 text-base font-medium text-white shadow-lg shadow-neutral-950/20 hover:bg-neutral-800 dark:bg-white dark:text-zinc-950 dark:shadow-white/20 dark:hover:bg-zinc-200">
           {ctaText.cta}
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

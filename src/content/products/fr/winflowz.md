@@ -11,8 +11,8 @@ main:
 longDescription:
   title: "Apprenez des workflows Windows qui font vraiment gagner du temps"
   subTitle: "WinFlowz est la colonne vertébrale de la formation pour celles et ceux qui veulent un poste Windows plus rapide, de meilleures habitudes de focus et une manière plus claire de travailler chaque jour."
-  btnTitle: "Voir la formation"
-  btnURL: "/fr/formations/"
+  btnTitle: "Voir la page de vente"
+  btnURL: "/fr/maitrise-windows"
 descriptionList:
   - title: "Configuration Windows utile"
     subTitle: "Organisez votre bureau, vos fenêtres et votre navigateur pour que vos outils servent votre travail."

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2026-04-13]
+
+### Added
+- Dedicated bilingual Windows sales-page funnel at `/fr/maitrise-windows` and `/windows-mastery`
+- Funnel strategy documents under `CONTENU/xxxTunnel/` covering messaging spine, avatar matrix, landing wireframe, sales-page draft, and email campaign copy
+- Reusable FR/EN Windows Mastery email campaign assets under `idees/emails/winflowz-windows-mastery/`
+
+### Changed
+- Redirect homepage hero, final CTA, and paid pricing CTA into the new Windows sales page while keeping the free plan linked to the course preview hub
+- Point the WinFlowz product entry and product listing links to the dedicated Windows sales page
+- Continue consolidating `CONTENU/` source notes into compact future-source briefs and align additional FR/EN premium lesson files with the published course
+
+### Fixed
+- Keep paid funnel entry points aligned across homepage, pricing, product copy, and dedicated sales-page routes in both French and English
+
 ### Added
 - Server checkout route for training unlocks at `/api/polar/checkout`
 - Signed Polar webhook route at `/api/polar/webhook`
