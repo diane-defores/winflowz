@@ -1,52 +1,75 @@
+---
+artifact: brand_context
+metadata_schema_version: "1.0"
+artifact_version: "0.1.0"
+project: "VoiceFlowz"
+created: "2026-03-18"
+updated: "2026-04-26"
+status: "draft"
+source_skill: "sf-docs"
+scope: "branding"
+owner: "unknown"
+confidence: "medium"
+risk_level: "low"
+docs_impact: "yes"
+security_impact: "none"
+evidence:
+  - "lib/constants.ts"
+  - "app/(tabs)/index.tsx"
+  - "assets/icon.png"
+depends_on:
+  - "BUSINESS.md@0.1.0"
+supersedes: []
+next_review: "2026-05-26"
+next_step: "$sf-docs update"
+---
+
 # Branding — VoiceFlowz
 
 ## Nom et identité
 
-- **Nom** : VoiceFlowz — contraction de Voice + Flow + z (suffixe de l'écosystème WinFlowz)
-- **Tagline** : "Parle. C'est écrit."
+- **Nom** : VoiceFlowz — contraction de Voice + Flow + z, cohérente avec l'écosystème WinFlowz.
+- **Promesse courte** : parler, nettoyer, copier.
+- **Tagline actuelle dans l'app** : "Speak. Transcribe. Ship."
+- **Tagline française utilisable** : "Parle. C'est écrit."
 
 ## Identité visuelle
 
 ### Cohérence écosystème
-- L'identité visuelle de VoiceFlowz est cohérente avec celle de WinFlowz : même rainbow spectrum comme palette de base
-- Le langage visuel (glass morphism, transitions fluides) est partagé entre les produits de l'écosystème
 
-### Couleur principale
-- **Cyan** : `#00c8ff`, issu de la palette rainbow WinFlowz
-- Utilisé pour les éléments d'action principaux, le bouton d'enregistrement et les accents visuels
+VoiceFlowz peut rester visuellement relié à WinFlowz, mais le code actuel utilise surtout une palette mobile sombre avec accents indigo et cyan. La documentation ne doit pas promettre un système visuel complet partagé avec WinFlowz tant que les tokens communs ne sont pas présents dans le repo.
 
-### Accent sur l'audio
-- Motifs récurrents d'ondes sonores et de visualisation audio
-- Formes organiques évoquant les vibrations et la propagation du son
+### Couleurs
 
-### Mode sombre
-- Mode sombre par défaut, adapté à l'usage mobile professionnel
-- Arrière-plans profonds pour mettre en valeur les éléments interactifs et les animations
+- **Fond sombre** : `#0f172a`
+- **Surface** : `#1e293b`
+- **Primaire** : `#6366f1`
+- **Accent audio** : `#22d3ee`
+- **Texte principal** : `#f8fafc`
+
+### Accent audio
+
+- Onde sonore animée pendant l'enregistrement.
+- États visuels clairs : repos, enregistrement, traitement, résultat, erreur.
+- Les animations servent le feedback fonctionnel.
 
 ## Typographie
 
-- **Interface** : polices système (San Francisco sur iOS, Roboto sur Android) pour des performances optimales sur mobile
-- **Texte transcrit** : police monospace pour distinguer visuellement le contenu dicté du reste de l'interface
-- Hiérarchie typographique simple : titre, corps, transcription
+- Polices système React Native.
+- Hiérarchie simple : titre, sous-titre, résultat, historique.
+- Le texte transcrit doit rester lisible et facile à copier ou modifier.
 
-## Icône de l'application
+## Ton de voix
 
-- Microphone stylisé intégrant une onde sonore
-- Couleurs : cyan sur fond sombre
-- Forme reconnaissable en petit format (grille d'apps, notifications)
-
-## Animations
-
-- **Enregistrement** : onde sonore animée, réactive au volume de la voix
-- **Transcription** : transition fluide de l'onde vers le texte qui apparaît
-- **Repos** : interface calme, sans animation parasite
-- Toutes les animations servent un objectif fonctionnel (feedback d'état), jamais purement décoratif
+- Direct, productif, sans jargon.
+- Orienté action : enregistrer, transcrire, copier, envoyer au clipboard partagé.
+- Les messages de configuration doivent rester honnêtes sur les prérequis : clé OpenAI, clé Anthropic optionnelle, permissions Android, Convex.
 
 ## Valeurs de marque
 
 | Valeur | Signification |
 |---|---|
-| Rapidité | Le texte apparaît immédiatement, sans attente perceptible |
-| Discrétion | L'application s'efface derrière l'usage, pas d'interface envahissante |
-| Précision | Le nettoyage IA produit un texte directement exploitable |
-| Liberté | Mains libres, mobilité totale, aucune contrainte de saisie |
+| Rapidité | L'utilisateur obtient vite un texte exploitable. |
+| Discrétion | L'application doit rester légère dans le workflow mobile. |
+| Précision | Le nettoyage IA améliore le texte sans changer l'intention. |
+| Contrôle | Les clés API restent sur l'appareil et les permissions sont explicites. |

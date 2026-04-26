@@ -1,3 +1,34 @@
+---
+artifact: documentation
+metadata_schema_version: "1.0"
+artifact_version: "0.1.0"
+project: "VoiceFlowz"
+created: "2026-03-18"
+updated: "2026-04-26"
+status: "draft"
+source_skill: "sf-docs"
+scope: "update"
+owner: "unknown"
+confidence: "low"
+security_impact: "unknown"
+docs_impact: "yes"
+linked_systems:
+  - "OpenAI"
+  - "Anthropic"
+  - "Expo"
+  - "Clerk"
+  - "Convex"
+depends_on:
+  - "BUSINESS.md@0.1.0"
+  - "PRODUCT.md@0.1.0"
+supersedes: []
+evidence:
+  - "package.json"
+  - "lib/whisper.ts"
+  - "lib/ai-cleanup.ts"
+next_step: "$sf-docs update"
+---
+
 # Sources — VoiceFlowz
 
 ## APIs et services
@@ -7,7 +38,7 @@
 
 ## Recherche
 
-- **Productivité voice-first** : études sur l'efficacité de la dictée vocale comparée à la saisie clavier (3x plus rapide en moyenne)
+- **Productivité voice-first** : études à vérifier sur l'efficacité de la dictée vocale comparée à la saisie clavier
 - **Ergonomie de la dictée vocale** : recherches sur la fatigue, la précision et les contextes d'utilisation optimaux
 - **Accessibilité** : W3C WAI, guidelines pour les interfaces vocales
 
@@ -23,12 +54,12 @@
 - **expo-clipboard** — Accès au clipboard système
 - **expo-secure-store** — Stockage sécurisé des données sensibles
 - **Expo SDK 55** — [docs.expo.dev](https://docs.expo.dev) : framework et outils de build
-- **Clerk** — [clerk.com/docs](https://clerk.com/docs) : authentification partagée avec WinFlowz
+- **Clerk** — [clerk.com/docs](https://clerk.com/docs) : authentification prévue avec WinFlowz, dépendance présente mais intégration applicative non branchée
 - **Convex** — [docs.convex.dev](https://docs.convex.dev) : backend temps réel et synchronisation
 
 ## Données de marché
 
-- **Grand View Research** — Rapports sur le marché de la reconnaissance vocale (projections 25 milliards de dollars d'ici 2030)
+- **Grand View Research** — Rapports sur le marché de la reconnaissance vocale
 - **Mordor Intelligence** — Analyse du segment voice-to-text et tendances d'adoption
 
 ## Communautés

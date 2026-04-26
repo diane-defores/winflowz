@@ -1,59 +1,96 @@
+---
+artifact: technical_guidelines
+metadata_schema_version: "1.0"
+artifact_version: "0.1.0"
+project: "VoiceFlowz"
+created: "2026-03-18"
+updated: "2026-04-26"
+status: "draft"
+source_skill: "sf-docs"
+scope: "guidelines"
+owner: "unknown"
+confidence: "medium"
+risk_level: "medium"
+docs_impact: "yes"
+security_impact: "yes"
+evidence:
+  - "package.json"
+  - "app.json"
+  - "app/_layout.tsx"
+  - "hooks/useVoiceRecording.ts"
+  - "lib/storage.ts"
+  - "convex/schema.ts"
+depends_on:
+  - "BUSINESS.md@0.1.0"
+supersedes: []
+next_review: "2026-05-26"
+next_step: "$sf-docs update"
+---
+
 # Guidelines — VoiceFlowz
 
 ## Architecture technique
 
-### Stack
-- **React Native + Expo SDK 55** : framework mobile cross-platform
-- **expo-router** : navigation file-based
-- **Convex** : backend temps réel pour la synchronisation cross-device
-- **Clerk** : authentification partagée avec WinFlowz
+### Stack vérifiée
+
+- **React Native 0.83 + Expo SDK 55** : framework mobile cross-platform.
+- **expo-router** : navigation file-based dans `app/`.
+- **Convex** : backend temps réel pour clipboard, transcriptions et snippets.
+- **expo-speech-recognition** : transcription locale gratuite.
+- **expo-audio** : enregistrement audio pour le mode avancé.
+- **OpenAI Whisper API** : transcription cloud en mode avancé.
+- **Anthropic Messages API** : nettoyage optionnel via Claude quand une clé Anthropic est configurée.
+- **expo-secure-store** : stockage local des clés API et de la langue préférée.
+- **Expo native module Kotlin** : overlay Android.
+
+### Authentification
+
+Clerk est présent dans les dépendances et documenté comme cible d'intégration, mais il n'est pas encore branché dans le flux applicatif. Le code utilise encore `TEMP_USER_ID = "local-user"` dans les écrans et hooks principaux. Toute promesse de comptes utilisateurs réels, permissions par utilisateur ou sécurité multi-utilisateur doit rester `planned` tant que Clerk n'est pas intégré.
 
 ### Pipeline de transcription
-1. **Capture** : `expo-audio` pour l'enregistrement vocal
-2. **Transcription** : OpenAI Whisper API
-3. **Nettoyage** : Claude Haiku (ponctuation, reformulation, mise en forme)
-4. **Résultat** : copie automatique dans le clipboard via `expo-clipboard`
 
-### Modules complémentaires
-- `expo-speech-recognition` : reconnaissance vocale on-device en fallback
-- `expo-secure-store` : stockage sécurisé des clés API
+1. **Mode gratuit** : `expo-speech-recognition` récupère une transcription locale avec résultats intermédiaires.
+2. **Nettoyage local** : `cleanupLocal()` retire certains mots de remplissage et améliore la ponctuation de base.
+3. **Mode avancé** : `expo-audio` enregistre un fichier audio, puis `lib/whisper.ts` l'envoie à Whisper.
+4. **Nettoyage IA optionnel** : `lib/ai-cleanup.ts` appelle Claude si une clé Anthropic est configurée.
+5. **Résultat** : le texte est affiché, copiable, et peut être sauvegardé dans Convex.
 
-## Sécurité
+## Sécurité et données
 
-- Les clés API sont stockées exclusivement dans `expo-secure-store`, jamais en clair dans le code ou les fichiers de configuration
-- Les données vocales ne sont jamais stockées côté serveur. Le fichier audio est envoyé à Whisper, la transcription est retournée, et l'audio est supprimé
-- L'authentification Clerk assure la sécurité des données synchronisées via Convex
+- Les clés OpenAI et Anthropic sont stockées via `expo-secure-store`.
+- Les clés API ne sont pas envoyées à Convex par le code actuel.
+- Le mode avancé envoie l'audio à OpenAI Whisper.
+- Le nettoyage IA envoie le texte transcrit à Anthropic si la clé Anthropic existe.
+- Les transcriptions et éléments de clipboard sont stockés dans Convex avec un `userId` temporaire tant que Clerk n'est pas branché.
+- Ne pas présenter la synchronisation Convex comme isolée par compte réel avant remplacement de `TEMP_USER_ID`.
 
-## Ton et expérience produit
+## Expérience produit
 
-- **Efficace** : l'application doit être opérationnelle en une action
-- **Discret** : pas d'interface chargée, pas de friction
-- **Rapide** : le texte doit apparaître le plus vite possible après la fin de la dictée
-- L'application doit être invisible dans le workflow de l'utilisateur : on parle, c'est transcrit, c'est terminé
-
-## Design
-
-- **Minimaliste** : un bouton principal (enregistrer), le résultat affiché immédiatement
-- **Feedback visuel** : onde sonore animée pendant l'enregistrement
-- **Mode sombre** par défaut, cohérent avec l'identité WinFlowz
-- Transitions fluides entre les états (repos, enregistrement, transcription, résultat)
+- L'écran Voice doit privilégier l'action principale : enregistrer, voir le texte, copier, modifier ou envoyer vers le clipboard partagé.
+- L'écran Clipboard doit rester scannable, avec actions rapides : copier, épingler, supprimer.
+- Les réglages doivent expliquer clairement les prérequis : clés API, langue, permissions Android.
+- L'overlay Android doit toujours avoir un fallback clipboard si l'injection texte échoue.
 
 ## Code
 
 ### Conventions
-- **TypeScript strict** : `strict: true` dans `tsconfig.json`
-- **Expo SDK 55** : pas d'Expo Go (modules natifs requis), builds via EAS
-- Composants fonctionnels avec hooks
-- Séparation claire entre logique métier (`lib/`) et interface (`components/`, `app/`)
 
-### Performance
-- Streaming de la transcription lorsque l'API le permet
-- Feedback visuel immédiat pendant l'enregistrement (pas d'écran blanc)
-- Optimisation du temps de démarrage de l'application
+- TypeScript strict.
+- Composants fonctionnels et hooks React.
+- Logique métier dans `hooks/` et `lib/`.
+- Mutations et queries Convex dans `convex/`.
+- Aucun secret dans `.env.example`, le code ou les docs.
+
+### Points de vigilance
+
+- Remplacer `TEMP_USER_ID` par l'identifiant Clerk avant tout usage multi-utilisateur.
+- Documenter toute modification du schéma Convex dans `ARCHITECTURE.md` et `docs/API.md`.
+- Vérifier Android après toute modification de l'overlay ou du plugin Expo.
+- Ne pas ajouter de promesse premium sans modèle de droits, quota et billing.
 
 ## Accessibilité
 
-- **Touch targets** : zones tactiles larges (minimum 44x44 points)
-- **VoiceOver** (iOS) et **TalkBack** (Android) : labels accessibles sur tous les éléments interactifs
-- Contraste suffisant pour la lisibilité en toutes conditions
-- Support des tailles de texte dynamiques du système
+- Les zones tactiles doivent rester larges, au minimum 44x44 points.
+- Les actions critiques doivent avoir des labels explicites.
+- Les permissions Android doivent être guidées pas à pas.
+- Les états erreur et traitement doivent être lisibles sans dépendre uniquement de la couleur.

@@ -1,3 +1,27 @@
+---
+artifact: documentation
+metadata_schema_version: "1.0"
+artifact_version: "0.1.0"
+project: "VoiceFlowz"
+created: "2026-03-18"
+updated: "2026-04-26"
+status: "draft"
+source_skill: "sf-docs"
+scope: "update"
+owner: "unknown"
+confidence: "low"
+security_impact: "none"
+docs_impact: "yes"
+linked_systems: []
+depends_on:
+  - "BUSINESS.md@0.1.0"
+  - "PRODUCT.md@0.1.0"
+supersedes: []
+evidence:
+  - "BUSINESS.md"
+next_step: "$sf-docs update"
+---
+
 # Inspiration — VoiceFlowz
 
 ## Transcription IA

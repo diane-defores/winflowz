@@ -1,9 +1,43 @@
+---
+artifact: documentation
+metadata_schema_version: "1.0"
+artifact_version: "0.1.0"
+project: "VoiceFlowz"
+created: "2026-03-18"
+updated: "2026-04-26"
+status: "draft"
+source_skill: "sf-docs"
+scope: "update"
+owner: "unknown"
+confidence: "medium"
+security_impact: "unknown"
+docs_impact: "yes"
+linked_systems: []
+depends_on: []
+supersedes: []
+evidence:
+  - "git history"
+next_step: "$sf-changelog"
+---
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
+
+## [2026-04-26]
+
+### Added
+- Added Node/npm runtime metadata and Dependabot coverage for npm and GitHub Actions updates.
+
+### Changed
+- Refreshed compatible npm dependencies within the current Expo SDK 55 / React Native 0.83 constraints.
+
+### Security
+- Updated transitive packages to remove known critical and high npm audit findings, including the Clerk shared SDK advisory.
+- Documented remaining moderate Expo toolchain audit findings that require a separate migration path rather than `npm audit fix --force`.
 
 ## [0.1.0] — 2026-03-18
 
