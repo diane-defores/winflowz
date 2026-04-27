@@ -1,15 +1,16 @@
 ---
 artifact: documentation
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.2.0"
 project: "VoiceFlowz"
 created: "2026-03-18"
-updated: "2026-04-26"
+updated: "2026-04-27"
 status: "draft"
 source_skill: "sf-docs"
 scope: "update"
-owner: "unknown"
-confidence: "low"
+owner: "Diane"
+confidence: "medium"
+risk_level: "low"
 security_impact: "none"
 docs_impact: "yes"
 linked_systems: []
@@ -19,6 +20,7 @@ depends_on:
 supersedes: []
 evidence:
   - "BUSINESS.md"
+  - "PRODUCT.md"
 next_step: "$sf-docs update"
 ---
 
@@ -27,37 +29,42 @@ next_step: "$sf-docs update"
 ## Transcription IA
 
 ### Otter.ai
-Leader du marché de la transcription IA. Référence pour les fonctionnalités de transcription en temps réel, la gestion de l'historique et l'intégration avec les outils de visioconférence. Benchmark pour la qualité de transcription et l'expérience utilisateur.
+Référence produit pour les fonctionnalités de transcription en temps réel, la gestion de l'historique et l'intégration avec les outils de visioconférence.
 
 ### OpenAI Whisper
-Modèle de transcription open source sur lequel repose le pipeline VoiceFlowz. Référence pour la qualité de reconnaissance vocale multilingue et la robustesse face aux accents et au bruit ambiant.
+Moteur de transcription utilisé dans VoiceFlowz pour le pipeline de transcription avancée.
 
 ### Notta
-Transcription avec résumé IA intégré. Inspiration pour les fonctionnalités de post-traitement du texte transcrit et la présentation des résultats.
+Inspiration potentielle pour le post-traitement du texte transcrit et la présentation des résultats.
 
 ### Rev.ai
-API de transcription professionnelle. Référence pour la fiabilité à grande échelle et les cas d'usage entreprise.
+Inspiration potentielle pour les cas d'usage transcription orientés API.
 
 ## Dictée native
 
 ### Google Voice Typing
-Dictée intégrée à Android. Benchmark pour la latence et l'expérience de dictée en temps réel sur mobile. Démontre les attentes minimales des utilisateurs.
+Benchmark de dictée native Android pour la latence et l'expérience de dictée mobile.
 
 ### Apple Dictation
-Dictée intégrée à iOS. Référence pour l'intégration système et la fluidité de l'expérience sur appareil Apple.
+Benchmark de dictée native iOS pour l'intégration système et la fluidité d'usage.
 
 ## Audio et voix
 
 ### Descript
-Édition audio et vidéo par manipulation du texte transcrit. Inspiration pour le lien entre texte et audio, et les possibilités de correction.
+Inspiration pour le lien texte-audio et les possibilités de correction post-transcription.
 
 ### Speechify
-Text-to-speech, approche inverse de VoiceFlowz. Inspiration pour le positionnement produit autour de la voix et l'accessibilité.
+Inspiration de positionnement autour de la voix et de l'accessibilité.
 
 ### Krisp
-Annulation du bruit et transcription. Inspiration pour le traitement audio en amont de la transcription et l'amélioration de la qualité d'entrée.
+Inspiration pour le traitement audio en amont de la transcription.
 
 ## Écosystème
 
 ### Microsoft Copilot
-Intégration vocale dans l'écosystème Windows. Référence pour le positionnement de la voix comme interface de productivité dans un environnement professionnel.
+Référence de positionnement pour la voix comme interface de productivité.
+
+## Questions ouvertes
+
+- Quels produits doivent rester en benchmark prioritaire pour Q2 2026 (max 3) ?
+- Faut-il séparer explicitement les inspirations "mobile", "desktop" et "workflow éducatif" ?

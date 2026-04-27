@@ -1,45 +1,35 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+build/
 
-# dependencies
-node_modules/
+# IDE
+.idea/
+*.iml
 
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
+# OS
+.DS_Store
 
-# Native
-.kotlin/
-*.orig.*
+# Secrets / env
+.env
+.env*.local
+
+# Native local files
+android/local.properties
+android/key.properties
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env
-.env*.local
-
-# Convex generated (stubs committed for CI, real files overwrite on `npx convex dev`)
-# convex/_generated/
-
-# typescript
-*.tsbuildinfo
-
-# generated native folders
-/ios
-/android
+# Generated ephemeral per platform
+ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+macos/Flutter/ephemeral/
+windows/flutter/ephemeral/
+linux/flutter/ephemeral/

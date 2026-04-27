@@ -4,114 +4,151 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-26"
-status: "draft"
+updated: "2026-04-27"
+status: "reviewed"
 source_skill: "sf-docs"
 scope: "architecture"
-owner: "unknown"
-confidence: "medium"
-risk_level: "medium"
+owner: "Diane"
+confidence: "high"
+risk_level: "high"
 docs_impact: "yes"
 security_impact: "yes"
 evidence:
-  - "package.json"
-  - "app.json"
-  - "app/_layout.tsx"
-  - "convex/schema.ts"
-  - "modules/floating-overlay/index.ts"
-  - "plugins/withFloatingOverlay.js"
+  - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
+  - "docs/DECISIONS.md"
+  - "docs/API.md"
+  - "modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayModule.kt"
+linked_systems:
+  - "Flutter"
+  - "Supabase"
+  - "Android overlay services"
+external_dependencies:
+  - "supabase_flutter"
+  - "flutter_riverpod"
+  - "go_router"
+  - "record"
+  - "speech_to_text"
+invariants:
+  - "Target implementation is Flutter + Supabase, not Expo/Convex/Clerk."
+  - "All user data access is authorized by Supabase Auth + RLS."
+  - "Android overlay stays native and exposes a stable Flutter bridge."
 depends_on:
-  - "GUIDELINES.md@0.1.0"
-  - "PRODUCT.md@0.1.0"
+  - "docs/DECISIONS.md@0.1.0"
+  - "docs/MIGRATION_FLUTTER.md@0.1.0"
 supersedes: []
-next_review: "2026-05-26"
+next_review: "2026-05-27"
 next_step: "$sf-docs update"
 ---
 
 # Architecture — VoiceFlowz
 
-## Vue d'ensemble
+## Purpose
 
-VoiceFlowz est une application React Native Expo avec navigation `expo-router`, backend Convex et module natif Android pour l'overlay flottant.
+This document separates:
 
-```text
-app/                         Écrans Expo Router
-components/                  Composants UI et pont overlay
-hooks/                       Logique d'enregistrement et permissions
-lib/                         Clients API, stockage, constantes, nettoyage
-convex/                      Schéma, queries et mutations Convex
-modules/floating-overlay/    Expo Module natif Android
-plugins/                     Config plugin Expo pour AndroidManifest
-assets/                      Icônes et splash
-```
+- legacy implementation reference (current Expo/Convex app),
+- target implementation contract (Flutter + Supabase migration target).
 
-## Entrée applicative
+Only the target section defines implementation direction.
 
-`app/_layout.tsx` initialise `ConvexReactClient`, monte le `Stack` Expo Router et ajoute `OverlayBridge`. L'URL Convex vient de `EXPO_PUBLIC_CONVEX_URL` avec un fallback placeholder pour le développement.
+## Legacy implementation (reference only)
 
-## Navigation
+Current codebase reference:
 
-Les écrans principaux sont sous `app/(tabs)/` :
+- Expo / React Native app shell with `expo-router`.
+- Convex schema/functions for transcriptions, clipboard, snippets, dictionary.
+- Clerk dependency present but not integrated in runtime auth flow.
+- Android overlay implemented as native Kotlin Expo module bridge.
+- `TEMP_USER_ID`/`local-user` pattern used in legacy data flow.
 
-- `index.tsx` : dictée, résultat, historique, édition et partage vers clipboard.
-- `clipboard.tsx` : historique clipboard synchronisé.
-- `settings.tsx` : clés API, langue, permissions overlay et logs.
+This stack is migration input only. It is not a target architecture.
 
-## Backend Convex
+## Target implementation contract
 
-### Tables
+### Platform scope
 
-- `clipboardItems` : contenu, type, source, pin, `userId`.
-- `transcriptions` : texte brut, texte nettoyé, langue, durée, source, `userId`.
-- `snippets` : trigger, contenu, label, `userId`.
-- `dictionary` : termes utilisateur et corrections optionnelles.
+Day 1 targets:
 
-### Fonctions publiques
+- Android
+- iOS
+- macOS
+- Windows
+- Linux
+- web
 
-- `clipboard.list`, `clipboard.add`, `clipboard.togglePin`, `clipboard.remove`
-- `transcriptions.list`, `transcriptions.save`, `transcriptions.update`, `transcriptions.remove`
-- `snippets.list`, `snippets.findByTrigger`, `snippets.upsert`, `snippets.remove`
+Android has additional native overlay capabilities. Other platforms do not promise equivalent system overlay.
 
-## Flux transcription
-
-### Mode gratuit
+### Runtime architecture
 
 ```text
-useVoiceRecording
-  -> expo-speech-recognition
-  -> cleanupLocal
-  -> Convex transcriptions.save
-  -> affichage / copie
+Flutter App (Dart)
+  -> app shell + routing + state
+  -> feature modules (voice, clipboard, settings, snippets, dictionary, auth, overlay)
+  -> data repositories
+  -> platform services
+  -> Supabase client
+
+Supabase
+  -> Auth
+  -> Postgres tables
+  -> Row Level Security policies
+  -> Realtime subscriptions
+
+Android native
+  -> overlay foreground service
+  -> accessibility-based text injection
+  -> Flutter bridge (plugin/platform channel)
 ```
 
-### Mode avancé
+### Layer contracts
 
-```text
-useVoiceRecording
-  -> expo-audio
-  -> OpenAI Whisper API
-  -> Claude cleanup si clé Anthropic disponible
-  -> fallback cleanupLocal
-  -> Convex transcriptions.save
-```
+1. Presentation layer (Flutter widgets):
+   UI workflow only; no direct SQL/policy logic.
+2. State layer (Riverpod providers/controllers):
+   owns async state transitions and error surfaces.
+3. Repository layer:
+   owns Supabase queries/mutations/subscriptions.
+4. Platform service layer:
+   owns speech/audio/clipboard/secure-storage/overlay bridges.
 
-## Overlay Android
+### Data and auth contract
 
-Le module `modules/floating-overlay` expose une API JS pour afficher, masquer et piloter le bouton flottant. `OverlayBridge` écoute les événements natifs, déclenche `useVoiceRecording`, pousse les états vers le module natif, puis copie ou injecte le texte final.
+- Supabase Auth session is required for user-scoped data.
+- User ownership source is `auth.uid()`, not client-provided ids.
+- RLS must gate all user tables before multi-user readiness.
+- Realtime updates are consumed only for current authenticated user scope.
 
-Le plugin `plugins/withFloatingOverlay.js` ajoute les permissions et services nécessaires au manifeste Android.
+### Voice pipeline contract
 
-## Sécurité et limites actuelles
+Free/local path:
 
-- Les clés API restent sur l'appareil via `expo-secure-store`.
-- Les audios peuvent quitter l'appareil en mode Whisper.
-- Les textes peuvent quitter l'appareil en nettoyage Claude.
-- Les données Convex utilisent un `userId` temporaire tant que Clerk n'est pas intégré.
-- Les fonctions Convex prennent `userId` en argument client, donc l'isolation utilisateur ne doit pas être considérée robuste avant auth serveur.
+- local speech recognition where supported by platform.
 
-## Invariants
+Advanced path:
 
-- Une transcription vide ne doit pas être sauvegardée.
-- Le résultat final doit rester copiable même si l'injection Android échoue.
-- Le mode avancé doit refuser l'enregistrement sans clé OpenAI.
-- Les docs produit ne doivent pas promettre billing, quota ou auth tant que les invariants correspondants n'existent pas dans le code.
+- audio recording + Whisper transcription.
+- optional Claude cleanup.
+- local cleanup fallback when Claude is unavailable.
+
+In all cases:
+
+- empty/whitespace results are never persisted.
+- final text remains copyable even if auto-injection fails.
+
+### Android overlay contract
+
+The Kotlin overlay module remains native and authoritative for:
+
+- overlay permission flow,
+- foreground service lifecycle,
+- bubble events (`tap`, `stop`, `cancel`, `long-press`),
+- accessibility text injection and fallback behavior.
+
+Flutter integrates this through a narrow bridge interface; feature logic stays in Dart.
+
+## Cross-cutting invariants
+
+- No target design decision may depend on Convex/Clerk/Expo.
+- API keys (OpenAI/Anthropic) remain local device secrets.
+- Supabase stores product data, not user API keys.
+- Platform limitations are explicit in UI and docs.

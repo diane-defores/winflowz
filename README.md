@@ -1,118 +1,87 @@
 ---
 artifact: documentation
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-26"
-status: "draft"
+updated: "2026-04-27"
+status: "reviewed"
 source_skill: "sf-docs"
 scope: "readme"
-owner: "unknown"
+owner: "Diane"
 confidence: "medium"
+risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
-  - "Convex"
+  - "Flutter"
+  - "Supabase"
   - "OpenAI Whisper"
-  - "Anthropic"
-  - "Expo"
+  - "Anthropic Messages API"
+  - "Android overlay services"
 depends_on:
-  - "PRODUCT.md@0.1.0"
-  - "ARCHITECTURE.md@0.1.0"
-supersedes: []
-evidence:
-  - "package.json"
-  - ".env.example"
-  - "app/(tabs)/index.tsx"
-  - "convex/schema.ts"
-next_step: "$sf-docs update"
+  - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md@0.1.0"
+  - "docs/API_SUPABASE.md@0.1.0"
 ---
 
 # VoiceFlowz
 
-VoiceFlowz is a React Native Expo app for mobile voice typing, transcription history, shared clipboard sync and Android overlay dictation.
+VoiceFlowz is migrating to a Flutter + Supabase architecture across Android, iOS, macOS, Windows, Linux and web.
 
-## Features
+VoiceFlowz is positioned as a sibling product of WinFlowz in the same ecosystem, with a product focus on voice-first capture and text workflow acceleration.
 
-- Local on-device voice transcription with `expo-speech-recognition`.
-- Advanced transcription through OpenAI Whisper when the user configures an OpenAI key.
-- Optional cleanup through Anthropic Claude when the user configures an Anthropic key.
-- Transcription history stored in Convex.
-- Shared clipboard list with copy, pin and delete actions.
-- Android floating overlay with clipboard fallback for text injection.
-- Settings screen for API keys, language, overlay permissions and debug logs.
+This repository now contains:
+- A Flutter multi-platform project scaffold.
+- Supabase SQL migrations with RLS-first contracts.
+- Migration docs and verification gates.
+- Legacy Expo/Convex code still present until parity validation and explicit purge gate.
 
-## Current Limitations
+## Go-to-Market Posture
 
-- Clerk is not integrated yet, even though the dependency exists.
-- Convex data currently uses `TEMP_USER_ID = "local-user"`.
-- Freemium quotas, premium plans, billing and entitlement logic are not implemented.
-- Snippets and dictionary tables exist in Convex, but a complete product UI is not implemented.
+- Product narrative: voice-first productivity and learning/watchflow support, not a generic all-in-one suite.
+- Commercial narrative: LTD + subscription strategy is documented at business level, but runtime billing/entitlements are not yet implemented.
+- Claim boundary: avoid public claims about production-grade billing, enterprise compliance, or finalized cross-device account isolation until the related runtime milestones are complete.
 
-## Quick Start
+## Quick Start (Flutter baseline)
 
 ```bash
-npm install
-cp .env.example .env
-npx convex dev
-npm run start
+flutter pub get
+flutter run \
+  --dart-define=SUPABASE_URL=https://<project-ref>.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=<anon-key>
 ```
 
-For Android native overlay work:
+## Required Runtime Defines
 
-```bash
-npm run android
-```
+| Variable | Required | Purpose |
+|---|---:|---|
+| `SUPABASE_URL` | Yes | Supabase project URL |
+| `SUPABASE_ANON_KEY` | Yes | Supabase anon key for client auth/data paths |
 
-Expo Go is not enough for the native overlay module. Use a development build for overlay testing.
+Never use `SUPABASE_SERVICE_ROLE_KEY` in Flutter/web/desktop/mobile clients.
 
-## Environment Variables
+## Current Migration Scope
 
-| Variable | Required | Status | Purpose |
-|---|---:|---|---|
-| `EXPO_PUBLIC_CONVEX_URL` | Yes | implemented | Convex deployment URL. |
-| `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` | No | planned | Future Clerk auth integration. |
+- Auth: Supabase Auth replaces Clerk target path.
+- Data: Supabase Postgres + RLS replaces Convex target path.
+- UI: Flutter shell + auth gate + settings key storage baseline is in place.
+- Security: SQL constraints + RLS policies are in migration files.
 
-OpenAI and Anthropic keys are not stored in environment variables. They are entered in the Settings tab and stored locally with `expo-secure-store`.
-
-## Scripts
-
-| Command | Description |
-|---|---|
-| `npm run start` | Start Expo dev server. |
-| `npm run android` | Run Android development build. |
-| `npm run ios` | Run iOS development build. |
-| `npm run web` | Start Expo web. |
-
-## Project Structure
+## Project Structure (target)
 
 ```text
-app/                         Expo Router screens and tabs
-components/                  Shared UI and overlay bridge
-hooks/                       Recording and permission hooks
-lib/                         API clients, storage, constants, cleanup
-convex/                      Convex schema, queries and mutations
-modules/floating-overlay/    Android native overlay module
-plugins/                     Expo config plugins
-assets/                      App icons and splash assets
-docs/                        Generated technical documentation
+lib/app/                     Flutter app shell
+lib/core/                    bootstrap, router, theme, platform capability rules
+lib/features/                auth, voice, clipboard, settings, shell
+lib/data/supabase/           Supabase client + repositories
+supabase/migrations/         SQL schema, constraints, RLS policies
+docs/                        migration, API, platform, overlay, verification contracts
 ```
 
-## Documentation
-
-- `PRODUCT.md` — product workflows and non-goals.
-- `ARCHITECTURE.md` — technical architecture and invariants.
-- `GTM.md` — draft go-to-market assumptions.
-- `GUIDELINES.md` — technical guidelines and security notes.
-- `docs/API.md` — Convex functions.
-- `docs/COMPONENTS.md` — component inventory.
-
-## Verification
-
-Run type checking after Convex generated files are available:
+## Validation
 
 ```bash
-npx convex dev
-npx tsc --noEmit
+flutter analyze
+flutter test
+flutter build web
 ```

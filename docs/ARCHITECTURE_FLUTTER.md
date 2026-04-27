@@ -1,0 +1,52 @@
+---
+artifact: documentation
+metadata_schema_version: "1.0"
+artifact_version: "0.1.0"
+project: "VoiceFlowz"
+created: "2026-04-27"
+updated: "2026-04-27"
+status: "reviewed"
+source_skill: "sf-start"
+scope: "flutter_architecture"
+owner: "Diane"
+confidence: "medium"
+risk_level: "high"
+security_impact: "yes"
+docs_impact: "yes"
+depends_on:
+  - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md@0.1.0"
+  - "docs/API_SUPABASE.md@0.1.0"
+---
+
+# Architecture Flutter — VoiceFlowz
+
+## Runtime Layout
+
+- `lib/main.dart` bootstraps Supabase from `--dart-define` and starts Riverpod.
+- `lib/app/voiceflowz_app.dart` configures MaterialApp + router + theme.
+- `lib/core/*` holds shared bootstrap, routing, theme and platform capability checks.
+- `lib/features/*` holds product domains (auth, voice, clipboard, settings, shell).
+- `lib/data/supabase/*` holds Supabase client wiring and repositories.
+- `supabase/migrations/*` is the source of truth for schema + RLS + constraints.
+
+## Security Rules in Code
+
+- No service role key in client code.
+- Supabase starts only with anon key + project URL from runtime defines.
+- BYOK keys are written to local secure storage facade and never synced.
+- Linux and web are treated as secure-storage degraded contexts.
+- Platform behavior and overlay availability are shown in UI as explicit capability state.
+
+## Migration Status
+
+- Flutter multi-platform project scaffold is created for Android, iOS, macOS, Windows, Linux and web.
+- Supabase baseline migration is created with user-scoped tables, constraints and RLS policies.
+- Legacy Expo/Convex code is still present and intentionally not purged yet.
+
+## Next Execution Slice
+
+1. Implement Supabase repositories for CRUD across transcriptions, clipboard, snippets, dictionary and settings.
+2. Implement real voice pipeline services (local speech, recording, Whisper, Claude fallback).
+3. Port Android native overlay to Flutter platform channel.
+4. Execute verification matrix from `docs/VERIFICATION.md`.
+5. Run purge gate only after parity checks pass.

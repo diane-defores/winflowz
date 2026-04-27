@@ -1,33 +1,31 @@
 ---
 artifact: documentation
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.1.0"
 project: "VoiceFlowz"
 created: "2026-03-18"
-updated: "2026-04-26"
-status: "draft"
+updated: "2026-04-27"
+status: "reviewed"
 source_skill: "sf-docs"
-scope: "update"
-owner: "unknown"
+scope: "runtime-baseline"
+owner: "Diane"
 confidence: "medium"
+risk_level: "medium"
 security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
-  - "Convex"
-  - "OpenAI Whisper"
-  - "Anthropic"
-  - "Expo"
+  - "Flutter"
+  - "Supabase Auth"
+  - "Supabase Postgres + RLS"
+  - "Android Overlay Bridge"
 depends_on:
   - "BUSINESS.md@0.1.0"
   - "PRODUCT.md@0.1.0"
   - "ARCHITECTURE.md@0.1.0"
   - "GUIDELINES.md@0.1.0"
-supersedes: []
-evidence:
-  - "package.json"
-  - "app/_layout.tsx"
-  - "hooks/useVoiceRecording.ts"
-  - "convex/schema.ts"
+supersedes:
+  - "CLAUDE.md@1.0.0"
+next_review: "2026-05-26"
 next_step: "$sf-docs update"
 ---
 
@@ -35,111 +33,91 @@ next_step: "$sf-docs update"
 
 ## Project Overview
 
-VoiceFlowz is a React Native Expo app for mobile voice typing and clipboard sync. It supports local on-device speech recognition, optional Whisper transcription through the user's OpenAI key, optional Claude cleanup through the user's Anthropic key, Convex-backed history, and an Android floating overlay.
+VoiceFlowz is now a Flutter application using Supabase for authentication and data persistence.
+The app targets multi-platform delivery with Android-specific overlay capabilities exposed through a Flutter method channel.
 
-Clerk is installed as a dependency but is not wired into the app yet. The current implementation still uses `TEMP_USER_ID = "local-user"` for Convex data.
+Current migration baseline includes:
+- Supabase auth gate and email/password login flow
+- User-scoped RLS tables for transcriptions, clipboard, snippets, dictionary, and settings
+- Flutter UI with CRUD foundations for transcriptions, clipboard, snippets, and dictionary
+- Android overlay permission bridge (permission status + toggle + settings deep-link)
 
 ## Stack
 
-- **Framework**: React Native 0.83 + Expo SDK 55
-- **Routing**: expo-router
-- **Backend**: Convex
-- **Auth**: Clerk dependency present, integration planned
-- **Transcription**: `expo-speech-recognition` locally, OpenAI Whisper in advanced mode
-- **AI Cleanup**: Anthropic Messages API when a key is configured, local regex fallback
-- **Audio**: expo-audio
-- **Clipboard**: expo-clipboard
-- **Secure Storage**: expo-secure-store
-- **Native Module**: Custom Expo Module in Kotlin for Android overlay
-- **CI**: GitHub Actions Android APK build
+- Framework: Flutter 3.x / Dart 3.x
+- State management: flutter_riverpod
+- Navigation: go_router
+- Backend: Supabase (Auth + Postgres + RLS)
+- Secure storage: flutter_secure_storage
+- Audio/voice primitives: record + speech_to_text
+- Android native: Kotlin `MethodChannel` bridge for overlay permission and bridge state
 
 ## Commands
 
 ```bash
-npm install
-npm run start
-npm run android
-npm run ios
-npm run web
-npx expo prebuild --platform android
-npx convex dev
-npx tsc --noEmit
-npx eas build --platform android --profile preview
+flutter pub get
+flutter analyze
+flutter test
+flutter run -d android
+flutter run -d ios
+```
+
+For Supabase:
+
+```bash
+supabase db push
 ```
 
 ## Architecture
 
 ```text
-app/
-├── _layout.tsx              # Root layout: ConvexProvider + Stack + OverlayBridge
-├── (tabs)/
-│   ├── _layout.tsx          # Tab navigation
-│   ├── index.tsx            # Voice recording, history, edit, share
-│   ├── clipboard.tsx        # Clipboard history and sync via Convex
-│   └── settings.tsx         # API keys, language, overlay permissions, logs
-hooks/
-├── useVoiceRecording.ts     # Recording state machine and transcription pipeline
-└── useOverlayPermissions.ts # Android overlay and accessibility permission flow
-components/
-├── AudioWaveform.tsx        # Animated audio bars
-├── RecordingControls.tsx    # Shared recording controls
-├── OverlayFAB.tsx           # In-app draggable FAB component
-└── OverlayBridge.tsx        # JS bridge for native overlay events
 lib/
-├── whisper.ts               # OpenAI Whisper API client
-├── ai-cleanup.ts            # Anthropic cleanup client
-├── cleanup-local.ts         # Local cleanup for filler words and punctuation
-├── constants.ts             # Colors and config constants
-├── debug-log.ts             # In-app debug log buffer
-└── storage.ts               # SecureStore helpers
-convex/
-├── schema.ts                # clipboardItems, transcriptions, snippets, dictionary
-├── clipboard.ts             # Clipboard queries and mutations
-├── transcriptions.ts        # Transcription queries and mutations
-└── snippets.ts              # Snippet queries and mutations
-modules/floating-overlay/    # Android native overlay module
-plugins/
-└── withFloatingOverlay.js   # Expo config plugin for Android manifest changes
+├── core/
+│   ├── bootstrap/supabase_bootstrap.dart
+│   ├── platform/android_overlay_bridge.dart
+│   └── router/app_router.dart
+├── data/supabase/
+│   ├── supabase_client_provider.dart
+│   ├── transcription_repository.dart
+│   ├── clipboard_repository.dart
+│   ├── snippet_repository.dart
+│   └── dictionary_repository.dart
+├── features/
+│   ├── auth/presentation/
+│   ├── shell/presentation/app_shell_screen.dart
+│   ├── voice/presentation/voice_screen.dart
+│   ├── clipboard/presentation/clipboard_screen.dart
+│   ├── snippets/presentation/snippets_screen.dart
+│   ├── dictionary/presentation/dictionary_screen.dart
+│   └── settings/presentation/settings_screen.dart
+└── main.dart
+
+android/
+└── app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt
+
+supabase/
+├── migrations/
+└── tests/
 ```
 
-## Key Patterns
+## Runtime Rules
 
-### Dual-Mode Transcription
-
-- **Free mode**: `expo-speech-recognition` runs on device and feeds `cleanupLocal()`.
-- **Advanced mode**: `expo-audio` records audio, Whisper transcribes it, then Claude cleanup runs if an Anthropic key exists.
-- Both modes can save transcriptions to Convex through `useVoiceRecording`.
-
-### Floating Overlay
-
-- `OverlayBridge` listens to native overlay events and uses `useVoiceRecording`.
-- Native Android code manages the floating button and text injection.
-- Text injection should fall back to clipboard when accessibility injection fails.
-
-### API Keys
-
-- OpenAI and Anthropic keys are stored on device via `expo-secure-store`.
-- Keys are not sent to Convex by the current implementation.
-- OpenAI is required for advanced mode. Anthropic is optional.
-
-### Clipboard Sync
-
-- The Clipboard screen polls local clipboard content every 2 seconds.
-- New content is saved to Convex and deduplicated against the latest item.
-- Data is scoped by a temporary `local-user` until Clerk is integrated.
+- Supabase URL and anon key must be injected via `--dart-define`.
+- No service-role key is allowed in Flutter client code.
+- Data access is controlled by Supabase RLS policies; client code must never bypass tenant/user filters.
+- Clipboard, snippets, dictionary, and transcriptions are user-scoped CRUD resources.
+- Android overlay features are Android-only and must remain disabled on non-Android platforms.
 
 ## Known Gaps
 
-- Replace `TEMP_USER_ID` with Clerk user identity.
-- Add server-side authorization rules for Convex functions.
-- Add billing, quota and premium entitlement logic before public freemium claims.
-- Add complete snippets and dictionary UI if those tables become product features.
+- Full Android overlay foreground-service flow and accessibility injection are not yet ported.
+- Voice recording and AI cleanup pipelines are not fully wired end-to-end.
+- Legacy JS/TS artifacts may remain in non-Flutter directories until final purge is completed.
 
 ## Related Docs
 
-- `README.md` — setup and project overview.
-- `PRODUCT.md` — product workflows, non-goals and current status.
-- `ARCHITECTURE.md` — technical architecture and invariants.
-- `GTM.md` — draft go-to-market assumptions.
-- `docs/API.md` — Convex functions and schemas.
-- `docs/COMPONENTS.md` — UI component inventory.
+- `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md`
+- `docs/ARCHITECTURE_FLUTTER.md`
+- `docs/API_SUPABASE.md`
+- `docs/OVERLAY_ANDROID.md`
+- `docs/VERIFICATION.md`

@@ -4,93 +4,87 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-03-18"
-updated: "2026-04-26"
-status: "draft"
+updated: "2026-04-27"
+status: "reviewed"
 source_skill: "sf-docs"
 scope: "guidelines"
-owner: "unknown"
-confidence: "medium"
-risk_level: "medium"
+owner: "Diane"
+confidence: "high"
+risk_level: "high"
 docs_impact: "yes"
 security_impact: "yes"
 evidence:
-  - "package.json"
-  - "app.json"
-  - "app/_layout.tsx"
-  - "hooks/useVoiceRecording.ts"
-  - "lib/storage.ts"
-  - "convex/schema.ts"
+  - "docs/DECISIONS.md"
+  - "docs/MIGRATION_FLUTTER.md"
+  - "docs/API.md"
+  - "modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayModule.kt"
+linked_systems:
+  - "Flutter"
+  - "Supabase"
+  - "Android native overlay"
 depends_on:
-  - "BUSINESS.md@0.1.0"
+  - "ARCHITECTURE.md@0.1.0"
 supersedes: []
-next_review: "2026-05-26"
+next_review: "2026-05-27"
 next_step: "$sf-docs update"
 ---
 
 # Guidelines — VoiceFlowz
 
-## Architecture technique
+## Rule zero: target architecture precedence
 
-### Stack vérifiée
+For implementation and documentation decisions, use:
 
-- **React Native 0.83 + Expo SDK 55** : framework mobile cross-platform.
-- **expo-router** : navigation file-based dans `app/`.
-- **Convex** : backend temps réel pour clipboard, transcriptions et snippets.
-- **expo-speech-recognition** : transcription locale gratuite.
-- **expo-audio** : enregistrement audio pour le mode avancé.
-- **OpenAI Whisper API** : transcription cloud en mode avancé.
-- **Anthropic Messages API** : nettoyage optionnel via Claude quand une clé Anthropic est configurée.
-- **expo-secure-store** : stockage local des clés API et de la langue préférée.
-- **Expo native module Kotlin** : overlay Android.
+- Flutter client + Supabase backend as target baseline.
 
-### Authentification
+Do not present Convex, Clerk, or Expo/React Native as target implementation.
+They are legacy references for migration parity only.
 
-Clerk est présent dans les dépendances et documenté comme cible d'intégration, mais il n'est pas encore branché dans le flux applicatif. Le code utilise encore `TEMP_USER_ID = "local-user"` dans les écrans et hooks principaux. Toute promesse de comptes utilisateurs réels, permissions par utilisateur ou sécurité multi-utilisateur doit rester `planned` tant que Clerk n'est pas intégré.
+## Legacy handling during migration
 
-### Pipeline de transcription
+Allowed:
 
-1. **Mode gratuit** : `expo-speech-recognition` récupère une transcription locale avec résultats intermédiaires.
-2. **Nettoyage local** : `cleanupLocal()` retire certains mots de remplissage et améliore la ponctuation de base.
-3. **Mode avancé** : `expo-audio` enregistre un fichier audio, puis `lib/whisper.ts` l'envoie à Whisper.
-4. **Nettoyage IA optionnel** : `lib/ai-cleanup.ts` appelle Claude si une clé Anthropic est configurée.
-5. **Résultat** : le texte est affiché, copiable, et peut être sauvegardé dans Convex.
+- reading legacy code/contracts to preserve behavior,
+- patching legacy code only when needed to unblock migration safety or parity verification,
+- referencing legacy APIs as "reference only" in docs.
 
-## Sécurité et données
+Not allowed:
 
-- Les clés OpenAI et Anthropic sont stockées via `expo-secure-store`.
-- Les clés API ne sont pas envoyées à Convex par le code actuel.
-- Le mode avancé envoie l'audio à OpenAI Whisper.
-- Le nettoyage IA envoie le texte transcrit à Anthropic si la clé Anthropic existe.
-- Les transcriptions et éléments de clipboard sont stockés dans Convex avec un `userId` temporaire tant que Clerk n'est pas branché.
-- Ne pas présenter la synchronisation Convex comme isolée par compte réel avant remplacement de `TEMP_USER_ID`.
+- introducing new target features on Convex/Clerk/Expo path,
+- adding new long-term contracts that depend on `TEMP_USER_ID`.
 
-## Expérience produit
+## Data and security guidelines
 
-- L'écran Voice doit privilégier l'action principale : enregistrer, voir le texte, copier, modifier ou envoyer vers le clipboard partagé.
-- L'écran Clipboard doit rester scannable, avec actions rapides : copier, épingler, supprimer.
-- Les réglages doivent expliquer clairement les prérequis : clés API, langue, permissions Android.
-- L'overlay Android doit toujours avoir un fallback clipboard si l'injection texte échoue.
+1. All user-scoped product data must be guarded by Supabase RLS.
+2. Ownership checks must rely on `auth.uid()` in SQL policies.
+3. Do not trust client-sent user identifiers for authorization.
+4. OpenAI and Anthropic keys stay in local secure storage only.
+5. Never write API keys to Supabase tables, logs, or analytics payloads.
+6. Never persist empty/whitespace transcriptions.
 
-## Code
+## API and schema change guidelines
 
-### Conventions
+- Update `docs/API.md` in the same change when schema or policy contracts change.
+- Keep table and policy contracts explicit (columns, constraints, RLS behavior).
+- For realtime behavior, document scope and ordering assumptions.
+- Mark any Convex references as legacy-only compatibility notes.
 
-- TypeScript strict.
-- Composants fonctionnels et hooks React.
-- Logique métier dans `hooks/` et `lib/`.
-- Mutations et queries Convex dans `convex/`.
-- Aucun secret dans `.env.example`, le code ou les docs.
+## Flutter implementation guidelines
 
-### Points de vigilance
+- Use Dart-first feature modules (`voice`, `clipboard`, `settings`, `snippets`, `dictionary`, `auth`, `overlay`).
+- Keep business logic out of widgets; use provider/controller + repository boundaries.
+- Prefer typed domain models and explicit error states.
+- Surface platform limitations directly in UI copy (for example overlay availability).
 
-- Remplacer `TEMP_USER_ID` par l'identifiant Clerk avant tout usage multi-utilisateur.
-- Documenter toute modification du schéma Convex dans `ARCHITECTURE.md` et `docs/API.md`.
-- Vérifier Android après toute modification de l'overlay ou du plugin Expo.
-- Ne pas ajouter de promesse premium sans modèle de droits, quota et billing.
+## Platform behavior guidelines
 
-## Accessibilité
+- Android overlay is native and Android-only.
+- If injection fails, clipboard fallback must still deliver final text.
+- Linux local speech mode is documented unavailable; advanced recording + Whisper path remains available.
+- Permission failures must produce explicit recovery paths, never silent no-op behavior.
 
-- Les zones tactiles doivent rester larges, au minimum 44x44 points.
-- Les actions critiques doivent avoir des labels explicites.
-- Les permissions Android doivent être guidées pas à pas.
-- Les états erreur et traitement doivent être lisibles sans dépendre uniquement de la couleur.
+## Documentation guidelines
+
+- Every owned doc must keep a `Legacy` vs `Target` split where relevant.
+- `status: reviewed` is valid only when the doc does not contradict Flutter + Supabase target.
+- Keep `artifact_version: 0.1.0` unless schema-level metadata changes require a version bump.

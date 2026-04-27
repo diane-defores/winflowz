@@ -4,20 +4,25 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-26"
-status: "draft"
+updated: "2026-04-27"
+status: "reviewed"
 source_skill: "sf-docs"
 scope: "api"
-owner: "unknown"
-confidence: "medium"
+owner: "Diane"
+confidence: "high"
+risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
-  - "Convex"
+  - "Supabase Auth"
+  - "Supabase Postgres"
+  - "Supabase Realtime"
 depends_on:
   - "../ARCHITECTURE.md@0.1.0"
+  - "../docs/DECISIONS.md@0.1.0"
 supersedes: []
 evidence:
+  - "../docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
   - "../convex/schema.ts"
   - "../convex/clipboard.ts"
   - "../convex/transcriptions.ts"
@@ -27,136 +32,150 @@ next_step: "$sf-docs api"
 
 # API — VoiceFlowz
 
-VoiceFlowz uses Convex functions instead of HTTP route files. The functions below are callable from the Expo app through the generated Convex client.
+## Scope
 
-## Security Status
+This document defines the target backend contract for migration:
 
-The current functions accept `userId` from the client. This is sufficient for local MVP development, but not for a secure multi-user product. Replace `TEMP_USER_ID` with authenticated Clerk identity and enforce authorization before public launch.
+- Target contract: Supabase schema + RLS + realtime.
+- Legacy note: Convex API signatures are reference only and not target implementation.
 
-## Tables
+## Target Supabase contract
 
-### `clipboardItems`
+### Auth contract
 
-| Field | Type | Notes |
+- Supabase Auth is required for all user-scoped data operations.
+- `auth.uid()` is the only trusted user identity source for authorization.
+- Client must not send arbitrary user ids for authorization decisions.
+
+### Tables (contract level)
+
+#### `profiles`
+
+| Column | Type | Contract |
 |---|---|---|
-| `userId` | string | Temporary client-provided user id. |
-| `content` | string | Clipboard content. |
-| `contentType` | `"text"` / `"url"` / `"code"` | Code currently creates `text` or `url`. |
-| `source` | string | Device or workflow source. |
-| `pinned` | boolean | Pin state. |
+| `id` | `uuid` | PK, references `auth.users(id)`, equals authenticated user id |
+| `display_name` | `text` nullable | user-facing name |
+| `created_at` | `timestamptz` | default `now()` |
+| `updated_at` | `timestamptz` | managed by trigger |
 
-Indexes: `by_user`, `by_user_time`.
+#### `user_settings`
 
-### `transcriptions`
-
-| Field | Type | Notes |
+| Column | Type | Contract |
 |---|---|---|
-| `userId` | string | Temporary client-provided user id. |
-| `rawText` | string | Original transcription. |
-| `cleanedText` | string | Cleaned or edited transcription. |
-| `language` | string | Detected or selected language. |
-| `durationMs` | number | Recording duration. |
-| `source` | string | `in-app`, `overlay` or another caller-provided source. |
+| `id` | `uuid` | PK |
+| `user_id` | `uuid` | FK to `auth.users(id)`, unique per user |
+| `preferred_language` | `text` | BCP-47 style language tag |
+| `overlay_enabled` | `boolean` | android UI preference only |
+| `created_at` | `timestamptz` | default `now()` |
+| `updated_at` | `timestamptz` | managed by trigger |
 
-Index: `by_user`.
+#### `transcriptions`
 
-### `snippets`
-
-| Field | Type | Notes |
+| Column | Type | Contract |
 |---|---|---|
-| `userId` | string | Temporary client-provided user id. |
-| `trigger` | string | Example: `/sig`. |
-| `content` | string | Text inserted by the snippet. |
-| `label` | string | Human-readable label. |
+| `id` | `uuid` | PK |
+| `user_id` | `uuid` | FK to `auth.users(id)` |
+| `raw_text` | `text` | non-empty content |
+| `cleaned_text` | `text` | non-empty final text |
+| `language` | `text` | selected or detected language |
+| `duration_ms` | `integer` | non-negative |
+| `source` | `text` | `in_app` or `overlay` |
+| `created_at` | `timestamptz` | default `now()` |
+| `updated_at` | `timestamptz` | managed by trigger |
 
-Indexes: `by_user`, `by_user_trigger`.
+Contract constraints:
 
-### `dictionary`
+- reject inserts where `trim(cleaned_text)` is empty.
+- reject inserts where `trim(raw_text)` is empty.
 
-| Field | Type | Notes |
+#### `clipboard_items`
+
+| Column | Type | Contract |
 |---|---|---|
-| `userId` | string | Temporary client-provided user id. |
-| `term` | string | Preferred term. |
-| `replacement` | string, optional | Optional correction. |
+| `id` | `uuid` | PK |
+| `user_id` | `uuid` | FK to `auth.users(id)` |
+| `content` | `text` | non-empty |
+| `content_type` | `text` | `text`, `url`, or `code` |
+| `source` | `text` | source descriptor |
+| `pinned` | `boolean` | default `false` |
+| `created_at` | `timestamptz` | default `now()` |
+| `updated_at` | `timestamptz` | managed by trigger |
 
-Index: `by_user`.
+#### `snippets`
 
-## Clipboard Functions
+| Column | Type | Contract |
+|---|---|---|
+| `id` | `uuid` | PK |
+| `user_id` | `uuid` | FK to `auth.users(id)` |
+| `trigger` | `text` | non-empty, unique per user (case-insensitive) |
+| `content` | `text` | non-empty |
+| `label` | `text` | display label |
+| `created_at` | `timestamptz` | default `now()` |
+| `updated_at` | `timestamptz` | managed by trigger |
 
-### `clipboard.list`
+#### `dictionary_terms`
 
-- **Type**: query
-- **Args**: `{ userId: string }`
-- **Returns**: up to 50 clipboard items ordered descending.
-- **Used by**: `app/(tabs)/clipboard.tsx`
+| Column | Type | Contract |
+|---|---|---|
+| `id` | `uuid` | PK |
+| `user_id` | `uuid` | FK to `auth.users(id)` |
+| `term` | `text` | non-empty source term |
+| `replacement` | `text` nullable | preferred replacement |
+| `created_at` | `timestamptz` | default `now()` |
+| `updated_at` | `timestamptz` | managed by trigger |
 
-### `clipboard.add`
+### RLS contract
 
-- **Type**: mutation
-- **Args**: `{ userId: string, content: string, contentType: "text" | "url" | "code", source: string }`
-- **Returns**: inserted item id, or latest item id if the newest item has the same content.
-- **Used by**: Clipboard polling and transcript sharing.
+RLS must be enabled on all user-scoped tables.
 
-### `clipboard.togglePin`
+Policy baseline per table with `user_id`:
 
-- **Type**: mutation
-- **Args**: `{ id: Id<"clipboardItems"> }`
-- **Returns**: void.
+- `SELECT`: `auth.uid() = user_id`
+- `INSERT`: `auth.uid() = user_id`
+- `UPDATE`: `auth.uid() = user_id`
+- `DELETE`: `auth.uid() = user_id`
 
-### `clipboard.remove`
+Policy baseline for `profiles`:
 
-- **Type**: mutation
-- **Args**: `{ id: Id<"clipboardItems"> }`
-- **Returns**: void.
+- row `id` must equal `auth.uid()`.
 
-## Transcription Functions
+No public or anonymous policy may expose user content rows.
 
-### `transcriptions.list`
+### Realtime contract
 
-- **Type**: query
-- **Args**: `{ userId: string }`
-- **Returns**: up to 30 transcriptions ordered descending.
+Realtime-enabled tables:
 
-### `transcriptions.save`
+- `transcriptions`
+- `clipboard_items`
+- `snippets`
+- `dictionary_terms`
+- `user_settings`
 
-- **Type**: mutation
-- **Args**: `{ userId: string, rawText: string, cleanedText: string, language: string, durationMs: number, source: string }`
-- **Returns**: inserted transcription id.
+Client subscription behavior:
 
-### `transcriptions.update`
+- subscribe after auth session is ready,
+- scope updates to current user rows,
+- handle out-of-order events idempotently with `updated_at`.
 
-- **Type**: mutation
-- **Args**: `{ id: Id<"transcriptions">, rawText: string, cleanedText: string }`
-- **Returns**: void.
+Expected behavior:
 
-### `transcriptions.remove`
+- UI converges to server truth without cross-user leakage,
+- transient offline errors are recoverable and visible to user.
 
-- **Type**: mutation
-- **Args**: `{ id: Id<"transcriptions"> }`
-- **Returns**: void.
+## Legacy Convex reference (non-target)
 
-## Snippet Functions
+The following mapping exists only to preserve parity intent during migration:
 
-### `snippets.list`
+| Legacy Convex function | Target Supabase operation |
+|---|---|
+| `clipboard.list` | `select` on `clipboard_items` (user-scoped) |
+| `clipboard.add` | `insert` on `clipboard_items` |
+| `clipboard.togglePin` | `update pinned` on `clipboard_items` |
+| `clipboard.remove` | `delete` from `clipboard_items` |
+| `transcriptions.list` | `select` on `transcriptions` |
+| `transcriptions.save` | `insert` on `transcriptions` |
+| `transcriptions.update` | `update` on `transcriptions` |
+| `transcriptions.remove` | `delete` on `transcriptions` |
+| `snippets.list/findByTrigger/upsert/remove` | corresponding CRUD on `snippets` |
 
-- **Type**: query
-- **Args**: `{ userId: string }`
-- **Returns**: all snippets for the user.
-
-### `snippets.findByTrigger`
-
-- **Type**: query
-- **Args**: `{ userId: string, trigger: string }`
-- **Returns**: first matching snippet or null.
-
-### `snippets.upsert`
-
-- **Type**: mutation
-- **Args**: `{ userId: string, trigger: string, content: string, label: string }`
-- **Returns**: snippet id.
-
-### `snippets.remove`
-
-- **Type**: mutation
-- **Args**: `{ id: Id<"snippets"> }`
-- **Returns**: void.
+Convex signatures are not implementation guidance for target runtime.

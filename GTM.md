@@ -1,22 +1,34 @@
 ---
 artifact: gtm_context
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-26"
-status: "draft"
+updated: "2026-04-27"
+status: "reviewed"
 source_skill: "sf-docs"
 scope: "gtm"
-owner: "unknown"
-confidence: "low"
+owner: "Diane"
+confidence: "medium"
 risk_level: "medium"
 docs_impact: "yes"
-security_impact: "unknown"
+security_impact: "none"
 evidence:
   - "BUSINESS.md"
   - "PRODUCT.md"
   - "app/(tabs)/settings.tsx"
+target_segment:
+  - "Mobile professionals dictating notes and messages"
+  - "Android power users needing overlay-driven text capture"
+offer: "A voice-first mobile workflow with free local dictation and optional advanced AI cleanup via user-provided keys"
+channels:
+  - "Internal APK distribution and direct demos"
+  - "Cross-promotion to adjacent WinFlowz users"
+  - "Workflow-led product content and demos"
+proof_points:
+  - "On-device transcription path exists"
+  - "Advanced Whisper and Claude cleanup paths are implemented"
+  - "Convex-backed history and clipboard sync are present in code"
 depends_on:
   - "BUSINESS.md@0.1.0"
   - "BRANDING.md@0.1.0"
@@ -28,24 +40,23 @@ next_step: "$sf-docs update"
 
 # GTM — VoiceFlowz
 
-## Statut
+## Positionnement
 
-Ce GTM est un brouillon basé sur le code et les documents existants. Il ne doit pas être utilisé comme plan de lancement final sans validation du positionnement, du pricing, de l'authentification et des preuves produit.
+VoiceFlowz est un produit sibling de WinFlowz dans le même écosystème. VoiceFlowz porte l'axe voice-first (dictée, transcription, nettoyage, clipboard), tandis que WinFlowz porte d'autres workflows de productivité.
 
 ## Segment prioritaire
 
-Power users mobiles et professionnels indépendants qui :
+Utilisateurs mobiles orientés productivité, en priorité :
 
-- rédigent régulièrement des notes courtes ;
-- veulent aller plus vite que la saisie clavier ;
-- acceptent de configurer leurs propres clés API en phase bêta ;
-- comprennent les permissions Android nécessaires pour l'overlay.
+- professionnels indépendants et power users qui dictent des notes/messages ;
+- utilisateurs Android qui veulent capturer du texte hors application via overlay ;
+- early adopters capables de configurer des clés BYO pour les modes IA avancés.
 
 ## Promesse publique sûre
 
 "VoiceFlowz transforme la voix en texte copiable sur mobile, avec un mode local gratuit et un mode avancé via vos clés API."
 
-## Promesses à éviter pour l'instant
+## Promesses à éviter
 
 - "Synchronisation sécurisée par compte" tant que Clerk n'est pas branché.
 - "Freemium avec quotas" tant que les droits et le billing n'existent pas.
@@ -53,13 +64,14 @@ Power users mobiles et professionnels indépendants qui :
 - "Données vocales jamais stockées" sans audit complet du flux audio, des caches natifs et des fournisseurs externes.
 - "Prêt entreprise" sans auth, politiques de rétention et garanties sécurité.
 
-## Canaux possibles
+## Canaux de distribution pragmatiques
 
-- Démo courte auprès d'utilisateurs WinFlowz existants.
+- Cross-promotion vers la base utilisateur WinFlowz.
 - Distribution interne Android APK pour premiers tests.
-- Contenu produit orienté workflow : notes de réunion, email rapide, pensée capturée en déplacement.
+- Contenu orienté workflow (notes de reunion, email rapide, pensee captee en deplacement).
+- Demos produit courtes centrees sur le gain de vitesse de saisie.
 
-## Objections probables
+## Objections usuelles et reponses factuelles
 
 | Objection | Réponse actuelle |
 |---|---|
@@ -68,10 +80,10 @@ Power users mobiles et professionnels indépendants qui :
 | "Faut-il payer ?" | Pas de billing implémenté. Les modes cloud utilisent les clés API de l'utilisateur. |
 | "Est-ce utilisable dans d'autres apps ?" | Oui sur Android via overlay si les permissions système sont accordées. |
 
-## Preuves à construire avant lancement public
+## Preconditions avant lancement public large
 
 - Test end-to-end Convex avec vraie URL de déploiement.
 - Intégration Clerk et suppression de `TEMP_USER_ID`.
 - Politique claire de données et fournisseurs.
 - Mesures de latence et fiabilité sur appareils Android réels.
-- Positionnement pricing validé par une implémentation de droits.
+- Positionnement `LTD + abonnement` implémente avec droits/quotas.

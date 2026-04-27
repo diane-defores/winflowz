@@ -4,19 +4,21 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-03-18"
-updated: "2026-04-26"
-status: "draft"
+updated: "2026-04-27"
+status: "reviewed"
 source_skill: "sf-docs"
 scope: "branding"
-owner: "unknown"
+owner: "Diane"
 confidence: "medium"
 risk_level: "low"
 docs_impact: "yes"
 security_impact: "none"
 evidence:
-  - "lib/constants.ts"
-  - "app/(tabs)/index.tsx"
-  - "assets/icon.png"
+  - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
+  - "BUSINESS.md"
+  - "PRODUCT.md"
+brand_voice: "Direct, productive, and honest about prerequisites"
+trust_posture: "Do not overpromise auth, billing, privacy, or AI quality beyond verified code paths"
 depends_on:
   - "BUSINESS.md@0.1.0"
 supersedes: []
@@ -25,6 +27,10 @@ next_step: "$sf-docs update"
 ---
 
 # Branding — VoiceFlowz
+
+## Cadre
+
+Ce document cadre la marque pour la cible `target-reviewed` Flutter + Supabase. Les mentions Expo/Convex/Clerk appartiennent uniquement au contexte `legacy-current` pré-migration et ne doivent pas être utilisées comme promesse produit.
 
 ## Nom et identité
 
@@ -37,7 +43,7 @@ next_step: "$sf-docs update"
 
 ### Cohérence écosystème
 
-VoiceFlowz peut rester visuellement relié à WinFlowz, mais le code actuel utilise surtout une palette mobile sombre avec accents indigo et cyan. La documentation ne doit pas promettre un système visuel complet partagé avec WinFlowz tant que les tokens communs ne sont pas présents dans le repo.
+VoiceFlowz peut rester visuellement relié à WinFlowz, avec une identité orientée produit utilitaire: rapide, lisible, orientée action. La documentation ne doit pas promettre un design system partagé complet tant que les tokens communs ne sont pas versionnés.
 
 ### Couleurs
 
@@ -55,15 +61,16 @@ VoiceFlowz peut rester visuellement relié à WinFlowz, mais le code actuel util
 
 ## Typographie
 
-- Polices système React Native.
+- Polices système Flutter par plateforme (Android, iOS, desktop, web).
 - Hiérarchie simple : titre, sous-titre, résultat, historique.
 - Le texte transcrit doit rester lisible et facile à copier ou modifier.
 
 ## Ton de voix
 
 - Direct, productif, sans jargon.
-- Orienté action : enregistrer, transcrire, copier, envoyer au clipboard partagé.
-- Les messages de configuration doivent rester honnêtes sur les prérequis : clé OpenAI, clé Anthropic optionnelle, permissions Android, Convex.
+- Orienté action : enregistrer, transcrire, copier, synchroniser.
+- Les messages de configuration doivent rester honnêtes sur les prérequis : compte Supabase, clé OpenAI BYO locale, clé Anthropic locale optionnelle, permissions Android overlay/accessibilité.
+- Les plateformes non Android ne doivent pas recevoir de promesse d'overlay système.
 
 ## Valeurs de marque
 
@@ -73,3 +80,23 @@ VoiceFlowz peut rester visuellement relié à WinFlowz, mais le code actuel util
 | Discrétion | L'application doit rester légère dans le workflow mobile. |
 | Précision | Le nettoyage IA améliore le texte sans changer l'intention. |
 | Contrôle | Les clés API restent sur l'appareil et les permissions sont explicites. |
+
+## Claims autorisés / interdits
+
+### Claims autorisés (target-reviewed)
+
+- "Application Flutter multi-plateforme."
+- "Connexion et synchronisation de données via Supabase."
+- "Clés OpenAI/Anthropic BYO conservées localement."
+- "Overlay disponible uniquement sur Android."
+- "Snippets et dictionnaire personnel synchronisés par compte."
+
+### Claims interdits tant que non implémentés
+
+- "Billing premium actif", "quotas appliqués", "entitlements en production".
+- "Chiffrement bout-en-bout".
+- "Overlay système sur iOS/macOS/Windows/Linux/web".
+
+### Claims legacy-current à ne pas utiliser comme cible
+
+- "Backend Convex", "auth Clerk en cours", "application Expo/React Native" comme direction produit.
