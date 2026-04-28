@@ -1,28 +1,46 @@
+---
+artifact: documentation
+metadata_schema_version: "1.0"
+artifact_version: "1.0.0"
+project: winflowz
+created: "2026-04-25"
+updated: "2026-04-27"
+status: reviewed
+source_skill: sf-docs
+scope: readme
+owner: "Diane"
+confidence: medium
+risk_level: medium
+security_impact: yes
+docs_impact: yes
+linked_systems: []
+depends_on: []
+supersedes: []
+evidence: []
+next_step: /sf-docs audit README.md
+---
 # WinFlowz
 
-Optimize your Windows workflow with a mixed product stack: a Windows productivity course, gated documentation, and companion tools around browser and knowledge workflows.
+WinFlowz is a Windows-first productivity project centered on `Windows Mastery`, with bilingual content, gated learning surfaces, and companion product pages.
 
 Production: https://winflowz.com
 
-## Features
+## What This Repo Contains
 
-- Astro 5 server-rendered marketing site with localized English and French routes
-- Starlight-powered course and documentation content under `src/content/docs`
-- Product catalog with dedicated sales flow for `Windows Mastery`
-- Clerk authentication and gated private course access
-- Polar checkout and webhook integration for course purchases
-- Convex backend for user sync, entitlements, API keys, and product state
-- Resend-powered newsletter signup and onboarding email flow
-- React islands for interactive landing and dashboard UI
+- Astro site with `en` and `fr` routes
+- content collections for blog, docs, and products
+- flagship route family around `Windows Mastery`
+- account, checkout, and newsletter API surfaces under `src/pages/api/*`
+- supporting Convex workspace for backend logic
 
 ## Quick Start
 
-### Requirements
+Requirements:
 
 - Node.js 20+
 - pnpm
 
-### Install and run
+Install and run:
 
 ```bash
 pnpm install
@@ -36,7 +54,7 @@ The local dev server runs on `http://localhost:3011`.
 - Astro 5
 - Astro Starlight
 - Tailwind CSS 3
-- React 19 islands
+- React islands
 - Clerk
 - Polar.sh
 - Convex
@@ -70,12 +88,12 @@ winflowz/
 ## Main Routes
 
 - `/` and `/fr` — localized homepages
-- `/landing` and `/fr/landing` — alternate landing flow
-- `/windows-mastery` and `/fr/maitrise-windows` — main course sales page
-- `/products` and `/fr/produits` — product catalog
-- `/dashboard/*` — authenticated app and private course access
+- `/landing` and `/fr/landing` — landing surfaces
+- `/windows-mastery` and `/fr/maitrise-windows` — flagship offer surfaces
+- `/products` and `/fr/produits` — product catalog routes
+- `/dashboard/*` — authenticated surfaces
 - `/api/newsletter/*` — newsletter subscribe and unsubscribe
-- `/api/polar/*` — checkout and webhook endpoints
+- `/api/polar/*` — checkout/webhook surfaces
 
 ## Environment Variables
 
@@ -107,31 +125,22 @@ Copy `.env.example` to `.env` and fill the values required by your environment.
 
 ## Scripts
 
-| Script | Description |
-| --- | --- |
-| `pnpm dev` | Start the Astro dev server |
-| `pnpm start` | Alias for `pnpm dev` |
-| `pnpm clean` | Remove build and Vite cache output |
-| `pnpm typecheck` | Run `astro check` with the project TS config |
-| `pnpm build:check` | Validate Astro files without building |
-| `pnpm build:analyze` | Build with bundle analysis |
-| `pnpm build:astro` | Standard Astro production build |
-| `pnpm build:debug` | Build with Node inspector enabled |
-| `pnpm build` | Force a full production build |
-| `pnpm preview` | Preview the production build locally |
-| `pnpm astro` | Run Astro CLI directly |
-| `pnpm test` | Start Vitest |
-| `pnpm test:unit` | Run unit tests once |
-| `pnpm test:integration` | Build then run integration tests |
-| `pnpm test:e2e` | Build then run Playwright end-to-end tests |
-| `pnpm test:coverage` | Generate coverage output |
-| `pnpm test:ui` | Start Vitest UI |
+Use `pnpm run` to list all scripts in your local checkout.
+
+Common commands:
+
+- `pnpm dev`
+- `pnpm build`
+- `pnpm preview`
 
 ## Documentation
 
 - [CLAUDE.md](./CLAUDE.md) — agent workflow and context rules
-- [BUSINESS.md](./BUSINESS.md) — business model, persona, and GTM context
-- [BRANDING.md](./BRANDING.md) — visual identity and route conventions
+- [BUSINESS.md](./BUSINESS.md) — business contract centered on `Windows Mastery`
+- [BRANDING.md](./BRANDING.md) — brand voice and claim policy
+- [PRODUCT.md](./PRODUCT.md) — product scope and user journey
+- [GTM.md](./GTM.md) — go-to-market structure
+- [CONTENT_MAP.md](./CONTENT_MAP.md) — content routing map
 - [GUIDELINES.md](./GUIDELINES.md) — project-specific engineering guidelines
 - [docs/DESIGN_SPECIFICATION.md](./docs/DESIGN_SPECIFICATION.md) — design system notes
 - [docs/COMPONENT_CLASSES.md](./docs/COMPONENT_CLASSES.md) — reusable CSS class reference
@@ -150,5 +159,5 @@ pnpm build
 
 1. Install dependencies with `pnpm install`.
 2. Create `.env` from `.env.example`.
-3. Run `pnpm build:check` before shipping documentation or route changes.
-4. Keep docs, route names, and localized paths aligned when editing the sales flow or product catalog.
+3. Keep docs and localized routes aligned when changing offer or conversion pages.
+4. Keep claims in product and marketing docs aligned with observable implementation.

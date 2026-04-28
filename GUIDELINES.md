@@ -1,24 +1,37 @@
 ---
 artifact: technical_guidelines
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: winflowz
 created: "2026-04-25"
-updated: "2026-04-25"
-status: draft
+updated: "2026-04-27"
+status: reviewed
 source_skill: sf-docs
 scope: guidelines
-owner: unknown
-confidence: low
+owner: "Diane"
+confidence: high
 risk_level: medium
-security_impact: unknown
+security_impact: yes
 docs_impact: yes
-linked_systems: []
-depends_on: []
+linked_systems:
+  - "Astro 5"
+  - "Clerk"
+  - "Convex"
+  - "Polar"
+  - "Resend"
+depends_on:
+  - "CLAUDE.md"
+  - "ARCHITECTURE.md"
 supersedes: []
-evidence: []
-next_review: "unknown"
-next_step: /sf-docs audit GUIDELINES.md
+evidence:
+  - "package.json"
+  - "astro.config.mjs"
+  - "src/pages/api/polar/checkout.ts"
+  - "src/pages/api/newsletter/subscribe.ts"
+  - "src/middleware/i18n.ts"
+  - "convex/http.ts"
+next_review: "2026-05-27"
+next_step: "pnpm build:check"
 ---
 # WinFlowz Engineering Guidelines
 
@@ -26,7 +39,7 @@ next_step: /sf-docs audit GUIDELINES.md
 
 - Framework: Astro 5 in server mode
 - UI: Astro components, React islands, Tailwind CSS, Preline
-- Content: Starlight docs and Markdown content collections
+- Content: Astro content collections and MDX content
 - Auth: Clerk
 - Payments: Polar.sh
 - Backend: Convex
@@ -51,6 +64,7 @@ next_step: /sf-docs audit GUIDELINES.md
   - `products/`
   - `services/`
 - Keep `src/i18n/*` in sync with the rendered pages and CTA labels.
+- Keep `src/utils/routing.ts` and `src/i18n/config.ts` aligned when adding or renaming localized routes.
 - When changing product status (`available`, `beta`, `coming_soon`), verify the CTA strategy matches the status.
 
 ## API and Integration Rules

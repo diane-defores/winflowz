@@ -1,22 +1,82 @@
+---
+artifact: documentation
+metadata_schema_version: "1.0"
+artifact_version: "1.0.0"
+project: winflowz
+created: "2026-04-25"
+updated: "2026-04-27"
+status: reviewed
+source_skill: sf-docs
+scope: file
+owner: "Diane"
+confidence: high
+risk_level: medium
+security_impact: yes
+docs_impact: yes
+linked_systems:
+  - "Astro 5"
+  - "Vercel"
+  - "Clerk"
+  - "Convex"
+  - "Polar"
+  - "Resend"
+depends_on:
+  - "GUIDELINES.md"
+  - "ARCHITECTURE.md"
+supersedes: []
+evidence:
+  - "package.json"
+  - "astro.config.mjs"
+  - "src/middleware/index.ts"
+  - "src/pages/api/polar/checkout.ts"
+  - "convex/http.ts"
+next_step: "pnpm build:check"
+---
 # winflowz
 
-## Context MCP — Token-Saving Protocol
+## Repository Execution Contract
 
-This project uses a local codebase MCP server for efficient context management. Follow this order strictly:
+This repository is an Astro 5 server application with bilingual routing, Clerk auth, Convex state, Polar checkout, and Resend newsletter flows.
 
-### Every turn:
-1. **Call `context_continue` FIRST** — before any Read, Grep, Glob, or file exploration. This returns files already in memory and avoids re-reading.
-2. **If you need more files**, call `context_retrieve` with your query BEFORE using Grep/Glob. It ranks files by relevance.
-3. **Use `context_read`** instead of the Read tool when exploring code. It excerpts only relevant portions and tracks your token budget (18K chars/turn).
-4. **After editing files**, always call `context_register_edit` with a one-sentence summary.
-5. **Store key decisions** with `context_decide` (e.g., "using Vue for interactive islands").
+Use this file as the short operating contract before changing code or docs.
 
-### Rules:
-- Do NOT use Read/Grep/Glob for broad exploration before calling `context_continue`
-- Do NOT re-read files that `context_continue` says are already in memory
-- Prefer `context_read` over Read for all code exploration (Read is fine for files you need in full)
-- Do NOT exceed the turn read budget — if `context_read` says budget exhausted, stop reading and work with what you have
-- After edits, ALWAYS call `context_register_edit` — this invalidates stale cache
-- For large files: call `list_symbols` first, then `context_read "file::symbol"` to read just the function you need
-- Call `count_tokens(text)` before reading any file > 200 lines to decide if it's worth the budget
-- When user says "done", "bye", or "wrap up" — call `session_wrap` to save context for next session
+## Stack Snapshot
+
+- Framework: Astro 5 (`output: "server"`)
+- Deployment adapter: Vercel (`@astrojs/vercel`)
+- Auth: Clerk middleware + webhook forwarding
+- Backend/state: Convex (`users`, `apiKeys`, `features`)
+- Billing: Polar checkout route + Convex webhook processing
+- Email: Resend subscribe/unsubscribe API routes
+- Content: Astro content collections (`docs`, `products`, `blog`, `services`)
+
+## First Files To Inspect
+
+1. `GUIDELINES.md`
+2. `ARCHITECTURE.md`
+3. `src/middleware/index.ts`
+4. `src/middleware/i18n.ts`
+5. `src/pages/api/polar/checkout.ts`
+6. `convex/http.ts`
+
+## High-Risk Change Areas
+
+- Locale and route normalization: `src/middleware/i18n.ts`, `src/i18n/config.ts`, `src/utils/routing.ts`
+- Checkout and entitlements: `src/pages/api/polar/checkout.ts`, `src/pages/api/polar/webhook.ts`, `convex/http.ts`, `convex/polar.ts`, `src/utils/courseGating.ts`
+- Auth identity sync: `src/pages/api/clerk/webhook.ts`, `convex/http.ts`, `convex/users.ts`
+- Newsletter side effects: `src/pages/api/newsletter/subscribe.ts`, `src/pages/api/newsletter/unsubscribe.ts`
+- Content schema contracts: `src/content/config.ts`
+
+## Runtime Assumptions
+
+- English routes are unprefixed and French routes are under `/fr`.
+- `PUBLIC_CONVEX_URL` must not be placeholder for Convex-backed logic.
+- Polar flows require `POLAR_ACCESS_TOKEN` and `POLAR_WINFLOWZ_PRODUCT_ID` (or fallback `POLAR_PRODUCT_ID`).
+- Newsletter routes require `RESEND_API_KEY` and a valid audience id.
+
+## Safe Change Pattern
+
+1. Identify the boundary first (routing, auth, checkout, newsletter, content schema).
+2. Keep Astro API routes as thin integration controllers.
+3. Keep durable state transitions inside Convex mutations/actions.
+4. Update docs when changing env contracts, route contracts, or data shape.

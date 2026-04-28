@@ -1,223 +1,96 @@
 ---
 artifact: brand_context
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: winflowz
 created: "2026-04-25"
-updated: "2026-04-25"
-status: draft
+updated: "2026-04-27"
+status: reviewed
 source_skill: sf-docs
 scope: brand
-owner: unknown
-confidence: low
+owner: "Diane"
+confidence: medium
 risk_level: medium
 security_impact: unknown
 docs_impact: yes
-brand_voice: unknown
-trust_posture: unknown
+brand_voice: "Practical, calm, direct, Windows-first, bilingual."
+trust_posture: "No hype, no fabricated proof, no unsupported performance claims."
 depends_on: []
 supersedes: []
 evidence: []
 next_review: "unknown"
 next_step: /sf-docs audit BRANDING.md
 ---
-# WinFlowz Brand Identity Specification
+# Branding — WinFlowz
 
-This document serves as the definitive guide to the WinFlowz brand identity, capturing all visual, typographic, and interactive elements that define the brand experience.
+This file defines the brand contract used by product pages, marketing pages, and editorial content. It focuses on reliable guidance, not speculative design details.
 
----
+## Brand Core
 
-## Table of Contents
+- Name: `WinFlowz`
+- Core promise: improve real Windows workflows through structured education and practical systems
+- Commercial center: `Windows Mastery`
+- Language posture: bilingual (`en` and `fr`) with parity on key commercial surfaces
 
-1. [Brand Overview](#brand-overview)
-2. [Logo System](#logo-system)
-3. [Color Palette](#color-palette)
-4. [Typography](#typography)
-5. [Iconography & Visual Elements](#iconography--visual-elements)
-6. [Animation & Motion](#animation--motion)
-7. [Component Styles](#component-styles)
-8. [Theme System (Light/Dark)](#theme-system-lightdark)
-9. [Internationalization](#internationalization)
-10. [Asset Inventory](#asset-inventory)
+## Tagline Direction
 
----
+Primary tagline:
 
-## Brand Overview
+`Optimize your Windows workflow`
 
-### Brand Name
-**WinFlowz**
+French equivalent used when localized copy requires symmetry:
 
-### Brand Tagline
-"Optimize your Windows workflow"
+`Optimise ton workflow Windows`
 
-### Brand Description
-WinFlowz is a Windows toolkit designed to optimize daily workflow. The brand offers productivity tools and training for Windows workflows, targeting entrepreneurs, freelancers, and professionals.
+## Voice And Tone
 
-### Site Information
-- **URL**: https://winflowz.com
-- **GitHub**: https://github.com/winflowz
+Voice characteristics:
 
-### SEO Meta
-- **Title**: WinFlowz - Optimize your Windows workflow
-- **Description**: WinFlowz is a Windows toolkit designed to optimize your daily workflow.
-- **OG Title**: WinFlowz: Software & Courses
-- **OG Description**: Equip your projects with WinFlowz's top-quality software and courses. Trusted by industry leaders, WinFlowz offers simplicity, affordability, and reliability.
+- direct and operational, not abstract
+- calm and credible, not aggressive or hyperbolic
+- system-focused (workflow, decisions, habits), not feature-list copy
+- pragmatic for professionals, solo creators, and learners
 
----
+Tone constraints:
 
-## Logo System
+- no fabricated social proof, metrics, or testimonial claims
+- no "all-in-one miracle" language
+- no anti-Mac rhetoric; stay pro-Windows and practical
 
-### Primary Logo (SVG Text-Based)
+## Messaging Hierarchy
 
-The primary logo uses an SVG text rendering of "WinFlowz" with sophisticated gradient and filter effects.
+1. `Windows Mastery` is the lead offer and narrative center.
+2. Blog/docs content educates and qualifies users.
+3. Companion pages support the main promise without diluting the positioning.
 
-#### Logo Colors
-```
-Primary Gradient (editing-shiny-gradient):
-- Start: #ffb200 (Gold/Orange)
-- Middle (50%): #e10057 (Magenta/Pink)
-- End: #5A1A80 (Deep Purple)
-```
+## Claim Policy
 
-#### Logo Effects
-- **Gradient Fill**: Three-color linear gradient (gold → magenta → purple)
-- **Shiny Filter**: Complex SVG filter with:
-  - Flood fill (#ffffff)
-  - Convolution matrix for texture
-  - Offset for depth
-  - Gaussian blur for shadow
-  - Color matrix for dark shadow
-  - Edge shadow effects
-  - Merged layers for final composition
+Allowed claims:
 
-### Text Logo (CSS-Based)
+- Windows-first workflow positioning
+- structured learning and practical implementation
+- bilingual publishing and localized surfaces
+- gated learning flow where implemented in product routes
 
-An alternative animated logo using CSS for enhanced interactivity.
+Forbidden without explicit in-repo source:
 
-#### Text Logo Properties
-- **Font Family**: `Audiowide`
-- **Font Weight**: Bold
-- **Base Font Size**:
-  - Desktop: `2.5rem`
-  - Tablet (max-width 640px): `2rem`
-  - Mobile (max-width 480px): `1.5rem`
+- revenue numbers and growth percentages
+- customer volume claims
+- quantified outcomes for users
+- "industry leader" positioning statements
 
-#### Rainbow Gradient (Signature Effect)
-```css
-background-image: linear-gradient(
-  45deg,
-  #ff0033,   /* Red */
-  #ff00c8,   /* Magenta */
-  #ffe500,   /* Yellow */
-  #00ff44,   /* Green */
-  #00c8ff,   /* Cyan */
-  #ff0033    /* Red (loop) */
-);
-```
+## Localization Rules
 
-#### Secondary Radial Gradient
-```css
-radial-gradient(
-  circle at top left,
-  #ff0033,   /* Red */
-  #ff3366,   /* Coral */
-  #ff00c8,   /* Magenta */
-  #ff33cc,   /* Pink */
-  #ffe500,   /* Yellow */
-  #ffcc00,   /* Gold */
-  #00ff44,   /* Green */
-  #00cc44,   /* Forest Green */
-  #00c8ff,   /* Cyan */
-  #0099ff,   /* Sky Blue */
-  #ff0033    /* Red (loop) */
-);
-```
+- Keep `en` and `fr` offer pages aligned in intent and CTA.
+- Localize examples and phrasing, not just literal wording.
+- If one language changes offer structure, update the other in the same batch.
 
-#### Interactive Effects
-- **3D Parallax**: Mouse-following perspective transformation
-  - Max rotation: ±12 degrees
-  - Perspective: 1000px
-  - Transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1)
-- **Text Layering**:
-  - Foreground: Gradient text with background-clip
-  - Middle layer: White text shadow for depth
-  - Background: Blur glow effect
-- **Hover States**:
-  - Increased glow opacity (0.45)
-  - Enhanced blur (15px)
-  - Faster animation (4s)
-  - Deeper shadow
+## Brand Review Trigger
 
----
+- update this file when offer naming changes
+- update this file when brand voice or audience strategy shifts
+- verify all major copy updates against this contract before publish
 
-## Color Palette
-
-### Primary Rainbow Spectrum (BRAND COLORS)
-
-These are the ONLY colors used for branding, taken directly from the logo. All accents, highlights, and interactive elements use these colors.
-
-| Name | Hex | RGB | Usage |
-|------|-----|-----|-------|
-| Red | `#ff0033` | rgb(255, 0, 51) | Primary accent, gradient start, CTAs |
-| Magenta | `#ff00c8` | rgb(255, 0, 200) | Primary UI accent, links, highlights |
-| Yellow | `#ffe500` | rgb(255, 229, 0) | Secondary accent, hover states |
-| Green | `#00ff44` | rgb(0, 255, 68) | Tertiary accent, success indicators |
-| Cyan | `#00c8ff` | rgb(0, 200, 255) | Quaternary accent, info states |
-
-### Neutral Colors
-
-Used ONLY for backgrounds, text, borders, and structural elements:
-- **Grays**: Tailwind gray scale (for general UI)
-- **Neutrals**: Tailwind neutral scale (for text and backgrounds)
-- **Zinc**: Tailwind zinc scale (for subtle shadows only)
-
-**NO orange, blue, indigo, or other colors are used in the brand.**
-
----
-
-## Typography
-
-### Primary Font: Audiowide
-
-**Font File**: `/public/fonts/Audiowide-Regular.woff2`
-
-**CSS Declaration**:
-```css
-@font-face {
-  font-family: 'Audiowide';
-  src: url('/fonts/Audiowide-Regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-```
-
-**Usage**: Logo, Brand Text, Hero Headlines (optional)
-
-### System Fonts (Body)
-
-Uses Tailwind CSS default system font stack for optimal performance and native feel.
-
-### Typography Scale
-
-| Element | Mobile | Tablet | Desktop | CSS Classes |
-|---------|--------|--------|---------|-------------|
-| Hero H1 | 24px | 30px | 60px | `text-2xl sm:text-3xl md:text-5xl lg:text-6xl` |
-| Section H2 | 20px | 24px | 30px | `text-xl sm:text-2xl md:text-3xl` |
-| Card H3 | 18px | 20px | 24px | `text-lg sm:text-xl md:text-2xl` |
-| Body | 16px | 18px | 18px | `text-base sm:text-lg` |
-| Small | 14px | 14px | 16px | `text-sm sm:text-base` |
-| Caption | 12px | 12px | 14px | `text-xs sm:text-sm` |
-
-### Font Weights
-- **Regular**: 400 (body text)
-- **Medium**: 500 (emphasis)
-- **Bold**: 700 (headings, CTAs)
-
-### Line Heights
-- **Headings**: `leading-tight` (1.25)
-- **Body**: `leading-relaxed` (1.625)
-- **Buttons**: `line-height: 1.1875`
 
 ---
 
