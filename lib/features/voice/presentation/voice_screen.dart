@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/bootstrap/supabase_bootstrap.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../../data/supabase/supabase_client_provider.dart';
@@ -26,6 +27,10 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   String? _message;
   List<TranscriptionItem> _items = const [];
 
+  static String get _cloudSyncDisabledMessage =>
+      '${SupabaseBootstrap.initError ?? 'Cloud sync is disabled.'} '
+      'Voice and keyboard local testing remains available.';
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +53,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _message = 'Supabase non configuré.');
+      setState(() => _message = _cloudSyncDisabledMessage);
       return;
     }
     setState(() => _busy = true);
@@ -174,7 +179,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   Future<void> _add() async {
     final client = ref.read(supabaseClientProvider);
     if (client == null) {
-      setState(() => _message = 'Supabase non configuré.');
+      setState(() => _message = _cloudSyncDisabledMessage);
       return;
     }
     final duration = int.tryParse(_durationController.text.trim()) ?? 0;

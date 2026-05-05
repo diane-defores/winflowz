@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/bootstrap/supabase_bootstrap.dart';
 import '../../../data/supabase/clipboard_repository.dart';
 import '../../../data/supabase/supabase_client_provider.dart';
 
@@ -18,6 +19,10 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
   String? _message;
   List<ClipboardItemRecord> _items = const [];
 
+  static String get _cloudSyncDisabledMessage =>
+      '${SupabaseBootstrap.initError ?? 'Cloud sync is disabled.'} '
+      'Clipboard and keyboard local testing remains available.';
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +38,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
   Future<void> _load() async {
     final client = ref.read(supabaseClientProvider);
     if (client == null) {
-      setState(() => _message = 'Supabase non configuré.');
+      setState(() => _message = _cloudSyncDisabledMessage);
       return;
     }
     setState(() {
@@ -59,7 +64,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
   Future<void> _add() async {
     final client = ref.read(supabaseClientProvider);
     if (client == null) {
-      setState(() => _message = 'Supabase non configuré.');
+      setState(() => _message = _cloudSyncDisabledMessage);
       return;
     }
     setState(() {

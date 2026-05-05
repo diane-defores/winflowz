@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/bootstrap/supabase_bootstrap.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../clipboard/presentation/clipboard_screen.dart';
 import '../../dictionary/presentation/dictionary_screen.dart';
@@ -44,6 +45,14 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
             const MaterialBanner(
               content: Text('Android overlay is unavailable on this platform.'),
               actions: [SizedBox.shrink()],
+            ),
+          if (!SupabaseBootstrap.isConfigured)
+            MaterialBanner(
+              content: Text(
+                '${SupabaseBootstrap.initError ?? 'Cloud sync is disabled.'} '
+                'VoiceFlowz is running in local mode for keyboard, overlay and settings tests.',
+              ),
+              actions: const [SizedBox.shrink()],
             ),
           Expanded(child: pages[_index]),
         ],

@@ -12,15 +12,7 @@ class AuthGateScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!SupabaseBootstrap.isConfigured) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('VoiceFlowz migration baseline')),
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: SelectableText(
-            SupabaseBootstrap.initError ?? 'Supabase init failed',
-          ),
-        ),
-      );
+      return const AppShellScreen();
     }
 
     final authStateAsync = ref.watch(authStateProvider);
