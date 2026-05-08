@@ -44,8 +44,9 @@ jobs:
           SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
         run: |
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_PUBLISHABLE_KEY" ]; then
-            echo "Missing GitHub Actions secrets: SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY." >&2
-            exit 1
+            echo "Supabase secrets are missing; building debug APK with local-only clipboard fallback."
+            SUPABASE_URL=""
+            SUPABASE_PUBLISHABLE_KEY=""
           fi
 
           flutter build apk --debug \
