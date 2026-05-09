@@ -52,3 +52,15 @@
 
 ## Audit Findings
 <!-- Populated by /sf-audit — dated sections with Fixed: / Remaining: -->
+
+### Audit: Design
+
+| Pri | Task | Status |
+|-----|------|--------|
+| ✅ | Adopt ContentFlow family palette, spacing, radius, motion names, and component defaults in the Flutter theme source of truth | ✅ done |
+| ✅ | Add a user-facing Appearance control for System / Light / Dark theme mode | ✅ done |
+| 🟠 | Persist the Appearance preference locally and sync it to server-side user settings once authenticated settings are finalized | 📋 todo |
+| 🟠 | Migrate feature screens from literal `EdgeInsets`, `SizedBox`, and ad hoc text weights to shared theme tokens/components | 📋 todo |
+| 🟡 | Add a Flutter design playground/storybook screen for token inspection across light/dark modes | 📋 todo |
+| 🟡 | Add widget/golden coverage for theme mode selection and key responsive layouts | 📋 todo |
+| 🟡 | Review contrast and state styling on Android overlay/keyboard status cards on real devices | 📋 todo |

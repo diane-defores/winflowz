@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 
+import '../../../app/voiceflowz_app.dart';
 import '../../../core/bootstrap/supabase_bootstrap.dart';
 import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/supabase/supabase_client_provider.dart';
 import '../../keyboard/domain/keyboard_models.dart';
 import '../data/secure_secret_store.dart';
@@ -363,13 +365,64 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     final overlayStatus = _overlayStatus;
     final keyboardStatus = _keyboardStatus;
+    final themeMode = ref.watch(appThemeModeProvider);
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.x5),
       children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.x4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Appearance',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.x2),
+                Text(
+                  'Uses the shared Flowz family palette from ContentFlow tokens.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.x3),
+                SegmentedButton<AppThemeMode>(
+                  segments: const [
+                    ButtonSegment(
+                      value: AppThemeMode.system,
+                      icon: Icon(Icons.brightness_auto_outlined),
+                      label: Text('System'),
+                    ),
+                    ButtonSegment(
+                      value: AppThemeMode.light,
+                      icon: Icon(Icons.light_mode_outlined),
+                      label: Text('Light'),
+                    ),
+                    ButtonSegment(
+                      value: AppThemeMode.dark,
+                      icon: Icon(Icons.dark_mode_outlined),
+                      label: Text('Dark'),
+                    ),
+                  ],
+                  selected: {themeMode},
+                  onSelectionChanged: (selection) {
+                    ref
+                        .read(appThemeModeProvider.notifier)
+                        .setMode(selection.single);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.x4),
         if (!SupabaseBootstrap.isConfigured) ...[
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.x4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -384,7 +437,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   SelectableText(
                     SupabaseBootstrap.initError ?? 'Cloud sync is disabled.',
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.x3),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: OutlinedButton.icon(
@@ -397,7 +450,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.x4),
         ],
         storageStatusAsync.when(
           data: (status) {
@@ -421,7 +474,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           error: (error, stack) =>
               ListTile(title: Text('Storage status error: $error')),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.x4),
         TextField(
           controller: _openAiController,
           obscureText: true,
@@ -430,7 +483,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             labelText: 'OpenAI API key',
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.x3),
         TextField(
           controller: _anthropicController,
           obscureText: true,
@@ -439,7 +492,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             labelText: 'Anthropic API key',
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.x4),
         if (_message != null) Text(_message!),
         Row(
           children: [
@@ -449,7 +502,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: const Text('Save local keys'),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.x3),
             Expanded(
               child: OutlinedButton(
                 onPressed: _saving ? null : _signOut,
@@ -458,7 +511,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.x4),
         const Divider(),
         ListTile(
           leading: const Icon(Icons.mic_none),
