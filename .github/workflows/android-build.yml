@@ -14,6 +14,9 @@ jobs:
     timeout-minutes: 45
 
     steps:
+      - name: Configure Git default branch
+        run: git config --global init.defaultBranch main
+
       - name: Checkout
         uses: actions/checkout@v6
 
@@ -53,11 +56,15 @@ jobs:
             --dart-define=SUPABASE_URL="$SUPABASE_URL" \
             --dart-define=SUPABASE_PUBLISHABLE_KEY="$SUPABASE_PUBLISHABLE_KEY"
 
+      - name: Verify debug APK exists
+        run: test -f build/app/outputs/flutter-apk/app-debug.apk
+
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
           name: voiceflowz-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: ignore
           retention-days: 14
 
   supabase:
@@ -66,6 +73,9 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      - name: Configure Git default branch
+        run: git config --global init.defaultBranch main
+
       - name: Checkout
         uses: actions/checkout@v6
 
