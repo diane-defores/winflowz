@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../core/bootstrap/firebase_bootstrap.dart';
 import '../../../data/supabase/clipboard_repository.dart';
 import '../../../data/supabase/supabase_client_provider.dart';
+import '../../auth/application/auth_session_provider.dart';
 import '../data/firebase_clipboard_history_store.dart';
 import 'clipboard_history_api.dart';
 import 'keyboard_clipboard_event_importer.dart';
@@ -16,17 +17,26 @@ final localClipboardHistoryStoreProvider =
     );
 
 final clipboardStoreProvider = Provider<ClipboardHistoryStore>((ref) {
+  final session = ref.watch(
+    authSessionProvider.select(
+      (value) =>
+          value.maybeWhen(data: (session) => session, orElse: () => null),
+    ),
+  );
+  final hasRemoteSession =
+      session != null && session.isSignedIn && !session.isLocalFallback;
+
   if (FirebaseBootstrap.isConfigured &&
+      hasRemoteSession &&
       firebase_auth.FirebaseAuth.instance.currentUser != null) {
     return FirebaseClipboardHistoryStore();
   }
 
-  if (!FirebaseBootstrap.isConfigured) {
+  if (!FirebaseBootstrap.isConfigured && hasRemoteSession) {
     final client = ref.watch(supabaseClientProvider);
-    if (client == null) {
-      return ref.watch(localClipboardHistoryStoreProvider);
+    if (client != null) {
+      return SupabaseClipboardStore(client);
     }
-    return SupabaseClipboardStore(client);
   }
 
   return ref.watch(localClipboardHistoryStoreProvider);

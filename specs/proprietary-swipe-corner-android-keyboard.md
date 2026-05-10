@@ -5,8 +5,8 @@ artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-05-09"
 created_at: "2026-05-09 15:32:50 UTC"
-updated: "2026-05-09"
-updated_at: "2026-05-09 18:29:15 UTC"
+updated: "2026-05-10"
+updated_at: "2026-05-10 22:06:25 UTC"
 status: draft
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -87,7 +87,7 @@ Proprietary Swipe-Corner Android Keyboard
 
 # Status
 
-Draft saved for review. This spec defines a VoiceFlowz-owned Android keyboard implementation coded in-house.
+Draft saved for review. This spec defines a VoiceFlowz-owned Android keyboard implementation coded in-house. Current code state as of 2026-05-10: `VoiceFlowzKeyboardView.kt` has a partial custom Canvas/touch rewrite replacing the previous Android `Button` stack, but the full spec remains open because the modular layout engine, swipe-corner classifier, AZERTY preference, navigation mode, settings panels, debug overlay and Android device QA are not complete.
 
 # User Story
 
@@ -469,6 +469,7 @@ Update after implementation:
   - User story link : rend le clavier utilisable et lisible.
   - Depends on : Taches 2-3.
   - Validate with : build Android debug + QA visuelle sur appareil/emulateur.
+  - Status 2026-05-10 : partiel hors flux formel `sf-start`; `VoiceFlowzKeyboardView.kt` est desormais une vue custom Canvas/touch avec touches dessinees, hit-test, modes `ABC`/`123`/`Acc`/`Sym`, panneau clipboard, haptique tap, et conservation des callbacks IME existants. Restent a faire pour terminer la tache : brancher le vrai modele de layout, le classificateur swipe-corner, la barre haute swipable, les appuis longs/double taps, le panneau reglages rapides complet, et valider sur Android SDK/appareil.
   - Notes : Garder dimensions stables et labels courts; aucune vue Flutter.
 
 - [ ] Tache 5 : Integrer l'etat clavier dans le service IME
@@ -821,12 +822,13 @@ Stop conditions:
 | 2026-05-09 18:23:57 UTC | sf-spec | GPT-5 Codex | Added double-tap policy for special keys such as Shift/Maj and Control, with configurable actions, disable switch, feedback and long-press precedence | draft updated | /sf-ready Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-09 18:25:36 UTC | sf-spec | GPT-5 Codex | Added drawable gesture shortcuts starting from the space bar, with settings recorder, action preview, collision detection and conservative Android action catalog | draft updated | /sf-ready Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-09 18:29:15 UTC | sf-spec | GPT-5 Codex | Changed spacebar drawable gesture start from long-press style to configurable movement threshold: tap remains space, movement beyond threshold starts drawing | draft updated | /sf-ready Proprietary Swipe-Corner Android Keyboard |
+| 2026-05-10 22:06:25 UTC | sf-spec | GPT-5 Codex | Checked existing keyboard chantier after user asked whether the remaining implementation work was specified; recorded partial custom Canvas/touch rewrite status for Tache 4 | draft tracking updated | /sf-ready Proprietary Swipe-Corner Android Keyboard |
 
 # Current Chantier Flow
 
 - sf-spec: done, draft saved in `specs/proprietary-swipe-corner-android-keyboard.md`
 - sf-ready: not launched; must validate legal boundary, MVP behavior choices, and implementation readiness
-- sf-start: not launched
+- sf-start: not launched formally; Tache 4 has a partial out-of-flow implementation in `VoiceFlowzKeyboardView.kt` and still needs formal execution/verification against this spec
 - sf-verify: not launched
 - sf-end: not launched
 - sf-ship: not launched
