@@ -1,16 +1,6 @@
 {
   "indexes": [
     {
-      "collectionGroup": "settings",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "updatedAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "clipboardItems",
       "queryScope": "COLLECTION",
       "fields": [
