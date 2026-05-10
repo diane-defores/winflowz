@@ -250,6 +250,7 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 | 2026-05-10 18:38:33 UTC | sf-verify | GPT-5 Codex | Validated GitHub OIDC/WIF deploy flow end-to-end; Firestore rules/indexes deploy succeeded in CI run `25636532417`, job `75249317806`, with APK pipeline also green | done | Move to sf-end and remaining task 7 scope decision |
 | 2026-05-10 18:53:54 UTC | sf-verify | GPT-5 Codex | Re-validated Firestore deploy after IAM hardening; CI run `25636936089` kept job `Deploy Firestore Rules and Indexes` green (job `75250395805`) with strict repo-scoped principal bindings | done | Keep monitoring and finalize task 7 strategy |
 | 2026-05-10 19:02:17 UTC | sf-ship | GPT-5 Codex | Full close ship: archived Supabase target docs, updated project/master tasks and changelog, and shipped Firebase OIDC/WIF Firestore CI proof with hardened IAM bindings | shipped | Continue task 7 (Supabase runtime detachment) and Android device QA tracks |
+| 2026-05-10 19:28:58 UTC | sf-test | GPT-5 Codex | Targeted Firebase/backend-agnostic migration validation: rechecked `docs`/`specs` canonical paths (legacy root paths removed), legacy-compatibility scan (`rg`), and `Supabase` scan in `lib/test/pubspec.yaml` | partial | Task 7 still pending by design; keep Supabase legacy adapters + continue Android device QA for Firebase parity |
 
 # Current Chantier Flow
 
