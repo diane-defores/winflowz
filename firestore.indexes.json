@@ -67,20 +67,6 @@
       ]
     },
     {
-      "collectionGroup": "transcriptions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "source",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "snippets",
       "queryScope": "COLLECTION",
       "fields": [
