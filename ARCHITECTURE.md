@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-27"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "architecture"
@@ -20,17 +20,17 @@ evidence:
   - "modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayModule.kt"
 linked_systems:
   - "Flutter"
-  - "Supabase"
+  - "Backend-agnostic stores"
+  - "Firebase first adapter"
   - "Android overlay services"
 external_dependencies:
-  - "supabase_flutter"
   - "flutter_riverpod"
   - "go_router"
   - "record"
   - "speech_to_text"
 invariants:
-  - "Target implementation is Flutter + Supabase, not Expo/Convex/Clerk."
-  - "All user data access is authorized by Supabase Auth + RLS."
+  - "Target implementation is Flutter with backend-agnostic data contracts, not Expo/Convex/Clerk/Supabase-coupled product code."
+  - "All remote user data access is authorized by the selected adapter's auth and security rules."
   - "Android overlay stays native and exposes a stable Flutter bridge."
 depends_on:
   - "docs/DECISIONS.md@0.1.0"
@@ -47,7 +47,7 @@ next_step: "$sf-docs update"
 This document separates:
 
 - legacy implementation reference (current Expo/Convex app),
-- target implementation contract (Flutter + Supabase migration target).
+- target implementation contract (Flutter + backend-agnostic stores with Firebase as first adapter).
 
 Only the target section defines implementation direction.
 
@@ -67,7 +67,13 @@ This stack is migration input only. It is not a target architecture.
 
 ### Platform scope
 
-Day 1 targets:
+Current execution target:
+
+- Android
+
+Other platforms remain Flutter project targets, but current implementation and QA focus is Android. Web is explicitly not a near-term backend/AI priority.
+
+Longer-term platform targets:
 
 - Android
 - iOS
@@ -86,13 +92,14 @@ Flutter App (Dart)
   -> feature modules (voice, clipboard, settings, snippets, dictionary, auth, overlay)
   -> data repositories
   -> platform services
-  -> Supabase client
+  -> backend-neutral stores
+  -> selected backend adapter
 
-Supabase
-  -> Auth
-  -> Postgres tables
-  -> Row Level Security policies
-  -> Realtime subscriptions
+Firebase first adapter
+  -> Firebase Auth
+  -> Cloud Firestore
+  -> Security Rules
+  -> optional realtime listeners
 
 Android native
   -> overlay foreground service
@@ -106,17 +113,17 @@ Android native
    UI workflow only; no direct SQL/policy logic.
 2. State layer (Riverpod providers/controllers):
    owns async state transitions and error surfaces.
-3. Repository layer:
-   owns Supabase queries/mutations/subscriptions.
+3. Store/repository layer:
+   owns provider-neutral data contracts. UI and domain code must not depend on Firebase, Supabase or another vendor directly.
 4. Platform service layer:
    owns speech/audio/clipboard/secure-storage/overlay bridges.
 
 ### Data and auth contract
 
-- Supabase Auth session is required for user-scoped data.
-- User ownership source is `auth.uid()`, not client-provided ids.
-- RLS must gate all user tables before multi-user readiness.
-- Realtime updates are consumed only for current authenticated user scope.
+- A remote auth session is required for user-scoped remote sync.
+- User ownership comes from the selected backend auth context, not client-provided ids.
+- Firebase Security Rules are the first adapter guardrail for multi-user readiness.
+- Realtime updates are consumed only for the current authenticated user scope.
 
 ### Voice pipeline contract
 
@@ -148,7 +155,7 @@ Flutter integrates this through a narrow bridge interface; feature logic stays i
 
 ## Cross-cutting invariants
 
-- No target design decision may depend on Convex/Clerk/Expo.
+- No target design decision may depend on Convex/Clerk/Expo or Supabase-specific coupling.
 - API keys (OpenAI/Anthropic) remain local device secrets.
-- Supabase stores product data, not user API keys.
+- Remote adapters store product data, not user API keys.
 - Platform limitations are explicit in UI and docs.

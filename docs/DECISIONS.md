@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-27"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "product_and_platform"
@@ -21,12 +21,34 @@ evidence:
   - "../docs/MIGRATION_FLUTTER.md"
 supersedes:
   - "2026-04-26 long-term platform direction"
-next_step: "execute migration per docs/MIGRATION_FLUTTER.md"
+next_step: "execute Android-first backend-agnostic migration with Firebase as first adapter"
 ---
 
 # Decisions — VoiceFlowz
 
+## 2026-05-09 — Backend abstraction and Android-first execution (reviewed)
+
+### Decision
+
+VoiceFlowz no longer treats Supabase as the active backend target. The app must move to backend-agnostic data/settings contracts with Firebase as the first hosted adapter for the Android MVP.
+
+1. Backend-facing Flutter code must use provider-neutral contracts such as settings, clipboard, transcription, snippets, dictionary and auth stores.
+2. Firebase Auth + Firestore is the first remote adapter candidate for the Android MVP because it has a free Spark plan, does not use Supabase-style project pausing, supports Flutter/Android well, and is deployable through CLI-managed rules/indexes.
+3. Supabase remains a migration artifact and reference only until removed or replaced. Do not add new Supabase-coupled product code.
+4. GitHub Secrets remain the CI secret source for Android builds on Blacksmith.
+5. Current implementation focus is Android. Web and non-Android cloud-AI behavior are ignored for now unless a later reviewed decision reopens them.
+6. The proprietary Android keyboard implementation proceeds progressively: base typing and safety first, advanced gestures/modularity after the first usable keyboard slice.
+
+### Consequences
+
+- Existing Supabase SQL, docs and repositories are legacy/current-state material, not the future coupling point.
+- New sync/settings work should introduce backend-neutral interfaces before adding Firebase implementation.
+- Documentation that says "Flutter + Supabase target" is stale after this decision and must be updated as touched.
+- Live backend validation waits until Firebase project/rules/indexes are created through CLI workflow.
+
 ## 2026-04-27 — Implementation target lock (reviewed)
+
+Superseded in part by the 2026-05-09 backend decision above. Flutter remains valid. Supabase is no longer the active backend target and is now a migration/reference artifact.
 
 ### Decision
 

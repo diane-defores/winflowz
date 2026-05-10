@@ -4,8 +4,8 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-05-04"
-status: "reviewed"
+updated: "2026-05-09"
+status: "legacy"
 source_skill: "sf-docs"
 scope: "api"
 owner: "Diane"
@@ -14,9 +14,9 @@ risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
-  - "Supabase Auth"
-  - "Supabase Postgres"
-  - "Supabase Realtime"
+  - "Backend-agnostic stores"
+  - "Firebase first adapter"
+  - "Supabase legacy reference"
 depends_on:
   - "../ARCHITECTURE.md@0.1.0"
   - "../docs/DECISIONS.md@0.1.0"
@@ -32,11 +32,17 @@ next_step: "$sf-docs api"
 
 # API — VoiceFlowz
 
+> Legacy reference: this document still contains the previous Supabase contract.
+> The active backend target is now backend-agnostic stores with Firebase as the
+> first Android adapter. Use `specs/firebase-backend-agnostic-migration.md` for
+> new work.
+
 ## Scope
 
-This document defines the target backend contract for migration:
+This document preserves the previous backend contract for migration history:
 
-- Target contract: Supabase schema + RLS + realtime.
+- Active target: backend-agnostic stores + Firebase first adapter.
+- Legacy contract: Supabase schema + RLS + realtime.
 - Legacy note: Convex API signatures are reference only and not target implementation.
 
 ## Target Supabase contract

@@ -4,8 +4,8 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-05-04"
-updated: "2026-05-08"
-status: draft
+updated: "2026-05-09"
+status: legacy
 source_skill: sf-docs
 scope: "supabase-data"
 owner: "Diane"
@@ -29,6 +29,11 @@ next_step: "/sf-docs technical audit"
 ---
 
 # Technical Module Context: Supabase Data
+
+> Legacy reference: Supabase data remains documented here only for current code
+> compatibility and migration comparison. New backend work belongs to
+> backend-agnostic stores with Firebase as first adapter, per
+> `specs/firebase-backend-agnostic-migration.md`.
 
 ## Purpose
 

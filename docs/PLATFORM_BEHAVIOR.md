@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-27"
-updated: "2026-05-04"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-spec"
 scope: "platform_behavior"
@@ -14,21 +14,21 @@ risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 depends_on:
-  - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md@0.1.0"
+  - "specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
   - "specs/android-ime-voiceflowz-keyboard.md"
   - "lib/core/platform/platform_capabilities.dart"
   - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzInputMethodService.kt"
-next_step: "/sf-ready Migration totale VoiceFlowz vers Flutter + Supabase"
+next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 ---
 
 # Platform Behavior — VoiceFlowz
 
 ## Shared Rules
 
-- Supabase data sync requires a valid authenticated session.
-- OpenAI and Anthropic keys are BYOK local secrets and are never synced to Supabase.
+- Remote data sync requires a valid authenticated session through the active backend adapter. Firebase Auth is the first adapter for the Android MVP.
+- OpenAI and Anthropic keys are BYOK local secrets and are never synced to a remote backend.
 - If secure local storage is unavailable or materially degraded, cloud AI features must be disabled or clearly marked degraded until the user accepts the risk.
 - Clipboard sync is opt-in and visibly controllable.
 - Platform limitations must be visible in Settings and docs.
@@ -42,19 +42,19 @@ next_step: "/sf-ready Migration totale VoiceFlowz vers Flutter + Supabase"
 | macOS | supported when package/platform allows | supported | keychain-backed where available | opt-in | unavailable | unavailable |
 | Windows | supported when package/platform allows | supported | platform secure storage where available | opt-in | unavailable | unavailable |
 | Linux | local speech unavailable unless package support changes | supported via recording + Whisper | may be degraded; require explicit UI state | opt-in | unavailable | unavailable |
-| Web | browser-dependent | supported only if direct API call/proxy decision is implemented safely | degraded compared with native keychain/keystore | permission/browser-limited and opt-in | unavailable | unavailable |
+| Web | ignored for current Android-first work | ignored for current Android-first work | degraded compared with native keychain/keystore | not a current priority | unavailable | unavailable |
 
 ## Android Keyboard IME
 
 - VoiceFlowz Keyboard is declared as an Android `InputMethodService` and is configurable from Settings through the `voiceflowz/keyboard` MethodChannel.
 - The keyboard provides a native minimal QWERTY layout, explicit clipboard copy/paste actions, Android speech recognition, and a generic play/pause media key.
 - Password, OTP, `noPersonalizedLearning`, and host-marked private fields force private mode: dictation, clipboard capture, snippets, sync intent, and learning are disabled while basic typing remains available.
-- Clipboard sync from the keyboard is opt-in and represented as intent/status. Real Supabase sync and cross-account queue flushing still require linked-project validation before production claims.
+- Clipboard sync from the keyboard is opt-in and represented as intent/status. Real cloud sync and cross-account queue flushing require the backend-agnostic Firebase adapter before production claims.
 - Non-Android platforms must not show IME activation controls.
 
 ## Direct AI Calls
 
-Native mobile and desktop may call OpenAI/Anthropic directly with user-provided keys. Web must be explicitly verified before enabling direct calls; if browser CORS, key exposure, or provider constraints make direct calls unacceptable, web advanced mode remains disabled until a proxy contract is specified.
+Android may call OpenAI/Anthropic directly with user-provided keys where secure local storage and provider behavior allow. Web is intentionally ignored for now and must stay disabled for advanced cloud AI until a later reviewed decision reopens it.
 
 ## Limits
 
@@ -62,4 +62,4 @@ Native mobile and desktop may call OpenAI/Anthropic directly with user-provided 
 - Max audio upload size: 25 MB or the current provider limit, whichever is lower.
 - Max synced text payload: 100,000 characters per transcription and 50,000 characters per clipboard item.
 - Retries: bounded to 2 automatic retries for network/transient failures; user action required after that.
-- Timeouts: AI and Supabase operations must surface recoverable errors.
+- Timeouts: AI and remote sync operations must surface recoverable errors.

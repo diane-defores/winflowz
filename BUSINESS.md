@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-03-18"
-updated: "2026-05-04"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "business"
@@ -37,7 +37,7 @@ next_step: "$sf-docs update"
 Ce document sépare explicitement:
 
 - `legacy-current`: état réel pré-migration (Expo/Convex/Clerk non branché).
-- `target-reviewed`: cible validée pour la migration Flutter + Supabase.
+- `target-reviewed`: cible validée Flutter Android-first avec contrats backend-agnostiques et Firebase comme premier adaptateur.
 - `out-of-scope`: hors migration actuelle.
 
 ## Mission
@@ -46,14 +46,14 @@ Libérer les mains des professionnels grâce à la dictée vocale intelligente, 
 
 ## Proposition de valeur
 
-VoiceFlowz cible une application Flutter multi-plateforme avec authentification Supabase et synchronisation Postgres/RLS/Realtime. Le produit combine dictée locale quand disponible, transcription avancée Whisper avec clé OpenAI locale BYO, nettoyage IA Claude optionnel avec clé Anthropic locale BYO, historique synchronisé, snippets, dictionnaire personnel, clavier Android natif, et overlay Android natif avec fallback clipboard.
+VoiceFlowz cible une application Flutter Android-first avec contrats backend-agnostiques et Firebase comme premier adaptateur distant. Le produit combine dictée locale quand disponible, transcription avancée Whisper avec clé OpenAI locale BYO, nettoyage IA Claude optionnel avec clé Anthropic locale BYO, historique synchronisé, snippets, dictionnaire personnel, clavier Android natif, et overlay Android natif avec fallback clipboard.
 
 ## Capacités business de référence
 
 | Capacité | Statut | Preuve |
 |---|---|---|
-| App Flutter Android/iOS/macOS/Windows/Linux/web | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
-| Auth Supabase + Postgres + RLS + Realtime | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md`, `docs/API.md` |
+| App Flutter Android-first | target-reviewed | `docs/DECISIONS.md` |
+| Backend-agnostic stores + Firebase first adapter | target-reviewed | `docs/DECISIONS.md` |
 | Clés OpenAI/Anthropic BYO stockées localement | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
 | Snippets + dictionnaire comme fonctionnalités produit | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
 | Clavier Android natif VoiceFlowz | target-reviewed | `specs/android-ime-voiceflowz-keyboard.md` |
@@ -67,9 +67,9 @@ Le modèle reste freemium BYO pour la migration. Les plans payants restent hors 
 
 ### Offre target-reviewed (post-migration attendue)
 
-- L'utilisateur se connecte avec Supabase Auth.
-- Les données utilisateur sont isolées via RLS `auth.uid()` sur Postgres.
-- Les clés OpenAI/Anthropic restent locales à l'appareil et ne sont pas stockées dans Supabase.
+- L'utilisateur se connecte avec l'adaptateur auth actif, Firebase Auth pour le premier MVP Android.
+- Les données utilisateur sont isolées via les règles de sécurité de l'adaptateur actif.
+- Les clés OpenAI/Anthropic restent locales à l'appareil et ne sont pas stockées dans le backend distant.
 - L'utilisateur gère transcriptions, clipboard, snippets et dictionnaire depuis son compte.
 - Le clavier Android VoiceFlowz reste disponible uniquement sur Android et sert de surface prioritaire dans les champs texte.
 - L'overlay Android reste disponible uniquement sur Android avec fallback clipboard.
@@ -86,9 +86,9 @@ Le modèle reste freemium BYO pour la migration. Les plans payants restent hors 
 
 Mitigations obligatoires pour readiness migration:
 
-1. Supabase Auth obligatoire avant usage multi-utilisateur; suppression du pattern `TEMP_USER_ID`.
-2. RLS activé sur toutes les tables utilisateur (`transcriptions`, `clipboard_items`, `snippets`, `dictionary`, `user_settings`).
-3. Clés OpenAI/Anthropic en stockage local sécurisé seulement; interdiction de sync Supabase et de logs en clair.
+1. Auth distante obligatoire avant usage multi-utilisateur; suppression du pattern `TEMP_USER_ID`.
+2. Règles de sécurité backend obligatoires sur toutes les collections/tables utilisateur.
+3. Clés OpenAI/Anthropic en stockage local sécurisé seulement; interdiction de sync distante et de logs en clair.
 4. Redaction systématique des secrets dans logs/erreurs/analytics.
 5. Interdiction de sauvegarder des textes vides; fallback texte brut si nettoyage IA échoue.
 6. Clavier Android et overlay derrière actions utilisateur explicites, avec private mode pour champs sensibles.
@@ -117,15 +117,15 @@ Mitigations obligatoires pour readiness migration:
 ## Stratégie Go-to-Market
 
 - Lancement initial auprès d'utilisateurs techniques capables de configurer leurs clés API BYO.
-- Positionnement migration: outil de productivité voice-first multi-plateforme avec sécurité de base robuste (Auth + RLS).
+- Positionnement migration: outil de productivité voice-first Android-first avec sécurité de base robuste côté auth/règles backend.
 - Les extensions premium restent post-migration et non promises à ce stade.
 
 ## Métriques clés
 
 | Métrique | Statut | Description |
 |---|---|---|
-| Minutes transcrites | target-reviewed | Instrumentation à implémenter côté Flutter/Supabase |
-| Nombre de transcriptions | target-reviewed | Mesurable par compte Supabase |
-| Utilisation clipboard | target-reviewed | Mesurable sur table clipboard et événements UI |
+| Minutes transcrites | target-reviewed | Instrumentation à implémenter côté Flutter/adaptateur backend |
+| Nombre de transcriptions | target-reviewed | Mesurable par compte distant |
+| Utilisation clipboard | target-reviewed | Mesurable via store clipboard et événements UI |
 | Utilisation snippets/dictionnaire | target-reviewed | Mesurable sur CRUD dédiés |
 | Conversion premium | out-of-scope | Nécessite billing non inclus dans la migration |

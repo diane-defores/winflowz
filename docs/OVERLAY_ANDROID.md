@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-27"
-updated: "2026-05-04"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-spec"
 scope: "android_overlay"
@@ -14,13 +14,13 @@ risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 depends_on:
-  - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md@0.1.0"
+  - "specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
   - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt"
   - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzInputMethodService.kt"
   - "specs/android-ime-voiceflowz-keyboard.md"
-next_step: "/sf-ready Migration totale VoiceFlowz vers Flutter + Supabase"
+next_step: "/sf-ready specs/proprietary-swipe-corner-android-keyboard.md"
 ---
 
 # Android Overlay — VoiceFlowz

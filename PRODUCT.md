@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-05-04"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "product"
@@ -43,7 +43,7 @@ next_step: "$sf-docs update"
 
 ## Cadre de référence
 
-Ce document décrit la cible `target-reviewed` de la migration Flutter + Supabase. Les éléments Expo/Convex/Clerk sont conservés ici uniquement comme `legacy-current` pré-migration.
+Ce document décrit la cible `target-reviewed` actuelle: Flutter, Android-first, contrats backend-agnostiques, Firebase comme premier adaptateur distant. Les éléments Expo/Convex/Clerk/Supabase sont conservés uniquement comme contexte de migration quand ils existent encore dans le repo.
 
 ## Problème utilisateur
 
@@ -60,7 +60,7 @@ Les utilisateurs produisent souvent du texte dans des contextes où taper est le
 
 ### Dictée rapide
 
-1. L'utilisateur se connecte via Supabase Auth.
+1. L'utilisateur se connecte via l'adaptateur auth actif, Firebase Auth pour le premier MVP Android.
 2. Il ouvre l'écran Voice et choisit mode local ou avancé.
 3. Il enregistre sa voix.
 4. VoiceFlowz affiche le texte brut puis le texte nettoyé si applicable.
@@ -97,8 +97,9 @@ Les utilisateurs produisent souvent du texte dans des contextes où taper est le
 
 ## Surface target-reviewed
 
-- Flutter app Android/iOS/macOS/Windows/Linux/web.
-- Supabase Auth + Postgres + RLS + Realtime.
+- Flutter app avec focus d'exécution Android en premier.
+- Contrats backend-agnostiques pour auth, settings, transcriptions, clipboard, snippets et dictionnaire.
+- Firebase Auth + Firestore comme premier adaptateur distant.
 - Écran Voice: capture locale (si supportée), capture avancée Whisper, sauvegarde, édition, copie.
 - Clipboard: liste, copy, pin, suppression, synchronisation.
 - Snippets: liste, création, édition, suppression, recherche trigger.
@@ -111,6 +112,7 @@ Les utilisateurs produisent souvent du texte dans des contextes où taper est le
 
 - Expo/React Native + code applicatif TS.
 - Backend Convex.
+- Supabase comme cible couplée.
 - Auth Clerk non branchée et `local-user`.
 
 ## Exigences sécurité produit et mitigations
@@ -119,12 +121,12 @@ Les utilisateurs produisent souvent du texte dans des contextes où taper est le
 
 Mitigations obligatoires:
 
-1. Auth Supabase active avant toute écriture de données utilisateur.
-2. RLS obligatoire sur toutes les tables utilisateur, avec politiques testées.
+1. Auth distante active avant toute écriture remote de données utilisateur.
+2. Règles de sécurité backend obligatoires et testées; Firebase Security Rules pour le premier adaptateur.
 3. Clés OpenAI/Anthropic locales uniquement; jamais synchronisées.
 4. Redaction des secrets et payloads sensibles dans logs/erreurs.
 5. Refus explicite des sauvegardes de texte vide.
-6. États erreurs récupérables pour permissions, API IA, sync Supabase.
+6. États erreurs récupérables pour permissions, API IA et sync distante.
 7. Overlay Android conditionné par permissions et fallback clipboard.
 8. Clavier Android conditionné par activation utilisateur, private mode pour champs sensibles et sync clipboard opt-in.
 

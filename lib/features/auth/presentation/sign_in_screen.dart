@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../data/supabase/supabase_client_provider.dart';
+import '../../../core/theme/app_theme.dart';
+import '../application/auth_session_provider.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -25,11 +25,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _submit({required bool signup}) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      setState(() => _error = 'Supabase is not configured.');
-      return;
-    }
+    final store = ref.read(authSessionStoreProvider);
 
     setState(() {
       _busy = true;
@@ -40,11 +36,52 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
       if (signup) {
-        await client.auth.signUp(email: email, password: password);
+        await store.createAccountWithEmailPassword(
+          email: email,
+          password: password,
+        );
       } else {
-        await client.auth.signInWithPassword(email: email, password: password);
+        await store.signInWithEmailPassword(email: email, password: password);
       }
-    } on AuthException catch (error) {
+    } on UnsupportedError catch (error) {
+      setState(() => _error = error.message);
+    } catch (error) {
+      setState(() => _error = 'Unexpected error: $error');
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Future<void> _continueLocally() async {
+    final store = ref.read(authSessionStoreProvider);
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await store.signInAnonymously();
+    } on UnsupportedError catch (error) {
+      setState(() => _error = error.message);
+    } catch (error) {
+      setState(() => _error = 'Unexpected error: $error');
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    final store = ref.read(authSessionStoreProvider);
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await store.signInWithGoogle();
+    } on UnsupportedError catch (error) {
       setState(() => _error = error.message);
     } catch (error) {
       setState(() => _error = 'Unexpected error: $error');
@@ -60,7 +97,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign in')),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: AppInsets.screen,
         child: Column(
           children: [
             TextField(
@@ -68,19 +105,21 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(labelText: 'Email'),
             ),
-            const SizedBox(height: 12),
+            AppGaps.x3,
             TextField(
               controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
             ),
-            const SizedBox(height: 16),
+            AppGaps.x4,
             if (_error != null)
               Text(
                 _error!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
-            const SizedBox(height: 8),
+            AppGaps.x2,
             Row(
               children: [
                 Expanded(
@@ -89,7 +128,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     child: const Text('Sign in'),
                   ),
                 ),
-                const SizedBox(width: 12),
+                AppGaps.horizontalX3,
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _busy ? null : () => _submit(signup: true),
@@ -98,9 +137,20 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 ),
               ],
             ),
+            AppGaps.x3,
+            OutlinedButton(
+              onPressed: _busy ? null : _continueLocally,
+              child: const Text('Continue anonymously'),
+            ),
+            AppGaps.x2,
+            OutlinedButton.icon(
+              onPressed: _busy ? null : _signInWithGoogle,
+              icon: const Icon(Icons.login_outlined),
+              label: const Text('Continue with Google'),
+            ),
             if (_busy)
               const Padding(
-                padding: EdgeInsets.only(top: 16),
+                padding: AppInsets.progress,
                 child: CircularProgressIndicator(),
               ),
           ],

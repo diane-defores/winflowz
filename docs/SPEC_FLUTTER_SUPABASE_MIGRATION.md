@@ -4,8 +4,8 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-27"
-status: ready
+updated: "2026-05-09"
+status: superseded
 source_skill: sf-spec
 scope: "migration"
 owner: "Diane"
@@ -78,16 +78,21 @@ evidence:
   - "docs/VERIFICATION.md"
   - "SECURITY_REVIEW_FLUTTER_SUPABASE.md"
   - "modules/floating-overlay/android/src/main"
-next_step: "/sf-start Migration totale VoiceFlowz vers Flutter + Supabase"
+next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 ---
 
 # Title
 
 Migration totale VoiceFlowz vers Flutter + Supabase
 
+> Superseded: this spec is no longer the active implementation target after the
+> 2026-05-09 decision to use backend-agnostic contracts with Firebase as the
+> first Android adapter. Keep it as migration history only. The active spec is
+> `specs/firebase-backend-agnostic-migration.md`.
+
 # Status
 
-Ready. L'implementation peut commencer avec `/sf-start`, en respectant les contrats Supabase, plateforme, overlay, verification et securite references par cette spec.
+Superseded. Do not start new implementation from this spec.
 
 # User Story
 

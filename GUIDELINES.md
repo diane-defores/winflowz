@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-03-18"
-updated: "2026-04-27"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "guidelines"
@@ -20,7 +20,8 @@ evidence:
   - "modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayModule.kt"
 linked_systems:
   - "Flutter"
-  - "Supabase"
+  - "Backend-agnostic stores"
+  - "Firebase first adapter"
   - "Android native overlay"
 depends_on:
   - "ARCHITECTURE.md@0.1.0"
@@ -35,9 +36,10 @@ next_step: "$sf-docs update"
 
 For implementation and documentation decisions, use:
 
-- Flutter client + Supabase backend as target baseline.
+- Flutter client + backend-agnostic data/settings contracts as target baseline.
+- Firebase Auth + Firestore is the first remote adapter for the Android MVP.
 
-Do not present Convex, Clerk, or Expo/React Native as target implementation.
+Do not present Convex, Clerk, Expo/React Native, or Supabase-coupled product code as target implementation.
 They are legacy references for migration parity only.
 
 ## Legacy handling during migration
@@ -50,24 +52,24 @@ Allowed:
 
 Not allowed:
 
-- introducing new target features on Convex/Clerk/Expo path,
+- introducing new target features on Convex/Clerk/Expo/Supabase-coupled paths,
 - adding new long-term contracts that depend on `TEMP_USER_ID`.
 
 ## Data and security guidelines
 
-1. All user-scoped product data must be guarded by Supabase RLS.
-2. Ownership checks must rely on `auth.uid()` in SQL policies.
+1. All user-scoped remote product data must be guarded by the selected backend security model.
+2. Firebase adapter ownership checks must rely on Firebase Auth uid and Firestore Security Rules.
 3. Do not trust client-sent user identifiers for authorization.
 4. OpenAI and Anthropic keys stay in local secure storage only.
-5. Never write API keys to Supabase tables, logs, or analytics payloads.
+5. Never write API keys to remote data stores, logs, or analytics payloads.
 6. Never persist empty/whitespace transcriptions.
 
 ## API and schema change guidelines
 
-- Update `docs/API.md` in the same change when schema or policy contracts change.
-- Keep table and policy contracts explicit (columns, constraints, RLS behavior).
+- Update backend API/docs in the same change when adapter contracts, rules, indexes or schemas change.
+- Keep data and security contracts explicit.
 - For realtime behavior, document scope and ordering assumptions.
-- Mark any Convex references as legacy-only compatibility notes.
+- Mark any Convex or Supabase references as legacy-only compatibility notes unless they describe the current adapter under active migration.
 
 ## Flutter implementation guidelines
 
@@ -86,5 +88,5 @@ Not allowed:
 ## Documentation guidelines
 
 - Every owned doc must keep a `Legacy` vs `Target` split where relevant.
-- `status: reviewed` is valid only when the doc does not contradict Flutter + Supabase target.
+- `status: reviewed` is valid only when the doc does not contradict Flutter + backend-agnostic/Firebase-first target.
 - Keep `artifact_version: 0.1.0` unless schema-level metadata changes require a version bump.

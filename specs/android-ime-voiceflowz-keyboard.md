@@ -5,9 +5,9 @@ artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-29"
 created_at: "2026-04-29 16:48:07 UTC"
-updated: "2026-05-08"
-updated_at: "2026-05-08 17:57:25 UTC"
-status: ready
+updated: "2026-05-09"
+updated_at: "2026-05-09 21:50:00 UTC"
+status: legacy-ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "android-ime-keyboard"
@@ -26,8 +26,8 @@ linked_systems:
   - "Android overlay/accessibility services"
   - "ClipboardHistoryApi"
   - "ClipboardHistoryStore"
-  - "Supabase Auth"
-  - "Supabase Postgres/RLS/Realtime as current cloud adapter"
+  - "Backend-agnostic stores"
+  - "Firebase first adapter"
   - "speech_to_text"
   - "record"
 depends_on:
@@ -43,12 +43,9 @@ depends_on:
   - artifact: "GUIDELINES.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
+  - artifact: "specs/firebase-backend-agnostic-migration.md"
     artifact_version: "0.1.0"
     required_status: "ready"
-  - artifact: "docs/API_SUPABASE.md"
-    artifact_version: "1.0.0"
-    required_status: "reviewed"
   - artifact: "docs/OVERLAY_ANDROID.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
@@ -67,7 +64,7 @@ evidence:
   - "Android Developers: Copy and paste, https://developer.android.com/guide/topics/text/copy-paste"
   - "Android Developers: MediaSessionManager, https://developer.android.com/reference/android/media/session/MediaSessionManager"
   - "Android Developers: AudioManager dispatchMediaKeyEvent, https://developer.android.com/reference/android/media/AudioManager"
-next_step: "/sf-start specs/clipboard-backend-agnostic-api.md task 6"
+next_step: "/sf-ready specs/proprietary-swipe-corner-android-keyboard.md"
 ---
 
 # Title
@@ -76,7 +73,7 @@ Android IME VoiceFlowz Keyboard
 
 # Status
 
-Ready for staged implementation as of 2026-05-04, with clipboard sync alignment updated on 2026-05-08. The prior sf-ready blockers have been resolved in the spec: keyboard queue ownership is account-scoped, dedupe/hash contracts are explicit, base media scope is play/pause only, and dictation implementation can start with native Android local speech while richer pipeline reuse remains a post-prototype decision. Clipboard work now defers to `specs/clipboard-backend-agnostic-api.md`: Supabase is the current cloud adapter, not the IME or UI contract.
+Legacy-ready for the already implemented IME foundation. New keyboard work should continue from `specs/proprietary-swipe-corner-android-keyboard.md` and the Firebase/backend-agnostic migration spec. Clipboard work defers to `specs/clipboard-backend-agnostic-api.md`; Firebase is the first planned cloud adapter, and neither the IME nor UI should couple directly to a backend provider.
 
 # User Story
 

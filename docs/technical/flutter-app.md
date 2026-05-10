@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-05-04"
-updated: "2026-05-08"
+updated: "2026-05-09"
 status: draft
 source_skill: sf-docs
 scope: "flutter-app"
@@ -18,7 +18,8 @@ linked_systems:
   - "Riverpod"
   - "ClipboardHistoryApi"
   - "ClipboardHistoryStore"
-  - "Supabase Flutter"
+  - "Backend-agnostic stores"
+  - "Firebase first adapter"
   - "Android MethodChannel"
 depends_on:
   - "CLAUDE.md@1.2.0"
@@ -36,9 +37,9 @@ next_step: "/sf-docs technical audit"
 
 The Flutter app owns the user-facing screens, backend-agnostic feature APIs and
 stores, platform capability gates, and MethodChannel bridge wrappers.
-Provider-specific repositories such as Supabase are adapters, not product
-contracts. Android-only capabilities must be hidden or described as unavailable
-on non-Android platforms.
+Provider-specific repositories such as Supabase legacy or Firebase are adapters,
+not product contracts. Android-only capabilities must be hidden or described as
+unavailable on non-Android platforms.
 
 ## Owned Files
 
@@ -50,7 +51,8 @@ on non-Android platforms.
 | `lib/features/clipboard/application/**` | Clipboard product API and provider composition | Keep UI and future Android bridges pointed at `ClipboardHistoryApi`, not provider repositories. |
 | `lib/features/clipboard/domain/**` | Backend-neutral clipboard sources, sync state, sensitivity and dedupe contracts | Keep provider names, SQL columns and native Android details out of the domain. |
 | `lib/features/clipboard/data/**` | Local/offline clipboard stores | Do not claim durable persistence unless a storage backend has been selected. |
-| `lib/data/supabase/**` | Supabase adapter implementations | Never use service-role keys or client-sent user IDs for authorization; do not make these adapters UI contracts. |
+| `lib/data/supabase/**` | Legacy Supabase adapter implementations | Keep compiling until Firebase parity exists; do not add new target behavior here. |
+| `lib/data/firebase/**` | Firebase adapter implementations | Keep Firebase behind backend-agnostic stores and Firestore Security Rules. |
 | `test/**` | Dart/widget tests | Cover model validation and bridge parsing when native contracts change. |
 
 ## Entrypoints
@@ -76,7 +78,8 @@ Clipboard UI
 
 ## Invariants
 
-- Supabase Auth/RLS owns user identity; Flutter client code must not send trusted `user_id` fields.
+- Remote auth owns user identity; Flutter client code must not send trusted `user_id` fields.
+- Firebase Auth + Firestore Security Rules are the first target adapter for the Android MVP.
 - Android-only controls render only when `PlatformCapabilities.isAndroid` is true.
 - Domain model source allowlists must match database constraints.
 - Clipboard UI, application APIs and domain models must not import Supabase adapters.
@@ -86,7 +89,7 @@ Clipboard UI
 ## Failure Modes
 
 - Native channel unavailable: show a recoverable Settings message instead of crashing.
-- Supabase not configured: keep local UI usable with the local clipboard store where available and display configuration state for cloud sync.
+- Remote backend not configured: keep local UI usable with the local clipboard store where available and display configuration state for cloud sync.
 
 ## Security Notes
 
@@ -104,7 +107,7 @@ flutter test
 
 - `lib/core/platform/**` changed -> verify native channel contract and Settings UI.
 - Domain model source allowlist changed -> verify SQL constraints and tests.
-- Repository metadata changed -> verify RLS docs and smoke tests.
+- Repository metadata changed -> verify backend adapter docs and security rules/tests.
 - Clipboard API/store changed -> verify no feature UI imports `lib/data/supabase`, run clipboard tests and update provider docs.
 
 ## Maintenance Rule

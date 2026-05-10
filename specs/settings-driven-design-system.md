@@ -6,7 +6,7 @@ project: "VoiceFlowz"
 created: "2026-05-09"
 created_at: "2026-05-09 15:19:23 UTC"
 updated: "2026-05-09"
-updated_at: "2026-05-09 15:19:23 UTC"
+updated_at: "2026-05-09 19:10:00 UTC"
 status: draft
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -22,8 +22,8 @@ linked_systems:
   - "Riverpod"
   - "SettingsScreen"
   - "AppTheme"
-  - "Supabase user_settings"
-  - "Future settings architecture decision"
+  - "Backend-agnostic SettingsStore"
+  - "Firebase first adapter"
   - "ContentFlow Site design playground"
 depends_on:
   - artifact: "BUSINESS.md"
@@ -38,20 +38,17 @@ depends_on:
   - artifact: "docs/technical/flutter-app.md"
     artifact_version: "0.1.0"
     required_status: "draft"
-  - artifact: "docs/API_SUPABASE.md"
-    artifact_version: "unknown"
+  - artifact: "docs/DECISIONS.md"
+    artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "decision:settings-architecture"
-    artifact_version: "pending"
-    required_status: "decided"
 supersedes: []
 evidence:
   - "2026-05-09 design audit adopted ContentFlow family colors, spacing, radii, motion names and component defaults in lib/core/theme/app_theme.dart."
   - "2026-05-09 design audit added a transient Settings Appearance selector in lib/features/settings/presentation/settings_screen.dart."
   - "Current appThemeModeProvider is in-memory only in lib/app/voiceflowz_app.dart."
-  - "Supabase user_settings currently exists with keyboard/overlay preferences but no theme mode field in docs/API_SUPABASE.md and migrations."
-  - "User request 2026-05-09: prepare a spec to launch once the Settings decision is made."
-next_step: "/sf-ready specs/settings-driven-design-system.md after settings architecture decision"
+  - "User decision 2026-05-09: settings and backend data must be backend-agnostic; Firebase is the first adapter."
+  - "User decision 2026-05-09: Supabase is no longer the target backend."
+next_step: "/sf-ready specs/settings-driven-design-system.md after Firebase adapter spec"
 ---
 
 # Title
@@ -60,7 +57,7 @@ Settings-Driven Design System Completion
 
 # Status
 
-Draft, intentionally blocked until the Settings architecture decision is made. This spec is ready to preserve context and scope, but it must not pass `/sf-ready` until the project decides where user preferences live, how they are persisted locally, and whether authenticated settings sync stays on Supabase or moves behind a backend-agnostic settings store.
+Draft. The Settings architecture decision is now made: preferences must go through a backend-agnostic `SettingsStore`, with Firebase as the first remote adapter. This spec still waits for the concrete Firebase adapter contract before implementation.
 
 # User Story
 
@@ -75,14 +72,14 @@ Déclencheurs:
 - L'utilisateur choisit `System`, `Light` ou `Dark` dans Settings.
 - L'application redémarre.
 - L'utilisateur se connecte, se déconnecte ou change d'appareil.
-- La décision Settings définit le store local et le contrat de sync.
+- Le contrat Firebase définit les règles, indexes, offline behavior et sync.
 - Les écrans VoiceFlowz migrent vers les tokens partagés.
 
 Résultat observable attendu: le mode d'apparence choisi s'applique sans flash incohérent, persiste localement, se synchronise par compte si un settings backend est disponible, et tous les écrans utilisent le même système de tokens plutôt que des valeurs visuelles dispersées.
 
 # Minimal Behavior Contract
 
-VoiceFlowz expose un contrat de settings d'apparence qui accepte uniquement `system`, `light` et `dark`, normalise toute valeur inconnue vers `system`, applique le mode avant ou au plus tôt dans le bootstrap Flutter, persiste le choix localement, et synchronise le choix vers les settings utilisateur authentifiés quand l'architecture Settings le permet. Si le store local, le backend ou la session auth est indisponible, l'app continue en `system` ou avec la dernière valeur locale valide, affiche un état récupérable dans Settings, et ne bloque jamais l'utilisation du produit. L'edge case facile à rater est le changement de compte: la préférence visuelle locale ne doit pas exposer ni écraser silencieusement les settings serveur d'un autre utilisateur.
+VoiceFlowz expose un contrat de settings d'apparence qui accepte uniquement `system`, `light` et `dark`, normalise toute valeur inconnue vers `system`, applique le mode avant ou au plus tôt dans le bootstrap Flutter, persiste le choix localement, et synchronise le choix vers les settings utilisateur authentifiés via un `SettingsStore` backend-agnostique. Si le store local, le backend ou la session auth est indisponible, l'app continue en `system` ou avec la dernière valeur locale valide, affiche un état récupérable dans Settings, et ne bloque jamais l'utilisation du produit. L'edge case facile à rater est le changement de compte: la préférence visuelle locale ne doit pas exposer ni écraser silencieusement les settings serveur d'un autre utilisateur.
 
 # Success Behavior
 
@@ -101,15 +98,15 @@ VoiceFlowz expose un contrat de settings d'apparence qui accepte uniquement `sys
 - Si le logout arrive pendant une sync, annuler ou isoler la mutation de l'ancien compte; ne jamais appliquer les settings d'un compte à un autre.
 - Si le backend renvoie une valeur invalide, ignorer la valeur, revenir à `system`, et ne pas propager l'invalide.
 - Si un écran ne supporte pas encore les tokens, la migration doit être incrémentale; ne pas bloquer le thème global sur un écran secondaire.
-- Si Supabase reste l'adaptateur courant, toute mutation `user_settings` doit passer par l'utilisateur authentifié et RLS, jamais par un `user_id` client de confiance.
+- Si Firebase est l'adaptateur courant, toute mutation settings doit passer par l'utilisateur authentifié et Firestore Security Rules, jamais par un `user_id` client de confiance.
 
 # Problem
 
-Le design audit du 2026-05-09 a ajouté une première base visuelle partagée avec ContentFlow: palette Flowz, spacing 4px, radii, motion names, Material component defaults et sélecteur Appearance. Cette base reste incomplète: le choix Appearance est seulement en mémoire, il n'est ni persisté localement ni synchronisé par compte, et plusieurs écrans contiennent encore des `EdgeInsets`, `SizedBox` et styles locaux. Comme la stratégie Settings globale n'est pas encore décidée, il serait risqué de figer maintenant un stockage ou un contrat de sync spécifique.
+Le design audit du 2026-05-09 a ajouté une première base visuelle partagée avec ContentFlow: palette Flowz, spacing 4px, radii, motion names, Material component defaults et sélecteur Appearance. Cette base reste incomplète: le choix Appearance est seulement en mémoire, il n'est ni persisté localement ni synchronisé par compte, et plusieurs écrans contiennent encore des `EdgeInsets`, `SizedBox` et styles locaux. La stratégie Settings globale est décidée au niveau architecture: contrat backend-agnostique d'abord, Firebase comme premier adaptateur. Il reste à spécifier les règles Firebase exactes avant d'implémenter la sync distante.
 
 # Solution
 
-Après décision Settings, transformer l'Appearance selector en préférence produit complète: module Settings centralisé, persistence locale, sync authentifiée selon le provider retenu, résolution des conflits local/distant, tests, et migration progressive des écrans vers les tokens `AppTheme`. La base ContentFlow reste la référence familiale, mais VoiceFlowz conserve son identité produit orientée dictée, contrôle et état système.
+Transformer l'Appearance selector en préférence produit complète: module Settings centralisé, persistence locale, sync authentifiée via `SettingsStore`, résolution des conflits local/distant, tests, et migration progressive des écrans vers les tokens `AppTheme`. La base ContentFlow reste la référence familiale, mais VoiceFlowz conserve son identité produit orientée dictée, contrôle et état système.
 
 # Scope In
 
@@ -125,8 +122,8 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 
 # Scope Out
 
-- Décider dans cette spec du provider Settings final.
-- Migrer tout le backend hors Supabase.
+- Coupler les écrans directement à Firebase ou Supabase.
+- Migrer tout le backend dans cette spec.
 - Ajouter billing, entitlements, quotas ou segmentation premium.
 - Refaire entièrement l'UI VoiceFlowz.
 - Créer un design system multi-produit versionné publiquement.
@@ -135,36 +132,33 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 
 # Constraints
 
-- Ne pas lancer l'implémentation avant la décision Settings.
+- Ne pas lancer la sync distante avant le contrat Firebase adapter.
 - `theme_mode` accepte seulement `system`, `light`, `dark`.
 - La valeur par défaut est `system`.
 - Les valeurs inconnues doivent revenir à `system`.
 - Le choix utilisateur ne doit pas bloquer auth, dictée, clipboard, clavier ou overlay.
-- Les settings compte sont user-scoped; aucune mutation ne doit contourner RLS si Supabase reste l'adaptateur.
+- Les settings compte sont user-scoped; aucune mutation ne doit contourner les règles de sécurité du backend actif.
 - Les clés OpenAI/Anthropic restent dans secure local storage et ne doivent pas être mélangées avec les préférences syncables.
 - Les tokens ContentFlow sont une base familiale, pas une copie aveugle: VoiceFlowz peut garder des ajustements de contraste, état audio et surfaces utilitaires.
 - Les changements visuels doivent rester testables sans appareil Android réel, sauf statut IME/overlay qui demande QA manuelle.
 
 # Dependencies
 
-- Décision à prendre: architecture Settings.
-  - Options probables: local-only pour préférences non critiques, Supabase `user_settings`, ou `SettingsStore` backend-agnostic avec adaptateur local/Supabase/futur provider.
-  - Cette décision doit préciser conflict resolution, offline behavior, account switch behavior et séparation secrets vs preferences.
+- Décision prise: architecture Settings backend-agnostique.
+  - Contrat cible: `SettingsStore` avec adaptateur local et Firebase comme premier adaptateur remote.
+  - Le contrat Firebase doit encore préciser conflict resolution, offline behavior, account switch behavior et séparation secrets/preferences.
 - Code existant:
   - `lib/core/theme/app_theme.dart`
   - `lib/app/voiceflowz_app.dart`
   - `lib/features/settings/presentation/settings_screen.dart`
   - `lib/features/settings/data/secure_secret_store.dart`
-  - `lib/data/supabase/**`
-  - `supabase/migrations/20260427084000_init_voiceflowz.sql`
-  - `supabase/migrations/20260504210000_android_keyboard_ime.sql`
+  - `lib/data/**`
 - Docs existantes:
   - `docs/technical/flutter-app.md`
-  - `docs/API_SUPABASE.md`
-  - `docs/technical/supabase-data.md`
+  - `docs/DECISIONS.md`
   - `BRANDING.md`
   - `GUIDELINES.md`
-- External docs verdict: fresh-docs not needed yet for this draft because implementation is blocked by an internal Settings decision. Recheck official Flutter/Riverpod/Supabase docs when choosing persistence/sync APIs or changing database schema.
+- External docs verdict: recheck official Flutter/Riverpod/Firebase docs when choosing persistence/sync APIs, rules or indexes.
 
 # Invariants
 
@@ -181,11 +175,9 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 - `lib/app/voiceflowz_app.dart`: le provider actuel devra devenir async/hydraté ou dépendre d'un Settings controller.
 - `lib/core/theme/app_theme.dart`: reste la source de tokens; ajouter éventuellement extensions de thème au lieu de valeurs dispersées.
 - `lib/features/settings/presentation/settings_screen.dart`: Appearance doit afficher état local/sync si pertinent.
-- `lib/features/settings/data/**`: peut recevoir un `SettingsStore` ou `UserPreferencesStore` selon décision.
-- `lib/data/supabase/**`: peut recevoir un adaptateur `SupabaseUserSettingsStore` si Supabase garde les settings compte.
-- `supabase/migrations/**`: ajouter `theme_mode` avec allowlist si Supabase stocke cette préférence.
-- `supabase/tests/rls_smoke.sql`: étendre si `user_settings.theme_mode` est ajouté.
-- `docs/API_SUPABASE.md`: documenter la colonne/adaptateur uniquement si Supabase est retenu.
+- `lib/features/settings/data/**`: peut recevoir un `SettingsStore` ou `UserPreferencesStore`.
+- `lib/data/**`: peut recevoir un adaptateur Firebase settings.
+- `firebase.json`, `firestore.rules`, `firestore.indexes.json`: à créer ou mettre à jour si Firebase porte cette préférence.
 - `docs/technical/flutter-app.md`: documenter le flux Settings -> Theme.
 - `TASKS.md`: les tâches d'audit design ouvertes pourront être fermées après implémentation.
 
@@ -194,8 +186,7 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 À mettre à jour pendant l'implémentation:
 
 - `docs/technical/flutter-app.md`: architecture Settings, bootstrap theme et règles UI.
-- `docs/technical/supabase-data.md`: seulement si Supabase continue à porter `user_settings`.
-- `docs/API_SUPABASE.md`: seulement si une colonne ou contrainte SQL est ajoutée.
+- docs backend/Firebase à créer: contrat Settings, rules, indexes et limites.
 - `docs/VERIFICATION.md`: ajouter scénarios Appearance persistence/sync.
 - `BRANDING.md`: mentionner que la famille Flowz partage une base visuelle si ce choix devient contractuel.
 - `CHANGELOG.md`: noter l'amélioration design system/settings au ship.
@@ -208,19 +199,19 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 - Offline au moment du changement de préférence.
 - Auth change pendant une mutation settings.
 - Logout puis login avec autre compte sur le même appareil.
-- Supabase non configuré.
+- Firebase non configuré.
 - Android IME/overlay lit des préférences pendant que Flutter app n'est pas ouverte.
 - Mode dark avec champs, cards et banners de permission à contraste insuffisant.
 - Tests web/desktop où secure storage peut être dégradé.
 
 # Implementation Tasks
 
-- [ ] Tâche 1 : Formaliser la décision Settings
-  - Fichiers : nouvelle note/spec ou section dans cette spec avant `/sf-ready`
-  - Action : choisir local-only, Supabase direct ou `SettingsStore` backend-agnostic; définir conflict resolution, offline behavior, auth switch behavior et séparation secrets/preferences.
+- [x] Tâche 1 : Formaliser la décision Settings
+  - Fichiers : `docs/DECISIONS.md`, cette spec
+  - Action : choisir `SettingsStore` backend-agnostic avec Firebase premier adaptateur; définir ensuite conflict resolution, offline behavior, auth switch behavior et séparation secrets/preferences dans la spec Firebase.
   - User story link : évite d'implémenter un thème persistant sur une fondation Settings instable.
   - Depends on : décision utilisateur.
-  - Validate with : revue explicite avant `/sf-ready`.
+  - Validate with : décision confirmée le 2026-05-09.
 
 - [ ] Tâche 2 : Créer le modèle de préférence Appearance
   - Fichiers : `lib/core/theme/app_theme.dart`, possiblement `lib/features/settings/domain/user_preferences.dart`
@@ -244,11 +235,11 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
   - Validate with : widget test MaterialApp themeMode.
 
 - [ ] Tâche 5 : Ajouter la sync compte si retenue
-  - Fichiers : `lib/features/settings/data/**`, `lib/data/supabase/**` ou futur adapter, `supabase/migrations/**`
-  - Action : ajouter `theme_mode` côté settings compte ou adapter équivalent, RLS/allowlist, upsert user-scoped et lecture initiale.
+  - Fichiers : `lib/features/settings/data/**`, `lib/data/**`, `firebase.json`, `firestore.rules`, `firestore.indexes.json`
+  - Action : ajouter `theme_mode` côté settings compte via `SettingsStore`, Firestore Security Rules/allowlist, upsert user-scoped et lecture initiale.
   - User story link : rend la préférence cohérente cross-device.
   - Depends on : Tâche 1.
-  - Validate with : tests adapter/fake, RLS smoke si Supabase.
+  - Validate with : tests adapter/fake, Firebase emulator/rules tests si disponibles.
 
 - [ ] Tâche 6 : Rendre Settings honnête sur état local/sync
   - Fichier : `lib/features/settings/presentation/settings_screen.dart`
@@ -272,7 +263,7 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
   - Validate with : widget test route/render.
 
 - [ ] Tâche 9 : Mettre à jour docs et vérification
-  - Fichiers : `docs/technical/flutter-app.md`, `docs/VERIFICATION.md`, `docs/API_SUPABASE.md` si applicable, `CHANGELOG.md`
+  - Fichiers : `docs/technical/flutter-app.md`, `docs/VERIFICATION.md`, docs Firebase/backend à créer, `CHANGELOG.md`
   - Action : documenter contrat, store, sync, commandes de vérification et limites.
   - User story link : empêche le drift entre UI, docs et settings réels.
   - Depends on : implémentation.
@@ -284,7 +275,7 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 - Les seules valeurs acceptées sont `system`, `light`, `dark`.
 - Une valeur inconnue locale ou distante ne plante pas et revient à `system`.
 - Le choix Appearance survit au redémarrage.
-- Si la sync compte est retenue, le choix se synchronise avec les settings utilisateur et respecte RLS ou le contrat provider équivalent.
+- Si la sync compte est retenue, le choix se synchronise avec les settings utilisateur et respecte Firestore Security Rules ou le contrat provider équivalent.
 - Le logout/account switch ne mélange pas les préférences de deux utilisateurs.
 - Settings indique honnêtement si la préférence est locale seulement, synchronisée, pending ou en erreur.
 - Les écrans principaux n'introduisent plus de nouvelles couleurs/espacements arbitraires pour les patterns communs.
@@ -305,9 +296,9 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
   - Settings affiche état sync/pending/error si applicable.
 - Adapter tests:
   - local store read/write.
-  - Supabase or fake backend store rejects invalid values.
+  - Firebase or fake backend store rejects invalid values.
   - account switch isolation.
-- SQL/RLS tests si Supabase:
+- Firebase rules/emulator tests:
   - `theme_mode` allowlist.
   - user A ne lit/modifie pas settings user B.
   - upsert own settings works.
@@ -320,11 +311,11 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 
 # Stop Conditions
 
-- La décision Settings n'est pas prise.
+- Le contrat Firebase adapter n'est pas pris.
 - Le contrat mélange secrets locaux et préférences syncables.
 - Une solution nécessite de stocker des clés BYOK dans `user_settings`.
 - Les settings compte ne peuvent pas être isolés par user.
-- La sync distante force un provider backend non décidé.
+- La sync distante force un couplage direct hors `SettingsStore`.
 - `flutter analyze` ou `flutter test` échoue.
 
 # Rollback Plan
@@ -332,11 +323,11 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 - Garder `AppTheme.light`, `AppTheme.dark` et `ThemeMode.system` comme fallback.
 - Si la persistence locale casse, revenir temporairement au provider in-memory actuel.
 - Si la sync distante casse, désactiver uniquement l'adapter sync et conserver local-only.
-- Si la migration SQL pose problème, retirer la colonne/contrainte `theme_mode` avant release tant que l'UI fonctionne localement.
+- Si la migration Firebase pose problème, désactiver l'adaptateur remote avant release tant que l'UI fonctionne localement.
 
 # Open Questions
 
-- Quel est le contrat Settings final: local-only, Supabase direct ou `SettingsStore` backend-agnostic?
+- Quel est le contrat Firebase exact: collections, rules, indexes, offline/cache et conflit local/distant?
 - Quelle règle gagne au premier login sur un appareil qui a déjà une préférence locale différente du compte?
 - Les préférences Android IME/overlay doivent-elles utiliser le même store Settings que Appearance?
 - Le design playground doit-il être une route debug cachée, une section Settings visible, ou un outil dev-only?
@@ -346,14 +337,14 @@ Après décision Settings, transformer l'Appearance selector en préférence pro
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-09 15:19:23 UTC | sf-spec | GPT-5 Codex | Created draft spec for post-settings-decision design system completion | Draft spec created; blocked on Settings architecture decision | `/sf-ready specs/settings-driven-design-system.md after settings architecture decision` |
+| 2026-05-09 15:19:23 UTC | sf-spec | GPT-5 Codex | Created draft spec for post-settings-decision design system completion | Draft spec created; later unblocked by backend-agnostic SettingsStore decision | `/sf-ready specs/settings-driven-design-system.md after Firebase adapter spec` |
 
 # Current Chantier Flow
 
 | Step | Status | Evidence | Next step |
 |------|--------|----------|-----------|
-| sf-spec | done | This draft spec exists with explicit blocker | Decide Settings architecture |
-| sf-ready | blocked | `decision:settings-architecture` is pending | Run after decision |
+| sf-spec | done | This draft spec exists and records the SettingsStore decision | Specify Firebase adapter |
+| sf-ready | blocked | Firebase adapter contract is pending | Run after Firebase adapter spec |
 | sf-start | pending | Implementation intentionally deferred | Wait for sf-ready |
 | sf-verify | pending | No implementation yet | After sf-start |
 | sf-end | pending | No implementation yet | After sf-verify |

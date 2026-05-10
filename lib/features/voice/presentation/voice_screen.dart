@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/bootstrap/supabase_bootstrap.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
-import '../../../data/supabase/supabase_client_provider.dart';
-import '../../../data/supabase/transcription_repository.dart';
+import '../../../core/theme/app_theme.dart';
+import '../application/transcription_store.dart';
+import '../application/transcription_store_provider.dart';
 import '../domain/transcription_draft.dart';
 
 class VoiceScreen extends ConsumerStatefulWidget {
@@ -25,11 +25,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   bool _overlayBusy = false;
   AndroidOverlayStatus? _overlayStatus;
   String? _message;
-  List<TranscriptionItem> _items = const [];
-
-  static String get _cloudSyncDisabledMessage =>
-      '${SupabaseBootstrap.initError ?? 'Cloud sync is disabled.'} '
-      'Voice and keyboard local testing remains available.';
+  List<TranscriptionRecord> _items = const [];
 
   @override
   void initState() {
@@ -48,18 +44,10 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   }
 
   Future<void> _load() async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _message = _cloudSyncDisabledMessage);
-      return;
-    }
+    final store = ref.read(transcriptionStoreProvider);
     setState(() => _busy = true);
     try {
-      final repo = TranscriptionRepository(client);
-      final rows = await repo.list();
+      final rows = await store.list();
       if (mounted) {
         setState(() {
           _items = rows;
@@ -177,11 +165,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   }
 
   Future<void> _add() async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      setState(() => _message = _cloudSyncDisabledMessage);
-      return;
-    }
+    final store = ref.read(transcriptionStoreProvider);
     final duration = int.tryParse(_durationController.text.trim()) ?? 0;
     final draft = TranscriptionDraft(
       rawText: _rawController.text,
@@ -197,7 +181,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       _message = null;
     });
     try {
-      await TranscriptionRepository(client).insert(draft);
+      await store.insert(draft);
       _rawController.clear();
       _cleanedController.clear();
       _durationController.text = '0';
@@ -214,16 +198,13 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   }
 
   Future<void> _delete(String id) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      return;
-    }
+    final store = ref.read(transcriptionStoreProvider);
     setState(() {
       _busy = true;
       _message = null;
     });
     try {
-      await TranscriptionRepository(client).delete(id);
+      await store.softDelete(id);
       await _load();
     } catch (error) {
       if (mounted) {
@@ -236,11 +217,8 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     }
   }
 
-  Future<void> _quickEdit(TranscriptionItem item) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      return;
-    }
+  Future<void> _quickEdit(TranscriptionRecord item) async {
+    final store = ref.read(transcriptionStoreProvider);
     final controller = TextEditingController(text: item.cleanedText);
     final updated = await showDialog<String>(
       context: context,
@@ -251,7 +229,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
             controller: controller,
             minLines: 2,
             maxLines: 6,
-            decoration: const InputDecoration(border: OutlineInputBorder()),
+            decoration: const InputDecoration(),
           ),
           actions: [
             TextButton(
@@ -274,9 +252,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       _message = null;
     });
     try {
-      await TranscriptionRepository(
-        client,
-      ).updateCleanedText(id: item.id, cleanedText: updated);
+      await store.updateCleanedText(id: item.id, cleanedText: updated);
       await _load();
     } catch (error) {
       if (mounted) {
@@ -294,20 +270,20 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   Widget build(BuildContext context) {
     final overlayStatus = _overlayStatus;
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: AppInsets.screen,
       children: [
         if (PlatformCapabilities.overlaySupported)
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: AppInsets.compactCard,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Android Overlay Controls',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  const SizedBox(height: 6),
+                  AppGaps.x2,
                   Text(
                     'enabled=${overlayStatus?.enabled ?? false} | '
                     'running=${overlayStatus?.running ?? false} | '
@@ -315,12 +291,12 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
                   ),
                   if (overlayStatus?.accessibilityPermissionGranted == false)
                     const Padding(
-                      padding: EdgeInsets.only(top: 6),
+                      padding: AppInsets.stack,
                       child: Text(
                         'Accessibility is disabled: delivery falls back to clipboard only.',
                       ),
                     ),
-                  const SizedBox(height: 10),
+                  AppGaps.x3,
                   Row(
                     children: [
                       Expanded(
@@ -329,14 +305,14 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
                           child: const Text('Start overlay'),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppGaps.horizontalX2,
                       Expanded(
                         child: OutlinedButton(
                           onPressed: _overlayBusy ? null : _stopOverlay,
                           child: const Text('Stop'),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppGaps.horizontalX2,
                       Expanded(
                         child: TextButton(
                           onPressed: _overlayBusy ? null : _cancelOverlay,
@@ -349,52 +325,40 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
               ),
             ),
           ),
-        if (PlatformCapabilities.overlaySupported) const SizedBox(height: 8),
+        if (PlatformCapabilities.overlaySupported) AppGaps.x2,
         TextField(
           controller: _rawController,
           minLines: 2,
           maxLines: 4,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Raw text',
-          ),
+          decoration: const InputDecoration(labelText: 'Raw text'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         TextField(
           controller: _cleanedController,
           minLines: 2,
           maxLines: 4,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Cleaned text',
-          ),
+          decoration: const InputDecoration(labelText: 'Cleaned text'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         Row(
           children: [
             Expanded(
               child: TextField(
                 controller: _languageController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Language',
-                ),
+                decoration: const InputDecoration(labelText: 'Language'),
               ),
             ),
-            const SizedBox(width: 8),
+            AppGaps.horizontalX2,
             Expanded(
               child: TextField(
                 controller: _durationController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Duration (ms)',
-                ),
+                decoration: const InputDecoration(labelText: 'Duration (ms)'),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         DropdownButtonFormField<String>(
           initialValue: _source,
           items: const [
@@ -406,12 +370,9 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
           onChanged: _busy
               ? null
               : (value) => setState(() => _source = value ?? 'advanced'),
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Source',
-          ),
+          decoration: const InputDecoration(labelText: 'Source'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         Row(
           children: [
             Expanded(
@@ -421,7 +382,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
                 label: const Text('Add transcription'),
               ),
             ),
-            const SizedBox(width: 8),
+            AppGaps.horizontalX2,
             OutlinedButton(
               onPressed: _busy ? null : _load,
               child: const Text('Refresh'),
@@ -430,20 +391,14 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         ),
         if (_busy)
           const Padding(
-            padding: EdgeInsets.only(top: 12),
+            padding: AppInsets.progress,
             child: LinearProgressIndicator(),
           ),
         if (_message != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(_message!),
-          ),
-        const SizedBox(height: 16),
-        const Text(
-          'Transcriptions (Supabase CRUD)',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
+          Padding(padding: AppInsets.message, child: Text(_message!)),
+        AppGaps.x4,
+        Text('Transcriptions', style: Theme.of(context).textTheme.titleSmall),
+        AppGaps.x2,
         if (_items.isEmpty)
           const Card(child: ListTile(title: Text('No transcription yet.'))),
         for (final item in _items)
@@ -457,7 +412,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
               ),
               isThreeLine: true,
               trailing: Wrap(
-                spacing: 4,
+                spacing: AppIconMetrics.listActionSpacing,
                 children: [
                   IconButton(
                     tooltip: 'Edit cleaned',

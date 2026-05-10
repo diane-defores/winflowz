@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/platform/platform_capabilities.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../clipboard/presentation/clipboard_screen.dart';
 import '../../dictionary/presentation/dictionary_screen.dart';
 import '../../settings/presentation/settings_screen.dart';
@@ -121,9 +122,11 @@ class _OnboardingPanel extends StatelessWidget {
     return ColoredBox(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 280),
+        constraints: const BoxConstraints(
+          maxHeight: AppLayoutMetrics.onboardingMaxHeight,
+        ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+          padding: AppInsets.onboarding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -134,11 +137,11 @@ class _OnboardingPanel extends StatelessWidget {
                     Icons.flag_outlined,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  const SizedBox(width: 8),
-                  const Expanded(
+                  AppGaps.horizontalX2,
+                  Expanded(
                     child: Text(
                       'Start here',
-                      style: TextStyle(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ),
                   TextButton.icon(
@@ -148,7 +151,7 @@ class _OnboardingPanel extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              AppGaps.x2,
               const _OnboardingStep(
                 number: '1',
                 text: 'Enable VoiceFlowz Keyboard in Settings.',
@@ -162,14 +165,12 @@ class _OnboardingPanel extends StatelessWidget {
                 text:
                     'Use Voice for dictation tests and Clipboard for captured text.',
               ),
-              const SizedBox(height: 14),
+              AppGaps.x4,
               Text(
                 'Why permissions are needed',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 8),
+              AppGaps.x2,
               const _PermissionNote(
                 icon: Icons.keyboard_outlined,
                 title: 'Keyboard',
@@ -198,7 +199,7 @@ class _OnboardingPanel extends StatelessWidget {
                 icon: Icons.cloud_outlined,
                 title: 'Cloud sync',
                 text:
-                    'Supabase sync stores your history across devices when configured; local mode keeps testing on this device.',
+                    'Cloud sync will use the configured backend adapter when available; local mode keeps testing on this device.',
               ),
             ],
           ),
@@ -222,19 +223,23 @@ class _PermissionNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: AppInsets.stack,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.secondary),
-          const SizedBox(width: 10),
+          Icon(
+            icon,
+            size: AppIconMetrics.sm,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          AppGaps.horizontalX3,
           Expanded(
             child: Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: '$title: ',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                   TextSpan(text: text),
                 ],
@@ -256,15 +261,15 @@ class _OnboardingStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 6),
+      padding: AppInsets.stack,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            radius: 12,
-            child: Text(number, style: const TextStyle(fontSize: 12)),
+            radius: AppIconMetrics.stepAvatarRadius,
+            child: Text(number, style: Theme.of(context).textTheme.labelMedium),
           ),
-          const SizedBox(width: 10),
+          AppGaps.horizontalX3,
           Expanded(child: Text(text)),
         ],
       ),

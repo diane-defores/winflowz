@@ -4,53 +4,51 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-27"
-updated: "2026-05-04"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-spec"
-scope: "flutter_supabase_migration"
+scope: "android_firebase_backend_agnostic_migration"
 owner: "Diane"
 confidence: "medium"
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 depends_on:
-  - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md@0.1.0"
+  - "specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
   - "specs/android-ime-voiceflowz-keyboard.md"
   - "test/widget_test.dart"
-  - "supabase/tests/rls_smoke.sql"
-next_step: "/sf-start Migration totale VoiceFlowz vers Flutter + Supabase"
+  - "specs/clipboard-backend-agnostic-api.md"
+next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 ---
 
-# Verification — VoiceFlowz Flutter + Supabase Migration
+# Verification — VoiceFlowz Android Firebase Backend-Agnostic Migration
 
 ## Required Automated Checks
 
 - `dart format --set-exit-if-changed .`
 - `flutter analyze`
 - `flutter test`
-- `flutter build web`
 - Android build on a machine with Android toolchain.
 - Android IME build/resource proof on an x64 Android runner when the local host is ARM64 and AAPT2 is unavailable.
 - Android overlay sanity (without full build when toolchain is heavy): verify `flutter analyze`, then run on Android and check start/stop/cancel/status from Settings and Voice screens.
-- Supabase migration apply on local or test project.
-- SQL/RLS tests from `docs/API_SUPABASE.md`.
+- Firebase configuration/rules/indexes validation when Firebase adapter is implemented.
+- Firestore Security Rules tests or emulator smoke proving user-scoped isolation.
 
 ## Required Manual Checks
 
 - Android: local speech, advanced recording, VoiceFlowz Keyboard enable/switch/type/private-field behavior, keyboard dictation permission denied/allowed, keyboard clipboard actions, keyboard media play/pause, overlay permission, accessibility fallback, clipboard fallback.
-- iOS: microphone/speech permissions, advanced recording, secure key storage, sync.
-- macOS/Windows/Linux: launch, auth, advanced recording, secure storage state, clipboard limits.
-- Web: auth, microphone/clipboard permission behavior, advanced mode enabled only if direct/proxy contract is satisfied.
+- iOS/macOS/Windows/Linux/web: deferred unless a later reviewed decision reopens non-Android scope.
 
 ## Security Gate
 
 - No client bundle contains a service role key.
-- OpenAI/Anthropic keys are never synced to Supabase.
+- No client bundle contains Firebase admin credentials or any backend service/admin credential.
+- OpenAI/Anthropic keys are never synced to Firebase or another remote backend.
 - Logs and copyable debug output redact keys, provider payloads, audio, and raw transcripts.
 - Clipboard sync is opt-in and visibly pausable.
-- RLS denies cross-user CRUD for every table.
+- Firestore Security Rules deny cross-user CRUD for every user-scoped collection.
 - Overlay cannot silently start recording or inject without user action.
 - IME cannot silently capture, sync, log, or enrich text in password/OTP/private fields.
 - AI and sync retries are bounded and time out visibly.
@@ -77,7 +75,7 @@ Before deleting legacy JS/TS application code:
 
 1. Snapshot rollback archive exists and includes legacy app, Convex, overlay, and docs.
 2. Flutter parity checks pass for Voice, Clipboard, Settings, Snippets, Dictionary, Auth, and Android overlay.
-3. Supabase migrations and RLS tests pass.
+3. Firebase rules/indexes and user-scoped access tests pass once Firebase adapter replaces Supabase.
 4. Dry-run list of files to delete is reviewed.
-5. Keep rules are explicit: keep docs, assets still referenced by Flutter, Supabase SQL, native platform files, Kotlin overlay code, and migration specs.
+5. Keep rules are explicit: keep docs, assets still referenced by Flutter, legacy backend archives until parity, native platform files, Kotlin overlay code, and migration specs.
 6. Post-purge search for JS/TS application code passes.

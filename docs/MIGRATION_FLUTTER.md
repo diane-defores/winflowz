@@ -4,8 +4,8 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-04-27"
-status: "reviewed"
+updated: "2026-05-09"
+status: "legacy"
 source_skill: "sf-docs"
 scope: "full_rewrite_flutter_supabase"
 owner: "Diane"
@@ -25,6 +25,10 @@ next_step: "execute domain workstreams with explicit write-sets"
 ---
 
 # Migration Contract — Flutter + Supabase
+
+> Legacy reference: this migration contract was superseded by
+> `specs/firebase-backend-agnostic-migration.md`. Flutter remains the app
+> foundation, but Supabase is no longer the active backend target.
 
 ## Review outcome
 

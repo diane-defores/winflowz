@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-05-04"
+updated: "2026-05-09"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "readme"
@@ -15,7 +15,8 @@ security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
   - "Flutter"
-  - "Supabase"
+  - "Backend-agnostic stores"
+  - "Firebase first adapter"
   - "OpenAI Whisper"
   - "Anthropic Messages API"
   - "Android overlay services"
@@ -33,13 +34,13 @@ next_step: "$sf-docs update"
 
 # VoiceFlowz
 
-VoiceFlowz is migrating to a Flutter + Supabase architecture across Android, iOS, macOS, Windows, Linux and web.
+VoiceFlowz is migrating to a Flutter Android-first architecture with backend-agnostic data/settings contracts. Firebase Auth + Firestore is the first planned remote adapter.
 
 VoiceFlowz is positioned as a sibling product of WinFlowz in the same ecosystem, with a product focus on voice-first capture and text workflow acceleration.
 
 This repository now contains:
 - A Flutter multi-platform project scaffold.
-- Supabase SQL migrations with RLS-first contracts.
+- Legacy Supabase SQL migrations with RLS-first contracts from the prior migration path.
 - Android native overlay and a first native VoiceFlowz Keyboard IME foundation.
 - Migration docs and verification gates.
 - Legacy Expo/Convex contracts preserved in docs for parity validation; no app-level JS/TS implementation remains in the repo.
@@ -54,40 +55,47 @@ This repository now contains:
 
 ```bash
 flutter pub get
-flutter run \
-  --dart-define=SUPABASE_URL=https://<project-ref>.supabase.co \
-  --dart-define=SUPABASE_PUBLISHABLE_KEY=<publishable-key>
+flutter run
 ```
 
-## Required Runtime Defines
+## Firebase Runtime Defines
 
-| Variable | Required | Purpose |
-|---|---:|---|
-| `SUPABASE_URL` | Yes | Supabase project URL |
-| `SUPABASE_PUBLISHABLE_KEY` | Yes | Supabase publishable key for client auth/data paths |
+Firebase is now wired as the first backend adapter behind backend-agnostic stores.
+If these values are missing, VoiceFlowz stays in local mode so UI development does
+not crash.
 
-Never use `SUPABASE_SERVICE_ROLE_KEY` in Flutter/web/desktop/mobile clients.
+Never use backend admin/service credentials in Flutter/web/desktop/mobile clients.
 
 ## GitHub Actions / Blacksmith APK
 
-The Android CI workflow runs on Blacksmith and injects Supabase config at build time.
+The Android CI workflow runs on Blacksmith and uses GitHub Secrets for build-time configuration.
 
 Add these repository secrets in GitHub: **Settings -> Secrets and variables -> Actions -> Repository secrets**.
 
-| Secret | Purpose |
-|---|---|
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key |
+Prepare these Firebase names now for the MVP adapter (do not introduce Doppler):
 
-The generated APK will show the missing configuration screen if these secrets are absent.
+- `FIREBASE_PROJECT_ID` (`winflowz-dev`)
+- `FIREBASE_CLI_TOKEN`
+- `FIREBASE_DEV_API_KEY`
+- `FIREBASE_DEV_APP_ID`
+- `FIREBASE_DEV_MESSAGING_SENDER_ID`
+- `FIREBASE_DEV_AUTH_DOMAIN`
+- `FIREBASE_DEV_STORAGE_BUCKET`
+
+Use `docs/technical/firebase-cli-foundation.md` for exact Firebase CLI commands:
+
+- `firebase use winflowz-dev`
+- `firebase deploy --only firestore`
+- `firebase emulators:start --only firestore,auth`
+
+The prior Supabase secrets are legacy and should not be expanded for new target work.
 
 ## Current Migration Scope
 
-- Auth: Supabase Auth replaces Clerk target path.
-- Data: Supabase Postgres + RLS replaces Convex target path.
+- Auth/data: backend-agnostic contracts replace direct Convex/Supabase coupling; Firebase Auth + Firestore adapters are wired with local fallback.
 - UI: Flutter shell + auth gate + settings key storage baseline is in place.
-- Security: SQL constraints + RLS policies are in migration files.
-- Android IME: VoiceFlowz can be enabled as a native Android keyboard. The current foundation provides text entry, private-field gating, explicit clipboard actions, local Android speech recognition, play/pause media key dispatch, and Settings status/preferences. Cloud sync from the keyboard still requires Supabase environment validation and real-device QA before it should be treated as production-ready.
+- Security: Firestore rules and indexes are versioned; emulator and real Firebase validation still require `firebase-tools`.
+- Android IME: VoiceFlowz can be enabled as a native Android keyboard. The current foundation provides text entry, private-field gating, explicit clipboard actions, local Android speech recognition, play/pause media key dispatch, and Settings status/preferences. Cloud sync from the keyboard waits for Firebase CLI/emulator and real-device QA before it should be treated as production-ready.
 
 ## Project Structure (target)
 
@@ -95,8 +103,8 @@ The generated APK will show the missing configuration screen if these secrets ar
 lib/app/                     Flutter app shell
 lib/core/                    bootstrap, router, theme, platform capability rules
 lib/features/                auth, voice, clipboard, settings, shell
-lib/data/supabase/           Supabase client + repositories
-supabase/migrations/         SQL schema, constraints, RLS policies
+lib/data/                    Backend adapters and provider-neutral repositories
+supabase/migrations/         Legacy SQL schema, constraints, RLS policies from prior path
 docs/                        migration, API, platform, overlay, verification contracts
 ```
 

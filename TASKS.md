@@ -9,10 +9,12 @@
 
 | Pri | Task | Status |
 |-----|------|--------|
+| ✅ | Replace Supabase target coupling with backend-agnostic contracts and Firebase first-adapter spec | ✅ done — `specs/firebase-backend-agnostic-migration.md` created |
+| 🔴 | Create Firebase CLI workflow for project config, Auth/Firestore setup, rules, indexes, emulator/dev validation and GitHub Secrets/Blacksmith integration | 🔄 in progress — rules/indexes/docs, FlutterFire conditional init, Auth/Firestore adapters added; Firebase CLI demo emulator starts; real Firebase deploy, Android SDK and Blacksmith proof still required |
 | ✅ | Run the verification gate end-to-end: `dart format --set-exit-if-changed .`, `flutter analyze`, `flutter test`, `flutter build web` | ✅ done |
-| 🔴 | Apply the Supabase schema on a dev/test project and execute `supabase/tests/rls_smoke.sql` against real auth users | ⛔ blocked — Docker/CI or linked Supabase project required |
-| ⚪ | Validate auth, transcriptions, snippets, dictionary, clipboard sync, and settings against a real Supabase environment (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`) | 💤 deferred — revisit after server change and Doppler/secrets-provider decision |
-| 🟠 | Build Android IME VoiceFlowz Keyboard end-to-end: native keyboard, Settings bridge, privacy gate, clipboard, media, schema, docs, Android device QA | 🔄 in progress — foundation implemented; Android x64/device and Supabase linked-project proof still required |
+| ⚪ | Retire or archive Supabase schema/tests after Firebase adapter parity is specified | 💤 deferred |
+| ⚪ | Validate auth, transcriptions, snippets, dictionary, clipboard sync, and settings against a real Firebase environment | 💤 deferred — after Firebase adapter setup |
+| 🟠 | Build Android IME VoiceFlowz Keyboard progressively: base native keyboard, Settings bridge, privacy gate, clipboard, media, docs, Android device QA | 🔄 in progress — foundation implemented; Android x64/device proof and backend-agnostic sync adapter still required |
 | 🟠 | Run the required manual platform pass for Android overlay, iOS microphone/speech, desktop launch, and web permission limits | 📋 todo |
 
 ---
@@ -45,7 +47,7 @@
 
 | Pri | Task | Status |
 |-----|------|--------|
-| ⚪ | Decide/install the future CI secrets workflow after server migration, then rebuild Android on GitHub Actions/Blacksmith with `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` supplied by GitHub Secrets, Doppler, or the chosen provider | 💤 deferred |
+| ✅ | Use GitHub Secrets, not Doppler, for Android build configuration on Blacksmith | ✅ done |
 | 🟢 | Review product/runtime scope after the verification gate before adding billing or release-surface work | 💤 deferred |
 
 ---
@@ -59,8 +61,8 @@
 |-----|------|--------|
 | ✅ | Adopt ContentFlow family palette, spacing, radius, motion names, and component defaults in the Flutter theme source of truth | ✅ done |
 | ✅ | Add a user-facing Appearance control for System / Light / Dark theme mode | ✅ done |
-| 🟠 | Persist the Appearance preference locally and sync it to server-side user settings once authenticated settings are finalized | 📋 todo |
-| 🟠 | Migrate feature screens from literal `EdgeInsets`, `SizedBox`, and ad hoc text weights to shared theme tokens/components | 📋 todo |
+| 🟠 | Persist the Appearance preference locally and sync it through backend-agnostic settings once Firebase adapter is finalized | ✅ done — local SettingsStore and FirebaseSettingsStore are wired behind backend-agnostic provider |
+| 🟠 | Migrate feature screens from literal `EdgeInsets`, `SizedBox`, and ad hoc text weights to shared theme tokens/components | ✅ done — feature/app presentation scan has no inline spacing, color, text style or numeric size literals |
 | 🟡 | Add a Flutter design playground/storybook screen for token inspection across light/dark modes | 📋 todo |
 | 🟡 | Add widget/golden coverage for theme mode selection and key responsive layouts | 📋 todo |
 | 🟡 | Review contrast and state styling on Android overlay/keyboard status cards on real devices | 📋 todo |

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../data/supabase/snippet_repository.dart';
-import '../../../data/supabase/supabase_client_provider.dart';
+import '../../../core/theme/app_theme.dart';
+import '../application/snippet_store_provider.dart';
+import '../domain/snippet_store.dart';
 
 class SnippetsScreen extends ConsumerStatefulWidget {
   const SnippetsScreen({super.key});
@@ -34,17 +35,13 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   }
 
   Future<void> _load() async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      setState(() => _message = 'Supabase non configuré.');
-      return;
-    }
+    final store = ref.read(snippetStoreProvider);
     setState(() {
       _busy = true;
       _message = null;
     });
     try {
-      final rows = await SnippetRepository(client).list();
+      final rows = await store.list();
       if (mounted) {
         setState(() => _items = rows);
       }
@@ -60,17 +57,13 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   }
 
   Future<void> _add() async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      setState(() => _message = 'Supabase non configuré.');
-      return;
-    }
+    final store = ref.read(snippetStoreProvider);
     setState(() {
       _busy = true;
       _message = null;
     });
     try {
-      await SnippetRepository(client).insert(
+      await store.insert(
         trigger: _triggerController.text,
         content: _contentController.text,
         label: _labelController.text,
@@ -91,10 +84,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   }
 
   Future<void> _edit(SnippetRecord item) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      return;
-    }
+    final store = ref.read(snippetStoreProvider);
     final trigger = TextEditingController(text: item.trigger);
     final content = TextEditingController(text: item.content);
     final label = TextEditingController(text: item.label ?? '');
@@ -111,14 +101,14 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                   controller: trigger,
                   decoration: const InputDecoration(labelText: 'Trigger'),
                 ),
-                const SizedBox(height: 8),
+                AppGaps.x2,
                 TextField(
                   controller: content,
                   minLines: 2,
                   maxLines: 5,
                   decoration: const InputDecoration(labelText: 'Content'),
                 ),
-                const SizedBox(height: 8),
+                AppGaps.x2,
                 TextField(
                   controller: label,
                   decoration: const InputDecoration(labelText: 'Label'),
@@ -149,7 +139,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
 
     setState(() => _busy = true);
     try {
-      await SnippetRepository(client).update(
+      await store.update(
         id: item.id,
         trigger: trigger.text,
         content: content.text,
@@ -171,13 +161,10 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   }
 
   Future<void> _remove(String id) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      return;
-    }
+    final store = ref.read(snippetStoreProvider);
     setState(() => _busy = true);
     try {
-      await SnippetRepository(client).softDelete(id);
+      await store.softDelete(id);
       await _load();
     } catch (error) {
       if (mounted) {
@@ -193,34 +180,25 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: AppInsets.screen,
       children: [
         TextField(
           controller: _triggerController,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Trigger',
-          ),
+          decoration: const InputDecoration(labelText: 'Trigger'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         TextField(
           controller: _contentController,
           minLines: 2,
           maxLines: 4,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Content',
-          ),
+          decoration: const InputDecoration(labelText: 'Content'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         TextField(
           controller: _labelController,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Label (optional)',
-          ),
+          decoration: const InputDecoration(labelText: 'Label (optional)'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         Row(
           children: [
             Expanded(
@@ -230,7 +208,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                 label: const Text('Add snippet'),
               ),
             ),
-            const SizedBox(width: 8),
+            AppGaps.horizontalX2,
             OutlinedButton(
               onPressed: _busy ? null : _load,
               child: const Text('Refresh'),
@@ -239,20 +217,14 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
         ),
         if (_busy)
           const Padding(
-            padding: EdgeInsets.only(top: 12),
+            padding: AppInsets.progress,
             child: LinearProgressIndicator(),
           ),
         if (_message != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(_message!),
-          ),
-        const SizedBox(height: 16),
-        const Text(
-          'Snippets (Supabase CRUD)',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
+          Padding(padding: AppInsets.message, child: Text(_message!)),
+        AppGaps.x4,
+        Text('Snippets', style: Theme.of(context).textTheme.titleSmall),
+        AppGaps.x2,
         if (_items.isEmpty)
           const Card(child: ListTile(title: Text('No snippet yet.'))),
         for (final item in _items)
@@ -263,7 +235,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                 '${item.label == null || item.label!.isEmpty ? '' : '[${item.label}] '}${item.content}',
               ),
               trailing: Wrap(
-                spacing: 4,
+                spacing: AppIconMetrics.listActionSpacing,
                 children: [
                   IconButton(
                     tooltip: 'Edit',

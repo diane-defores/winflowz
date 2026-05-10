@@ -8,7 +8,7 @@ import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../data/supabase/supabase_client_provider.dart';
+import '../../auth/application/auth_session_provider.dart';
 import '../../keyboard/domain/keyboard_models.dart';
 import '../data/secure_secret_store.dart';
 
@@ -332,11 +332,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _signOut() async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      return;
-    }
-    await client.auth.signOut();
+    await ref.read(authSessionStoreProvider).signOut();
   }
 
   Future<void> _copyBackendDiagnostic() async {
@@ -348,10 +344,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   String _backendDiagnosticText() {
-    final status = SupabaseBootstrap.isConfigured ? 'configured' : 'local_mode';
+    final status = SupabaseBootstrap.isConfigured
+        ? 'legacy_remote'
+        : 'local_mode';
     final detail = SupabaseBootstrap.initError ?? 'Cloud sync is disabled.';
     return 'VoiceFlowz backend diagnostic\n'
-        'provider: supabase\n'
+        'provider: backend-agnostic\n'
+        'legacy_supabase: ${SupabaseBootstrap.isConfigured}\n'
         'status: $status\n'
         'detail: $detail';
   }
@@ -367,28 +366,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final keyboardStatus = _keyboardStatus;
     final themeMode = ref.watch(appThemeModeProvider);
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.x5),
+      padding: AppInsets.screen,
       children: [
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.x4),
+            padding: AppInsets.card,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Appearance',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: AppSpacing.x2),
+                AppGaps.x2,
                 Text(
                   'Uses the shared Flowz family palette from ContentFlow tokens.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.x3),
+                AppGaps.x3,
                 SegmentedButton<AppThemeMode>(
                   segments: const [
                     ButtonSegment(
@@ -418,26 +415,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.x4),
+        AppGaps.x4,
         if (!SupabaseBootstrap.isConfigured) ...[
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.x4),
+              padding: AppInsets.card,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const ListTile(
-                    contentPadding: EdgeInsets.zero,
+                    contentPadding: AppInsets.none,
                     leading: Icon(Icons.storage_outlined),
                     title: Text('Backend provider'),
                     subtitle: Text(
-                      'Supabase is not configured yet. VoiceFlowz stays in local mode while the backend provider decision remains open.',
+                      'Remote sync is not configured yet. VoiceFlowz stays in local mode while Firebase is wired behind backend-agnostic stores.',
                     ),
                   ),
                   SelectableText(
                     SupabaseBootstrap.initError ?? 'Cloud sync is disabled.',
                   ),
-                  const SizedBox(height: AppSpacing.x3),
+                  AppGaps.x3,
                   Align(
                     alignment: Alignment.centerLeft,
                     child: OutlinedButton.icon(
@@ -450,7 +447,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.x4),
+          AppGaps.x4,
         ],
         storageStatusAsync.when(
           data: (status) {
@@ -474,25 +471,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           error: (error, stack) =>
               ListTile(title: Text('Storage status error: $error')),
         ),
-        const SizedBox(height: AppSpacing.x4),
+        AppGaps.x4,
         TextField(
           controller: _openAiController,
           obscureText: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'OpenAI API key',
-          ),
+          decoration: const InputDecoration(labelText: 'OpenAI API key'),
         ),
-        const SizedBox(height: AppSpacing.x3),
+        AppGaps.x3,
         TextField(
           controller: _anthropicController,
           obscureText: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Anthropic API key',
-          ),
+          decoration: const InputDecoration(labelText: 'Anthropic API key'),
         ),
-        const SizedBox(height: AppSpacing.x4),
+        AppGaps.x4,
         if (_message != null) Text(_message!),
         Row(
           children: [
@@ -502,7 +493,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: const Text('Save local keys'),
               ),
             ),
-            const SizedBox(width: AppSpacing.x3),
+            AppGaps.horizontalX3,
             Expanded(
               child: OutlinedButton(
                 onPressed: _saving ? null : _signOut,
@@ -511,7 +502,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.x4),
+        AppGaps.x4,
         const Divider(),
         ListTile(
           leading: const Icon(Icons.mic_none),
@@ -556,8 +547,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   trailing: _keyboardBusy
                       ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          dimension: AppIconMetrics.sm,
+                          child: CircularProgressIndicator(
+                            strokeWidth: AppIconMetrics.progressStroke,
+                          ),
                         )
                       : IconButton(
                           tooltip: 'Refresh keyboard status',
@@ -574,7 +567,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: AppInsets.keyboardControls,
                   child: Row(
                     children: [
                       Expanded(
@@ -586,7 +579,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           label: const Text('Input settings'),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppGaps.horizontalX2,
                       Expanded(
                         child: FilledButton.icon(
                           onPressed: _keyboardBusy ? null : _showKeyboardPicker,
@@ -632,12 +625,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  padding: AppInsets.keyboardPrivacy,
                   child: DropdownButtonFormField<KeyboardPrivacyMode>(
                     initialValue:
                         keyboardStatus?.privacyMode ?? KeyboardPrivacyMode.auto,
                     decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
                       labelText: 'Keyboard privacy mode',
                     ),
                     items: const [
@@ -699,11 +691,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    bottom: 8,
-                  ),
+                  padding: AppInsets.keyboardPrivacy,
                   child: Row(
                     children: [
                       Expanded(
@@ -713,7 +701,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           label: const Text('Overlay permission'),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppGaps.horizontalX2,
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: _openAccessibilitySettings,
@@ -725,7 +713,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  padding: AppInsets.overlayControls,
                   child: Row(
                     children: [
                       Expanded(
@@ -734,14 +722,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           child: const Text('Start'),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppGaps.horizontalX2,
                       Expanded(
                         child: OutlinedButton(
                           onPressed: _overlayBusy ? null : _stopOverlay,
                           child: const Text('Stop'),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      AppGaps.horizontalX2,
                       Expanded(
                         child: TextButton(
                           onPressed: _overlayBusy ? null : _cancelOverlay,

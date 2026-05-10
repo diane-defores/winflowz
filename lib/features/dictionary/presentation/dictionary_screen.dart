@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../data/supabase/dictionary_repository.dart';
-import '../../../data/supabase/supabase_client_provider.dart';
+import '../../../core/theme/app_theme.dart';
+import '../application/dictionary_store_provider.dart';
+import '../domain/dictionary_store.dart';
 
 class DictionaryScreen extends ConsumerStatefulWidget {
   const DictionaryScreen({super.key});
@@ -33,17 +34,13 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   }
 
   Future<void> _load() async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      setState(() => _message = 'Supabase non configuré.');
-      return;
-    }
+    final store = ref.read(dictionaryStoreProvider);
     setState(() {
       _busy = true;
       _message = null;
     });
     try {
-      final rows = await DictionaryRepository(client).list();
+      final rows = await store.list();
       if (mounted) {
         setState(() => _items = rows);
       }
@@ -59,17 +56,13 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   }
 
   Future<void> _add() async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      setState(() => _message = 'Supabase non configuré.');
-      return;
-    }
+    final store = ref.read(dictionaryStoreProvider);
     setState(() {
       _busy = true;
       _message = null;
     });
     try {
-      await DictionaryRepository(client).insert(
+      await store.insert(
         term: _termController.text,
         replacement: _replacementController.text,
         caseSensitive: _caseSensitive,
@@ -90,10 +83,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   }
 
   Future<void> _edit(DictionaryTermRecord item) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      return;
-    }
+    final store = ref.read(dictionaryStoreProvider);
     final term = TextEditingController(text: item.term);
     final replacement = TextEditingController(text: item.replacement);
     bool caseSensitive = item.caseSensitive;
@@ -112,17 +102,17 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                       controller: term,
                       decoration: const InputDecoration(labelText: 'Term'),
                     ),
-                    const SizedBox(height: 8),
+                    AppGaps.x2,
                     TextField(
                       controller: replacement,
                       decoration: const InputDecoration(
                         labelText: 'Replacement',
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    AppGaps.x2,
                     SwitchListTile(
                       dense: true,
-                      contentPadding: EdgeInsets.zero,
+                      contentPadding: AppInsets.none,
                       value: caseSensitive,
                       onChanged: (value) =>
                           setLocalState(() => caseSensitive = value),
@@ -155,7 +145,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
 
     setState(() => _busy = true);
     try {
-      await DictionaryRepository(client).update(
+      await store.update(
         id: item.id,
         term: term.text,
         replacement: replacement.text,
@@ -178,13 +168,10 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   }
 
   Future<void> _remove(String id) async {
-    final client = ref.read(supabaseClientProvider);
-    if (client == null) {
-      return;
-    }
+    final store = ref.read(dictionaryStoreProvider);
     setState(() => _busy = true);
     try {
-      await DictionaryRepository(client).softDelete(id);
+      await store.softDelete(id);
       await _load();
     } catch (error) {
       if (mounted) {
@@ -202,25 +189,19 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: AppInsets.screen,
       children: [
         TextField(
           controller: _termController,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Term',
-          ),
+          decoration: const InputDecoration(labelText: 'Term'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         TextField(
           controller: _replacementController,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Replacement',
-          ),
+          decoration: const InputDecoration(labelText: 'Replacement'),
         ),
         SwitchListTile(
-          contentPadding: EdgeInsets.zero,
+          contentPadding: AppInsets.none,
           value: _caseSensitive,
           onChanged: _busy
               ? null
@@ -236,7 +217,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 label: const Text('Add term'),
               ),
             ),
-            const SizedBox(width: 8),
+            AppGaps.horizontalX2,
             OutlinedButton(
               onPressed: _busy ? null : _load,
               child: const Text('Refresh'),
@@ -245,20 +226,14 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
         ),
         if (_busy)
           const Padding(
-            padding: EdgeInsets.only(top: 12),
+            padding: AppInsets.progress,
             child: LinearProgressIndicator(),
           ),
         if (_message != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(_message!),
-          ),
-        const SizedBox(height: 16),
-        const Text(
-          'Dictionary terms (Supabase CRUD)',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
+          Padding(padding: AppInsets.message, child: Text(_message!)),
+        AppGaps.x4,
+        Text('Dictionary terms', style: Theme.of(context).textTheme.titleSmall),
+        AppGaps.x2,
         if (_items.isEmpty)
           const Card(child: ListTile(title: Text('No dictionary term yet.'))),
         for (final item in _items)
@@ -270,7 +245,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
               ),
               isThreeLine: true,
               trailing: Wrap(
-                spacing: 4,
+                spacing: AppIconMetrics.listActionSpacing,
                 children: [
                   IconButton(
                     tooltip: 'Edit',

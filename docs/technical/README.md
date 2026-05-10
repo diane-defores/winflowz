@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "VoiceFlowz"
 created: "2026-05-04"
-updated: "2026-05-04"
+updated: "2026-05-09"
 status: draft
 source_skill: sf-docs
 scope: "technical-governance-index"
@@ -16,7 +16,8 @@ docs_impact: yes
 linked_systems:
   - "Flutter"
   - "Android native"
-  - "Supabase"
+  - "Backend-agnostic stores"
+  - "Firebase first adapter"
 depends_on:
   - "CLAUDE.md@1.2.0"
   - "GUIDELINES.md@0.1.0"
@@ -38,8 +39,10 @@ before editing. It is not public product documentation.
   and repository boundaries.
 - `docs/technical/android-native.md`: Android native overlay and keyboard/IME
   services.
-- `docs/technical/supabase-data.md`: Supabase schema, RLS, repositories, and
-  smoke tests.
+- `docs/technical/supabase-data.md`: legacy Supabase schema, RLS, repositories,
+  and smoke tests from the previous target path.
+- `docs/technical/firebase-cli-foundation.md`: Firebase CLI foundation, deployment
+  and emulator commands, and GitHub/Blacksmith secret list.
 
 ## Maintenance Rule
 

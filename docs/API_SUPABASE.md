@@ -4,8 +4,8 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-27"
-updated: "2026-05-04"
-status: "reviewed"
+updated: "2026-05-09"
+status: "legacy"
 source_skill: "sf-spec"
 scope: "supabase_api"
 owner: "Diane"
@@ -21,14 +21,20 @@ evidence:
   - "supabase/migrations/20260427084000_init_voiceflowz.sql"
   - "supabase/migrations/20260504210000_android_keyboard_ime.sql"
   - "supabase/tests/rls_smoke.sql"
-next_step: "/sf-ready Migration totale VoiceFlowz vers Flutter + Supabase"
+next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 ---
 
 # API Supabase — VoiceFlowz
 
+> Legacy reference: Supabase is no longer the active backend target after the
+> 2026-05-09 Firebase/backend-agnostic decision. Keep this document only for
+> migration comparison until Firebase parity lets the Supabase adapter be
+> archived or removed. The active backend chantier is
+> `specs/firebase-backend-agnostic-migration.md`.
+
 ## Purpose
 
-This document is the target backend contract for the Flutter + Supabase migration. `docs/API.md` may keep legacy Convex mapping context, but implementation must follow this Supabase contract.
+This document was the target backend contract for the Flutter + Supabase migration. It is now superseded as an active target.
 
 ## Auth Contract
 

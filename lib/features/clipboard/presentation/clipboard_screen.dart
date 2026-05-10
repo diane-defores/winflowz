@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../application/clipboard_store_provider.dart';
 import '../domain/clipboard_capture_event.dart';
 import '../domain/clipboard_normalizer.dart';
@@ -169,18 +170,15 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: AppInsets.screen,
       children: [
         TextField(
           controller: _contentController,
           minLines: 2,
           maxLines: 4,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Clipboard content',
-          ),
+          decoration: const InputDecoration(labelText: 'Clipboard content'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         DropdownButtonFormField<ClipboardCanonicalSource>(
           initialValue: _source,
           items: const [
@@ -218,12 +216,9 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
               : (value) => setState(
                   () => _source = value ?? ClipboardCanonicalSource.manual,
                 ),
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Source',
-          ),
+          decoration: const InputDecoration(labelText: 'Source'),
         ),
-        const SizedBox(height: 8),
+        AppGaps.x2,
         Row(
           children: [
             Expanded(
@@ -233,7 +228,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
                 label: const Text('Add clipboard item'),
               ),
             ),
-            const SizedBox(width: 8),
+            AppGaps.horizontalX2,
             OutlinedButton(
               onPressed: _busy ? null : _load,
               child: const Text('Refresh'),
@@ -242,20 +237,14 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
         ),
         if (_busy)
           const Padding(
-            padding: EdgeInsets.only(top: 12),
+            padding: AppInsets.progress,
             child: LinearProgressIndicator(),
           ),
         if (_message != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(_message!),
-          ),
-        const SizedBox(height: 16),
-        const Text(
-          'Clipboard items',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
+          Padding(padding: AppInsets.message, child: Text(_message!)),
+        AppGaps.x4,
+        Text('Clipboard items', style: Theme.of(context).textTheme.titleSmall),
+        AppGaps.x2,
         if (_items.isEmpty)
           const Card(child: ListTile(title: Text('No clipboard item yet.'))),
         for (final item in _items)
@@ -264,7 +253,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
               title: Text(item.content),
               subtitle: Text('source: ${item.sourceLabel}'),
               trailing: Wrap(
-                spacing: 4,
+                spacing: AppIconMetrics.listActionSpacing,
                 children: [
                   IconButton(
                     tooltip: item.pinned ? 'Unpin' : 'Pin',
