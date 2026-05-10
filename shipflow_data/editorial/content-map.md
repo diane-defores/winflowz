@@ -15,9 +15,9 @@ docs_impact: yes
 security_impact: yes
 content_surfaces:
   - "README.md"
-  - "PRODUCT.md"
-  - "BUSINESS.md"
-  - "BRANDING.md"
+  - "shipflow_data/business/product.md"
+  - "shipflow_data/business/business.md"
+  - "shipflow_data/business/branding.md"
   - "docs/PLATFORM_BEHAVIOR.md"
   - "docs/OVERLAY_ANDROID.md"
   - "docs/VERIFICATION.md"
@@ -26,10 +26,10 @@ content_surfaces:
 evidence:
   - "Bootstrapped during Android IME chantier governance gate."
 depends_on:
-  - "BUSINESS.md@0.1.0"
-  - "PRODUCT.md@0.1.0"
-  - "BRANDING.md@0.1.0"
-  - "GUIDELINES.md@0.1.0"
+  - "shipflow_data/business/business.md@0.1.0"
+  - "shipflow_data/business/product.md@0.1.0"
+  - "shipflow_data/business/branding.md@0.1.0"
+  - "shipflow_data/technical/guidelines.md@0.1.0"
 supersedes: []
 next_review: "2026-06-04"
 next_step: "/sf-docs editorial"
@@ -45,9 +45,9 @@ content tree. Public/user-facing claims live mainly in README and project docs.
 | Surface | Path | Audience | Update trigger |
 | --- | --- | --- | --- |
 | README | `README.md` | Developers/operators | Setup, supported platform, verification, or feature capability changes |
-| Product context | `PRODUCT.md` | Product/build agents | Target workflow, non-goal, security, or platform promise changes |
-| Business context | `BUSINESS.md` | Product/GTM agents | Market, model, offer, or positioning changes |
-| Brand context | `BRANDING.md` | Copy/design agents | Voice, visual, or public-claim boundary changes |
+| Product context | `shipflow_data/business/product.md` | Product/build agents | Target workflow, non-goal, security, or platform promise changes |
+| Business context | `shipflow_data/business/business.md` | Product/GTM agents | Market, model, offer, or positioning changes |
+| Brand context | `shipflow_data/business/branding.md` | Copy/design agents | Voice, visual, or public-claim boundary changes |
 | Platform docs | `docs/PLATFORM_BEHAVIOR.md`, `docs/OVERLAY_ANDROID.md`, `docs/VERIFICATION.md` | Developers/operators | Platform capability, permission, setup, or QA matrix changes |
 | API docs | `docs/API_SUPABASE.md`, `docs/API.md` | Developers/operators | Schema, RLS, source, realtime, or repository changes |
 

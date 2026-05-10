@@ -19,14 +19,14 @@ linked_systems:
   - "Flutter"
   - "Supabase"
 depends_on:
-  - "BUSINESS.md@0.1.0"
-  - "PRODUCT.md@0.1.0"
+  - "shipflow_data/business/business.md@0.1.0"
+  - "shipflow_data/business/product.md@0.1.0"
 supersedes: []
 evidence:
   - "pubspec.yaml"
   - "lib/core/bootstrap/supabase_bootstrap.dart"
   - "supabase/migrations/20260427084000_init_voiceflowz.sql"
-  - "PRODUCT.md"
+  - "shipflow_data/business/product.md"
 next_step: "$sf-docs update"
 ---
 
@@ -56,4 +56,4 @@ next_step: "$sf-docs update"
 ## Questions ouvertes
 
 - Quelles 3 sources externes "marché" sont validées officiellement pour les docs VoiceFlowz ?
-- Faut-il maintenir une section "Communautés" ici, ou la déplacer dans `GTM.md` ?
+- Faut-il maintenir une section "Communautés" ici, ou la déplacer dans `shipflow_data/business/gtm.md` ?

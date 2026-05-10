@@ -30,19 +30,19 @@ depends_on:
   - artifact: "docs/MIGRATION_FLUTTER.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "PRODUCT.md"
+  - artifact: "shipflow_data/business/product.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "ARCHITECTURE.md"
+  - artifact: "shipflow_data/technical/architecture.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "BUSINESS.md"
+  - artifact: "shipflow_data/business/business.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "BRANDING.md"
+  - artifact: "shipflow_data/business/branding.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "GUIDELINES.md"
+  - artifact: "shipflow_data/technical/guidelines.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
   - artifact: "docs/API.md"
@@ -244,7 +244,7 @@ Sources officielles consultees:
 - Product: snippets et dictionary passent de tables partiellement exposees a UI complete.
 - Platform: Android conserve des capacites supplementaires via overlay; iOS, macOS, Windows, Linux et web doivent avoir une experience complete sans overlay.
 - Ops: Supabase migrations doivent devenir la source de verite schema.
-- Docs: `ARCHITECTURE.md`, `GUIDELINES.md`, `docs/API.md`, `docs/COMPONENTS.md`, `BUSINESS.md`, `PRODUCT.md` et `BRANDING.md` sont alignes comme contrats reviewed; `README.md` et les guides generes doivent rester coherents pendant l'implementation.
+- Docs: `shipflow_data/technical/architecture.md`, `shipflow_data/technical/guidelines.md`, `docs/API.md`, `docs/COMPONENTS.md`, `shipflow_data/business/business.md`, `shipflow_data/business/product.md` et `shipflow_data/business/branding.md` sont alignes comme contrats reviewed; `README.md` et les guides generes doivent rester coherents pendant l'implementation.
 
 # Documentation Coherence
 
@@ -257,7 +257,7 @@ Docs a creer ou remplacer:
 - `docs/OVERLAY_ANDROID.md`: cree et reviewed; a completer si le bridge Kotlin change.
 - `docs/VERIFICATION.md`: cree et reviewed; a cocher avec les resultats effectifs.
 - `docs/DECISIONS.md`: reviewed avec decision Flutter + Supabase.
-- `BUSINESS.md`, `PRODUCT.md`, `BRANDING.md`, `ARCHITECTURE.md`, `GUIDELINES.md`, `docs/API.md`, `docs/COMPONENTS.md`: reviewed et alignes sur cible Flutter + Supabase.
+- `shipflow_data/business/business.md`, `shipflow_data/business/product.md`, `shipflow_data/business/branding.md`, `shipflow_data/technical/architecture.md`, `shipflow_data/technical/guidelines.md`, `docs/API.md`, `docs/COMPONENTS.md`: reviewed et alignes sur cible Flutter + Supabase.
 - `SECURITY_REVIEW_FLUTTER_SUPABASE.md`: revue adversariale integree dans cette spec.
 
 # Edge Cases
@@ -509,10 +509,10 @@ Fichiers a lire d'abord:
 
 - `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md`
 - `docs/MIGRATION_FLUTTER.md`
-- `PRODUCT.md`
-- `BUSINESS.md`
-- `ARCHITECTURE.md`
-- `GUIDELINES.md`
+- `shipflow_data/business/product.md`
+- `shipflow_data/business/business.md`
+- `shipflow_data/technical/architecture.md`
+- `shipflow_data/technical/guidelines.md`
 - `docs/API.md`
 - `docs/API_SUPABASE.md`
 - `docs/PLATFORM_BEHAVIOR.md`

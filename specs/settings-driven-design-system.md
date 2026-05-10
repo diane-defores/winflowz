@@ -26,13 +26,13 @@ linked_systems:
   - "Firebase first adapter"
   - "ContentFlow Site design playground"
 depends_on:
-  - artifact: "BUSINESS.md"
+  - artifact: "shipflow_data/business/business.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
-  - artifact: "BRANDING.md"
+  - artifact: "shipflow_data/business/branding.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
-  - artifact: "GUIDELINES.md"
+  - artifact: "shipflow_data/technical/guidelines.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
   - artifact: "docs/technical/flutter-app.md"
@@ -156,8 +156,8 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - Docs existantes:
   - `docs/technical/flutter-app.md`
   - `docs/DECISIONS.md`
-  - `BRANDING.md`
-  - `GUIDELINES.md`
+  - `shipflow_data/business/branding.md`
+  - `shipflow_data/technical/guidelines.md`
 - External docs verdict: recheck official Flutter/Riverpod/Firebase docs when choosing persistence/sync APIs, rules or indexes.
 
 # Invariants
@@ -188,7 +188,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - `docs/technical/flutter-app.md`: architecture Settings, bootstrap theme et règles UI.
 - docs backend/Firebase à créer: contrat Settings, rules, indexes et limites.
 - `docs/VERIFICATION.md`: ajouter scénarios Appearance persistence/sync.
-- `BRANDING.md`: mentionner que la famille Flowz partage une base visuelle si ce choix devient contractuel.
+- `shipflow_data/business/branding.md`: mentionner que la famille Flowz partage une base visuelle si ce choix devient contractuel.
 - `CHANGELOG.md`: noter l'amélioration design system/settings au ship.
 
 # Edge Cases

@@ -20,10 +20,10 @@ linked_systems:
   - "Android Overlay Bridge"
 evidence: []
 depends_on:
-  - "BUSINESS.md@0.1.0"
-  - "PRODUCT.md@0.1.0"
-  - "ARCHITECTURE.md@0.1.0"
-  - "GUIDELINES.md@0.1.0"
+  - "shipflow_data/business/business.md@0.1.0"
+  - "shipflow_data/business/product.md@0.1.0"
+  - "shipflow_data/technical/architecture.md@0.1.0"
+  - "shipflow_data/technical/guidelines.md@0.1.0"
 supersedes:
   - "CLAUDE.md@1.0.0"
 next_review: "2026-05-26"

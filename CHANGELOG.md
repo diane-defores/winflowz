@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 - Changed first-run onboarding into a dismissible overlay so tab content remains visible while setup guidance is shown.
 - Changed Android/system Back handling inside the shell so Back returns to the previous app tab before exiting.
+- Migrated canonical project documentation from root files (`ARCHITECTURE.md`, `BRANDING.md`, `BUSINESS.md`, `GTM.md`, `GUIDELINES.md`, `PRODUCT.md`, `CONTENT_MAP.md`) to `shipflow_data` and updated documentation/spec path references accordingly.
 - Moved the missing Supabase configuration diagnostic out of the global shell banner and into Settings so local-mode screens are not crowded while the backend provider remains undecided.
 - Repaired the local Flox Flutter environment and pinned it to an executable Flutter SDK variant.
 - Protected direct app routes behind Supabase auth state instead of allowing private screens to load before sign-in.

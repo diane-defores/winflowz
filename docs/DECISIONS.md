@@ -14,8 +14,8 @@ risk_level: "high"
 security_impact: "yes"
 docs_impact: "high"
 depends_on:
-  - "../BUSINESS.md@0.1.0"
-  - "../PRODUCT.md@0.1.0"
+  - "../shipflow_data/business/business.md@0.1.0"
+  - "../shipflow_data/business/product.md@0.1.0"
 evidence:
   - "SPEC_FLUTTER_SUPABASE_MIGRATION.md"
   - "../docs/MIGRATION_FLUTTER.md"

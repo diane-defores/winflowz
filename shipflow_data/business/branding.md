@@ -15,12 +15,12 @@ docs_impact: "yes"
 security_impact: "none"
 evidence:
   - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
-  - "BUSINESS.md"
-  - "PRODUCT.md"
+  - "shipflow_data/business/business.md"
+  - "shipflow_data/business/product.md"
 brand_voice: "Direct, productive, and honest about prerequisites"
 trust_posture: "Do not overpromise auth, billing, privacy, or AI quality beyond verified code paths"
 depends_on:
-  - "BUSINESS.md@0.1.0"
+  - "shipflow_data/business/business.md@0.1.0"
 supersedes: []
 next_review: "2026-05-26"
 next_step: "$sf-docs update"

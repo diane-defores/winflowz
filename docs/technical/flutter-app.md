@@ -23,7 +23,7 @@ linked_systems:
   - "Android MethodChannel"
 depends_on:
   - "CLAUDE.md@1.2.0"
-  - "GUIDELINES.md@0.1.0"
+  - "shipflow_data/technical/guidelines.md@0.1.0"
 supersedes: []
 evidence:
   - "Mapped before Android IME Settings bridge work."

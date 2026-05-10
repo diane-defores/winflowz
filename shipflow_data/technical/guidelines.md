@@ -24,7 +24,7 @@ linked_systems:
   - "Firebase first adapter"
   - "Android native overlay"
 depends_on:
-  - "ARCHITECTURE.md@0.1.0"
+  - "shipflow_data/technical/architecture.md@0.1.0"
 supersedes: []
 next_review: "2026-05-27"
 next_step: "$sf-docs update"

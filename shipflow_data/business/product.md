@@ -17,8 +17,8 @@ evidence:
   - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
   - "docs/MIGRATION_FLUTTER.md"
   - "docs/DECISIONS.md"
-  - "ARCHITECTURE.md"
-  - "GUIDELINES.md"
+  - "shipflow_data/technical/architecture.md"
+  - "shipflow_data/technical/guidelines.md"
   - "docs/API.md"
 target_user: "Professionals and power users capturing text from speech across mobile, desktop, and web"
 user_problem: "Typing is slow or disruptive in contexts where quick dictation, cleanup, and structured reuse matter"
@@ -32,8 +32,8 @@ non_goals:
   - "Not an iOS/desktop/web system overlay product"
   - "Not a JS/TS application codebase in final target repository"
 depends_on:
-  - "BUSINESS.md@0.1.0"
-  - "BRANDING.md@0.1.0"
+  - "shipflow_data/business/business.md@0.1.0"
+  - "shipflow_data/business/branding.md@0.1.0"
 supersedes: []
 next_review: "2026-05-26"
 next_step: "$sf-docs update"

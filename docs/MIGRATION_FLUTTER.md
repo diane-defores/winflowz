@@ -103,7 +103,7 @@ Legacy stack status:
 ### Gate A — Documentation coherence
 
 - `docs/DECISIONS.md` explicitly locks Flutter + Supabase target.
-- `ARCHITECTURE.md`, `GUIDELINES.md`, `docs/API.md`, `docs/COMPONENTS.md` split legacy vs target.
+- `shipflow_data/technical/architecture.md`, `shipflow_data/technical/guidelines.md`, `docs/API.md`, `docs/COMPONENTS.md` split legacy vs target.
 - No owned doc presents Convex/Clerk/Expo as target implementation.
 
 ### Gate B — Backend security baseline

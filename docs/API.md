@@ -18,7 +18,7 @@ linked_systems:
   - "Firebase first adapter"
   - "Supabase legacy reference"
 depends_on:
-  - "../ARCHITECTURE.md@0.1.0"
+  - "../shipflow_data/technical/architecture.md@0.1.0"
   - "../docs/DECISIONS.md@0.1.0"
 supersedes: []
 evidence:

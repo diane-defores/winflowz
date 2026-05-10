@@ -14,8 +14,8 @@ risk_level: "medium"
 docs_impact: "yes"
 security_impact: "none"
 evidence:
-  - "BUSINESS.md"
-  - "PRODUCT.md"
+  - "shipflow_data/business/business.md"
+  - "shipflow_data/business/product.md"
   - "lib/features/settings/presentation/settings_screen.dart"
 target_segment:
   - "Mobile professionals dictating notes and messages"
@@ -30,9 +30,9 @@ proof_points:
   - "Supabase Auth/Postgres/RLS baseline exists"
   - "Android overlay bridge baseline exists"
 depends_on:
-  - "BUSINESS.md@0.1.0"
-  - "BRANDING.md@0.1.0"
-  - "PRODUCT.md@0.1.0"
+  - "shipflow_data/business/business.md@0.1.0"
+  - "shipflow_data/business/branding.md@0.1.0"
+  - "shipflow_data/business/product.md@0.1.0"
 supersedes: []
 next_review: "2026-05-26"
 next_step: "$sf-docs update"

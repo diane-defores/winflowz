@@ -33,10 +33,10 @@ depends_on:
   - artifact: "docs/DECISIONS.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "ARCHITECTURE.md"
+  - artifact: "shipflow_data/technical/architecture.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "GUIDELINES.md"
+  - artifact: "shipflow_data/technical/guidelines.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
   - artifact: "specs/clipboard-backend-agnostic-api.md"
@@ -211,7 +211,7 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 - Android smoke: auth, settings, clipboard, transcription save, snippets, dictionary.
 - CI: Blacksmith APK avec secrets Firebase quand disponibles.
 - Search checks:
-  - `rg "Supabase.*target|Flutter \\+ Supabase" README.md PRODUCT.md BUSINESS.md ARCHITECTURE.md GUIDELINES.md docs specs`
+  - `rg "Supabase.*target|Flutter \\+ Supabase" README.md shipflow_data/business/product.md shipflow_data/business/business.md shipflow_data/technical/architecture.md shipflow_data/technical/guidelines.md docs specs`
   - `rg "Supabase" lib test pubspec.yaml` doit rester uniquement dans legacy/adapters jusqu'à suppression.
 
 # Stop Conditions

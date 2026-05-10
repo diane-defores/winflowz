@@ -20,7 +20,7 @@ linked_systems:
   - "Supabase Realtime"
 depends_on:
   - "docs/API_SUPABASE.md@0.1.0"
-  - "GUIDELINES.md@0.1.0"
+  - "shipflow_data/technical/guidelines.md@0.1.0"
 supersedes: []
 evidence:
   - "Mapped before Android keyboard schema extension."

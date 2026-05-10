@@ -31,16 +31,16 @@ linked_systems:
   - "speech_to_text"
   - "record"
 depends_on:
-  - artifact: "BUSINESS.md"
+  - artifact: "shipflow_data/business/business.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
-  - artifact: "PRODUCT.md"
+  - artifact: "shipflow_data/business/product.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
-  - artifact: "BRANDING.md"
+  - artifact: "shipflow_data/business/branding.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
-  - artifact: "GUIDELINES.md"
+  - artifact: "shipflow_data/technical/guidelines.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
   - artifact: "specs/firebase-backend-agnostic-migration.md"
@@ -222,7 +222,7 @@ Update or create:
 - `docs/VERIFICATION.md`: Android IME manual QA matrix.
 - `docs/API_SUPABASE.md`: provider fields, constraints, realtime behavior and RLS tests while Supabase remains enabled.
 - `docs/COMPONENTS.md`: keyboard settings, clipboard panel, voice controls.
-- `PRODUCT.md` and `BUSINESS.md`: if the IME becomes primary positioning rather than overlay.
+- `shipflow_data/business/product.md` and `shipflow_data/business/business.md`: if the IME becomes primary positioning rather than overlay.
 - Support/onboarding copy: Android enable keyboard, switch keyboard, privacy warning for custom keyboards, clipboard sync opt-in.
 
 # Edge Cases
@@ -458,7 +458,7 @@ Update or create:
   - Notes : Android IME necessite appareil/emulateur avec input method settings.
 
 - [ ] Tache 27 : Alignement docs et onboarding
-  - Fichier : `README.md`, `PRODUCT.md`, `BUSINESS.md`, `docs/OVERLAY_ANDROID.md`, `docs/COMPONENTS.md`
+  - Fichier : `README.md`, `shipflow_data/business/product.md`, `shipflow_data/business/business.md`, `docs/OVERLAY_ANDROID.md`, `docs/COMPONENTS.md`
   - Action : Documenter clavier comme entree Android prioritaire, overlay complementaire, permissions, confidentialite et limites.
   - User story link : installer/configurer sans mauvaise promesse.
   - Depends on : Tache 26.

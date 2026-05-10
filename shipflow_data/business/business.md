@@ -17,7 +17,7 @@ evidence:
   - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
   - "docs/MIGRATION_FLUTTER.md"
   - "docs/DECISIONS.md"
-  - "ARCHITECTURE.md"
+  - "shipflow_data/technical/architecture.md"
   - "docs/API.md"
   - "README.md"
 business_model: "Freemium voice productivity app with bring-your-own-key advanced features"

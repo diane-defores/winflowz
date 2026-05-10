@@ -15,12 +15,12 @@ security_impact: "none"
 docs_impact: "yes"
 linked_systems: []
 depends_on:
-  - "BUSINESS.md@0.1.0"
-  - "PRODUCT.md@0.1.0"
+  - "shipflow_data/business/business.md@0.1.0"
+  - "shipflow_data/business/product.md@0.1.0"
 supersedes: []
 evidence:
-  - "BUSINESS.md"
-  - "PRODUCT.md"
+  - "shipflow_data/business/business.md"
+  - "shipflow_data/business/product.md"
 next_step: "$sf-docs update"
 ---
 

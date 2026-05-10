@@ -38,7 +38,7 @@ The blockers below were used as the integration checklist for the ready spec and
 ## Blockers
 
 1. Dependency docs are not coherent with the migration target.
-   `BUSINESS.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `GUIDELINES.md`, `docs/API.md`, `docs/DECISIONS.md`, and `docs/MIGRATION_FLUTTER.md` still describe draft/current-state Expo, Convex, Clerk, or "directional" Flutter decisions. `docs/MIGRATION_FLUTTER.md` also recommends Android first/iOS second, while the spec requires Android/iOS/macOS/Windows/Linux/web Day 1. A fresh agent could implement against contradictory source documents.
+   `shipflow_data/business/business.md`, `shipflow_data/business/product.md`, `shipflow_data/technical/architecture.md`, `shipflow_data/technical/guidelines.md`, `docs/API.md`, `docs/DECISIONS.md`, and `docs/MIGRATION_FLUTTER.md` still describe draft/current-state Expo, Convex, Clerk, or "directional" Flutter decisions. `docs/MIGRATION_FLUTTER.md` also recommends Android first/iOS second, while the spec requires Android/iOS/macOS/Windows/Linux/web Day 1. A fresh agent could implement against contradictory source documents.
 
 2. Supabase Auth/RLS is underspecified.
    The spec says `auth.uid() = user_id`, but does not require concrete SQL contracts: `user_id uuid not null default auth.uid()`, authenticated-only grants, RLS enabled on every user table, `using` and `with check` policies for insert/update/delete, unique constraints scoped by `user_id`, ownership checks for deletes by ID, realtime authorization behavior, and tests proving cross-user read/write/delete denial. This is a hard blocker because the current app's Convex functions accept client-provided `userId`.
@@ -101,7 +101,7 @@ Update source-of-truth docs before implementation:
 
 - `docs/DECISIONS.md`: replace the directional Flutter note with the actual Flutter + Supabase migration decision or explicitly keep the spec blocked.
 - `docs/MIGRATION_FLUTTER.md`: resolve the platform-scope conflict between Android-first recommendation and Day 1 all-platform spec.
-- `BUSINESS.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `GUIDELINES.md`, `docs/API.md`: mark current Expo/Convex/Clerk material as legacy/current-state only, or replace it with Flutter/Supabase target docs so agents do not implement stale contracts.
+- `shipflow_data/business/business.md`, `shipflow_data/business/product.md`, `shipflow_data/technical/architecture.md`, `shipflow_data/technical/guidelines.md`, `docs/API.md`: mark current Expo/Convex/Clerk material as legacy/current-state only, or replace it with Flutter/Supabase target docs so agents do not implement stale contracts.
 - `docs/PLATFORM_BEHAVIOR.md`: document per-platform audio, clipboard, secure storage, AI call, and overlay limitations.
 - `docs/OVERLAY_ANDROID.md`: document accessibility permission wording, foreground service behavior, injection rules, fallback behavior, and abuse/race tests.
 - `docs/VERIFICATION.md`: include a security gate for RLS, secrets, logs, clipboard privacy, overlay/accessibility, offline/concurrency, cost limits, and final purge.
