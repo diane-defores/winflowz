@@ -75,7 +75,8 @@ Add these repository secrets in GitHub: **Settings -> Secrets and variables -> A
 Prepare these Firebase names now for the MVP adapter (do not introduce Doppler):
 
 - `FIREBASE_PROJECT_ID` (`winflowz-dev`)
-- `FIREBASE_CLI_TOKEN`
+- `GCP_WIF_PROVIDER`
+- `GCP_WIF_SERVICE_ACCOUNT`
 - `FIREBASE_DEV_API_KEY`
 - `FIREBASE_DEV_APP_ID`
 - `FIREBASE_DEV_MESSAGING_SENDER_ID`
@@ -89,6 +90,8 @@ Use `docs/technical/firebase-cli-foundation.md` for exact Firebase CLI commands:
 - `firebase emulators:start --only firestore,auth`
 
 The prior Supabase secrets are legacy and should not be expanded for new target work.
+The Firestore CI deploy now uses GitHub OIDC + Google Workload Identity Federation
+instead of a long-lived service account JSON key.
 
 ## Current Migration Scope
 

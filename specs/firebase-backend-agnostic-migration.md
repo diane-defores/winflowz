@@ -6,7 +6,7 @@ project: "VoiceFlowz"
 created: "2026-05-09"
 created_at: "2026-05-09 21:45:00 UTC"
 updated: "2026-05-09"
-updated_at: "2026-05-10 00:00:00 UTC"
+updated_at: "2026-05-10 16:18:01 UTC"
 status: ready
 source_skill: sf-build
 source_model: "GPT-5 Codex"
@@ -181,10 +181,10 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
   - Action : déplacer en legacy/archive ou supprimer quand Firebase parity passe.
   - Validate with : `rg Supabase lib test pubspec.yaml`, `flutter analyze`, `flutter test`.
 
-- [ ] Tâche 8 : Mettre à jour CI/Blacksmith
+- [x] Tâche 8 : Mettre à jour CI/Blacksmith
   - Fichiers : `.github/workflows/**`, README.
-  - Action : GitHub Secrets Firebase, build APK, artifact proof.
-  - Validate with : workflow syntax, hosted build.
+  - Action : GitHub Secrets Firebase, build APK, artifact proof. Fait avec secrets Firebase runtime, `GCP_WIF_PROVIDER` + `GCP_WIF_SERVICE_ACCOUNT` (OIDC Workload Identity Federation), build APK Blacksmith et job deploy Firestore conditionné à `main`/`master`/manuel.
+  - Validate with : workflow syntax locale OK; hosted build/deploy restant à prouver après ajout des secrets GitHub.
 
 - [ ] Tâche 9 : Archiver les docs Supabase
   - Fichiers : `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md`, `docs/API_SUPABASE.md`, `docs/MIGRATION_FLUTTER.md`, `docs/technical/supabase-data.md`.
@@ -247,6 +247,7 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 | 2026-05-10 00:00:00 UTC | continue | GPT-5 Codex + gpt-5.3-codex-spark workers | Continued implementation through backend-neutral auth/settings/domain stores and Firestore adapters with local fallback | partial | Validate with Firebase CLI/emulator and Android SDK/Blacksmith |
 | 2026-05-10 00:00:00 UTC | continue | GPT-5 Codex | Installed Firebase CLI and validated local Auth/Firestore emulator startup against demo project | partial | Authenticate/deploy real Firebase project or run Blacksmith Android build |
 | 2026-05-10 09:29:11 UTC | sf-ship | GPT-5 Codex | Quick ship all dirty for backend-agnostic Firebase migration, ContentFlow theme integration, icon assets and docs | shipped | Real Firebase deploy and Android/Blacksmith proof remain |
+| 2026-05-10 16:18:01 UTC | sf-build | GPT-5 Codex | Re-ran verification gate after repository cleanup: `flutter analyze`, `flutter test`, Supabase target scan, Firebase emulator smoke, and real `firebase deploy --only firestore` attempt | partial | Authenticate Firebase CLI (or CI token/service account) then run real Firestore deploy and Android/Blacksmith proof |
 
 # Current Chantier Flow
 
@@ -254,7 +255,7 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 |------|--------|----------|-----------|
 | sf-spec | done | This spec captures backend-agnostic Firebase migration contract | sf-start |
 | sf-ready | done | Scope, constraints, rules, CLI, tasks, tests and stop conditions are explicit | sf-start |
-| sf-start | in_progress | Tasks 1-6 implemented locally; Firebase CLI demo emulator starts; Android SDK validation still blocked | Validate real Firebase deploy and Android build |
-| sf-verify | pending | Analyze/test pass; emulator starts; Android build proof and real Firebase deploy missing | Run Blacksmith/Firebase login or CI token |
+| sf-start | in_progress | Tasks 1-6 implemented locally; Firebase emulator smoke still passes on 2026-05-10; task 8 CI wiring added with OIDC/WIF Firestore deploy; tasks 7 and 9 remain open | Add GitHub Firebase secrets, run hosted Blacksmith workflow, finish Supabase target detachment and legacy-doc archival |
+| sf-verify | in_progress | `flutter analyze` and `flutter test` pass on 2026-05-10; `firebase deploy --only firestore --project winflowz-dev` fails with missing `firebase login` auth; emulator smoke passes | Provide Firebase auth/token and run real deploy + Android/Blacksmith proof |
 | sf-end | pending | Not ready | After verification |
 | sf-ship | done | Quick all-dirty ship requested; local checks and Firebase demo emulator pass | Real Firebase deploy and Android/Blacksmith proof remain |

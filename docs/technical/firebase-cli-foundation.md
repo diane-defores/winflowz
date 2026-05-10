@@ -109,7 +109,10 @@ Runtime adapters currently use:
 Use repository secrets (do not introduce Doppler):
 
 - `FIREBASE_PROJECT_ID` — target project alias/id (`winflowz-dev`)
-- `FIREBASE_CLI_TOKEN` — deploy token for CI/manual operations
+- `GCP_WIF_PROVIDER` — Workload Identity Provider resource name used by GitHub
+  OIDC, format: `projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL/providers/PROVIDER`
+- `GCP_WIF_SERVICE_ACCOUNT` — service account email impersonated by the GitHub
+  workflow, format: `name@project.iam.gserviceaccount.com`
 - `FIREBASE_DEV_API_KEY` — Android Firebase API key from generated client config
 - `FIREBASE_DEV_APP_ID` — Android app id from generated client config
 - `FIREBASE_DEV_MESSAGING_SENDER_ID` — message sender id for Android client config
@@ -118,3 +121,51 @@ Use repository secrets (do not introduce Doppler):
 
 These secret names are prepared for Blacksmith environment injection with local fallback logic
 enabled in the app when Firebase runtime is missing.
+
+## CI deploy setup
+
+Use Workload Identity Federation (OIDC) for GitHub Actions instead of a static
+service-account JSON key.
+
+Create a dedicated service account in Google Cloud IAM for `winflowz-dev` and
+grant the least broad role that can deploy Firestore rules and indexes. Then
+create a Workload Identity Pool + Provider for GitHub and allow that provider
+to impersonate the deploy service account.
+
+Typical setup commands (replace placeholders):
+
+```bash
+gcloud iam workload-identity-pools create github \
+  --project="$PROJECT_ID" \
+  --location="global" \
+  --display-name="GitHub Actions"
+
+gcloud iam workload-identity-pools providers create-oidc github-repo \
+  --project="$PROJECT_ID" \
+  --location="global" \
+  --workload-identity-pool="github" \
+  --display-name="GitHub repo provider" \
+  --issuer-uri="https://token.actions.githubusercontent.com" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.ref=assertion.ref" \
+  --attribute-condition="assertion.repository=='OWNER/REPO'"
+
+gcloud iam service-accounts add-iam-policy-binding "$SERVICE_ACCOUNT_EMAIL" \
+  --project="$PROJECT_ID" \
+  --role="roles/iam.workloadIdentityUser" \
+  --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github/attribute.repository/OWNER/REPO"
+```
+
+Store in GitHub secrets:
+
+- `GCP_WIF_PROVIDER`
+- `GCP_WIF_SERVICE_ACCOUNT`
+
+The workflow `.github/workflows/android-build.yml` authenticates with
+`google-github-actions/auth@v3`, then runs:
+
+```bash
+firebase deploy --only firestore --project "$FIREBASE_PROJECT_ID"
+```
+
+The deploy job runs only on `main`, `master`, or manual `workflow_dispatch`.
+Pull requests still run analyze/tests/APK build, but do not deploy Firestore.

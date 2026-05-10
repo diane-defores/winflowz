@@ -43,18 +43,30 @@ jobs:
 
       - name: Build debug APK
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_DEV_API_KEY: ${{ secrets.FIREBASE_DEV_API_KEY }}
+          FIREBASE_DEV_APP_ID: ${{ secrets.FIREBASE_DEV_APP_ID }}
+          FIREBASE_DEV_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_DEV_MESSAGING_SENDER_ID }}
+          FIREBASE_DEV_AUTH_DOMAIN: ${{ secrets.FIREBASE_DEV_AUTH_DOMAIN }}
+          FIREBASE_DEV_STORAGE_BUCKET: ${{ secrets.FIREBASE_DEV_STORAGE_BUCKET }}
         run: |
-          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_PUBLISHABLE_KEY" ]; then
-            echo "Supabase secrets are missing; building debug APK with local-only clipboard fallback."
-            SUPABASE_URL=""
-            SUPABASE_PUBLISHABLE_KEY=""
+          if [ -z "$FIREBASE_PROJECT_ID" ] || [ -z "$FIREBASE_DEV_API_KEY" ] || [ -z "$FIREBASE_DEV_APP_ID" ] || [ -z "$FIREBASE_DEV_MESSAGING_SENDER_ID" ]; then
+            echo "Firebase client secrets are missing; building debug APK with local fallback."
+            FIREBASE_PROJECT_ID=""
+            FIREBASE_DEV_API_KEY=""
+            FIREBASE_DEV_APP_ID=""
+            FIREBASE_DEV_MESSAGING_SENDER_ID=""
+            FIREBASE_DEV_AUTH_DOMAIN=""
+            FIREBASE_DEV_STORAGE_BUCKET=""
           fi
 
           flutter build apk --debug \
-            --dart-define=SUPABASE_URL="$SUPABASE_URL" \
-            --dart-define=SUPABASE_PUBLISHABLE_KEY="$SUPABASE_PUBLISHABLE_KEY"
+            --dart-define=FIREBASE_PROJECT_ID="$FIREBASE_PROJECT_ID" \
+            --dart-define=FIREBASE_DEV_API_KEY="$FIREBASE_DEV_API_KEY" \
+            --dart-define=FIREBASE_DEV_APP_ID="$FIREBASE_DEV_APP_ID" \
+            --dart-define=FIREBASE_DEV_MESSAGING_SENDER_ID="$FIREBASE_DEV_MESSAGING_SENDER_ID" \
+            --dart-define=FIREBASE_DEV_AUTH_DOMAIN="$FIREBASE_DEV_AUTH_DOMAIN" \
+            --dart-define=FIREBASE_DEV_STORAGE_BUCKET="$FIREBASE_DEV_STORAGE_BUCKET"
 
       - name: Verify debug APK exists
         run: test -f build/app/outputs/flutter-apk/app-debug.apk
@@ -67,10 +79,14 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-  supabase:
-    name: Supabase Migration Tests
+  firebase:
+    name: Deploy Firestore Rules and Indexes
     runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 20
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Configure Git default branch
@@ -79,20 +95,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set up Supabase CLI
-        uses: supabase/setup-cli@v2
+      - name: Set up Node
+        uses: actions/setup-node@v5
         with:
-          version: 2.90.0
+          node-version: 22
 
-      - name: Start local Supabase and apply migrations
-        run: supabase start
+      - name: Authenticate to Google Cloud via OIDC
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
 
-      - name: Lint local database
-        run: supabase db lint --local
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@15.17.0
 
-      - name: Run RLS smoke tests
-        run: supabase test db supabase/tests/rls_smoke.sql
+      - name: Validate Firebase project secret
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+          GCP_WIF_SERVICE_ACCOUNT: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$FIREBASE_PROJECT_ID"
+          test -n "$GCP_WIF_PROVIDER"
+          test -n "$GCP_WIF_SERVICE_ACCOUNT"
 
-      - name: Stop local Supabase services
-        if: always()
-        run: supabase stop --no-backup
+      - name: Deploy Firestore rules and indexes
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: firebase deploy --only firestore --project "$FIREBASE_PROJECT_ID"
