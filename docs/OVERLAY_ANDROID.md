@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-27"
-updated: "2026-05-09"
+updated: "2026-05-10"
 status: "reviewed"
 source_skill: "sf-spec"
 scope: "android_overlay"
@@ -18,9 +18,12 @@ depends_on:
 supersedes: []
 evidence:
   - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt"
+  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayView.kt"
+  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayEventQueue.kt"
+  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayTextInjectionHelper.kt"
   - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzInputMethodService.kt"
   - "specs/android-ime-voiceflowz-keyboard.md"
-next_step: "/sf-ready specs/proprietary-swipe-corner-android-keyboard.md"
+next_step: "/sf-verify specs/android-overlay-flutter-parity-repair.md"
 ---
 
 # Android Overlay — VoiceFlowz
@@ -30,6 +33,8 @@ next_step: "/sf-ready specs/proprietary-swipe-corner-android-keyboard.md"
 Android overlay is an Android-only native capability exposed to Flutter through a narrow Dart bridge. It must not be represented as available on iOS, macOS, Windows, Linux, or web.
 
 VoiceFlowz Keyboard is now the preferred Android text-entry surface for in-field typing, dictation, clipboard actions, snippets entry points, and generic media play/pause. Overlay remains complementary for floating capture flows and fallback delivery, not the primary keyboard path.
+
+The Flutter port now owns an actual native overlay bubble through `OverlayForegroundService`, `OverlayView`, `WaveformView`, `OverlayEventQueue`, and `OverlayTextInjectionHelper`. The old Expo module remains a legacy reference only and must not be used at runtime.
 
 ## Permissions
 
@@ -53,6 +58,9 @@ VoiceFlowz Keyboard is now the preferred Android text-entry surface for in-field
 - `getOverlayStatus`: returns `enabled`, `requestedEnabled`, `running`, `overlayPermissionGranted`, `accessibilityPermissionGranted`, `deliveryMode`.
 - `setOverlayEnabled`: enables/disables overlay runtime capability.
 - `startOverlayRecording`, `stopOverlayRecording`, `cancelOverlayRecording`: foreground service controls with idempotent stop/cancel and guarded start.
+- `drainOverlayEvents`: returns queued native overlay events such as `bubbleTap`, `longPress`, `recordStop`, `recordCancel`, and `serviceError`.
+- `setOverlayState`, `updateMeterLevel`, `setResultText`: lets Flutter mirror voice pipeline state into the native bubble.
+- `deliverText`: attempts accessibility injection and always attempts clipboard fallback for non-empty text.
 - `openOverlayPermissionSettings`, `openAccessibilitySettings`: deep-links to Android settings recovery paths.
 
 `deliveryMode` is `clipboard_only` when accessibility is disabled, and `injection_and_clipboard` when enabled.
@@ -66,6 +74,12 @@ VoiceFlowz Keyboard is now the preferred Android text-entry surface for in-field
 ## Fallback
 
 Clipboard fallback is required for every successful overlay transcription. Direct injection is a best-effort enhancement, not the only delivery path.
+
+`deliverText` returns whether text was injected, copied to clipboard, and blocked by a sensitive field. It must not log text content.
+
+## Legacy Reference
+
+Keep `modules/floating-overlay/` and `voiceflowz_snapshots/voiceflowz-pre-flutter-migration-20260427-081046.tar.gz` until a real Android QA pass confirms parity. Cleanup belongs in a separate chantier after proof.
 
 ## Required Tests
 

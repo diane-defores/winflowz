@@ -4,6 +4,18 @@ import 'platform_capabilities.dart';
 
 enum OverlayDeliveryMode { clipboardOnly, injectionAndClipboard }
 
+enum AndroidOverlayEventType {
+  bubbleTap,
+  recordStop,
+  recordCancel,
+  longPress,
+  serviceError,
+  permissionRevoked,
+  unknown,
+}
+
+enum AndroidOverlayVisualState { collapsed, recording, processing, result }
+
 class AndroidOverlayStatus {
   const AndroidOverlayStatus({
     required this.enabled,
@@ -34,6 +46,81 @@ class AndroidOverlayStatus {
       deliveryMode: modeRaw == 'injection_and_clipboard'
           ? OverlayDeliveryMode.injectionAndClipboard
           : OverlayDeliveryMode.clipboardOnly,
+    );
+  }
+}
+
+class AndroidOverlayEvent {
+  const AndroidOverlayEvent({
+    required this.type,
+    required this.capturedAtUtc,
+    required this.payload,
+  });
+
+  final AndroidOverlayEventType type;
+  final DateTime capturedAtUtc;
+  final Map<String, Object?> payload;
+
+  static AndroidOverlayEvent? fromMap(Map<Object?, Object?> map) {
+    final rawType = map['type'];
+    final capturedAtEpochMillis = map['capturedAtEpochMillis'];
+    if (rawType is! String || capturedAtEpochMillis is! num) {
+      return null;
+    }
+    final payload = <String, Object?>{};
+    final rawPayload = map['payload'];
+    if (rawPayload is Map<Object?, Object?>) {
+      for (final entry in rawPayload.entries) {
+        final key = entry.key;
+        final value = entry.value;
+        if (key is String &&
+            (value == null ||
+                value is String ||
+                value is num ||
+                value is bool)) {
+          payload[key] = value;
+        }
+      }
+    }
+    return AndroidOverlayEvent(
+      type: _eventTypeFromNative(rawType),
+      capturedAtUtc: DateTime.fromMillisecondsSinceEpoch(
+        capturedAtEpochMillis.toInt(),
+        isUtc: true,
+      ),
+      payload: payload,
+    );
+  }
+
+  static AndroidOverlayEventType _eventTypeFromNative(String value) {
+    return switch (value) {
+      'bubbleTap' => AndroidOverlayEventType.bubbleTap,
+      'recordStop' => AndroidOverlayEventType.recordStop,
+      'recordCancel' => AndroidOverlayEventType.recordCancel,
+      'longPress' => AndroidOverlayEventType.longPress,
+      'serviceError' => AndroidOverlayEventType.serviceError,
+      'permissionRevoked' => AndroidOverlayEventType.permissionRevoked,
+      _ => AndroidOverlayEventType.unknown,
+    };
+  }
+}
+
+class AndroidOverlayDeliveryResult {
+  const AndroidOverlayDeliveryResult({
+    required this.injected,
+    required this.clipboardCopied,
+    required this.sensitiveField,
+  });
+
+  final bool injected;
+  final bool clipboardCopied;
+  final bool sensitiveField;
+
+  factory AndroidOverlayDeliveryResult.fromMap(Map<Object?, Object?> map) {
+    return AndroidOverlayDeliveryResult(
+      injected: map['injected'] as bool? ?? false,
+      clipboardCopied: map['clipboardCopied'] as bool? ?? false,
+      sensitiveField: map['sensitiveField'] as bool? ?? false,
     );
   }
 }
@@ -129,6 +216,53 @@ class AndroidOverlayBridge {
   static Future<AndroidOverlayStatus> cancelRecording() async {
     final raw = await _invoke<Map<Object?, Object?>>('cancelOverlayRecording');
     return AndroidOverlayStatus.fromMap(raw ?? const {});
+  }
+
+  static Future<List<AndroidOverlayEvent>> drainEvents() async {
+    if (!PlatformCapabilities.overlaySupported) {
+      return const <AndroidOverlayEvent>[];
+    }
+    final raw = await _invoke<List<Object?>>('drainOverlayEvents');
+    return (raw ?? const <Object?>[])
+        .whereType<Map<Object?, Object?>>()
+        .map(AndroidOverlayEvent.fromMap)
+        .whereType<AndroidOverlayEvent>()
+        .toList(growable: false);
+  }
+
+  static Future<void> setVisualState(AndroidOverlayVisualState state) async {
+    if (!PlatformCapabilities.overlaySupported) {
+      return;
+    }
+    await _invoke<void>('setOverlayState', {'state': state.name});
+  }
+
+  static Future<void> updateMeterLevel(double level) async {
+    if (!PlatformCapabilities.overlaySupported) {
+      return;
+    }
+    await _invoke<void>('updateMeterLevel', {'level': level.clamp(0, 1)});
+  }
+
+  static Future<void> setResultText(String text) async {
+    if (!PlatformCapabilities.overlaySupported || text.trim().isEmpty) {
+      return;
+    }
+    await _invoke<void>('setResultText', {'text': text});
+  }
+
+  static Future<AndroidOverlayDeliveryResult> deliverText(String text) async {
+    if (!PlatformCapabilities.overlaySupported || text.trim().isEmpty) {
+      return const AndroidOverlayDeliveryResult(
+        injected: false,
+        clipboardCopied: false,
+        sensitiveField: false,
+      );
+    }
+    final raw = await _invoke<Map<Object?, Object?>>('deliverText', {
+      'text': text,
+    });
+    return AndroidOverlayDeliveryResult.fromMap(raw ?? const {});
   }
 
   static Future<T?> _invoke<T>(String method, [Object? arguments]) async {

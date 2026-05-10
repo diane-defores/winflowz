@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-26"
-updated: "2026-05-09"
+updated: "2026-05-10"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "readme"
@@ -95,6 +95,7 @@ The prior Supabase secrets are legacy and should not be expanded for new target 
 - Auth/data: backend-agnostic contracts replace direct Convex/Supabase coupling; Firebase Auth + Firestore adapters are wired with local fallback.
 - UI: Flutter shell + auth gate + settings key storage baseline is in place.
 - Security: Firestore rules and indexes are versioned; emulator and real Firebase validation still require `firebase-tools`.
+- Android overlay: Flutter now has a native foreground overlay bubble foundation with queued native events, visual states, accessibility delivery, and clipboard fallback. Real-device QA is still required before deleting the legacy Expo overlay reference or snapshot archive.
 - Android IME: VoiceFlowz can be enabled as a native Android keyboard. The current foundation provides text entry, private-field gating, explicit clipboard actions, local Android speech recognition, play/pause media key dispatch, and Settings status/preferences. Cloud sync from the keyboard waits for Firebase CLI/emulator and real-device QA before it should be treated as production-ready.
 
 ## Project Structure (target)

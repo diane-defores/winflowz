@@ -40,6 +40,9 @@ class MainActivity : FlutterActivity() {
                         openAccessibilitySettings()
                         result.success(true)
                     }
+                    "drainOverlayEvents" -> {
+                        result.success(OverlayEventQueue.drain())
+                    }
                     "setOverlayEnabled" -> {
                         val requestedEnabled =
                             call.argument<Boolean>("enabled") ?: false
@@ -74,16 +77,69 @@ class MainActivity : FlutterActivity() {
                             )
                             return@setMethodCallHandler
                         }
-                        startOverlayForegroundService()
-                        result.success(buildStatusMap())
+                        try {
+                            sendOverlayCommand(OverlayForegroundService.ACTION_START)
+                            result.success(buildStatusMap())
+                        } catch (error: Exception) {
+                            result.error(
+                                "OVERLAY_START_FAILED",
+                                "Unable to start overlay service.",
+                                error.message,
+                            )
+                        }
                     }
                     "stopOverlayRecording" -> {
-                        stopOverlayForegroundService(cancel = false)
+                        sendOverlayCommand(OverlayForegroundService.ACTION_STOP)
                         result.success(buildStatusMap())
                     }
                     "cancelOverlayRecording" -> {
-                        stopOverlayForegroundService(cancel = true)
+                        sendOverlayCommand(OverlayForegroundService.ACTION_CANCEL)
                         result.success(buildStatusMap())
+                    }
+                    "setOverlayState" -> {
+                        val state = call.argument<String>("state") ?: "collapsed"
+                        sendOverlayCommand(
+                            OverlayForegroundService.ACTION_SET_STATE,
+                        ) { intent ->
+                            intent.putExtra(OverlayForegroundService.EXTRA_STATE, state)
+                        }
+                        result.success(true)
+                    }
+                    "updateMeterLevel" -> {
+                        val level =
+                            call.argument<Number>("level")?.toFloat() ?: 0f
+                        sendOverlayCommand(
+                            OverlayForegroundService.ACTION_UPDATE_METER,
+                        ) { intent ->
+                            intent.putExtra(
+                                OverlayForegroundService.EXTRA_LEVEL,
+                                level,
+                            )
+                        }
+                        result.success(true)
+                    }
+                    "setResultText" -> {
+                        val text = call.argument<String>("text") ?: ""
+                        sendOverlayCommand(
+                            OverlayForegroundService.ACTION_SET_RESULT_TEXT,
+                        ) { intent ->
+                            intent.putExtra(OverlayForegroundService.EXTRA_TEXT, text)
+                        }
+                        result.success(true)
+                    }
+                    "deliverText" -> {
+                        val text = call.argument<String>("text") ?: ""
+                        if (text.isBlank()) {
+                            result.success(
+                                mapOf(
+                                    "injected" to false,
+                                    "clipboardCopied" to false,
+                                    "sensitiveField" to false,
+                                ),
+                            )
+                        } else {
+                            result.success(OverlayTextInjectionHelper.deliverText(this, text))
+                        }
                     }
                     else -> result.notImplemented()
                 }
@@ -127,6 +183,23 @@ class MainActivity : FlutterActivity() {
             }
     }
 
+    private fun sendOverlayCommand(
+        action: String,
+        fillIntent: ((Intent) -> Unit)? = null,
+    ) {
+        val intent = Intent(this, OverlayForegroundService::class.java).apply {
+            this.action = action
+            fillIntent?.invoke(this)
+        }
+        if (action == OverlayForegroundService.ACTION_START &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+        ) {
+            startForegroundService(intent)
+            return
+        }
+        startService(intent)
+    }
+
     private fun isOverlayPermissionGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Settings.canDrawOverlays(this)
@@ -142,7 +215,7 @@ class MainActivity : FlutterActivity() {
         val intent =
             Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
+                Uri.parse("package:$packageName"),
             )
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
@@ -172,8 +245,7 @@ class MainActivity : FlutterActivity() {
             Settings.Secure.getString(
                 contentResolver,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-            )
-                ?: return false
+            ) ?: return false
         val splitter = TextUtils.SimpleStringSplitter(':')
         splitter.setString(enabledServices)
         while (splitter.hasNext()) {
@@ -185,39 +257,28 @@ class MainActivity : FlutterActivity() {
         return false
     }
 
-    private fun overlayPreferences() =
-        getSharedPreferences(preferencesName, MODE_PRIVATE)
+    private fun overlayPreferences() = getSharedPreferences(preferencesName, MODE_PRIVATE)
 
     private fun isOverlayEnabled(): Boolean =
         overlayPreferences().getBoolean(keyOverlayEnabled, false)
 
     private fun setOverlayEnabled(enabled: Boolean) {
         overlayPreferences().edit().putBoolean(keyOverlayEnabled, enabled).apply()
-        if (!enabled) {
+        if (enabled) {
+            sendOverlayCommand(OverlayForegroundService.ACTION_START)
+        } else {
             stopOverlayForegroundService(cancel = false)
         }
     }
 
-    private fun startOverlayForegroundService() {
-        val intent = Intent(this, OverlayForegroundService::class.java).apply {
-            action = OverlayForegroundService.ACTION_START
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
-    }
-
     private fun stopOverlayForegroundService(cancel: Boolean) {
-        val intent = Intent(this, OverlayForegroundService::class.java).apply {
-            action = if (cancel) {
+        sendOverlayCommand(
+            if (cancel) {
                 OverlayForegroundService.ACTION_CANCEL
             } else {
                 OverlayForegroundService.ACTION_STOP
-            }
-        }
-        startService(intent)
+            },
+        )
     }
 
     private fun buildStatusMap(): Map<String, Any> {

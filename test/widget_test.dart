@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voiceflowz/core/bootstrap/supabase_bootstrap.dart';
 import 'package:voiceflowz/core/platform/android_keyboard_bridge.dart';
+import 'package:voiceflowz/core/platform/android_overlay_bridge.dart';
 import 'package:voiceflowz/features/keyboard/domain/keyboard_models.dart';
 import 'package:voiceflowz/features/clipboard/domain/clipboard_normalizer.dart';
 import 'package:voiceflowz/features/shell/presentation/app_shell_screen.dart';
@@ -81,6 +82,32 @@ void main() {
     expect(event?.capturedAtUtc.isUtc, isTrue);
     expect(event?.sourceMetadata, containsPair('action', 'copy_selection'));
     expect(event?.sourceMetadata, isNot(contains('ignored')));
+  });
+
+  test('android overlay event parses native bridge maps', () {
+    final event = AndroidOverlayEvent.fromMap({
+      'type': 'serviceError',
+      'capturedAtEpochMillis': 1778263200000,
+      'payload': {'code': 'OVERLAY_PERMISSION_REVOKED', 'ignored': <String>[]},
+    });
+
+    expect(event, isNotNull);
+    expect(event?.type, AndroidOverlayEventType.serviceError);
+    expect(event?.capturedAtUtc.isUtc, isTrue);
+    expect(event?.payload, containsPair('code', 'OVERLAY_PERMISSION_REVOKED'));
+    expect(event?.payload, isNot(contains('ignored')));
+  });
+
+  test('android overlay delivery result parses native bridge maps', () {
+    final result = AndroidOverlayDeliveryResult.fromMap({
+      'injected': true,
+      'clipboardCopied': true,
+      'sensitiveField': false,
+    });
+
+    expect(result.injected, isTrue);
+    expect(result.clipboardCopied, isTrue);
+    expect(result.sensitiveField, isFalse);
   });
 
   test('clipboard normalized hash is stable across whitespace', () {

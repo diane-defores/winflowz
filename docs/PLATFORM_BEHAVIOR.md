@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "VoiceFlowz"
 created: "2026-04-27"
-updated: "2026-05-09"
+updated: "2026-05-10"
 status: "reviewed"
 source_skill: "sf-spec"
 scope: "platform_behavior"
@@ -51,6 +51,14 @@ next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 - Password, OTP, `noPersonalizedLearning`, and host-marked private fields force private mode: dictation, clipboard capture, snippets, sync intent, and learning are disabled while basic typing remains available.
 - Clipboard sync from the keyboard is opt-in and represented as intent/status. Real cloud sync and cross-account queue flushing require the backend-agnostic Firebase adapter before production claims.
 - Non-Android platforms must not show IME activation controls.
+
+## Android Overlay
+
+- The Android overlay is implemented as a native foreground service with a draggable `WindowManager` bubble.
+- The bubble can emit queued events to Flutter for tap, long press, stop, cancel, and native service errors.
+- Accessibility delivery is optional and best-effort; clipboard fallback remains mandatory for final text.
+- The overlay and IME must not run concurrent voice sessions. Until full arbitration is implemented, UI and logs must treat this as a high-risk QA case.
+- Non-Android platforms must not show overlay activation controls.
 
 ## Direct AI Calls
 
