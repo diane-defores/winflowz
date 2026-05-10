@@ -101,10 +101,12 @@ jobs:
           node-version: 22
 
       - name: Authenticate to Google Cloud via OIDC
+        id: gcp-auth
         uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+          token_format: access_token
 
       - name: Install Firebase CLI
         run: npm install --global firebase-tools@15.17.0
@@ -122,4 +124,5 @@ jobs:
       - name: Deploy Firestore rules and indexes
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-        run: firebase deploy --only firestore --project "$FIREBASE_PROJECT_ID"
+          FIREBASE_TOKEN: ${{ steps.gcp-auth.outputs.access_token }}
+        run: firebase deploy --only firestore --project "$FIREBASE_PROJECT_ID" --non-interactive
