@@ -65,20 +65,21 @@ object OverlayTextInjectionHelper {
         if (node.isPassword) {
             return true
         }
-        val inputType =
-            node.extras?.getInt(AccessibilityNodeInfo.EXTRA_INPUT_TYPE, -1) ?: return false
-        if (inputType == -1) {
-            return false
-        }
+        val inputType = node.inputType
 
         val classType = inputType and InputType.TYPE_MASK_CLASS
         val variation = inputType and InputType.TYPE_MASK_VARIATION
-        return classType == InputType.TYPE_CLASS_TEXT &&
-            (variation == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
-                variation == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD ||
-                variation == InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD) ||
-            (classType == InputType.TYPE_CLASS_NUMBER &&
-                variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+        val isTextPassword =
+            classType == InputType.TYPE_CLASS_TEXT &&
+                (
+                    variation == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
+                        variation == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD ||
+                        variation == InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD
+                )
+        val isNumberPassword =
+            classType == InputType.TYPE_CLASS_NUMBER &&
+                variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD
+        return isTextPassword || isNumberPassword
     }
 
     private fun copyToClipboard(context: Context, text: String): Boolean {

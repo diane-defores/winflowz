@@ -301,12 +301,13 @@ Mettre a jour apres implementation:
 |----------|-------|-------|--------|--------|-----------|
 | 2026-05-10 09:52:03 | sf-spec | GPT-5 Codex | Created overlay parity repair spec from current Flutter code, legacy Expo module, and existing overlay docs. | Draft spec created. | `/sf-ready specs/android-overlay-flutter-parity-repair.md` |
 | 2026-05-10 10:20:00 | sf-build | GPT-5 Codex + gpt-5.3-codex-spark worker | Implemented native overlay bubble core, Dart bridge methods, docs, and parser tests. | Partial: Flutter checks pass; Android Kotlin compile blocked by missing SDK; real-device QA still required. | Install/configure Android SDK or run Blacksmith APK build, then verify on Android device. |
+| 2026-05-10 10:32:36 | sf-fix | GPT-5 Codex | Diagnosed Blacksmith `:app:compileDebugKotlin` failure from `BUG-2026-05-10-001` and replaced the invalid `AccessibilityNodeInfo.EXTRA_INPUT_TYPE` reference with `node.inputType`. | Fix attempted: `flutter analyze`, `flutter test`, and `git diff --check` pass locally; Android compile still requires Blacksmith or a configured Android SDK. | Run Blacksmith Android CI and close `BUG-2026-05-10-001` when `Analyze, Test, Build APK` passes. |
 
 # Current Chantier Flow
 
 sf-spec: done  
 sf-ready: accepted with implementation risk  
-sf-start: partial  
-sf-verify: blocked by missing Android SDK/device proof  
+sf-start: partial; CI compile fix attempted
+sf-verify: blocked by Blacksmith Android CI/device proof
 sf-end: blocked until Android native compile + device QA  
 sf-ship: blocked until verification passes
