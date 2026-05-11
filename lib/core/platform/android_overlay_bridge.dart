@@ -26,6 +26,9 @@ class AndroidOverlayStatus {
     required this.deliveryMode,
     required this.sizeScale,
     required this.opacity,
+    this.eventQueueSize = 0,
+    this.serviceState = 'unknown',
+    this.lastNativeEvent,
   });
 
   final bool enabled;
@@ -36,6 +39,9 @@ class AndroidOverlayStatus {
   final OverlayDeliveryMode deliveryMode;
   final double sizeScale;
   final double opacity;
+  final int eventQueueSize;
+  final String serviceState;
+  final String? lastNativeEvent;
 
   factory AndroidOverlayStatus.fromMap(Map<Object?, Object?> map) {
     final modeRaw = map['deliveryMode'] as String? ?? 'clipboard_only';
@@ -52,6 +58,9 @@ class AndroidOverlayStatus {
           : OverlayDeliveryMode.clipboardOnly,
       sizeScale: (map['sizeScale'] as num?)?.toDouble() ?? 1,
       opacity: (map['opacity'] as num?)?.toDouble() ?? 0.8,
+      eventQueueSize: (map['eventQueueSize'] as num?)?.toInt() ?? 0,
+      serviceState: map['serviceState'] as String? ?? 'unknown',
+      lastNativeEvent: map['lastNativeEvent'] as String?,
     );
   }
 }
@@ -192,6 +201,8 @@ class AndroidOverlayBridge {
         deliveryMode: OverlayDeliveryMode.clipboardOnly,
         sizeScale: 1,
         opacity: 0.8,
+        eventQueueSize: 0,
+        serviceState: 'unsupported',
       );
     }
     final raw = await _invoke<Map<Object?, Object?>>('getOverlayStatus');

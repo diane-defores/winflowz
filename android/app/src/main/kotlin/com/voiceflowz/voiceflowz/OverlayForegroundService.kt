@@ -46,9 +46,18 @@ class OverlayForegroundService : Service() {
 
         @Volatile
         private var running = false
+        private var lastState = "not_created"
 
         @Synchronized
         fun isRunning(): Boolean = running
+
+        @Synchronized
+        fun serviceState(): String = lastState
+
+        @Synchronized
+        private fun updateServiceState(state: String) {
+            lastState = state
+        }
     }
 
     private var windowManager: WindowManager? = null
@@ -70,6 +79,8 @@ class OverlayForegroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        updateServiceState("created")
+        OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "created"))
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         loadAppearancePreferences()
         createNotificationChannelIfNeeded()
@@ -78,10 +89,15 @@ class OverlayForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (isRunning() && !Settings.canDrawOverlays(this)) {
             OverlayEventQueue.enqueue("serviceError", mapOf("code" to "OVERLAY_PERMISSION_REVOKED"))
+            updateServiceState("permission_revoked")
             handleStop()
             return START_NOT_STICKY
         }
 
+        OverlayEventQueue.enqueue(
+            "serviceCommand",
+            mapOf("action" to (intent?.action ?: "null")),
+        )
         when (intent?.action) {
             ACTION_START -> handleStart()
             ACTION_STOP -> handleStop()
@@ -108,6 +124,8 @@ class OverlayForegroundService : Service() {
 
     override fun onDestroy() {
         Log.i(TAG, "Overlay service destroyed.")
+        OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "destroyed"))
+        updateServiceState("destroyed")
         hideOverlay()
         synchronized(this) {
             running = false
@@ -117,7 +135,9 @@ class OverlayForegroundService : Service() {
 
     private fun handleStart() {
         synchronized(this) {
+            updateServiceState("start_requested")
             if (running) {
+                OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "already_running"))
                 ensureOverlay()
                 return
             }
@@ -126,23 +146,31 @@ class OverlayForegroundService : Service() {
                     "serviceError",
                     mapOf("code" to "OVERLAY_PERMISSION_MISSING"),
                 )
+                updateServiceState("permission_missing")
                 return
             }
             if (!ensureForegroundNotification()) {
+                updateServiceState("foreground_failed")
                 return
             }
             if (!ensureOverlay()) {
+                updateServiceState("overlay_add_failed")
                 return
             }
             running = true
+            updateServiceState("running")
+            OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "running"))
         }
     }
 
     private fun handleStop() {
         synchronized(this) {
             if (!running) {
+                OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "stop_ignored_not_running"))
+                updateServiceState("stopped")
                 return
             }
+            updateServiceState("stopping")
             hideOverlay()
             setOverlayStateInternal("collapsed")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -153,6 +181,8 @@ class OverlayForegroundService : Service() {
             }
             stopSelf()
             running = false
+            updateServiceState("stopped")
+            OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "stopped"))
         }
     }
 
@@ -176,11 +206,15 @@ class OverlayForegroundService : Service() {
     private fun ensureForegroundNotification(): Boolean {
         return try {
             startForegroundCompat(buildNotification("Tap the floating button to dictate"))
+            OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "foreground_started"))
             true
-        } catch (_: Exception) {
+        } catch (error: Exception) {
             OverlayEventQueue.enqueue(
                 "serviceError",
-                mapOf("code" to "OVERLAY_FOREGROUND_START_FAILED"),
+                mapOf(
+                    "code" to "OVERLAY_FOREGROUND_START_FAILED",
+                    "detail" to (error.message ?: error.javaClass.simpleName),
+                ),
             )
             false
         }
@@ -188,6 +222,7 @@ class OverlayForegroundService : Service() {
 
     private fun ensureOverlay(): Boolean {
         if (isShowing) {
+            OverlayEventQueue.enqueue("overlayView", mapOf("state" to "already_showing"))
             return true
         }
         if (!Settings.canDrawOverlays(this)) {
@@ -241,9 +276,23 @@ class OverlayForegroundService : Service() {
         try {
             windowManager?.addView(overlayView, layoutParams)
             isShowing = true
+            OverlayEventQueue.enqueue(
+                "overlayView",
+                mapOf(
+                    "state" to "shown",
+                    "x" to (layoutParams?.x ?: -1),
+                    "y" to (layoutParams?.y ?: -1),
+                ),
+            )
             return true
-        } catch (_: Exception) {
-            OverlayEventQueue.enqueue("serviceError", mapOf("code" to "OVERLAY_VIEW_ADD_FAILED"))
+        } catch (error: Exception) {
+            OverlayEventQueue.enqueue(
+                "serviceError",
+                mapOf(
+                    "code" to "OVERLAY_VIEW_ADD_FAILED",
+                    "detail" to (error.message ?: error.javaClass.simpleName),
+                ),
+            )
             overlayView = null
             layoutParams = null
             return false
@@ -260,8 +309,14 @@ class OverlayForegroundService : Service() {
         }
         try {
             windowManager?.removeView(overlayView)
-        } catch (_: Exception) {
-            // best effort cleanup
+        } catch (error: Exception) {
+            OverlayEventQueue.enqueue(
+                "serviceError",
+                mapOf(
+                    "code" to "OVERLAY_VIEW_REMOVE_FAILED",
+                    "detail" to (error.message ?: error.javaClass.simpleName),
+                ),
+            )
         }
         overlayView?.post {
             overlayView?.setOnTouchListener(null)
@@ -415,7 +470,7 @@ class OverlayForegroundService : Service() {
             startForeground(
                 NOTIFICATION_ID,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
             )
         } else {
             startForeground(NOTIFICATION_ID, notification)

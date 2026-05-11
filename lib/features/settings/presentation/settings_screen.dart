@@ -105,6 +105,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!PlatformCapabilities.overlaySupported) {
       return;
     }
+    AppDiagnostics.record('overlay_status_load', 'start');
     setState(() => _overlayBusy = true);
     try {
       final status = await AndroidOverlayBridge.getStatus();
@@ -114,7 +115,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       setState(() {
         _overlayStatus = status;
       });
+      AppDiagnostics.record(
+        'overlay_status_load',
+        _overlayStatusSummary(status),
+      );
     } on AndroidOverlayBridgeException catch (error) {
+      AppDiagnostics.record(
+        'overlay_status_error',
+        '${error.code}: ${error.message}',
+      );
       if (!mounted) {
         return;
       }
@@ -231,6 +240,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _openOverlaySettings() async {
     try {
+      AppDiagnostics.record('overlay_permission_settings', 'open');
       await AndroidOverlayBridge.openPermissionSettings();
       await _loadOverlayState();
     } catch (error) {
@@ -242,6 +252,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _toggleOverlay(bool value) async {
+    AppDiagnostics.record('overlay_toggle', 'requested=$value');
     setState(() => _overlayBusy = true);
     try {
       final status = await AndroidOverlayBridge.setOverlayEnabled(value);
@@ -251,7 +262,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       setState(() {
         _overlayStatus = status;
       });
+      AppDiagnostics.record(
+        'overlay_toggle_result',
+        _overlayStatusSummary(status),
+      );
     } on AndroidOverlayBridgeException catch (error) {
+      AppDiagnostics.record(
+        'overlay_toggle_error',
+        '${error.code}: ${error.message}',
+      );
       if (!mounted) {
         return;
       }
@@ -270,6 +289,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required double sizeScale,
     required double opacity,
   }) async {
+    AppDiagnostics.record(
+      'overlay_appearance',
+      'size=$sizeScale; opacity=$opacity',
+    );
     setState(() => _overlayBusy = true);
     try {
       final status = await AndroidOverlayBridge.setAppearance(
@@ -280,7 +303,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         return;
       }
       setState(() => _overlayStatus = status);
+      AppDiagnostics.record(
+        'overlay_appearance_result',
+        _overlayStatusSummary(status),
+      );
     } on AndroidOverlayBridgeException catch (error) {
+      AppDiagnostics.record(
+        'overlay_appearance_error',
+        '${error.code}: ${error.message}',
+      );
       if (!mounted) {
         return;
       }
@@ -296,6 +327,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _startOverlay() async {
+    AppDiagnostics.record('overlay_start', 'requested');
     setState(() => _overlayBusy = true);
     try {
       final status = await AndroidOverlayBridge.startRecording();
@@ -306,7 +338,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _overlayStatus = status;
         _message = 'Overlay recording started.';
       });
+      AppDiagnostics.record(
+        'overlay_start_result',
+        _overlayStatusSummary(status),
+      );
     } on AndroidOverlayBridgeException catch (error) {
+      AppDiagnostics.record(
+        'overlay_start_error',
+        '${error.code}: ${error.message}',
+      );
       if (!mounted) {
         return;
       }
@@ -322,6 +362,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _stopOverlay() async {
+    AppDiagnostics.record('overlay_stop', 'requested');
     setState(() => _overlayBusy = true);
     try {
       final status = await AndroidOverlayBridge.stopRecording();
@@ -332,7 +373,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _overlayStatus = status;
         _message = 'Overlay recording stopped.';
       });
+      AppDiagnostics.record(
+        'overlay_stop_result',
+        _overlayStatusSummary(status),
+      );
     } on AndroidOverlayBridgeException catch (error) {
+      AppDiagnostics.record(
+        'overlay_stop_error',
+        '${error.code}: ${error.message}',
+      );
       if (!mounted) {
         return;
       }
@@ -348,6 +397,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _cancelOverlay() async {
+    AppDiagnostics.record('overlay_cancel', 'requested');
     setState(() => _overlayBusy = true);
     try {
       final status = await AndroidOverlayBridge.cancelRecording();
@@ -358,7 +408,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _overlayStatus = status;
         _message = 'Overlay recording canceled.';
       });
+      AppDiagnostics.record(
+        'overlay_cancel_result',
+        _overlayStatusSummary(status),
+      );
     } on AndroidOverlayBridgeException catch (error) {
+      AppDiagnostics.record(
+        'overlay_cancel_error',
+        '${error.code}: ${error.message}',
+      );
       if (!mounted) {
         return;
       }
@@ -375,6 +433,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _openAccessibilitySettings() async {
     try {
+      AppDiagnostics.record('overlay_accessibility_settings', 'open');
       await AndroidOverlayBridge.openAccessibilitySettings();
       await _loadOverlayState();
     } on AndroidOverlayBridgeException catch (error) {
@@ -500,7 +559,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       'delivery=${status.deliveryMode.name}',
       'size=${status.sizeScale}',
       'opacity=${status.opacity}',
+      'service_state=${status.serviceState}',
+      'event_queue_size=${status.eventQueueSize}',
+      'last_native_event=${_sanitizeDiagnostic(status.lastNativeEvent ?? 'none')}',
       'busy=$_overlayBusy',
+    ].join('; ');
+  }
+
+  String _overlayStatusSummary(AndroidOverlayStatus status) {
+    return [
+      'enabled=${status.enabled}',
+      'requested=${status.requestedEnabled}',
+      'running=${status.running}',
+      'overlay_permission=${status.overlayPermissionGranted}',
+      'accessibility_permission=${status.accessibilityPermissionGranted}',
+      'service_state=${status.serviceState}',
+      'event_queue_size=${status.eventQueueSize}',
+      'last_native_event=${_sanitizeDiagnostic(status.lastNativeEvent ?? 'none')}',
     ].join('; ');
   }
 
@@ -965,8 +1040,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       : null,
                   title: const Text('Enable Android overlay bridge'),
                   subtitle: Text(
-                    (overlayStatus?.overlayPermissionGranted ?? false)
-                        ? 'Overlay bridge enabled. Foreground recording can run from Android controls.'
+                    (overlayStatus?.enabled ?? false)
+                        ? 'Overlay bridge enabled. The floating Android bubble should be visible.'
+                        : (overlayStatus?.overlayPermissionGranted ?? false)
+                        ? 'Overlay permission granted. Turn this on to show the floating bubble.'
                         : 'Overlay permission required before enabling.',
                   ),
                 ),
@@ -974,10 +1051,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: const Text('Overlay runtime status'),
                   subtitle: Text(
                     'enabled=${overlayStatus?.enabled ?? false} | '
+                    'requested=${overlayStatus?.requestedEnabled ?? false} | '
                     'running=${overlayStatus?.running ?? false} | '
+                    'service=${overlayStatus?.serviceState ?? 'unknown'} | '
                     'delivery=${overlayStatus?.deliveryMode.name ?? 'clipboardOnly'}',
                   ),
                 ),
+                if ((overlayStatus?.lastNativeEvent ?? 'none') != 'none')
+                  ListTile(
+                    title: const Text('Last native overlay event'),
+                    subtitle: Text(overlayStatus?.lastNativeEvent ?? 'none'),
+                  ),
                 if (overlayStatus?.accessibilityPermissionGranted == false)
                   const ListTile(
                     leading: Icon(Icons.info_outline),

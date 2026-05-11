@@ -49,7 +49,18 @@ class MainActivity : FlutterActivity() {
                     "setOverlayEnabled" -> {
                         val requestedEnabled =
                             call.argument<Boolean>("enabled") ?: false
+                        OverlayEventQueue.enqueue(
+                            "bridgeCall",
+                            mapOf(
+                                "method" to "setOverlayEnabled",
+                                "enabled" to requestedEnabled,
+                            ),
+                        )
                         if (requestedEnabled && !isOverlayPermissionGranted()) {
+                            OverlayEventQueue.enqueue(
+                                "bridgeError",
+                                mapOf("code" to "OVERLAY_PERMISSION_DENIED"),
+                            )
                             result.error(
                                 "OVERLAY_PERMISSION_DENIED",
                                 "Overlay permission is required before enabling overlay.",
@@ -57,8 +68,23 @@ class MainActivity : FlutterActivity() {
                             )
                             return@setMethodCallHandler
                         }
-                        setOverlayEnabled(requestedEnabled)
-                        result.success(buildStatusMap())
+                        try {
+                            setOverlayEnabled(requestedEnabled)
+                            result.success(buildStatusMap())
+                        } catch (error: Exception) {
+                            OverlayEventQueue.enqueue(
+                                "bridgeError",
+                                mapOf(
+                                    "code" to "OVERLAY_TOGGLE_FAILED",
+                                    "detail" to (error.message ?: error.javaClass.simpleName),
+                                ),
+                            )
+                            result.error(
+                                "OVERLAY_TOGGLE_FAILED",
+                                "Unable to toggle overlay service.",
+                                error.message,
+                            )
+                        }
                     }
                     "setOverlayAppearance" -> {
                         val sizeScale =
@@ -67,6 +93,14 @@ class MainActivity : FlutterActivity() {
                         val opacity =
                             call.argument<Number>("opacity")?.toFloat()
                                 ?: overlayOpacity()
+                        OverlayEventQueue.enqueue(
+                            "bridgeCall",
+                            mapOf(
+                                "method" to "setOverlayAppearance",
+                                "sizeScale" to sizeScale,
+                                "opacity" to opacity,
+                            ),
+                        )
                         setOverlayAppearance(sizeScale, opacity)
                         result.success(buildStatusMap())
                     }
@@ -74,7 +108,15 @@ class MainActivity : FlutterActivity() {
                         result.success(buildStatusMap())
                     }
                     "startOverlayRecording" -> {
+                        OverlayEventQueue.enqueue(
+                            "bridgeCall",
+                            mapOf("method" to "startOverlayRecording"),
+                        )
                         if (!isOverlayPermissionGranted()) {
+                            OverlayEventQueue.enqueue(
+                                "bridgeError",
+                                mapOf("code" to "OVERLAY_PERMISSION_DENIED"),
+                            )
                             result.error(
                                 "OVERLAY_PERMISSION_DENIED",
                                 "Overlay permission is required to start overlay recording.",
@@ -83,17 +125,29 @@ class MainActivity : FlutterActivity() {
                             return@setMethodCallHandler
                         }
                         if (!isOverlayEnabled()) {
-                            result.error(
-                                "OVERLAY_DISABLED",
-                                "Overlay must be enabled before starting overlay recording.",
-                                null,
+                            overlayPreferences()
+                                .edit()
+                                .putBoolean(keyOverlayEnabled, true)
+                                .apply()
+                            OverlayEventQueue.enqueue(
+                                "overlayPreference",
+                                mapOf(
+                                    "enabled" to true,
+                                    "source" to "startOverlayRecording",
+                                ),
                             )
-                            return@setMethodCallHandler
                         }
                         try {
                             sendOverlayCommand(OverlayForegroundService.ACTION_START)
                             result.success(buildStatusMap())
                         } catch (error: Exception) {
+                            OverlayEventQueue.enqueue(
+                                "bridgeError",
+                                mapOf(
+                                    "code" to "OVERLAY_START_FAILED",
+                                    "detail" to (error.message ?: error.javaClass.simpleName),
+                                ),
+                            )
                             result.error(
                                 "OVERLAY_START_FAILED",
                                 "Unable to start overlay service.",
@@ -102,10 +156,18 @@ class MainActivity : FlutterActivity() {
                         }
                     }
                     "stopOverlayRecording" -> {
+                        OverlayEventQueue.enqueue(
+                            "bridgeCall",
+                            mapOf("method" to "stopOverlayRecording"),
+                        )
                         sendOverlayCommand(OverlayForegroundService.ACTION_STOP)
                         result.success(buildStatusMap())
                     }
                     "cancelOverlayRecording" -> {
+                        OverlayEventQueue.enqueue(
+                            "bridgeCall",
+                            mapOf("method" to "cancelOverlayRecording"),
+                        )
                         sendOverlayCommand(OverlayForegroundService.ACTION_CANCEL)
                         result.success(buildStatusMap())
                     }
@@ -298,6 +360,10 @@ class MainActivity : FlutterActivity() {
 
     private fun setOverlayEnabled(enabled: Boolean) {
         overlayPreferences().edit().putBoolean(keyOverlayEnabled, enabled).apply()
+        OverlayEventQueue.enqueue(
+            "overlayPreference",
+            mapOf("enabled" to enabled),
+        )
         if (enabled) {
             sendOverlayCommand(OverlayForegroundService.ACTION_START)
         } else {
@@ -354,6 +420,9 @@ class MainActivity : FlutterActivity() {
             "deliveryMode" to mode,
             "sizeScale" to overlaySizeScale(),
             "opacity" to overlayOpacity(),
+            "eventQueueSize" to OverlayEventQueue.size(),
+            "serviceState" to OverlayForegroundService.serviceState(),
+            "lastNativeEvent" to (OverlayEventQueue.lastEventSummary() ?: "none"),
         )
     }
 }

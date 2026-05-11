@@ -45,8 +45,9 @@ The Flutter port now owns an actual native overlay bubble through `OverlayForegr
 
 ## Runtime Rules
 
+- The visible overlay bubble runs as a user-controlled Android foreground service with `specialUse`; it must not require microphone runtime permission merely to appear.
 - Starting recording from overlay requires an explicit user action.
-- A foreground notification is visible while overlay recording is active.
+- A foreground notification is visible while the overlay service is active.
 - Stop and cancel are always available.
 - If no editable field is focused, injection is skipped and final text is copied to clipboard.
 - If the focused field appears sensitive/password-like where detectable, injection is skipped.
