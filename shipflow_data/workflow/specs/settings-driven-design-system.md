@@ -338,6 +338,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
 | 2026-05-09 15:19:23 UTC | sf-spec | GPT-5 Codex | Created draft spec for post-settings-decision design system completion | Draft spec created; later unblocked by backend-agnostic SettingsStore decision | `/sf-ready shipflow_data/workflow/specs/settings-driven-design-system.md after Firebase adapter spec` |
+| 2026-05-11 19:08:22 UTC | sf-ship | GPT-5.5 | Centralized theme variables using TubeFlow theme references across AppTheme, keyboard preview, settings slider, and shell breakpoints; copied theme-reference assets from tubeflow_site | shipped | `/sf-end shipflow_data/workflow/specs/settings-driven-design-system.md` |
 
 # Current Chantier Flow
 
@@ -348,4 +349,4 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 | sf-start | pending | Implementation intentionally deferred | Wait for sf-ready |
 | sf-verify | pending | No implementation yet | After sf-start |
 | sf-end | pending | No implementation yet | After sf-verify |
-| sf-ship | pending | No implementation yet | After sf-end |
+| sf-ship | done | Theme tokens migrated for core screens; theme reference files copied | Continue sf-end once remaining design tasks are complete | /sf-end |

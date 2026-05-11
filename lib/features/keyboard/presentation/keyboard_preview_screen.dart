@@ -239,7 +239,7 @@ class _Dropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 220,
+      width: AppKeyboardPreview.dropdownWidth,
       child: DropdownButtonFormField<T>(
         initialValue: value,
         decoration: InputDecoration(labelText: label),
@@ -268,12 +268,14 @@ class _KeyboardFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 760),
+        constraints: const BoxConstraints(
+          maxWidth: AppKeyboardPreview.maxWidth,
+        ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: snapshot.privateMode
-                ? const Color(0xFFF6E8E2)
-                : const Color(0xFFEEF1EE),
+                ? AppColors.keyboardPrivateFrame
+                : AppColors.keyboardDefaultFrame,
             borderRadius: BorderRadius.circular(AppRadii.md),
             border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
@@ -308,13 +310,13 @@ class _KeyboardStatus extends StatelessWidget {
         ? 'WinFlowzApp - private input'
         : 'WinFlowzApp - ${snapshot.fieldContext.label}';
     return SizedBox(
-      height: 30,
+      height: AppKeyboardPreview.statusHeight,
       child: Center(
         child: Text(
           text,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: const Color(0xFF333D38),
-            fontWeight: FontWeight.w700,
+            color: AppColors.keyboardStatusText,
+            fontWeight: AppFontWeights.bold,
           ),
         ),
       ),
@@ -338,13 +340,16 @@ class _KeyboardRow extends StatelessWidget {
             Spacer(flex: (row.leadingWeight * 100).round()),
           for (final key in row.keys) ...[
             Expanded(
-              flex: (key.weight * 100).round(),
+              flex: (key.weight * AppKeyboardPreview.keyWeightScale).round(),
               child: _KeyCap(keySpec: key, debug: debug),
             ),
             if (key != row.keys.last) AppGaps.horizontalX2,
           ],
           if (row.trailingWeight > 0)
-            Spacer(flex: (row.trailingWeight * 100).round()),
+            Spacer(
+              flex: (row.trailingWeight * AppKeyboardPreview.keyWeightScale)
+                  .round(),
+            ),
         ],
       ),
     );
@@ -360,18 +365,22 @@ class _KeyCap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final background = keySpec.active
-        ? const Color(0xFF17795D)
+        ? AppColors.keyboardKeyActive
         : keySpec.special
-        ? const Color(0xFFE0E6E3)
-        : Colors.white;
-    final foreground = keySpec.active ? Colors.white : const Color(0xFF1D2320);
+        ? AppColors.keyboardKeySpecial
+        : AppColors.white;
+    final foreground = keySpec.active
+        ? AppColors.white
+        : AppColors.keyboardKeyForeground;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: keySpec.enabled ? background : const Color(0xFFD6D9D7),
+        color: keySpec.enabled ? background : AppColors.keyboardKeyDisabled,
         borderRadius: BorderRadius.circular(AppRadii.sm),
         border: Border.all(
           color: debug ? AppColors.danger : AppColors.borderLight,
-          width: debug ? 1.3 : 1,
+          width: debug
+              ? AppKeyboardPreview.keyDebugBorderWidth
+              : AppKeyboardPreview.keyBorderWidth,
         ),
       ),
       child: Stack(
@@ -403,7 +412,7 @@ class _KeyCap extends StatelessWidget {
                   maxLines: 1,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: foreground,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: AppFontWeights.bold,
                   ),
                 ),
               ),
@@ -426,12 +435,12 @@ class _CornerLabel extends StatelessWidget {
     return Align(
       alignment: alignment,
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(AppKeyboardPreview.cornerLabelPadding),
         child: Text(
           text,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: const Color(0xFF5C6762),
-            fontWeight: FontWeight.w700,
+            color: AppColors.keyboardCornerLabel,
+            fontWeight: AppFontWeights.bold,
           ),
         ),
       ),
@@ -469,7 +478,7 @@ class KeyboardPreviewSnapshot {
 
   KeyboardPreviewRow _actionRow() {
     return KeyboardPreviewRow(
-      height: 40,
+      height: AppKeyboardPreview.rowHeightMini,
       keys: [
         _modeKey('ABC', KeyboardPreviewMode.letters),
         _modeKey('123', KeyboardPreviewMode.numbers),
@@ -498,7 +507,7 @@ class KeyboardPreviewSnapshot {
     }
     return const [
       KeyboardPreviewRow(
-        height: 42,
+        height: AppKeyboardPreview.rowHeightCompact,
         keys: [
           KeyboardPreviewKey(label: "j'arrive", special: true, weight: 1.4),
           KeyboardPreviewKey(label: 'bonjour', special: true, weight: 1.4),
@@ -513,9 +522,9 @@ class KeyboardPreviewSnapshot {
       case KeyboardPreviewPanel.none:
         return const [];
       case KeyboardPreviewPanel.navigation:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(label: 'Start', special: true),
               KeyboardPreviewKey(label: 'Word<', special: true),
@@ -526,7 +535,7 @@ class KeyboardPreviewSnapshot {
             ],
           ),
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(label: 'Del', special: true),
               KeyboardPreviewKey(label: 'DelW<', special: true),
@@ -538,9 +547,9 @@ class KeyboardPreviewSnapshot {
           ),
         ];
       case KeyboardPreviewPanel.emoji:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(label: 'Rec', special: true),
               KeyboardPreviewKey(label: ':-)', special: true),
@@ -550,7 +559,7 @@ class KeyboardPreviewSnapshot {
             ],
           ),
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(label: ':)'),
               KeyboardPreviewKey(label: ':D'),
@@ -560,9 +569,9 @@ class KeyboardPreviewSnapshot {
           ),
         ];
       case KeyboardPreviewPanel.clipboard:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(label: 'Copy', special: true, weight: 1.2),
               KeyboardPreviewKey(label: 'Cut', special: true),
@@ -577,9 +586,9 @@ class KeyboardPreviewSnapshot {
           ),
         ];
       case KeyboardPreviewPanel.snippets:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(label: 'Snippet', special: true, weight: 1.8),
               KeyboardPreviewKey(label: 'App', special: true, weight: 1.2),
@@ -588,9 +597,9 @@ class KeyboardPreviewSnapshot {
           ),
         ];
       case KeyboardPreviewPanel.media:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(label: 'Prev', special: true),
               KeyboardPreviewKey(label: '>||', special: true, weight: 1.2),
@@ -602,7 +611,7 @@ class KeyboardPreviewSnapshot {
       case KeyboardPreviewPanel.settings:
         return [
           KeyboardPreviewRow(
-            height: 42,
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               KeyboardPreviewKey(
                 label: corners ? 'Corners on' : 'Corners off',
@@ -632,9 +641,9 @@ class KeyboardPreviewSnapshot {
       case KeyboardPreviewMode.letters:
         return _letterRows();
       case KeyboardPreviewMode.numbers:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 46,
+            height: AppKeyboardPreview.rowHeightRegular,
             keys: [
               KeyboardPreviewKey(label: '1'),
               KeyboardPreviewKey(label: '2'),
@@ -649,7 +658,7 @@ class KeyboardPreviewSnapshot {
             ],
           ),
           KeyboardPreviewRow(
-            height: 46,
+            height: AppKeyboardPreview.rowHeightRegular,
             keys: [
               KeyboardPreviewKey(label: '+'),
               KeyboardPreviewKey(label: '-'),
@@ -665,9 +674,9 @@ class KeyboardPreviewSnapshot {
           ),
         ];
       case KeyboardPreviewMode.accents:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 46,
+            height: AppKeyboardPreview.rowHeightRegular,
             keys: [
               KeyboardPreviewKey(label: 'à'),
               KeyboardPreviewKey(label: 'â'),
@@ -680,7 +689,7 @@ class KeyboardPreviewSnapshot {
             ],
           ),
           KeyboardPreviewRow(
-            height: 46,
+            height: AppKeyboardPreview.rowHeightRegular,
             keys: [
               KeyboardPreviewKey(label: 'î'),
               KeyboardPreviewKey(label: 'ï'),
@@ -695,9 +704,9 @@ class KeyboardPreviewSnapshot {
           ),
         ];
       case KeyboardPreviewMode.symbols:
-        return const [
+        return [
           KeyboardPreviewRow(
-            height: 46,
+            height: AppKeyboardPreview.rowHeightRegular,
             keys: [
               KeyboardPreviewKey(label: '!'),
               KeyboardPreviewKey(label: '?'),
@@ -710,7 +719,7 @@ class KeyboardPreviewSnapshot {
             ],
           ),
           KeyboardPreviewRow(
-            height: 46,
+            height: AppKeyboardPreview.rowHeightRegular,
             keys: [
               KeyboardPreviewKey(label: '#'),
               KeyboardPreviewKey(label: '@'),
@@ -737,15 +746,18 @@ class KeyboardPreviewSnapshot {
         ? 'wxcvbn'
         : 'zxcvbnm';
     return [
-      KeyboardPreviewRow(height: 46, keys: _letterKeys(top)),
       KeyboardPreviewRow(
-        height: 46,
+        height: AppKeyboardPreview.rowHeightRegular,
+        keys: _letterKeys(top),
+      ),
+      KeyboardPreviewRow(
+        height: AppKeyboardPreview.rowHeightRegular,
         leadingWeight: .45,
         trailingWeight: .45,
         keys: _letterKeys(middle),
       ),
       KeyboardPreviewRow(
-        height: 46,
+        height: AppKeyboardPreview.rowHeightRegular,
         leadingWeight: 1,
         trailingWeight: 1,
         keys: _letterKeys(bottom),
@@ -764,7 +776,7 @@ class KeyboardPreviewSnapshot {
       KeyboardPreviewFieldContext.text => 'Back',
     };
     return KeyboardPreviewRow(
-      height: 48,
+      height: AppKeyboardPreview.rowHeightControl,
       keys: [
         KeyboardPreviewKey(label: left, special: true, weight: 1.2),
         const KeyboardPreviewKey(label: 'Space', special: true, weight: 4),

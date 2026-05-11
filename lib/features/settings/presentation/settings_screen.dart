@@ -1083,34 +1083,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ],
                       ),
                       Slider(
-                        value: overlayStatus?.sizeScale ?? 1,
-                        min: 0.8,
-                        max: 1.4,
-                        divisions: 6,
+                        value:
+                            overlayStatus?.sizeScale ??
+                            AppSliders.overlayDefaultSize,
+                        min: AppSliders.overlayBubbleSizeMin,
+                        max: AppSliders.overlayBubbleSizeMax,
+                        divisions: AppSliders.overlaySizeDivisions,
                         onChanged: _overlayBusy
                             ? null
                             : (value) => _setOverlayAppearance(
                                 sizeScale: value,
-                                opacity: overlayStatus?.opacity ?? 0.8,
+                                opacity:
+                                    overlayStatus?.opacity ??
+                                    AppSliders.overlayDefaultOpacity,
                               ),
                       ),
                       Row(
                         children: [
                           const Expanded(child: Text('Bubble opacity')),
                           Text(
-                            '${((overlayStatus?.opacity ?? 0.8) * 100).round()}%',
+                            '${((overlayStatus?.opacity ?? AppSliders.overlayDefaultOpacity) * 100).round()}%',
                           ),
                         ],
                       ),
                       Slider(
-                        value: overlayStatus?.opacity ?? 0.8,
-                        min: 0.5,
-                        max: 1,
-                        divisions: 5,
+                        value:
+                            overlayStatus?.opacity ??
+                            AppSliders.overlayDefaultOpacity,
+                        min: AppSliders.overlayBubbleOpacityMin,
+                        max: AppSliders.overlayBubbleOpacityMax,
+                        divisions: AppSliders.overlayOpacityDivisions,
                         onChanged: _overlayBusy
                             ? null
                             : (value) => _setOverlayAppearance(
-                                sizeScale: overlayStatus?.sizeScale ?? 1,
+                                sizeScale:
+                                    overlayStatus?.sizeScale ??
+                                    AppSliders.overlayDefaultSize,
                                 opacity: value,
                               ),
                       ),

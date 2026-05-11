@@ -79,7 +79,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final useRail = constraints.maxWidth >= 720;
+        final useRail = constraints.maxWidth >= AppBreakpoints.navigationRail;
         return PopScope(
           canPop: _tabHistory.length <= 1,
           onPopInvokedWithResult: (didPop, result) {
@@ -93,7 +93,9 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
               children: [
                 if (useRail)
                   NavigationRail(
-                    extended: constraints.maxWidth >= 980,
+                    extended:
+                        constraints.maxWidth >=
+                        AppBreakpoints.navigationRailExtended,
                     selectedIndex: _index,
                     onDestinationSelected: _selectTab,
                     destinations: const [

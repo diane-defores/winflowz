@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:winflowz_app/core/theme/tubeflow_site_theme_tokens.dart';
 
 enum AppThemeMode {
   system(ThemeMode.system, 'System'),
@@ -19,96 +20,119 @@ enum AppThemeMode {
 }
 
 class AppColors {
-  // WinFlowzApp brand primitives.
-  static const primary = Color(0xFF6366F1);
-  static const primaryDark = Color(0xFF4F46E5);
-  static const secondary = Color(0xFF22D3EE);
+  // Brand primitives.
+  static const primary = TubeflowSiteThemeTokens.brandPrimary;
+  static const primaryDark = TubeflowSiteThemeTokens.brandPrimaryDark;
+  static const secondary = TubeflowSiteThemeTokens.brandSecondary;
   static const accent = secondary;
 
-  // WinFlowzApp neutral primitives.
-  static const dark = Color(0xFF0F172A);
-  static const gray = Color(0xFF64748B);
+  // Neutral primitives (site theme base + app continuity).
+  static const dark = TubeflowSiteThemeTokens.siteText;
+  static const gray = TubeflowSiteThemeTokens.siteMutedForeground;
   static const neutral = gray;
   static const slate = gray;
-  static const lightGray = Color(0xFFF1F5F9);
-  static const lightBlue = Color(0xFFE0E7FF);
-  static const white = Color(0xFFFFFFFF);
+  static const lightGray = TubeflowSiteThemeTokens.lightGray;
+  static const lightBlue = TubeflowSiteThemeTokens.brandSecondary;
+  static const white = TubeflowSiteThemeTokens.white;
+  static const black = TubeflowSiteThemeTokens.black;
+  static const transparent = Colors.transparent;
 
   // Semantic surfaces and text.
   static const textPrimary = dark;
+  static const siteBackground = TubeflowSiteThemeTokens.siteBackground;
+  static const siteForeground = TubeflowSiteThemeTokens.siteForeground;
   static const textMuted = gray;
   static const surfaceBase = white;
   static const surfaceRaised = white;
   static const surfaceOverlay = white;
-  static const surfaceSunken = Color(0xFFF8FAFC);
+  static const surfaceSunken = TubeflowSiteThemeTokens.surfaceSunken;
   static const surfaceSubtle = lightGray;
   static const surfaceTint = lightBlue;
   static const surfaceCard = surfaceRaised;
-  static const surfaceBaseDark = dark;
-  static const surfaceRaisedDark = Color(0xFF1E293B);
-  static const surfaceOverlayDark = Color(0xFF334155);
-  static const surfaceSunkenDark = Color(0xFF020617);
-  static const textOnDark = white;
-  static const textOnDarkMuted = Color(0xB3FFFFFF);
-  static const codeText = Color(0xFFE2E8F0);
-  static const badgeBg = Color(0xFFFEF3C7);
-  static const badgeText = Color(0xFF92400E);
+  static const surfaceBaseDark = siteBackground;
+  static const surfaceRaisedDark = TubeflowSiteThemeTokens.surfaceRaisedDark;
+  static const surfaceOverlayDark = TubeflowSiteThemeTokens.surfaceOverlayDark;
+  static const surfaceSunkenDark = TubeflowSiteThemeTokens.surfaceSunkenDark;
+  static const overlayDark = TubeflowSiteThemeTokens.siteWhiteSubtle;
+  static const textOnDark = siteForeground;
+  static const textOnDarkMuted = TubeflowSiteThemeTokens.siteTextOnDarkMuted;
+  static const codeText = TubeflowSiteThemeTokens.siteCodeText;
+  static const badgeBg = TubeflowSiteThemeTokens.siteBadgeBg;
+  static const badgeText = TubeflowSiteThemeTokens.siteBadgeText;
 
   // Borders and overlays.
-  static const borderSubtle = Color(0x0D000000);
-  static const borderLight = Color(0x14000000);
-  static const borderDarkSubtle = Color(0x1AFFFFFF);
-  static const overlayDark = Color(0x1AFFFFFF);
-  static const overlayScrim = Color(0x660F172A);
+  static const borderSubtle = TubeflowSiteThemeTokens.siteBorderSubtle;
+  static const borderLight = TubeflowSiteThemeTokens.siteBorder;
+  static const borderDarkSubtle = TubeflowSiteThemeTokens.siteBorderDarkSubtle;
+  static const overlayScrim = TubeflowSiteThemeTokens.siteScrim;
 
   // Support colors.
-  static const success = Color(0xFF16A34A);
-  static const warning = Color(0xFFD97706);
-  static const danger = Color(0xFFDC2626);
-  static const dangerLight = Color(0xFFF87171);
+  static const success = TubeflowSiteThemeTokens.brandSuccess;
+  static const warning = TubeflowSiteThemeTokens.brandWarning;
+  static const danger = TubeflowSiteThemeTokens.brandDanger;
+  static const dangerLight = TubeflowSiteThemeTokens.brandDangerLight;
   static const info = accent;
+
+  // Keyboard preview surface-specific tokens (copied from pages de debug).
+  static const keyboardPrivateFrame =
+      TubeflowSiteThemeTokens.keyboardPrivateFrame;
+  static const keyboardDefaultFrame =
+      TubeflowSiteThemeTokens.keyboardDefaultFrame;
+  static const keyboardStatusText = TubeflowSiteThemeTokens.keyboardStatusText;
+  static const keyboardKeyActive = TubeflowSiteThemeTokens.keyboardKeyActive;
+  static const keyboardKeySpecial = TubeflowSiteThemeTokens.keyboardKeySpecial;
+  static const keyboardKeyDisabled =
+      TubeflowSiteThemeTokens.keyboardKeyDisabled;
+  static const keyboardKeyForeground =
+      TubeflowSiteThemeTokens.keyboardKeyForeground;
+  static const keyboardCornerLabel =
+      TubeflowSiteThemeTokens.keyboardCornerLabel;
 }
 
 class AppTypography {
-  static const fontFamily = 'Inter';
-  static const fontFallback = <String>[
-    'Segoe UI',
-    'Roboto',
-    'Arial',
-    'sans-serif',
-  ];
+  static const fontFamily = TubeflowSiteThemeTokens.fontSans;
+  static const fontFallback = TubeflowSiteThemeTokens.fontFallback;
 
-  // WinFlowzApp scale: base 16px, ratio 1.25.
-  static const xs = 12.0;
-  static const sm = 14.0;
-  static const base = 16.0;
-  static const lg = 20.0;
-  static const h3 = 24.0;
-  static const h2 = 32.0;
-  static const h1 = 40.0;
+  // WinFlowzApp scale (cohérente avec le thème site, bornée à un set court).
+  static const xs = TubeflowSiteThemeTokens.typographyXs;
+  static const sm = TubeflowSiteThemeTokens.typographySm;
+  static const base = TubeflowSiteThemeTokens.typographyBase;
+  static const lg = TubeflowSiteThemeTokens.typographyMd;
+  static const h3 = TubeflowSiteThemeTokens.typographyLg;
+  static const h2 = TubeflowSiteThemeTokens.typographyXl;
+  static const h1 = TubeflowSiteThemeTokens.typographyXxl;
 
-  static const leadingTight = 1.2;
-  static const leadingSnug = 1.3;
-  static const leadingNormal = 1.6;
+  static const leadingTight = TubeflowSiteThemeTokens.lineHeightTight;
+  static const leadingSnug = TubeflowSiteThemeTokens.lineHeightSnug;
+  static const leadingNormal = TubeflowSiteThemeTokens.lineHeightNormal;
   static const leadingRelaxed = 1.8;
 
-  static const trackingWide = 0.04;
-  static const trackingWider = 0.08;
+  static const trackingWide = TubeflowSiteThemeTokens.trackingWide;
+  static const trackingWider = TubeflowSiteThemeTokens.trackingWider;
+}
+
+class AppFontWeights {
+  static const regular = FontWeight.w400;
+  static const medium = FontWeight.w500;
+  static const semiBold = FontWeight.w600;
+  static const bold = FontWeight.w700;
+  static const xBold = FontWeight.w800;
+  static const heavy = FontWeight.w900;
 }
 
 class AppSpacing {
-  static const x1 = 4.0;
-  static const x2 = 8.0;
-  static const x3 = 12.0;
-  static const x4 = 16.0;
-  static const x5 = 20.0;
-  static const x6 = 24.0;
-  static const x8 = 32.0;
-  static const x10 = 40.0;
-  static const x12 = 48.0;
-  static const x16 = 64.0;
-  static const x20 = 80.0;
-  static const x24 = 96.0;
+  static const x1 = TubeflowSiteThemeTokens.spacing1;
+  static const x2 = TubeflowSiteThemeTokens.spacing2;
+  static const x3 = TubeflowSiteThemeTokens.spacing3;
+  static const x4 = TubeflowSiteThemeTokens.spacing4;
+  static const x5 = TubeflowSiteThemeTokens.spacing5;
+  static const x6 = TubeflowSiteThemeTokens.spacing6;
+  static const x8 = TubeflowSiteThemeTokens.spacing8;
+  static const x10 = TubeflowSiteThemeTokens.spacing10;
+  static const x12 = TubeflowSiteThemeTokens.spacing12;
+  static const x16 = TubeflowSiteThemeTokens.spacing16;
+  static const x20 = TubeflowSiteThemeTokens.spacing20;
+  static const x24 = TubeflowSiteThemeTokens.spacing24;
 }
 
 class AppInsets {
@@ -168,49 +192,123 @@ class AppLayoutMetrics {
       AppSpacing.x24 + AppSpacing.x24 + AppSpacing.x20 + AppSpacing.x2;
 }
 
+class AppBreakpoints {
+  static const double navigationRail =
+      TubeflowSiteThemeTokens.navRailBreakpoint;
+  static const double navigationRailExtended =
+      TubeflowSiteThemeTokens.navRailExtendedBreakpoint;
+}
+
+class AppKeyboardPreview {
+  static const double maxWidth =
+      TubeflowSiteThemeTokens.keyboardPreviewFrameMaxWidth;
+  static const double dropdownWidth =
+      TubeflowSiteThemeTokens.keyboardPreviewDropdownWidth;
+  static const double statusHeight =
+      TubeflowSiteThemeTokens.keyboardPreviewStatusHeight;
+  static const double rowHeightTiny =
+      TubeflowSiteThemeTokens.keyboardPreviewRowHeightMini;
+  static const double rowHeightMini = rowHeightTiny;
+  static const double rowHeightCompact =
+      TubeflowSiteThemeTokens.keyboardPreviewRowHeightCompact;
+  static const double rowHeightRegular =
+      TubeflowSiteThemeTokens.keyboardPreviewRowHeight;
+  static const double rowHeightControl =
+      TubeflowSiteThemeTokens.keyboardPreviewControlHeight;
+  static const double keyBorderWidth =
+      TubeflowSiteThemeTokens.keyboardKeyBorderWidth;
+  static const double keyDebugBorderWidth =
+      TubeflowSiteThemeTokens.keyboardKeyDebugBorderWidth;
+  static const double cornerLabelPadding =
+      TubeflowSiteThemeTokens.keyboardCornerLabelPadding;
+  static const double keyWeightScale =
+      TubeflowSiteThemeTokens.keyboardWeightScale;
+}
+
+class AppSliders {
+  static const double overlayBubbleSizeMin =
+      TubeflowSiteThemeTokens.overlayBubbleSizeMin;
+  static const double overlayBubbleSizeMax =
+      TubeflowSiteThemeTokens.overlayBubbleSizeMax;
+  static const int overlaySizeDivisions =
+      TubeflowSiteThemeTokens.overlaySizeDivisions;
+  static const double overlayBubbleOpacityMin =
+      TubeflowSiteThemeTokens.overlayBubbleOpacityMin;
+  static const double overlayBubbleOpacityMax =
+      TubeflowSiteThemeTokens.overlayBubbleOpacityMax;
+  static const int overlayOpacityDivisions =
+      TubeflowSiteThemeTokens.overlayOpacityDivisions;
+  static const double overlayDefaultSize =
+      TubeflowSiteThemeTokens.overlayBubbleDefaultSize;
+  static const double overlayDefaultOpacity =
+      TubeflowSiteThemeTokens.overlayBubbleDefaultOpacity;
+}
+
 class AppElevation {
-  static const overlay = 8.0;
+  static const overlay = TubeflowSiteThemeTokens.elevationOverlay;
+  static const cardLight = TubeflowSiteThemeTokens.cardElevationLight;
+  static const cardDark = TubeflowSiteThemeTokens.cardElevationDark;
 }
 
 class AppRadii {
-  static const sm = 8.0;
-  static const md = 12.0;
-  static const lg = 16.0;
-  static const xl = 20.0;
-  static const x2l = 28.0;
+  static const sm = TubeflowSiteThemeTokens.siteRadiusSm;
+  static const md = TubeflowSiteThemeTokens.siteRadiusMd;
+  static const lg = TubeflowSiteThemeTokens.siteRadiusLg;
+  static const xl = TubeflowSiteThemeTokens.siteRadiusXl;
+  static const x2l = TubeflowSiteThemeTokens.siteRadius2xl;
   static const pill = 9999.0;
 }
 
 class AppShadows {
   static const sm = [
-    BoxShadow(color: Color(0x0F000000), blurRadius: 8, offset: Offset(0, 2)),
+    BoxShadow(
+      color: TubeflowSiteThemeTokens.shadowSoft,
+      blurRadius: 8,
+      offset: Offset(0, 2),
+    ),
   ];
 
   static const card = [
-    BoxShadow(color: Color(0x14000000), blurRadius: 20, offset: Offset(0, 4)),
+    BoxShadow(
+      color: TubeflowSiteThemeTokens.shadowCard,
+      blurRadius: 20,
+      offset: Offset(0, 4),
+    ),
   ];
 
   static const cardHover = [
-    BoxShadow(color: Color(0x1F000000), blurRadius: 30, offset: Offset(0, 8)),
+    BoxShadow(
+      color: TubeflowSiteThemeTokens.shadowCardHover,
+      blurRadius: 30,
+      offset: Offset(0, 8),
+    ),
   ];
 
   static const cardLarge = [
-    BoxShadow(color: Color(0x26000000), blurRadius: 40, offset: Offset(0, 12)),
+    BoxShadow(
+      color: TubeflowSiteThemeTokens.shadowCardLarge,
+      blurRadius: 40,
+      offset: Offset(0, 12),
+    ),
   ];
 
   static const primary = [
-    BoxShadow(color: Color(0x4D6366F1), blurRadius: 15, offset: Offset(0, 4)),
+    BoxShadow(
+      color: TubeflowSiteThemeTokens.shadowPrimary,
+      blurRadius: 15,
+      offset: Offset(0, 4),
+    ),
   ];
 }
 
 class AppMotion {
-  static const instant = Duration(milliseconds: 120);
-  static const fast = Duration(milliseconds: 150);
-  static const base = Duration(milliseconds: 200);
-  static const slow = Duration(milliseconds: 300);
-  static const standardCurve = Curves.ease;
+  static const instant = TubeflowSiteThemeTokens.motionInstant;
+  static const fast = TubeflowSiteThemeTokens.motionFast;
+  static const base = TubeflowSiteThemeTokens.motionBase;
+  static const slow = TubeflowSiteThemeTokens.motionSlow;
+  static const standardCurve = TubeflowSiteThemeTokens.motionStandard;
   static const outCurve = Curves.easeOut;
-  static const springCurve = Cubic(0.34, 1.56, 0.64, 1);
+  static const springCurve = TubeflowSiteThemeTokens.motionSpring;
 }
 
 class AppTheme {
@@ -249,7 +347,7 @@ class AppTheme {
       surface: AppColors.surfaceBaseDark,
       onSurface: AppColors.textOnDark,
       surfaceContainerLowest: AppColors.surfaceSunkenDark,
-      surfaceContainerLow: Color(0xFF0B1120),
+      surfaceContainerLow: TubeflowSiteThemeTokens.surfaceSunkenDark,
       surfaceContainer: AppColors.surfaceRaisedDark,
       surfaceContainerHighest: AppColors.surfaceOverlayDark,
       outline: AppColors.borderDarkSubtle,
@@ -271,20 +369,22 @@ class AppTheme {
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
         centerTitle: false,
-        elevation: 0,
+        elevation: TubeflowSiteThemeTokens.appBarElevation,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
-          fontWeight: FontWeight.w700,
+          fontWeight: AppFontWeights.bold,
         ),
       ),
       cardTheme: CardThemeData(
         margin: const EdgeInsets.symmetric(vertical: AppSpacing.x2),
-        elevation: isDark ? 0 : 1,
-        shadowColor: Colors.black.withValues(alpha: isDark ? 0 : 0.08),
+        elevation: isDark ? AppElevation.cardDark : AppElevation.cardLight,
+        shadowColor: AppColors.black.withValues(
+          alpha: isDark ? 0 : TubeflowSiteThemeTokens.cardShadowAlpha,
+        ),
         color: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
           side: BorderSide(color: colorScheme.outlineVariant),
@@ -300,10 +400,15 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
-          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+          borderSide: BorderSide(
+            color: colorScheme.primary,
+            width: TubeflowSiteThemeTokens.textFieldBorderWidth,
+          ),
         ),
         filled: true,
-        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+        fillColor: colorScheme.surfaceContainerHighest.withValues(
+          alpha: TubeflowSiteThemeTokens.textFieldFillAlpha,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.x4,
           vertical: AppSpacing.x3,
@@ -320,7 +425,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(fontWeight: AppFontWeights.bold),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -334,7 +439,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(fontWeight: AppFontWeights.bold),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -360,9 +465,9 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         indicatorColor: colorScheme.primaryContainer,
         backgroundColor: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(fontWeight: FontWeight.w600),
+          const TextStyle(fontWeight: AppFontWeights.semiBold),
         ),
       ),
       switchTheme: SwitchThemeData(
@@ -379,8 +484,8 @@ class AppTheme {
       ),
       dividerTheme: DividerThemeData(
         color: colorScheme.outlineVariant,
-        thickness: 1,
-        space: 1,
+        thickness: TubeflowSiteThemeTokens.dividerThickness,
+        space: TubeflowSiteThemeTokens.dividerThickness,
       ),
       chipTheme: ChipThemeData(
         backgroundColor: colorScheme.surfaceContainerHighest,
@@ -393,7 +498,7 @@ class AppTheme {
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
           textStyle: WidgetStateProperty.all(
-            textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+            textTheme.labelLarge?.copyWith(fontWeight: AppFontWeights.bold),
           ),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
@@ -419,7 +524,7 @@ class AppTheme {
         fontFamilyFallback: AppTypography.fontFallback,
         fontSize: AppTypography.h1,
         height: AppTypography.leadingTight,
-        fontWeight: FontWeight.w900,
+        fontWeight: AppFontWeights.heavy,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
@@ -428,7 +533,7 @@ class AppTheme {
         fontFamilyFallback: AppTypography.fontFallback,
         fontSize: AppTypography.h2,
         height: AppTypography.leadingTight,
-        fontWeight: FontWeight.w800,
+        fontWeight: AppFontWeights.xBold,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
@@ -437,7 +542,7 @@ class AppTheme {
         fontFamilyFallback: AppTypography.fontFallback,
         fontSize: AppTypography.h3,
         height: AppTypography.leadingSnug,
-        fontWeight: FontWeight.w700,
+        fontWeight: AppFontWeights.bold,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
@@ -446,7 +551,7 @@ class AppTheme {
         fontFamilyFallback: AppTypography.fontFallback,
         fontSize: AppTypography.lg,
         height: AppTypography.leadingSnug,
-        fontWeight: FontWeight.w700,
+        fontWeight: AppFontWeights.bold,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
@@ -455,7 +560,7 @@ class AppTheme {
         fontFamilyFallback: AppTypography.fontFallback,
         fontSize: AppTypography.base,
         height: AppTypography.leadingNormal,
-        fontWeight: FontWeight.w700,
+        fontWeight: AppFontWeights.bold,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
@@ -481,14 +586,16 @@ class AppTheme {
         fontSize: AppTypography.xs,
         height: AppTypography.leadingNormal,
         letterSpacing: 0,
-        color: colorScheme.onSurface.withValues(alpha: 0.72),
+        color: colorScheme.onSurface.withValues(
+          alpha: TubeflowSiteThemeTokens.surfaceSubtleAlpha,
+        ),
       ),
       labelLarge: TextStyle(
         fontFamily: AppTypography.fontFamily,
         fontFamilyFallback: AppTypography.fontFallback,
         fontSize: AppTypography.sm,
         height: AppTypography.leadingSnug,
-        fontWeight: FontWeight.w700,
+        fontWeight: AppFontWeights.bold,
         letterSpacing: 0,
         color: colorScheme.onSurface,
       ),
@@ -497,7 +604,7 @@ class AppTheme {
         fontFamilyFallback: AppTypography.fontFallback,
         fontSize: AppTypography.xs,
         height: AppTypography.leadingSnug,
-        fontWeight: FontWeight.w700,
+        fontWeight: AppFontWeights.bold,
         letterSpacing: AppTypography.trackingWide,
         color: colorScheme.onSurface,
       ),
