@@ -6,6 +6,7 @@ import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../clipboard/presentation/clipboard_screen.dart';
 import '../../dictionary/presentation/dictionary_screen.dart';
+import '../../keyboard/presentation/keyboard_preview_screen.dart';
 import '../../settings/presentation/settings_screen.dart';
 import '../../snippets/presentation/snippets_screen.dart';
 import '../../voice/presentation/voice_screen.dart';
@@ -26,7 +27,14 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
     if (value == _index) {
       return;
     }
-    const titles = ['Voice', 'Clipboard', 'Snippets', 'Dictionary', 'Settings'];
+    const titles = [
+      'Voice',
+      'Clipboard',
+      'Keyboard',
+      'Snippets',
+      'Dictionary',
+      'Settings',
+    ];
     AppDiagnostics.record(
       'tab_select',
       '${titles[_index]} -> ${titles[value]}',
@@ -53,80 +61,140 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
     final pages = [
       VoiceScreen(),
       ClipboardScreen(),
+      const KeyboardPreviewScreen(),
       SnippetsScreen(),
       DictionaryScreen(),
       SettingsScreen(
         onResumeOnboarding: () => setState(() => _onboardingVisible = true),
       ),
     ];
-    const titles = ['Voice', 'Clipboard', 'Snippets', 'Dictionary', 'Settings'];
+    const titles = [
+      'Voice',
+      'Clipboard',
+      'Keyboard',
+      'Snippets',
+      'Dictionary',
+      'Settings',
+    ];
 
-    return PopScope(
-      canPop: _tabHistory.length <= 1,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
-          _goBackInTabs();
-        }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final useRail = constraints.maxWidth >= 720;
+        return PopScope(
+          canPop: _tabHistory.length <= 1,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop) {
+              _goBackInTabs();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(title: Text('WinFlowzApp • ${titles[_index]}')),
+            body: Row(
+              children: [
+                if (useRail)
+                  NavigationRail(
+                    extended: constraints.maxWidth >= 980,
+                    selectedIndex: _index,
+                    onDestinationSelected: _selectTab,
+                    destinations: const [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.keyboard_voice_outlined),
+                        label: Text('Voice'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.content_paste_outlined),
+                        label: Text('Clipboard'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.keyboard_outlined),
+                        label: Text('Keyboard'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.text_snippet_outlined),
+                        label: Text('Snippets'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.auto_fix_high_outlined),
+                        label: Text('Dictionary'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.settings_outlined),
+                        label: Text('Settings'),
+                      ),
+                    ],
+                  ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      if (!PlatformCapabilities.localSpeechSupported)
+                        const MaterialBanner(
+                          content: Text(
+                            'Local speech is unavailable on Linux. Use advanced Whisper mode.',
+                          ),
+                          actions: [SizedBox.shrink()],
+                        ),
+                      if (!PlatformCapabilities.overlaySupported)
+                        const MaterialBanner(
+                          content: Text(
+                            'Android overlay is unavailable on this platform.',
+                          ),
+                          actions: [SizedBox.shrink()],
+                        ),
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            Positioned.fill(child: pages[_index]),
+                            if (_onboardingVisible)
+                              _OnboardingOverlay(
+                                onClose: () =>
+                                    setState(() => _onboardingVisible = false),
+                                onOpenSettings: () => _selectTab(5),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            bottomNavigationBar: useRail
+                ? null
+                : NavigationBar(
+                    labelBehavior:
+                        NavigationDestinationLabelBehavior.onlyShowSelected,
+                    selectedIndex: _index,
+                    onDestinationSelected: _selectTab,
+                    destinations: const [
+                      NavigationDestination(
+                        icon: Icon(Icons.keyboard_voice_outlined),
+                        label: 'Voice',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.content_paste_outlined),
+                        label: 'Clipboard',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.keyboard_outlined),
+                        label: 'Keyboard',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.text_snippet_outlined),
+                        label: 'Snippets',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.auto_fix_high_outlined),
+                        label: 'Dictionary',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.settings_outlined),
+                        label: 'Settings',
+                      ),
+                    ],
+                  ),
+          ),
+        );
       },
-      child: Scaffold(
-        appBar: AppBar(title: Text('WinFlowzApp • ${titles[_index]}')),
-        body: Column(
-          children: [
-            if (!PlatformCapabilities.localSpeechSupported)
-              const MaterialBanner(
-                content: Text(
-                  'Local speech is unavailable on Linux. Use advanced Whisper mode.',
-                ),
-                actions: [SizedBox.shrink()],
-              ),
-            if (!PlatformCapabilities.overlaySupported)
-              const MaterialBanner(
-                content: Text(
-                  'Android overlay is unavailable on this platform.',
-                ),
-                actions: [SizedBox.shrink()],
-              ),
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned.fill(child: pages[_index]),
-                  if (_onboardingVisible)
-                    _OnboardingOverlay(
-                      onClose: () => setState(() => _onboardingVisible = false),
-                      onOpenSettings: () => _selectTab(4),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: _selectTab,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.keyboard_voice_outlined),
-              label: 'Voice',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.content_paste_outlined),
-              label: 'Clipboard',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.text_snippet_outlined),
-              label: 'Snippets',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.auto_fix_high_outlined),
-              label: 'Dictionary',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              label: 'Settings',
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

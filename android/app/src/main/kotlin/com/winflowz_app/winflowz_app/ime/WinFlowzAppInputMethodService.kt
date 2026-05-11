@@ -2,12 +2,10 @@ package com.winflowz_app.winflowz_app.ime
 
 import android.content.Intent
 import android.inputmethodservice.InputMethodService
-import android.view.KeyCharacterMap
+import android.view.inputmethod.InputMethodSubtype
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.ExtractedTextRequest
-import android.view.inputmethod.InputConnection
 import android.widget.Toast
 import com.winflowz_app.winflowz_app.MainActivity
 
@@ -20,6 +18,7 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
     private var fieldPolicy =
         KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var inputContext = KeyboardInputContextResolver.resolve(null)
+    private var selectionState = KeyboardSelectionState.Unavailable
 
     override fun onCreate() {
         super.onCreate()
@@ -31,18 +30,13 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
                 context = this,
                 onState = { message -> keyboardView?.setStatus(message) },
                 onResult = { text ->
-                    val inputConnection = currentInputConnection
-                    if (inputConnection == null) {
+                    val editor = editor()
+                    if (!editor.hasActiveConnection()) {
                         showStatus("Dictation result ignored: no active field")
                         return@KeyboardVoiceController
                     }
-                    val committed =
-                        commitTextSafely(
-                            inputConnection = inputConnection,
-                            text = text,
-                            failureStatus = "Dictation text rejected by field",
-                        )
-                    if (!committed) {
+                    val committed = editor.commitText(text)
+                    if (!committed.reportFailure("Dictation text rejected by field")) {
                         return@KeyboardVoiceController
                     }
                     if (stateStore.clipboardSyncDesired && fieldPolicy.clipboardAllowed) {
@@ -71,8 +65,39 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
+        refreshInputState(attribute)
+    }
+
+    override fun onStartInputView(
+        info: EditorInfo?,
+        restarting: Boolean,
+    ) {
+        super.onStartInputView(info, restarting)
+        refreshInputState(info)
+    }
+
+    override fun onCurrentInputMethodSubtypeChanged(newSubtype: InputMethodSubtype?) {
+        super.onCurrentInputMethodSubtypeChanged(newSubtype)
+        refreshInputState(currentInputEditorInfo)
+    }
+
+    override fun onEvaluateFullscreenMode(): Boolean {
+        return false
+    }
+
+    override fun onEvaluateInputViewShown(): Boolean {
+        super.onEvaluateInputViewShown()
+        return true
+    }
+
+    private fun refreshInputState(attribute: EditorInfo?) {
         fieldPolicy = KeyboardSecurityPolicy.evaluate(attribute, stateStore.privacyMode)
         inputContext = KeyboardInputContextResolver.resolve(attribute)
+        selectionState =
+            KeyboardSelectionState.fromEditorBounds(
+                selectionStart = attribute?.initialSelStart ?: -1,
+                selectionEnd = attribute?.initialSelEnd ?: -1,
+            )
         keyboardView?.applyPolicy(fieldPolicy)
         applyRuntimePreferencesToView()
         keyboardView?.applyInputContext(
@@ -81,8 +106,34 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
         )
     }
 
+    override fun onUpdateSelection(
+        oldSelStart: Int,
+        oldSelEnd: Int,
+        newSelStart: Int,
+        newSelEnd: Int,
+        candidatesStart: Int,
+        candidatesEnd: Int,
+    ) {
+        super.onUpdateSelection(
+            oldSelStart,
+            oldSelEnd,
+            newSelStart,
+            newSelEnd,
+            candidatesStart,
+            candidatesEnd,
+        )
+        selectionState =
+            KeyboardSelectionState(
+                selectionStart = newSelStart,
+                selectionEnd = newSelEnd,
+                candidatesStart = candidatesStart,
+                candidatesEnd = candidatesEnd,
+            )
+    }
+
     override fun onFinishInput() {
         voiceController.cancel()
+        selectionState = KeyboardSelectionState.Unavailable
         super.onFinishInput()
     }
 
@@ -96,12 +147,12 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
             showStatus("Input unavailable")
             return false
         }
-        val inputConnection = currentInputConnection
-        if (inputConnection == null) {
+        val editor = editor()
+        if (!editor.hasActiveConnection()) {
             showStatus("Input unavailable: no active field")
             return false
         }
-        return commitWithTypingCorrections(inputConnection, text)
+        return commitWithTypingCorrections(editor, text)
     }
 
     override fun onEmojiInserted(emoji: String) {
@@ -110,37 +161,30 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
     }
 
     override fun onBackspace(): Boolean {
-        val inputConnection = currentInputConnection
-        if (inputConnection == null) {
+        val editor = editor()
+        if (!editor.hasActiveConnection()) {
             showStatus("Delete unavailable: no active field")
             return false
         }
-        val selected = inputConnection.getSelectedText(0)
-        if (!selected.isNullOrEmpty()) {
-            return commitTextSafely(
-                inputConnection = inputConnection,
-                text = "",
-                failureStatus = "Delete selection rejected by field",
-            )
+        if (selectionState.hasSelection || !editor.selectedText().isNullOrEmpty()) {
+            return editor.commitText("").reportFailure("Delete selection rejected by field")
         }
-        val deleted = deleteCodePointBefore(inputConnection)
-        if (!deleted) {
+        val deleted = editor.deleteCodePointsBefore(1)
+        if (!deleted.applied) {
             showStatus("Delete rejected by field")
         }
-        return deleted
+        return deleted.applied
     }
 
     override fun onDeleteWordBefore(): Boolean {
-        val inputConnection = currentInputConnection ?: return false
-        val selected = inputConnection.getSelectedText(0)
-        if (!selected.isNullOrEmpty()) {
-            return commitTextSafely(
-                inputConnection = inputConnection,
-                text = "",
-                failureStatus = "Delete selection rejected by field",
-            )
+        val editor = editor()
+        if (!editor.hasActiveConnection()) {
+            return false
         }
-        val before = inputConnection.getTextBeforeCursor(128, 0)?.toString().orEmpty()
+        if (selectionState.hasSelection || !editor.selectedText().isNullOrEmpty()) {
+            return editor.commitText("").reportFailure("Delete selection rejected by field")
+        }
+        val before = editor.textBeforeCursor(128)?.toString().orEmpty()
         if (before.isEmpty()) {
             return false
         }
@@ -149,27 +193,25 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
             index--
         }
         if (index < 0) {
-            return deleteCodePointsBefore(inputConnection, before.codePointCount(0, before.length))
+            return editor.deleteCodePointsBefore(before.codePointCount(0, before.length)).applied
         }
         while (index >= 0 && !before[index].isWhitespace()) {
             index--
         }
         val segment = before.substring(index + 1)
         val codePointCount = segment.codePointCount(0, segment.length)
-        return deleteCodePointsBefore(inputConnection, codePointCount)
+        return editor.deleteCodePointsBefore(codePointCount).applied
     }
 
     override fun onEnter(): Boolean {
-        val inputConnection = currentInputConnection
-        if (inputConnection == null) {
+        val editor = editor()
+        if (!editor.hasActiveConnection()) {
             showStatus("Enter unavailable: no active field")
             return false
         }
-        val actionId = currentInputEditorInfo?.imeOptions?.and(EditorInfo.IME_MASK_ACTION)
-            ?: EditorInfo.IME_ACTION_NONE
+        val actionId = inputContext.actionId
         if (actionId != EditorInfo.IME_ACTION_NONE) {
-            val handled = inputConnection.performEditorAction(actionId)
-            if (handled) {
+            if (editor.performEditorAction(actionId).applied) {
                 return true
             }
         } else {
@@ -222,7 +264,8 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
             showStatus("Snippets disabled for private field")
             return
         }
-        showStatus("Snippets sync opens from the app for now")
+        onSettings()
+        showStatus("Open WinFlowzApp snippets from the app")
     }
 
     override fun onSettings() {
@@ -265,22 +308,22 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
     override fun onNavigateCharRight(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_RIGHT, 0)
 
     override fun onNavigateWordLeft(): Boolean {
-        val moved = moveWordCursor(left = true)
+        val moved = if (inputContext.selectionModeAllowed) editor().moveWordCursor(left = true).applied else false
         return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_CTRL_ON)
     }
 
     override fun onNavigateWordRight(): Boolean {
-        val moved = moveWordCursor(left = false)
+        val moved = if (inputContext.selectionModeAllowed) editor().moveWordCursor(left = false).applied else false
         return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON)
     }
 
     override fun onNavigateLineStart(): Boolean {
-        val moved = moveLineBoundary(start = true)
+        val moved = if (inputContext.selectionModeAllowed) editor().moveLineBoundary(start = true).applied else false
         return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_HOME, 0)
     }
 
     override fun onNavigateLineEnd(): Boolean {
-        val moved = moveLineBoundary(start = false)
+        val moved = if (inputContext.selectionModeAllowed) editor().moveLineBoundary(start = false).applied else false
         return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_END, 0)
     }
 
@@ -340,11 +383,12 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
                 KeyboardFieldContextMode.Email,
                 KeyboardFieldContextMode.Url,
                 KeyboardFieldContextMode.Phone,
+                KeyboardFieldContextMode.Number,
             )
     }
 
     private fun commitWithTypingCorrections(
-        inputConnection: InputConnection,
+        editor: InputConnectionEditor,
         text: String,
     ): Boolean {
         if (text.isEmpty()) {
@@ -353,33 +397,25 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
 
         if (!shouldSuppressAutoCorrections()) {
             if (stateStore.doubleSpacePeriodEnabled && text == " ") {
-                when (applyDoubleSpacePeriod(inputConnection)) {
+                when (applyDoubleSpacePeriod(editor)) {
                     TextCorrectionResult.Applied -> return true
                     TextCorrectionResult.Failed -> return false
                     TextCorrectionResult.NotApplied -> Unit
                 }
             }
             if (stateStore.punctuationAutoSpacingEnabled) {
-                val spaced = applyPunctuationAutoSpacing(inputConnection, text)
+                val spaced = applyPunctuationAutoSpacing(editor, text)
                 if (spaced != null) {
-                    return commitTextSafely(
-                        inputConnection = inputConnection,
-                        text = spaced,
-                        failureStatus = "Punctuation insertion rejected by field",
-                    )
+                    return editor.commitText(spaced).reportFailure("Punctuation insertion rejected by field")
                 }
             }
         }
 
-        return commitTextSafely(
-            inputConnection = inputConnection,
-            text = text,
-            failureStatus = "Text input rejected by field",
-        )
+        return editor.commitText(text).reportFailure("Text input rejected by field")
     }
 
-    private fun applyDoubleSpacePeriod(inputConnection: InputConnection): TextCorrectionResult {
-        val before = inputConnection.getTextBeforeCursor(3, 0)?.toString().orEmpty()
+    private fun applyDoubleSpacePeriod(editor: InputConnectionEditor): TextCorrectionResult {
+        val before = editor.textBeforeCursor(3)?.toString().orEmpty()
         if (!before.endsWith(" ") || before.length < 2) {
             return TextCorrectionResult.NotApplied
         }
@@ -387,16 +423,11 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
         if (!previous.isLetterOrDigit()) {
             return TextCorrectionResult.NotApplied
         }
-        if (!deleteCodePointBefore(inputConnection)) {
+        if (!editor.deleteCodePointsBefore(1).applied) {
             showStatus("Double-space correction rejected by field")
             return TextCorrectionResult.Failed
         }
-        val committed =
-            commitTextSafely(
-                inputConnection = inputConnection,
-                text = ". ",
-                failureStatus = "Double-space correction rejected by field",
-            )
+        val committed = editor.commitText(". ").reportFailure("Double-space correction rejected by field")
         return if (committed) {
             TextCorrectionResult.Applied
         } else {
@@ -405,14 +436,14 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
     }
 
     private fun applyPunctuationAutoSpacing(
-        inputConnection: InputConnection,
+        editor: InputConnectionEditor,
         text: String,
     ): String? {
         if (text.length != 1) {
             return null
         }
         val symbol = text[0]
-        val before = inputConnection.getTextBeforeCursor(1, 0)?.toString().orEmpty()
+        val before = editor.textBeforeCursor(1)?.toString().orEmpty()
         return when (symbol) {
             ':', ';', '!', '?' -> {
                 val prefix = if (before.isNotEmpty() && !before.last().isWhitespace()) " " else ""
@@ -429,138 +460,18 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
         }
     }
 
-    private fun moveWordCursor(left: Boolean): Boolean {
-        val inputConnection = currentInputConnection ?: return false
-        val extracted = inputConnection.getExtractedText(ExtractedTextRequest(), 0) ?: return false
-        val text = extracted.text?.toString() ?: return false
-        val selection = extracted.selectionStart.coerceIn(0, text.length)
-        val target =
-            if (left) {
-                previousWordBoundary(text, selection)
-            } else {
-                nextWordBoundary(text, selection)
-            }
-        if (target == selection) {
-            return false
-        }
-        return inputConnection.setSelection(target, target)
-    }
-
-    private fun moveLineBoundary(start: Boolean): Boolean {
-        val inputConnection = currentInputConnection ?: return false
-        val extracted = inputConnection.getExtractedText(ExtractedTextRequest(), 0) ?: return false
-        val text = extracted.text?.toString() ?: return false
-        val selection = extracted.selectionStart.coerceIn(0, text.length)
-        val target =
-            if (start) {
-                val previousLineBreak = text.lastIndexOf('\n', maxOf(0, selection - 1))
-                if (previousLineBreak < 0) 0 else previousLineBreak + 1
-            } else {
-                val nextLineBreak = text.indexOf('\n', selection)
-                if (nextLineBreak < 0) text.length else nextLineBreak
-            }
-        if (target == selection) {
-            return false
-        }
-        return inputConnection.setSelection(target, target)
-    }
-
-    private fun previousWordBoundary(
-        text: String,
-        cursor: Int,
-    ): Int {
-        if (cursor <= 0) {
-            return 0
-        }
-        var index = cursor - 1
-        while (index >= 0 && text[index].isWhitespace()) {
-            index--
-        }
-        while (index >= 0 && !text[index].isWhitespace()) {
-            index--
-        }
-        return (index + 1).coerceAtLeast(0)
-    }
-
-    private fun nextWordBoundary(
-        text: String,
-        cursor: Int,
-    ): Int {
-        if (cursor >= text.length) {
-            return text.length
-        }
-        var index = cursor
-        while (index < text.length && !text[index].isWhitespace()) {
-            index++
-        }
-        while (index < text.length && text[index].isWhitespace()) {
-            index++
-        }
-        return index.coerceAtMost(text.length)
-    }
-
     private fun sendSoftKey(
         keyCode: Int,
         metaState: Int,
-    ): Boolean {
-        val inputConnection = currentInputConnection ?: return false
-        val down =
-            KeyEvent(
-                0L,
-                0L,
-                KeyEvent.ACTION_DOWN,
-                keyCode,
-                0,
-                metaState,
-                KeyCharacterMap.VIRTUAL_KEYBOARD,
-                0,
-                KeyEvent.FLAG_SOFT_KEYBOARD,
-            )
-        val up =
-            KeyEvent(
-                0L,
-                0L,
-                KeyEvent.ACTION_UP,
-                keyCode,
-                0,
-                metaState,
-                KeyCharacterMap.VIRTUAL_KEYBOARD,
-                0,
-                KeyEvent.FLAG_SOFT_KEYBOARD,
-        )
-        val downSent = inputConnection.sendKeyEvent(down)
-        val upSent = inputConnection.sendKeyEvent(up)
-        return downSent && upSent
-    }
+    ): Boolean = editor().sendSoftKey(keyCode, metaState).applied
 
-    private fun commitTextSafely(
-        inputConnection: InputConnection,
-        text: String,
-        failureStatus: String,
-    ): Boolean {
-        val committed = inputConnection.commitText(text, 1)
-        if (!committed) {
+    private fun editor(): InputConnectionEditor = InputConnectionEditor(currentInputConnection)
+
+    private fun KeyboardEditorResult.reportFailure(failureStatus: String): Boolean {
+        if (!applied) {
             showStatus(failureStatus)
         }
-        return committed
-    }
-
-    private fun deleteCodePointsBefore(
-        inputConnection: InputConnection,
-        count: Int,
-    ): Boolean {
-        if (count <= 0) {
-            return false
-        }
-        val deletedCodePoints = inputConnection.deleteSurroundingTextInCodePoints(count, 0)
-        if (deletedCodePoints) {
-            return true
-        }
-        return inputConnection.deleteSurroundingText(count, 0)
-    }
-
-    private fun deleteCodePointBefore(inputConnection: InputConnection): Boolean {
-        return deleteCodePointsBefore(inputConnection, 1)
+        return applied
     }
 
     private fun showStatus(message: String) {

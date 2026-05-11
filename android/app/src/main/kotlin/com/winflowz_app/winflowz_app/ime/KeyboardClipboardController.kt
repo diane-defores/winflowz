@@ -5,7 +5,6 @@ import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
-import android.os.PersistableBundle
 import android.view.inputmethod.InputConnection
 
 class KeyboardClipboardController(private val context: Context) {
@@ -13,7 +12,7 @@ class KeyboardClipboardController(private val context: Context) {
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
     fun copySelection(inputConnection: InputConnection?, syncDesired: Boolean): Boolean {
-        val selectedText = inputConnection?.getSelectedText(0)?.toString()?.trim()
+        val selectedText = InputConnectionEditor(inputConnection).selectedText()?.toString()?.trim()
         if (selectedText.isNullOrEmpty()) {
             return false
         }
@@ -35,7 +34,7 @@ class KeyboardClipboardController(private val context: Context) {
         val item = clip.getItemAt(0) ?: return false
         val value = item.coerceToText(context)?.toString()?.takeIf { it.isNotBlank() }
             ?: return false
-        val pasted = inputConnection?.commitText(value, 1) == true
+        val pasted = InputConnectionEditor(inputConnection).commitText(value).applied
         if (pasted && syncDesired && !clip.isSensitive()) {
             KeyboardClipboardEventQueue.enqueue(
                 context = context,
@@ -45,16 +44,6 @@ class KeyboardClipboardController(private val context: Context) {
             )
         }
         return pasted
-    }
-
-    private fun markSensitive(clip: ClipData) {
-        val extras = PersistableBundle()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            extras.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-        } else {
-            extras.putBoolean("android.content.extra.IS_SENSITIVE", true)
-        }
-        clip.description.extras = extras
     }
 
     private fun ClipData.isSensitive(): Boolean {

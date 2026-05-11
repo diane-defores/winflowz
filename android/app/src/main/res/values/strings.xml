@@ -3,4 +3,6 @@
     <string name="app_name">WinFlowzApp</string>
     <string name="keyboard_name">WinFlowzApp Keyboard</string>
     <string name="keyboard_settings_name">WinFlowzApp keyboard settings</string>
+    <string name="keyboard_subtype_fr">Francais</string>
+    <string name="keyboard_subtype_en">English</string>
 </resources>

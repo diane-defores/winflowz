@@ -5,6 +5,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../features/auth/presentation/auth_gate_screen.dart';
 import '../../features/clipboard/presentation/clipboard_screen.dart';
 import '../../features/dictionary/presentation/dictionary_screen.dart';
+import '../../features/keyboard/presentation/keyboard_preview_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/snippets/presentation/snippets_screen.dart';
 import '../../features/voice/presentation/voice_screen.dart';
@@ -32,6 +33,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/keyboard',
+        name: 'keyboard',
+        builder: (context, state) => const KeyboardPreviewScreen(),
       ),
       GoRoute(
         path: '/snippets',

@@ -6,7 +6,7 @@ project: "WinFlowzApp"
 created: "2026-05-09"
 created_at: "2026-05-09 15:32:50 UTC"
 updated: "2026-05-11"
-updated_at: "2026-05-11 03:15:38 UTC"
+updated_at: "2026-05-11 15:12:10 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -79,6 +79,7 @@ evidence:
   - "User decision 2026-05-09: drawable gestures from the space bar should start by movement threshold, not long press; tap remains space, swipe/draw beyond a configurable threshold starts the gesture."
   - "User decision 2026-05-09: backend work is backend-agnostic, Firebase is the first remote adapter, and Supabase is legacy/reference only."
   - "Android official docs checked 2026-05-10: external actions should use explicit/implicit Intents where available, common intents for standard tasks, app launch intents, settings intents, app shortcuts when exposed by apps, and package visibility constraints when querying availability."
+  - "Reference keyboard reviewed at /home/claude/keyboard on 2026-05-11: mature IME service uses input-method subtypes, supports switching to next input method, onStartInputView/onUpdateSelection lifecycle hooks, EditorConfig-style field context, layout parsing, candidates, dictionaries, direct-boot-aware preferences and parser-level tests."
 next_step: "/sf-start Proprietary Swipe-Corner Android Keyboard"
 ---
 
@@ -382,6 +383,37 @@ Update after implementation:
 - `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`: cross-link this spec as the ergonomic rebuild of the IME surface.
 - `CHANGELOG.md`: after code ships, note keyboard usability rewrite.
 
+# Reference Keyboard Parity Roadmap
+
+Reference source: `/home/claude/keyboard`, reviewed locally on 2026-05-11. The goal is not to copy that codebase, layouts or assets. The goal is to use it as an architecture benchmark for a production-grade Android IME.
+
+Priority 1 - IME foundations:
+
+- Add input-method subtypes for at least French and English, and advertise support for switching to the next input method.
+- Keep the IME service defensive across lifecycle hooks: `onStartInput`, `onStartInputView`, subtype changes, fullscreen evaluation and input-view visibility.
+- Replace ad hoc field detection with an `EditorConfig`-like resolver that captures field context, action id, enter label, numeric mode and selection-mode support.
+- Ensure fake product placeholders never insert user-visible text; snippets must either use real snippet data or open the app/panel honestly.
+- Extend tests around field-context resolution, numeric/date fields, custom action labels and failure/fallback behavior.
+
+Priority 2 - Editing and navigation parity:
+
+- Add `onUpdateSelection` handling and maintain a small selection/cursor state for navigation and future suggestions.
+- Centralize all `InputConnection` editing in a narrow editor abstraction with explicit success/failure results.
+- Add app-specific fallbacks for host editors that return success from `setSelection` but do not move the cursor.
+- Improve autocapitalisation from initial caps mode and cursor updates before adding prediction.
+
+Priority 3 - Layout extensibility:
+
+- Move built-in layouts toward a parseable internal format or structured catalog inspired by `KeyboardData`, while keeping all WinFlowzApp layouts proprietary.
+- Add unit tests for layout parsing/catalog validation, key values, modifiers, unknown modules and fallback QWERTY.
+- Add a compact subtype/language resolver before expanding beyond French and English.
+
+Priority 4 - Advanced typing:
+
+- Add candidates/suggestions only after the typing path, privacy mode and lifecycle hooks are stable.
+- Add dictionaries as optional local modules, never as a dependency of basic typing.
+- Keep private/sensitive fields as the hard stop for learning, suggestions, adaptive stats, clipboard capture and recents.
+
 # Edge Cases
 
 - Very small screens where corner labels collide.
@@ -440,6 +472,33 @@ Update after implementation:
 - OEM devices with unusual IME window sizes.
 
 # Implementation Tasks
+
+- [x] Tache 0 : Aligner les fondations IME sur le clavier de reference
+  - Fichiers : `android/app/src/main/res/xml/winflowz_app_input_method.xml`, `android/app/src/main/res/values/strings.xml`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardInputContextResolver.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutModels.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`, `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutBuilderTest.kt`
+  - Action : Ajouter subtypes FR/EN, support switch-next, hooks lifecycle defensifs, contexte numerique/date, action id resolu, mode selection supporte, bouton snippets visible, et suppression du snippet hardcode.
+  - User story link : rapproche l'IME WinFlowzApp d'un clavier Android mature sans copier le clavier de reference.
+  - Depends on : audit local `/home/claude/keyboard`.
+  - Validate with : revue du diff; `./gradlew testDebugUnitTest` bloque encore sans SDK Android local.
+  - Status 2026-05-11 : implemente partiellement; compile Android a prouver sur environnement avec SDK.
+  - Notes : Premiere tranche volontairement bas niveau; ne couvre pas encore candidats, dictionnaires, layout parser ou suggestions.
+
+- [x] Tache 0b : Ajouter l'etat de selection et l'abstraction editeur InputConnection
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/InputConnectionEditor.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`, `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardTextNavigationTest.kt`
+  - Action : Ajouter `onUpdateSelection`, conserver un `KeyboardSelectionState`, centraliser commit/delete/action/soft-key/navigation dans `InputConnectionEditor`, confirmer les `setSelection` quand l'app hote expose `ExtractedText`, et faire passer le collage clipboard par la meme couche.
+  - User story link : rapproche la navigation et l'edition du clavier de reference avant les suggestions, dictionnaires et panneaux avances.
+  - Depends on : Tache 0 et roadmap priorite 2.
+  - Validate with : tests navigation/selection; `./gradlew testDebugUnitTest` bloque encore sans SDK Android local.
+  - Status 2026-05-11 : implemente partiellement; compilation Android native a prouver sur environnement avec SDK.
+  - Notes : Les fallbacks clavier restent conservateurs si `setSelection` est refuse ou non confirme; le vrai mode paragraphe reste a enrichir plus tard.
+
+- [x] Tache 0c : Ajouter une surface de preview clavier dans FlutterWeb
+  - Fichiers : `lib/features/keyboard/presentation/keyboard_preview_screen.dart`, `lib/features/shell/presentation/app_shell_screen.dart`, `lib/core/router/app_router.dart`, `test/widget_test.dart`
+  - Action : Ajouter un ecran Flutter `Keyboard preview` accessible dans l'app et via `/keyboard`, avec controles profil QWERTY/AZERTY, contexte texte/email/URL/phone/number/search, panneaux, modes, etats private/corners/debug, plus navigation responsive rail/bottom pour garder l'app testable sur Vercel.
+  - User story link : donne a l'utilisateur une surface web unique pour inspecter l'aspect du clavier sans maintenir une preview HTML separee.
+  - Depends on : decision utilisateur 2026-05-11 de privilegier FlutterWeb/Vercel comme cockpit de review.
+  - Validate with : `flutter analyze`, `flutter test test/widget_test.dart`, `flutter build web`.
+  - Status 2026-05-11 : implemente; reste une preview visuelle proxy, pas une preuve de comportement IME Android natif.
+  - Notes : La preview doit rester alignee avec les layouts Kotlin; a terme, extraire un schema partage ou ajouter des tests de coherence.
 
 - [ ] Tache 1 : Ajouter un garde-fou provenance dans la doc technique
   - Fichier : `docs/technical/android-native.md`
@@ -834,14 +893,19 @@ Stop conditions:
 | 2026-05-10 22:55:00 UTC | sf-verify | GPT-5 Codex | Re-verified targeted private emoji recents fix: private fields no longer read recents into the emoji panel and no longer write inserted emoji to recent history; double-space suppression remains gated by private/email/url/phone context; local Dart checks pass, Android Kotlin compile proof remains blocked by missing SDK | verified | /sf-end Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-11 03:15:38 UTC | continue | GPT-5 Codex | Resumed chantier after targeted verification and routed to partial closeout because Android Kotlin compile proof and device QA remain missing | routed | /sf-end Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-11 03:15:38 UTC | sf-end | GPT-5 Codex | Closed the implementation session as partial: core custom keyboard work, privacy fix and Dart checks are recorded, while Android native compile/device proof remains required before ship | deferred | /sf-ship only after Android Kotlin/Gradle or CI compile proof and device QA |
+| 2026-05-11 14:04:10 UTC | sf-spec | GPT-5 Codex | Added reference-keyboard parity roadmap from local `/home/claude/keyboard` audit and created a first foundation task for IME lifecycle/context/subtypes | updated | /sf-start Proprietary Swipe-Corner Android Keyboard |
+| 2026-05-11 14:04:10 UTC | sf-start | GPT-5 Codex | Implemented first parity foundation slice: FR/EN IME subtypes, next-input support, defensive IME lifecycle hooks, richer input context, numeric field mode and no hardcoded snippet insertion | partial | /sf-verify Proprietary Swipe-Corner Android Keyboard |
+| 2026-05-11 14:20:23 UTC | sf-start | GPT-5 Codex | Implemented second reference-keyboard parity slice: selection update state, narrow InputConnection editor abstraction, confirmed navigation moves and centralized clipboard paste insertion | partial | /sf-verify Proprietary Swipe-Corner Android Keyboard |
+| 2026-05-11 15:02:57 UTC | sf-start | GPT-5 Codex | Added FlutterWeb keyboard preview as the single browser review surface for Vercel, including profile/context/panel controls and responsive shell navigation | partial | /sf-verify Proprietary Swipe-Corner Android Keyboard |
+| 2026-05-11 15:12:10 UTC | sf-ship | GPT-5 Codex | Shipped reference-keyboard parity foundations and FlutterWeb keyboard preview with Dart checks and web build proof; Android native compile/device proof remains pending | shipped | /sf-verify Proprietary Swipe-Corner Android Keyboard |
 
 # Current Chantier Flow
 
 - sf-spec: done, draft saved in `shipflow_data/workflow/specs/proprietary-swipe-corner-android-keyboard.md`
 - sf-ready: ready as of 2026-05-10 22:10:51 UTC
-- sf-start: partial implementation extended on 2026-05-10 with input-path reliability fixes (commit/delete/navigation feedback), post-phone mode reset, locale-aware punctuation default, private emoji recents gating, and clearer pins messaging; Android device QA and broader advanced modules remain
+- sf-start: partial implementation extended on 2026-05-11 with reference-keyboard foundation/editing parity and FlutterWeb review surface: IME subtypes, switch-next metadata, defensive lifecycle hooks, richer field context/action id, numeric field mode, visible snippet panel entry, removal of hardcoded snippet insertion, `onUpdateSelection`, `KeyboardSelectionState`, centralized `InputConnectionEditor`, confirmed navigation moves, centralized clipboard paste insertion, and a Vercel-testable `Keyboard preview` screen; Android compile/device QA and broader advanced modules remain
 - sf-verify: verified as of 2026-05-10 22:55:00 UTC for the targeted privacy-recents fix and post-fix warnings; Android Kotlin compile proof remains blocked by missing local SDK and should be covered before sf-ship
 - sf-end: deferred as of 2026-05-11 03:15:38 UTC; session closed as partial because compile/device evidence is still missing
-- sf-ship: not launched
+- sf-ship: shipped on 2026-05-11 15:12:10 UTC for the current parity/FlutterWeb preview slice; not a final Android native readiness ship
 
-Next command: `/sf-ship Proprietary Swipe-Corner Android Keyboard` only after Android Kotlin/Gradle or CI compile proof and Android device QA
+Next command: `/sf-verify Proprietary Swipe-Corner Android Keyboard`, then `/sf-ship Proprietary Swipe-Corner Android Keyboard` only after Android Kotlin/Gradle or CI compile proof and Android device QA

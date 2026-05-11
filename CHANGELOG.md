@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added a FlutterWeb `Keyboard preview` screen for Vercel/browser review of the WinFlowzApp Keyboard layouts, field contexts, panels and private/corner/debug states.
+- Added Android IME reference-parity foundations: FR/EN subtypes, next-keyboard switching metadata, defensive lifecycle hooks, numeric/date field context handling and centralized `InputConnectionEditor` editing/navigation results.
 - Added Android overlay appearance controls in Settings for floating bubble size and opacity.
 - Added native Android overlay bridge support for persisted bubble appearance preferences.
 - Added first-run onboarding that explains the startup path, Android keyboard setup, microphone, overlay, accessibility and cloud sync permissions.
@@ -41,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `docs/technical/firebase-oidc-ci-playbook.md` with a reusable GitHub OIDC/WIF Firestore deploy runbook and troubleshooting matrix.
 
 ### Changed
+- Changed the app shell navigation to use a responsive rail on wider screens so the added keyboard review surface does not crowd the bottom navigation.
 - Changed first-run onboarding into a dismissible overlay so tab content remains visible while setup guidance is shown.
 - Changed Android/system Back handling inside the shell so Back returns to the previous app tab before exiting.
 - Migrated canonical project documentation from root files (`ARCHITECTURE.md`, `BRANDING.md`, `BUSINESS.md`, `GTM.md`, `GUIDELINES.md`, `PRODUCT.md`, `CONTENT_MAP.md`) to `shipflow_data` and updated documentation/spec path references accordingly.
@@ -58,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Moved active task tracking to `shipflow_data/workflow/TASKS.md` and synced tracker naming to WinFlowzApp.
 
 ### Security
+- Removed the hardcoded sample snippet insertion path from the Android IME; snippet actions now open the app instead of inserting placeholder text.
 - Converted the RLS smoke script into a pgTAP-style test covering own-user access, forged user denial, anonymous denial, tombstone preservation and sensitive client-event metadata keys.
 - Added database guardrails for tombstone preservation, client event metadata size, sensitive metadata keys and user-scoped query indexes.
 - Added IME private-field gating for password, OTP, no-personalized-learning and host-marked sensitive fields so dictation, snippets and clipboard capture are disabled there.

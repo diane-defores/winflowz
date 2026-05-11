@@ -41,6 +41,7 @@ enum class KeyboardFieldContextMode {
     Email,
     Url,
     Phone,
+    Number,
     Search,
 }
 
@@ -150,7 +151,7 @@ data class KeyboardLayoutRequest(
 object KeyboardLayoutBuilder {
     fun build(request: KeyboardLayoutRequest): KeyboardLayoutSnapshot {
         val effectiveMode =
-            if (request.fieldContext == KeyboardFieldContextMode.Phone) {
+            if (request.fieldContext.isNumericEntry()) {
                 KeyboardLayoutMode.Numbers
             } else {
                 request.mode
@@ -184,6 +185,7 @@ object KeyboardLayoutBuilder {
                     panelKey("Nav", KeyboardKeyAction.ToggleNavigationPanel, request.panel == KeyboardPanelMode.Navigation),
                     panelKey("Emoji", KeyboardKeyAction.ToggleEmojiPanel, request.panel == KeyboardPanelMode.Emoji),
                     panelKey("Clip", KeyboardKeyAction.ToggleClipboardPanel, request.panel == KeyboardPanelMode.Clipboard, request.clipboardAllowed),
+                    panelKey("Snip", KeyboardKeyAction.ToggleSnippetsPanel, request.panel == KeyboardPanelMode.Snippets, request.snippetsAllowed),
                     panelKey("Media", KeyboardKeyAction.ToggleMediaPanel, request.panel == KeyboardPanelMode.Media),
                     panelKey("Prefs", KeyboardKeyAction.ToggleSettingsPanel, request.panel == KeyboardPanelMode.Settings),
                     KeyboardKeySpec("voice", "Mic", KeyboardKeyAction.Voice, enabled = request.voiceAllowed),
@@ -449,7 +451,9 @@ object KeyboardLayoutBuilder {
             when (request.fieldContext) {
                 KeyboardFieldContextMode.Email -> "@"
                 KeyboardFieldContextMode.Url -> "/"
-                KeyboardFieldContextMode.Phone -> "+"
+                KeyboardFieldContextMode.Phone,
+                KeyboardFieldContextMode.Number,
+                -> "+"
                 KeyboardFieldContextMode.Text,
                 KeyboardFieldContextMode.Search,
                 -> ","
@@ -459,6 +463,7 @@ object KeyboardLayoutBuilder {
                 KeyboardFieldContextMode.Email -> ".com"
                 KeyboardFieldContextMode.Url -> ".com"
                 KeyboardFieldContextMode.Phone -> "#"
+                KeyboardFieldContextMode.Number -> "-"
                 KeyboardFieldContextMode.Text,
                 KeyboardFieldContextMode.Search,
                 -> "."
@@ -519,6 +524,10 @@ object KeyboardLayoutBuilder {
             action = KeyboardKeyAction.Text,
             glyph = glyphFor(lower[0]),
         )
+    }
+
+    private fun KeyboardFieldContextMode.isNumericEntry(): Boolean {
+        return this == KeyboardFieldContextMode.Phone || this == KeyboardFieldContextMode.Number
     }
 
     private fun textKey(

@@ -494,11 +494,6 @@ class WinFlowzAppKeyboardView(
             KeyboardKeyAction.MediaPlayPause -> callbacks.onMediaPlayPause()
             KeyboardKeyAction.MediaNext -> callbacks.onMediaNext()
             KeyboardKeyAction.InsertSnippetOne -> {
-                val committed = callbacks.onText("Merci - envoye depuis WinFlowzApp")
-                if (!committed) {
-                    setStatus("Snippet insertion unavailable")
-                    return
-                }
                 callbacks.onSnippets()
                 panelMode = KeyboardPanelMode.None
             }
@@ -579,7 +574,9 @@ class WinFlowzAppKeyboardView(
 
     private fun buildSnapshot(): KeyboardLayoutSnapshot {
         val effectiveMode =
-            if (fieldContext == KeyboardFieldContextMode.Phone) {
+            if (fieldContext == KeyboardFieldContextMode.Phone ||
+                fieldContext == KeyboardFieldContextMode.Number
+            ) {
                 KeyboardLayoutMode.Numbers
             } else {
                 layoutMode

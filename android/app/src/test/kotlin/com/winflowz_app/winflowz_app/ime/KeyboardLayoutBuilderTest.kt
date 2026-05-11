@@ -61,4 +61,33 @@ class KeyboardLayoutBuilderTest {
         assertTrue(controlRow.keys.any { it.label == "+" })
         assertTrue(controlRow.keys.any { it.label == "#" })
     }
+
+    @Test
+    fun `forces number mode on numeric fields`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.None,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Number,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Done",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                ),
+            )
+
+        assertEquals(KeyboardLayoutMode.Numbers, snapshot.mode)
+        val controlRow = snapshot.rows.last()
+        assertTrue(controlRow.keys.any { it.label == "+" })
+        assertTrue(controlRow.keys.any { it.label == "-" })
+    }
 }

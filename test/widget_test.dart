@@ -280,7 +280,7 @@ void main() {
     expect(find.textContaining('Cloud sync is disabled'), findsNothing);
     expect(find.text('Raw text'), findsOneWidget);
 
-    await tester.tap(find.text('Snippets').last);
+    await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await tester.pumpAndSettle();
     expect(find.text('WinFlowzApp • Snippets'), findsOneWidget);
     expect(find.text('Trigger'), findsOneWidget);
@@ -300,7 +300,7 @@ void main() {
     expect(find.text('Start here'), findsNothing);
     expect(find.text('Raw text'), findsOneWidget);
 
-    await tester.tap(find.text('Settings').last);
+    await tester.tap(find.byIcon(Icons.settings_outlined).last);
     await tester.pump();
     await tester.tap(find.text('Resume'));
     await tester.pump();
@@ -342,25 +342,31 @@ void main() {
     );
     expect(addTranscriptionButton, findsOneWidget);
 
-    await tester.tap(find.text('Clipboard').last);
+    await tester.tap(find.byIcon(Icons.content_paste_outlined).last);
     await tester.pumpAndSettle();
     expect(find.text('WinFlowzApp • Clipboard'), findsOneWidget);
     expect(find.text('Clipboard content'), findsOneWidget);
     expect(find.text('Add clipboard item'), findsOneWidget);
 
-    await tester.tap(find.text('Snippets').last);
+    await tester.tap(find.byIcon(Icons.keyboard_outlined).last);
+    await tester.pumpAndSettle();
+    expect(find.text('WinFlowzApp • Keyboard'), findsOneWidget);
+    expect(find.text('Keyboard preview'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await tester.pumpAndSettle();
     expect(find.text('WinFlowzApp • Snippets'), findsOneWidget);
     expect(find.text('Trigger'), findsOneWidget);
     expect(find.text('Add snippet'), findsOneWidget);
 
-    await tester.tap(find.text('Dictionary').last);
+    await tester.tap(find.byIcon(Icons.auto_fix_high_outlined).last);
     await tester.pumpAndSettle();
     expect(find.text('WinFlowzApp • Dictionary'), findsOneWidget);
     expect(find.text('Term'), findsOneWidget);
     expect(find.text('Add term'), findsOneWidget);
 
-    await tester.tap(find.text('Settings').last);
+    await tester.tap(find.byIcon(Icons.settings_outlined).last);
     await tester.pumpAndSettle();
     expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
     expect(find.text('Appearance'), findsOneWidget);
