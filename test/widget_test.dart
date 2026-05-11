@@ -82,6 +82,16 @@ void _clearAndroidBridgeMocks() {
   messenger.setMockMethodCallHandler(_secureStorageChannel, null);
 }
 
+Widget _appShellTestWidget() {
+  return ProviderScope(
+    child: MaterialApp(
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      home: const AppShellScreen(),
+    ),
+  );
+}
+
 void main() {
   test('app theme mode maps Material theme modes with system fallback', () {
     expect(AppThemeMode.fromThemeMode(ThemeMode.system), AppThemeMode.system);
@@ -262,9 +272,7 @@ void main() {
   testWidgets('app shell shows onboarding and back returns to previous tab', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: AppShellScreen())),
-    );
+    await tester.pumpWidget(_appShellTestWidget());
     await tester.pump();
 
     expect(find.text('Start here'), findsNothing);
@@ -286,9 +294,7 @@ void main() {
   });
 
   testWidgets('settings can resume onboarding overlay', (tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: AppShellScreen())),
-    );
+    await tester.pumpWidget(_appShellTestWidget());
     await tester.pump();
 
     expect(find.text('Start here'), findsNothing);
@@ -320,9 +326,7 @@ void main() {
       _clearAndroidBridgeMocks();
     });
 
-    await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: AppShellScreen())),
-    );
+    await tester.pumpWidget(_appShellTestWidget());
     await tester.pumpAndSettle();
 
     expect(find.text('VoiceFlowz • Voice'), findsOneWidget);

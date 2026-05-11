@@ -311,7 +311,10 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(AppIconMetrics.minTarget),
+          minimumSize: const Size(
+            AppIconMetrics.minTarget,
+            AppIconMetrics.minTarget,
+          ),
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           shape: RoundedRectangleBorder(
@@ -322,7 +325,10 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(AppIconMetrics.minTarget),
+          minimumSize: const Size(
+            AppIconMetrics.minTarget,
+            AppIconMetrics.minTarget,
+          ),
           foregroundColor: colorScheme.primary,
           side: BorderSide(color: colorScheme.outline),
           shape: RoundedRectangleBorder(
