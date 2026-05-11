@@ -39,6 +39,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _openAiController;
   late final TextEditingController _anthropicController;
+  late final ScrollController _scrollController;
   bool _loading = true;
   bool _saving = false;
   AndroidOverlayStatus? _overlayStatus;
@@ -52,6 +53,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     super.initState();
     _openAiController = TextEditingController();
     _anthropicController = TextEditingController();
+    _scrollController = ScrollController();
     _loadSecrets();
     _loadOverlayState();
     _loadKeyboardState();
@@ -61,6 +63,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void dispose() {
     _openAiController.dispose();
     _anthropicController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -404,7 +407,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : 'local_mode';
     final lines = <String>[
       'VoiceFlowz backend diagnostic',
-      'diagnostic_version: 3',
+      'diagnostic_version: 4',
       'generated_at_utc: ${DateTime.now().toUtc().toIso8601String()}',
       'secret_values_redacted: true',
       'provider_contract: backend-agnostic',
@@ -545,13 +548,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return events.map((event) => _sanitizeDiagnostic(event)).join(' || ');
   }
 
+  Widget _settingsList({required List<Widget> children}) {
+    return Scrollbar(
+      controller: _scrollController,
+      thumbVisibility: true,
+      child: ListView(
+        controller: _scrollController,
+        padding: AppInsets.screen,
+        children: children,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppDiagnostics.record('screen_build', 'Settings');
     final storageStatusAsync = ref.watch(_storageStatusProvider);
     if (_loading) {
-      return ListView(
-        padding: AppInsets.screen,
+      return _settingsList(
         children: [
           if (widget.onResumeOnboarding != null)
             _OnboardingSettingsTile(onResume: widget.onResumeOnboarding!),
@@ -564,8 +578,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final overlayStatus = _overlayStatus;
     final keyboardStatus = _keyboardStatus;
     final themeMode = ref.watch(appThemeModeProvider);
-    return ListView(
-      padding: AppInsets.screen,
+    return _settingsList(
       children: [
         if (widget.onResumeOnboarding != null)
           _OnboardingSettingsTile(onResume: widget.onResumeOnboarding!),

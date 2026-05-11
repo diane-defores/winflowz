@@ -12,7 +12,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final previousFlutterError = FlutterError.onError;
   FlutterError.onError = (details) {
-    AppDiagnostics.recordFlutterError(details);
+    final shouldPresent = AppDiagnostics.recordFlutterError(details);
+    if (!shouldPresent) {
+      return;
+    }
     if (previousFlutterError != null) {
       previousFlutterError(details);
     } else {

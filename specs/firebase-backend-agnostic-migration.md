@@ -253,6 +253,7 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 | 2026-05-10 19:28:58 UTC | sf-test | GPT-5 Codex | Targeted Firebase/backend-agnostic migration validation: rechecked `docs`/`specs` canonical paths (legacy root paths removed), legacy-compatibility scan (`rg`), and `Supabase` scan in `lib/test/pubspec.yaml` | partial | Task 7 still pending by design; keep Supabase legacy adapters + continue Android device QA for Firebase parity |
 | 2026-05-10 20:31:19 UTC | sf-build | GPT-5 Codex | Finalized Android-current manual pass scope: Android overlay/IME device QA remains tracked separately, iOS/macOS microphone/speech declarations are future-compatible only, non-Android desktop/web proof is out of current runtime scope, web local speech disabled, and local analyze/test/web build passed. | partial | Keep Android real-device QA under overlay/IME tasks. |
 | 2026-05-11 00:00:00 UTC | sf-start | GPT-5 Codex | Completed task 7 by removing Supabase from active runtime bootstrap/provider selection and backend diagnostics while preserving legacy Supabase adapters/tests for compile compatibility. | implemented | `/sf-verify specs/firebase-backend-agnostic-migration.md` |
+| 2026-05-11 05:48:21 UTC | sf-verify | GPT-5 Codex | Verified task 7 runtime detachment and local checks; `flutter analyze`, `flutter test`, format, diff check, and Firebase emulator smoke passed, but high bug `BUG-2026-05-10-002` remains `fix-attempted` and active docs still present Supabase as reviewed runtime architecture. | partial | Close bug gate with APK/device retest and update stale Supabase-target docs before sf-end |
 
 # Current Chantier Flow
 
@@ -261,6 +262,6 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 | sf-spec | done | This spec captures backend-agnostic Firebase migration contract | sf-start |
 | sf-ready | done | Scope, constraints, rules, CLI, tasks, tests and stop conditions are explicit | sf-start |
 | sf-start | done | Tasks 1-9 are implemented. Task 7 now detaches Supabase from active runtime bootstrap/provider selection and diagnostics while preserving legacy Supabase code for compatibility. | sf-verify |
-| sf-verify | done | CI run `25636532417` succeeded, and post-hardening run `25636936089` also kept Firestore deploy job `75250395805` green; OIDC/WIF auth and Firestore deploy proofs are captured | sf-end |
-| sf-end | done | Verification and legacy-doc archival complete; full close bookkeeping and ship report prepared | Re-opened for task 7 execution, then sf-verify |
-| sf-ship | done | OIDC/WIF CI deploy path is working on hosted runner; Firestore rules/indexes deployment proven and revalidated after IAM hardening | Keep shipping as needed after sf-verify |
+| sf-verify | partial | Local Dart checks and Firebase emulator smoke passed; runtime detachment is visible in code, but high bug `BUG-2026-05-10-002` is still `fix-attempted` and `CLAUDE.md`/`docs/ARCHITECTURE_FLUTTER.md` still carry reviewed Supabase-target instructions. | Fix doc/bug gates, then rerun sf-verify |
+| sf-end | pending | Current verification is partial after task 7 reopen. | Wait for sf-verify verified |
+| sf-ship | pending | Prior Firestore OIDC/WIF CI deploy proof remains valid, but current dirty task 7 verification is not ready to close. | Run after sf-end |
