@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../bootstrap/firebase_bootstrap.dart';
-import '../bootstrap/supabase_bootstrap.dart';
 import '../theme/app_theme.dart';
 
 class LocalModeNotice extends StatelessWidget {
@@ -11,7 +10,7 @@ class LocalModeNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (FirebaseBootstrap.isConfigured || SupabaseBootstrap.isConfigured) {
+    if (FirebaseBootstrap.isConfigured) {
       return const SizedBox.shrink();
     }
 
@@ -32,7 +31,7 @@ class LocalModeNoticeGap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (FirebaseBootstrap.isConfigured || SupabaseBootstrap.isConfigured) {
+    if (FirebaseBootstrap.isConfigured) {
       return const SizedBox.shrink();
     }
     return AppGaps.x2;

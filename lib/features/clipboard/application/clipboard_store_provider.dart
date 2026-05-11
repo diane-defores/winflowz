@@ -2,8 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 import '../../../core/bootstrap/firebase_bootstrap.dart';
-import '../../../data/supabase/clipboard_repository.dart';
-import '../../../data/supabase/supabase_client_provider.dart';
 import '../../auth/application/auth_session_provider.dart';
 import '../data/firebase_clipboard_history_store.dart';
 import 'clipboard_history_api.dart';
@@ -30,13 +28,6 @@ final clipboardStoreProvider = Provider<ClipboardHistoryStore>((ref) {
       hasRemoteSession &&
       firebase_auth.FirebaseAuth.instance.currentUser != null) {
     return FirebaseClipboardHistoryStore();
-  }
-
-  if (!FirebaseBootstrap.isConfigured && hasRemoteSession) {
-    final client = ref.watch(supabaseClientProvider);
-    if (client != null) {
-      return SupabaseClipboardStore(client);
-    }
   }
 
   return ref.watch(localClipboardHistoryStoreProvider);

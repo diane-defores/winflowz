@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import '../../../app/voiceflowz_app.dart';
 import '../../../core/bootstrap/app_build_info.dart';
 import '../../../core/bootstrap/firebase_bootstrap.dart';
-import '../../../core/bootstrap/supabase_bootstrap.dart';
 import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
@@ -402,8 +401,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final storageStatus = ref.read(_storageStatusProvider);
     final status = FirebaseBootstrap.isConfigured
         ? 'firebase_remote'
-        : SupabaseBootstrap.isConfigured
-        ? 'legacy_supabase_remote'
         : 'local_mode';
     final lines = <String>[
       'VoiceFlowz backend diagnostic',
@@ -417,9 +414,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       'firebase_initialized: ${FirebaseBootstrap.isInitialized}',
       'firebase_configured: ${FirebaseBootstrap.isConfigured}',
       'firebase_detail: ${_sanitizeDiagnostic(FirebaseBootstrap.initError ?? 'configured_or_not_required')}',
-      'legacy_supabase_initialized: ${SupabaseBootstrap.isInitialized}',
-      'legacy_supabase_configured: ${SupabaseBootstrap.isConfigured}',
-      'legacy_supabase_detail: ${_sanitizeDiagnostic(SupabaseBootstrap.initError ?? 'configured_or_not_required')}',
       'auth_store: ${ref.read(authSessionStoreProvider).runtimeType}',
       'auth_session: ${_authDiagnostic(authAsync)}',
       'settings_store: ${ref.read(settingsStoreProvider).runtimeType}',
