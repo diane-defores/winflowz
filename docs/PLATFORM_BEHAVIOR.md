@@ -14,13 +14,13 @@ risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 depends_on:
-  - "specs/firebase-backend-agnostic-migration.md@0.1.0"
+  - "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
-  - "specs/android-ime-winflowz_app-keyboard.md"
+  - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
   - "lib/core/platform/platform_capabilities.dart"
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt"
-next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
+next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
 # Platform Behavior — WinFlowzApp

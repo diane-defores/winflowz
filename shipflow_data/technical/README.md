@@ -23,7 +23,7 @@ depends_on:
   - "shipflow_data/technical/guidelines.md@0.1.0"
 supersedes: []
 evidence:
-  - "Bootstrapped for specs/android-ime-winflowz_app-keyboard.md execution."
+  - "Bootstrapped for shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md execution."
 next_review: "2026-06-04"
 next_step: "/sf-docs technical audit"
 ---

@@ -5,7 +5,7 @@ artifact_version: "0.1.0"
 project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-09"
-status: "legacy"
+status: "superseded"
 source_skill: "sf-docs"
 scope: "full_rewrite_flutter_supabase"
 owner: "Diane"
@@ -21,13 +21,14 @@ evidence:
   - "../modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayModule.kt"
   - "../docs/API.md"
 supersedes: []
+superseded_by: "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 next_step: "execute domain workstreams with explicit write-sets"
 ---
 
 # Migration Contract — Flutter + Supabase
 
 > Legacy reference: this migration contract was superseded by
-> `specs/firebase-backend-agnostic-migration.md`. Flutter remains the app
+> `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`. Flutter remains the app
 > foundation, but Supabase is no longer the active backend target.
 >
 > Archived migration contract: do not use this document as an execution plan

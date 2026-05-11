@@ -56,7 +56,7 @@ WinFlowzApp cible une application Flutter Android-first avec contrats backend-ag
 | Backend-agnostic stores + Firebase first adapter | target-reviewed | `docs/DECISIONS.md` |
 | Clés OpenAI/Anthropic BYO stockées localement | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
 | Snippets + dictionnaire comme fonctionnalités produit | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
-| Clavier Android natif WinFlowzApp | target-reviewed | `specs/android-ime-winflowz_app-keyboard.md` |
+| Clavier Android natif WinFlowzApp | target-reviewed | `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md` |
 | Overlay Android natif uniquement | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
 | Expo/Convex/Clerk comme implémentation cible | out-of-scope | explicitement exclu de la cible finale |
 | Quotas gratuits / premium / billing | out-of-scope | non inclus dans le scope migration |

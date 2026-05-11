@@ -5,7 +5,7 @@ artifact_version: "0.1.0"
 project: "WinFlowzApp"
 created: "2026-05-04"
 updated: "2026-05-09"
-status: legacy
+status: stale
 source_skill: sf-docs
 scope: "supabase-data"
 owner: "Diane"
@@ -33,7 +33,7 @@ next_step: "/sf-docs technical audit"
 > Legacy reference: Supabase data remains documented here only for current code
 > compatibility and migration comparison. New backend work belongs to
 > backend-agnostic stores with Firebase as first adapter, per
-> `specs/firebase-backend-agnostic-migration.md`.
+> `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`.
 >
 > Archived technical context for legacy adapters: do not use as a target design
 > document for new work.

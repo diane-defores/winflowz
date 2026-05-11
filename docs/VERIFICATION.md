@@ -14,13 +14,13 @@ risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 depends_on:
-  - "specs/firebase-backend-agnostic-migration.md@0.1.0"
+  - "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
-  - "specs/android-ime-winflowz_app-keyboard.md"
+  - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
   - "test/widget_test.dart"
-  - "specs/clipboard-backend-agnostic-api.md"
-next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
+  - "shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md"
+next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
 # Verification — WinFlowzApp Android Firebase Backend-Agnostic Migration

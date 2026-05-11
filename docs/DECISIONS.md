@@ -1,7 +1,7 @@
 ---
 artifact: decision_log
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-09"

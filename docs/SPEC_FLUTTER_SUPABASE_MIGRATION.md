@@ -62,6 +62,7 @@ depends_on:
     required_status: "reviewed"
 supersedes:
   - "docs/MIGRATION_FLUTTER.md@0.1.0 as execution scope"
+superseded_by: "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 evidence:
   - "package.json"
   - "app/(tabs)/index.tsx"
@@ -76,9 +77,9 @@ evidence:
   - "docs/PLATFORM_BEHAVIOR.md"
   - "docs/OVERLAY_ANDROID.md"
   - "docs/VERIFICATION.md"
-  - "SECURITY_REVIEW_FLUTTER_SUPABASE.md"
+  - "shipflow_data/workflow/reviews/security-readiness-flutter-supabase.md"
   - "modules/floating-overlay/android/src/main"
-next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
+next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
 # Title
@@ -88,7 +89,7 @@ Migration totale WinFlowzApp vers Flutter + Supabase
 > Superseded: this spec is no longer the active implementation target after the
 > 2026-05-09 decision to use backend-agnostic contracts with Firebase as the
 > first Android adapter. Keep it as migration history only. The active spec is
-> `specs/firebase-backend-agnostic-migration.md`.
+> `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`.
 >
 > Archived spec: do not execute new tasks from this document.
 
@@ -258,7 +259,7 @@ Docs a creer ou remplacer:
 - `docs/VERIFICATION.md`: cree et reviewed; a cocher avec les resultats effectifs.
 - `docs/DECISIONS.md`: reviewed avec decision Flutter + Supabase.
 - `shipflow_data/business/business.md`, `shipflow_data/business/product.md`, `shipflow_data/business/branding.md`, `shipflow_data/technical/architecture.md`, `shipflow_data/technical/guidelines.md`, `docs/API.md`, `docs/COMPONENTS.md`: reviewed et alignes sur cible Flutter + Supabase.
-- `SECURITY_REVIEW_FLUTTER_SUPABASE.md`: revue adversariale integree dans cette spec.
+- `shipflow_data/workflow/reviews/security-readiness-flutter-supabase.md`: revue adversariale integree dans cette spec.
 
 # Edge Cases
 
@@ -518,7 +519,7 @@ Fichiers a lire d'abord:
 - `docs/PLATFORM_BEHAVIOR.md`
 - `docs/OVERLAY_ANDROID.md`
 - `docs/VERIFICATION.md`
-- `SECURITY_REVIEW_FLUTTER_SUPABASE.md`
+- `shipflow_data/workflow/reviews/security-readiness-flutter-supabase.md`
 - `modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayModule.kt`
 
 Approche d'execution:

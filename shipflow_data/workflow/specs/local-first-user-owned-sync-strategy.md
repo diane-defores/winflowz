@@ -41,10 +41,10 @@ depends_on:
   - artifact: "shipflow_data/technical/architecture.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "specs/firebase-backend-agnostic-migration.md"
+  - artifact: "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
     artifact_version: "0.1.0"
     required_status: "ready"
-  - artifact: "specs/clipboard-backend-agnostic-api.md"
+  - artifact: "shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md"
     artifact_version: "0.1.0"
     required_status: "ready"
 supersedes: []
@@ -60,7 +60,7 @@ evidence:
   - "Official docs checked 2026-05-10: Microsoft Graph OneDrive app folder uses Files.ReadWrite.AppFolder and /special/approot."
   - "Official docs checked 2026-05-10: Syncthing relay docs show relay infrastructure as a fallback pattern, with private relay support and rate limits."
   - "Official docs checked 2026-05-10: Automerge documents local-first, offline updates, network-agnostic sync and automatic merge semantics."
-next_step: "/sf-ready specs/local-first-user-owned-sync-strategy.md"
+next_step: "/sf-ready shipflow_data/workflow/specs/local-first-user-owned-sync-strategy.md"
 ---
 
 # Title
@@ -205,8 +205,8 @@ Docs et specs locales:
 - `README.md`: decrit Flutter Android-first, backend-agnostic stores, Firebase first adapter et local mode.
 - `shipflow_data/business/business.md`: pose les contraintes BYO, securite et modele freemium/LTD hors billing runtime.
 - `shipflow_data/technical/architecture.md`: impose stores backend-neutres et cles API locales.
-- `specs/firebase-backend-agnostic-migration.md`: Firebase est un adaptateur, pas le domaine produit.
-- `specs/clipboard-backend-agnostic-api.md`: clipboard est deja le modele d'API produit a ne pas coupler a un backend.
+- `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`: Firebase est un adaptateur, pas le domaine produit.
+- `shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md`: clipboard est deja le modele d'API produit a ne pas coupler a un backend.
 
 Docs externes officielles consultees le 2026-05-10:
 
@@ -412,7 +412,7 @@ Dependances probables a evaluer pendant `/sf-ready`, sans engagement dans ce dra
   - Validate with : widget tests + manual flows.
 
 - [ ] Tache 18 : Definir l'architecture P2P/rendezvous
-  - Fichiers : `docs/technical/local-first-sync.md`, `specs/p2p-rendezvous-relay.md` si necessaire.
+  - Fichiers : `docs/technical/local-first-sync.md`, `shipflow_data/workflow/specs/p2p-rendezvous-relay.md` si necessaire.
   - Action : Specifier signaling, STUN/TURN, privacy metadata, fallback, quotas, rate limits et cout avant implementation.
   - User story link : P2P est utile pour sync live sans cloud central, mais pas suffisant seul.
   - Depends on : moteur sync asynchrone stable.
@@ -542,8 +542,8 @@ Files to read first before implementation:
 - `lib/core/sync/sync_status.dart`
 - `lib/core/bootstrap/app_bootstrap.dart`
 - `README.md`
-- `specs/firebase-backend-agnostic-migration.md`
-- `specs/clipboard-backend-agnostic-api.md`
+- `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`
+- `shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md`
 
 Packages and APIs:
 
@@ -574,7 +574,7 @@ Stop conditions:
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-10 21:41:03 UTC | sf-spec | GPT-5 Codex | Created first local-first user-owned sync strategy spec from user direction to minimize WinFlowzApp server costs and maximize local/user-cloud sync. | draft saved | `/sf-ready specs/local-first-user-owned-sync-strategy.md` |
+| 2026-05-10 21:41:03 UTC | sf-spec | GPT-5 Codex | Created first local-first user-owned sync strategy spec from user direction to minimize WinFlowzApp server costs and maximize local/user-cloud sync. | draft saved | `/sf-ready shipflow_data/workflow/specs/local-first-user-owned-sync-strategy.md` |
 
 # Current Chantier Flow
 
@@ -585,4 +585,4 @@ Stop conditions:
 - sf-end: not launched.
 - sf-ship: not launched.
 
-Next command: `/sf-ready specs/local-first-user-owned-sync-strategy.md`
+Next command: `/sf-ready shipflow_data/workflow/specs/local-first-user-owned-sync-strategy.md`

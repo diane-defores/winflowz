@@ -5,7 +5,7 @@ artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-04-27"
 updated: "2026-05-09"
-status: "legacy"
+status: "stale"
 source_skill: "sf-spec"
 scope: "supabase_api"
 owner: "Diane"
@@ -21,7 +21,7 @@ evidence:
   - "supabase/migrations/20260427084000_init_winflowz_app.sql"
   - "supabase/migrations/20260504210000_android_keyboard_ime.sql"
   - "supabase/tests/rls_smoke.sql"
-next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
+next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
 # API Supabase — WinFlowzApp
@@ -30,7 +30,7 @@ next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 > 2026-05-09 Firebase/backend-agnostic decision. Keep this document only for
 > migration comparison until Firebase parity lets the Supabase adapter be
 > archived or removed. The active backend chantier is
-> `specs/firebase-backend-agnostic-migration.md`.
+> `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`.
 >
 > Archived target contract: do not use this document to plan or implement new
 > backend work.

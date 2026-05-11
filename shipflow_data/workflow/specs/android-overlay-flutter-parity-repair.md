@@ -1,17 +1,18 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-10"
 created_at: "2026-05-10 09:52:03 UTC"
 updated: "2026-05-10"
 updated_at: "2026-05-10 11:49:25 UTC"
-status: partial
+status: active
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "android-overlay-bugfix"
 owner: "Diane"
+confidence: high
 user_story: "En tant qu'utilisateur Android de WinFlowzApp, je veux retrouver l'overlay flottant fonctionnel de la version Expo dans l'application Flutter, afin de dicter, arreter, annuler et livrer du texte depuis n'importe quelle app sans ouvrir WinFlowzApp."
 risk_level: "high"
 security_impact: "yes"
@@ -33,10 +34,10 @@ depends_on:
   - artifact: "docs/PLATFORM_BEHAVIOR.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
-  - artifact: "specs/android-ime-winflowz_app-keyboard.md"
+  - artifact: "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
     artifact_version: "1.0.0"
-    required_status: "legacy-ready"
-  - artifact: "specs/firebase-backend-agnostic-migration.md"
+    required_status: "reviewed"
+  - artifact: "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
     artifact_version: "0.1.0"
     required_status: "ready"
 supersedes: []
@@ -51,7 +52,7 @@ evidence:
   - "winflowz_app_snapshots/winflowz_app-pre-flutter-migration-20260427-081046.tar.gz contains the pre-Flutter Expo source and must be kept until overlay parity is verified."
   - "Android Developers: WindowManager.LayoutParams TYPE_APPLICATION_OVERLAY documentation checked 2026-05-10."
   - "Android Developers: Android 14 foreground service type requirements checked 2026-05-10."
-next_step: "/sf-ready specs/android-overlay-flutter-parity-repair.md"
+next_step: "/sf-ready shipflow_data/workflow/specs/android-overlay-flutter-parity-repair.md"
 ---
 
 # Title
@@ -154,7 +155,7 @@ Porter la logique utile du module Expo vers l'app Android Flutter native en gard
 - Android Kotlin dans `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/`.
 - Legacy reference dans `modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/`.
 - `docs/OVERLAY_ANDROID.md` pour le contrat permission/runtime.
-- `specs/android-ime-winflowz_app-keyboard.md` pour la coexistence avec l'IME.
+- `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md` pour la coexistence avec l'IME.
 - Android official docs checked 2026-05-10:
   - `WindowManager.LayoutParams`: `TYPE_APPLICATION_OVERLAY` est le type attendu pour une fenetre overlay d'application moderne.
   - Android 14 foreground service requirements: un foreground service qui utilise le micro doit declarer le type et les permissions appropries.
@@ -192,7 +193,7 @@ Mettre a jour apres implementation:
 - `docs/OVERLAY_ANDROID.md`: methods finales, event names, lifecycle, fallback, tests.
 - `docs/PLATFORM_BEHAVIOR.md`: statut overlay Android et limites.
 - `README.md`: prerequis manuel Android pour overlay/accessibility/micro si le README mentionne les features Android.
-- `TASKS.md` seulement via skill de tracking appropriee, pas depuis cette spec.
+- `shipflow_data/workflow/TASKS.md` seulement via skill de tracking appropriee, pas depuis cette spec.
 
 # Edge Cases
 
@@ -301,7 +302,7 @@ Mettre a jour apres implementation:
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-10 09:52:03 | sf-spec | GPT-5 Codex | Created overlay parity repair spec from current Flutter code, legacy Expo module, and existing overlay docs. | Draft spec created. | `/sf-ready specs/android-overlay-flutter-parity-repair.md` |
+| 2026-05-10 09:52:03 | sf-spec | GPT-5 Codex | Created overlay parity repair spec from current Flutter code, legacy Expo module, and existing overlay docs. | Draft spec created. | `/sf-ready shipflow_data/workflow/specs/android-overlay-flutter-parity-repair.md` |
 | 2026-05-10 10:20:00 | sf-build | GPT-5 Codex + gpt-5.3-codex-spark worker | Implemented native overlay bubble core, Dart bridge methods, docs, and parser tests. | Partial: Flutter checks pass; Android Kotlin compile blocked by missing SDK; real-device QA still required. | Install/configure Android SDK or run Blacksmith APK build, then verify on Android device. |
 | 2026-05-10 10:32:36 | sf-fix | GPT-5 Codex | Diagnosed Blacksmith `:app:compileDebugKotlin` failure from `BUG-2026-05-10-001` and replaced the invalid `AccessibilityNodeInfo.EXTRA_INPUT_TYPE` reference with `node.inputType`. | Fix attempted: `flutter analyze`, `flutter test`, and `git diff --check` pass locally; Android compile still requires Blacksmith or a configured Android SDK. | Run Blacksmith Android CI and close `BUG-2026-05-10-001` when `Analyze, Test, Build APK` passes. |
 | 2026-05-10 11:39:12 | sf-prod | GPT-5 Codex | Pushed commit `0780a2f`, followed Blacksmith run `25627619426`, collected full GitHub/Blacksmith logs, and checked artifact upload. | Android CI passed: `Analyze, Test, Build APK` in 4m55s and `Supabase Migration Tests` in 1m10s. Separate Vercel status still fails on `vite build` for a `socialflow` deployment. | Android device QA for overlay behavior; decide whether Vercel should be disabled or configured for this Flutter repo. |

@@ -1,7 +1,7 @@
 ---
 artifact: technical_runbook
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-10"
 updated: "2026-05-10"
@@ -19,6 +19,12 @@ linked_systems:
   - "Workload Identity Federation"
   - "Firebase CLI"
   - "Cloud Firestore"
+depends_on:
+  - "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md@0.1.0"
+supersedes: []
+evidence:
+  - ".github/workflows/android-build.yml"
+  - "Hosted CI Firestore deploy proof referenced in shipflow_data/workflow/TASKS.md"
 next_step: "Reuse this runbook for new repos before adding any Firebase deploy job."
 ---
 

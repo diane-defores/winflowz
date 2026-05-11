@@ -1,7 +1,7 @@
 ---
 artifact: firebase_foundation
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-10"
 updated: "2026-05-10"
@@ -10,8 +10,18 @@ source_skill: "sf-docs"
 scope: "firebase-cli-foundation"
 owner: "Diane"
 confidence: "high"
+risk_level: "high"
 security_impact: "high"
 docs_impact: "high"
+depends_on:
+  - "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md@0.1.0"
+supersedes: []
+evidence:
+  - ".firebaserc"
+  - "firebase.json"
+  - "firestore.rules"
+  - "firestore.indexes.json"
+next_step: "/sf-docs technical audit"
 ---
 
 # Firebase CLI Foundation

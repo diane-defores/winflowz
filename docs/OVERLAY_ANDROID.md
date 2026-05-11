@@ -14,7 +14,7 @@ risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 depends_on:
-  - "specs/firebase-backend-agnostic-migration.md@0.1.0"
+  - "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt"
@@ -22,8 +22,8 @@ evidence:
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayEventQueue.kt"
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayTextInjectionHelper.kt"
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt"
-  - "specs/android-ime-winflowz_app-keyboard.md"
-next_step: "/sf-verify specs/android-overlay-flutter-parity-repair.md"
+  - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
+next_step: "/sf-verify shipflow_data/workflow/specs/android-overlay-flutter-parity-repair.md"
 ---
 
 # Android Overlay — WinFlowzApp

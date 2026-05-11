@@ -48,7 +48,7 @@ evidence:
   - "Current appThemeModeProvider is in-memory only in lib/app/winflowz_app.dart."
   - "User decision 2026-05-09: settings and backend data must be backend-agnostic; Firebase is the first adapter."
   - "User decision 2026-05-09: Supabase is no longer the target backend."
-next_step: "/sf-ready specs/settings-driven-design-system.md after Firebase adapter spec"
+next_step: "/sf-ready shipflow_data/workflow/specs/settings-driven-design-system.md after Firebase adapter spec"
 ---
 
 # Title
@@ -179,7 +179,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - `lib/data/**`: peut recevoir un adaptateur Firebase settings.
 - `firebase.json`, `firestore.rules`, `firestore.indexes.json`: à créer ou mettre à jour si Firebase porte cette préférence.
 - `docs/technical/flutter-app.md`: documenter le flux Settings -> Theme.
-- `TASKS.md`: les tâches d'audit design ouvertes pourront être fermées après implémentation.
+- `shipflow_data/workflow/TASKS.md`: les tâches d'audit design ouvertes pourront être fermées après implémentation.
 
 # Documentation Coherence
 
@@ -337,7 +337,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-09 15:19:23 UTC | sf-spec | GPT-5 Codex | Created draft spec for post-settings-decision design system completion | Draft spec created; later unblocked by backend-agnostic SettingsStore decision | `/sf-ready specs/settings-driven-design-system.md after Firebase adapter spec` |
+| 2026-05-09 15:19:23 UTC | sf-spec | GPT-5 Codex | Created draft spec for post-settings-decision design system completion | Draft spec created; later unblocked by backend-agnostic SettingsStore decision | `/sf-ready shipflow_data/workflow/specs/settings-driven-design-system.md after Firebase adapter spec` |
 
 # Current Chantier Flow
 

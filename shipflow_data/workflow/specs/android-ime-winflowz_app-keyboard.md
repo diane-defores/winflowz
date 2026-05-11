@@ -7,7 +7,7 @@ created: "2026-04-29"
 created_at: "2026-04-29 16:48:07 UTC"
 updated: "2026-05-09"
 updated_at: "2026-05-09 21:50:00 UTC"
-status: legacy-ready
+status: reviewed
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "android-ime-keyboard"
@@ -43,7 +43,7 @@ depends_on:
   - artifact: "shipflow_data/technical/guidelines.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "specs/firebase-backend-agnostic-migration.md"
+  - artifact: "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
     artifact_version: "0.1.0"
     required_status: "ready"
   - artifact: "docs/OVERLAY_ANDROID.md"
@@ -59,12 +59,12 @@ evidence:
   - "Existing Android service is overlay foreground recording state only in android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt."
   - "Legacy Expo overlay contains reusable concepts for bubble UI, waveform, accessibility injection, and clipboard fallback in modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/."
   - "Supabase already has user-scoped transcriptions, clipboard_items, snippets, dictionary_terms, user_settings, client_events with RLS and realtime in supabase/migrations/20260427084000_init_winflowz_app.sql."
-  - "specs/clipboard-backend-agnostic-api.md records the 2026-05-08 decision that clipboard behavior must go through ClipboardHistoryApi/ClipboardHistoryStore and keep Supabase as a replaceable adapter."
+  - "shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md records the 2026-05-08 decision that clipboard behavior must go through ClipboardHistoryApi/ClipboardHistoryStore and keep Supabase as a replaceable adapter."
   - "Android Developers: Create an input method, https://developer.android.com/develop/ui/views/touch-and-input/creating-input-method"
   - "Android Developers: Copy and paste, https://developer.android.com/guide/topics/text/copy-paste"
   - "Android Developers: MediaSessionManager, https://developer.android.com/reference/android/media/session/MediaSessionManager"
   - "Android Developers: AudioManager dispatchMediaKeyEvent, https://developer.android.com/reference/android/media/AudioManager"
-next_step: "/sf-ready specs/proprietary-swipe-corner-android-keyboard.md"
+next_step: "/sf-ready shipflow_data/workflow/specs/proprietary-swipe-corner-android-keyboard.md"
 ---
 
 # Title
@@ -73,7 +73,7 @@ Android IME WinFlowzApp Keyboard
 
 # Status
 
-Legacy-ready for the already implemented IME foundation. New keyboard work should continue from `specs/proprietary-swipe-corner-android-keyboard.md` and the Firebase/backend-agnostic migration spec. Clipboard work defers to `specs/clipboard-backend-agnostic-api.md`; Firebase is the first planned cloud adapter, and neither the IME nor UI should couple directly to a backend provider.
+Legacy-ready for the already implemented IME foundation. New keyboard work should continue from `shipflow_data/workflow/specs/proprietary-swipe-corner-android-keyboard.md` and the Firebase/backend-agnostic migration spec. Clipboard work defers to `shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md`; Firebase is the first planned cloud adapter, and neither the IME nor UI should couple directly to a backend provider.
 
 # User Story
 
@@ -560,13 +560,13 @@ Update or create:
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-04-29 16:48:07 UTC | sf-spec | GPT-5 Codex | Created Android IME WinFlowzApp Keyboard chantier spec from user request and repo investigation. | Draft saved in `specs/android-ime-winflowz_app-keyboard.md`. | `/sf-ready Android IME WinFlowzApp Keyboard` |
+| 2026-04-29 16:48:07 UTC | sf-spec | GPT-5 Codex | Created Android IME WinFlowzApp Keyboard chantier spec from user request and repo investigation. | Draft saved in `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`. | `/sf-ready Android IME WinFlowzApp Keyboard` |
 | 2026-04-30 09:12:44 UTC | sf-ready | GPT-5 Codex | Checked readiness gate for Android IME spec, including structure, metadata, user story alignment, adversarial review, security review, and documentation freshness. | Not ready: core IME dictation/media scope decisions and secure local queue/hash contract need to be fixed in spec. | `/sf-spec Android IME WinFlowzApp Keyboard` |
 | 2026-05-04 00:00:00 UTC | sf-ready | GPT-5 Codex | Rechecked readiness inside sf-build after confirming the spec now contains the missing queue, hash/dedupe, media scope, privacy and implementation-order contracts. | Ready for staged implementation. | `/sf-start Android IME WinFlowzApp Keyboard` |
 | 2026-05-04 21:15:11 UTC | sf-start | GPT-5 Codex | Implemented the native Android IME foundation, Flutter keyboard bridge/Settings card, keyboard schema metadata, source-aware repository hashing, docs and tests. | Partial: local Dart/web/docs checks pass; Android APK proof is blocked by ARM64 AAPT2 tooling and Supabase RLS smoke needs a running/linked database. | `/sf-test Android IME WinFlowzApp Keyboard on Android device and linked Supabase` |
 | 2026-05-04 21:15:11 UTC | sf-verify | GPT-5 Codex | Verified the implemented foundation against the spec with format, analyze, Flutter tests, web build, metadata lint, diff check, Android debug build attempt and Supabase lint attempt. | Partial: Android device/IME visibility, native APK build on x64, and SQL/RLS execution remain unproven. | `/sf-test Android IME WinFlowzApp Keyboard on Android device and linked Supabase` |
 | 2026-05-04 21:15:11 UTC | sf-build | GPT-5 Codex | Orchestrated readiness recovery, governance bootstrap, implementation, docs alignment and verification for the Android IME chantier. | Partial: stopped before sf-end/sf-ship because required Android/Supabase/manual proof is incomplete. | `/sf-test Android IME WinFlowzApp Keyboard on Android device and linked Supabase` |
-| 2026-05-08 17:57:25 UTC | sf-build | GPT-5 Codex | Aligned clipboard sync wording with the backend-agnostic clipboard API chantier. | partial | `/sf-start specs/clipboard-backend-agnostic-api.md task 6` |
+| 2026-05-08 17:57:25 UTC | sf-build | GPT-5 Codex | Aligned clipboard sync wording with the backend-agnostic clipboard API chantier. | partial | `/sf-start shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md task 6` |
 
 # Current Chantier Flow
 
@@ -577,4 +577,4 @@ Update or create:
 - sf-end: not launched; blocked by partial proof.
 - sf-ship: not launched; blocked by partial proof.
 
-Next lifecycle command: `/sf-start specs/clipboard-backend-agnostic-api.md task 6`, then Android device and backend adapter proof when the IME clipboard bridge is implemented.
+Next lifecycle command: `/sf-start shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md task 6`, then Android device and backend adapter proof when the IME clipboard bridge is implemented.

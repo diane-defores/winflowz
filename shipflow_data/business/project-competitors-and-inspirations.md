@@ -1,26 +1,37 @@
 ---
-artifact: documentation
+artifact: competitive_intelligence
 metadata_schema_version: "1.0"
-artifact_version: "0.2.0"
+artifact_version: "0.3.0"
 project: "WinFlowzApp"
 created: "2026-03-18"
-updated: "2026-04-27"
+updated: "2026-05-11"
 status: "draft"
 source_skill: "sf-docs"
-scope: "update"
+scope: "project-competitors-and-inspirations"
 owner: "Diane"
 confidence: "medium"
 risk_level: "low"
 security_impact: "none"
 docs_impact: "yes"
 linked_systems: []
+target_projects:
+  - "WinFlowzApp"
+reference_categories:
+  - "transcription_ai"
+  - "native_dictation"
+  - "audio_voice"
+  - "productivity_ai"
+source_policy: "Keep public, non-secret references only; cite source notes when external research is promoted into positioning."
 depends_on:
   - "shipflow_data/business/business.md@0.1.0"
   - "shipflow_data/business/product.md@0.1.0"
-supersedes: []
+supersedes:
+  - "INSPIRATION.md"
 evidence:
   - "shipflow_data/business/business.md"
   - "shipflow_data/business/product.md"
+  - "shipflow_data/workflow/research/2026-05-11-concurrents-inspirations.md"
+next_review: "2026-06-11"
 next_step: "$sf-docs update"
 ---
 
@@ -63,6 +74,18 @@ Inspiration pour le traitement audio en amont de la transcription.
 
 ### Microsoft Copilot
 Référence de positionnement pour la voix comme interface de productivité.
+
+## Veille productivité IA — 2026-05-11
+
+| Lien | Type | Score | Usage concret |
+|---|---:|:---:|---|
+| [VenturOS](https://betalist.com/startups/venturos) | Concurrent / inspiration | 8/10 | Benchmark "executive operating system": décisions, priorités, pilotage. |
+| [Validue](https://betalist.com/startups/validue) | Module formation | 7/10 | Leçon potentielle sur validation d'hypothèses avant exécution. |
+| [Populous](https://betalist.com/startups/populous) | Module validation | 7/10 | Inspiration pour tester une idée avant d'y passer 3 mois. |
+| [IntelCue](https://betalist.com/startups/intelcue-2) | Module veille IA | 6/10 | Exemple de veille marché intégrée dans Claude/ChatGPT. |
+| [MemoryPlugin](https://betalist.com/startups/memoryplugin) | Module mémoire IA | 6/10 | Sujet productivité IA: mémoire utile vs mémoire risquée. |
+| [Spec27](https://betalist.com/startups/spec27) | Module agents fiables | 6/10 | Alimenter une page "spécifier avant de déléguer à l'IA". |
+| [Mindry](https://betalist.com/startups/mindry) | Inspiration journaling | 5/10 | À surveiller; moins B2B que les autres références. |
 
 ## Questions ouvertes
 

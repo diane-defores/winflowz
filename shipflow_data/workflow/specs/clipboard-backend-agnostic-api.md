@@ -1,7 +1,7 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-08"
 created_at: "2026-05-08 17:48:07 UTC"
@@ -26,7 +26,7 @@ linked_systems:
   - "SupabaseClipboardStore"
   - "Future local/offline store"
   - "Future backend provider"
-  - "specs/android-ime-winflowz_app-keyboard.md"
+  - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
 depends_on:
   - artifact: "docs/technical/flutter-app.md"
     artifact_version: "0.1.0"
@@ -37,7 +37,7 @@ depends_on:
   - artifact: "docs/explorations/2026-05-05-backend-provider-pause-risk.md"
     artifact_version: "1.0.0"
     required_status: "draft"
-  - artifact: "specs/android-ime-winflowz_app-keyboard.md"
+  - artifact: "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
     artifact_version: "1.0.0"
     required_status: "ready"
 supersedes: []
@@ -45,7 +45,7 @@ evidence:
   - "User decision 2026-05-08: Supabase validation is deferred and Supabase should remain replaceable because provider pauses and project splitting are not acceptable as a core product dependency."
   - "Current code adds ClipboardHistoryApi, ClipboardHistoryStore, backend-neutral clipboard domain models, and SupabaseClipboardStore as an adapter."
   - "docs/explorations/2026-05-05-backend-provider-pause-risk.md recommends freezing deeper Supabase-specific work until backend choice is explicit."
-  - "specs/android-ime-winflowz_app-keyboard.md still contains Supabase-specific assumptions that must be routed through the backend-agnostic API before more Android/IME work."
+  - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md still contains Supabase-specific assumptions that must be routed through the backend-agnostic API before more Android/IME work."
 next_step: "/sf-test Android IME clipboard bridge on Android SDK/device"
 ---
 
@@ -146,7 +146,7 @@ Faire du clipboard une API produit local-first et backend-agnostic. Le cœur est
   - `lib/data/supabase/clipboard_repository.dart`
   - `lib/features/clipboard/presentation/clipboard_screen.dart`
 - Specs/docs:
-  - `specs/android-ime-winflowz_app-keyboard.md` doit être alignée avant la prochaine vague Android/IME.
+  - `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md` doit être alignée avant la prochaine vague Android/IME.
   - `docs/explorations/2026-05-05-backend-provider-pause-risk.md` explique pourquoi éviter de renforcer le couplage Supabase.
   - `docs/technical/flutter-app.md` et `docs/technical/code-docs-map.md` documentent les surfaces Flutter à maintenir.
 - Fresh external docs verdict: fresh-docs not needed for this spec because the contract is internal Flutter/Dart architecture and does not introduce a new framework/API behavior. Android and Supabase official-doc checks remain covered by the existing IME spec and are rechecked only when touching native Android or Supabase runtime behavior.
@@ -169,7 +169,7 @@ Faire du clipboard une API produit local-first et backend-agnostic. Le cœur est
 - `lib/features/clipboard/domain/clipboard_store.dart`: définit le contrat que les stores provider/local doivent implémenter.
 - `lib/data/supabase/clipboard_repository.dart`: reste un adaptateur et ne doit pas redevenir le contrat produit.
 - `android/app/src/main/kotlin/**`: futur raccord IME doit produire des événements compatibles avec l'API/store; aucun appel backend direct.
-- `specs/android-ime-winflowz_app-keyboard.md`: contient des tâches Supabase directes à requalifier vers backend-agnostic avant reprise.
+- `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`: contient des tâches Supabase directes à requalifier vers backend-agnostic avant reprise.
 - `docs/technical/flutter-app.md`: doit mentionner que clipboard suit une architecture API/store backend-agnostic.
 - `docs/technical/supabase-data.md`: doit clarifier que Supabase est un adaptateur actuel, pas une contrainte produit définitive.
 
@@ -178,7 +178,7 @@ Faire du clipboard une API produit local-first et backend-agnostic. Le cœur est
 - `docs/technical/flutter-app.md`: update requis pour nommer `ClipboardHistoryApi`, `ClipboardHistoryStore`, provider et règle anti-couplage UI -> Supabase.
 - `docs/technical/supabase-data.md`: update requis pour qualifier `SupabaseClipboardStore` comme adaptateur transitoire.
 - `docs/technical/code-docs-map.md`: review requis si les triggers docs restent trop Supabase-centric.
-- `specs/android-ime-winflowz_app-keyboard.md`: update requis avant nouvelles tâches IME touchant clipboard/sync.
+- `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`: update requis avant nouvelles tâches IME touchant clipboard/sync.
 - README/public copy: no impact immédiat tant que le comportement visible ne change pas.
 - Changelog: à préparer au ship, car c'est une refonte d'architecture interne.
 
@@ -242,7 +242,7 @@ Faire du clipboard une API produit local-first et backend-agnostic. Le cœur est
   - Notes : queue native en mémoire uniquement; pas de stockage disque de texte clipboard sans décision produit/architecture séparée.
 
 - [x] Tâche 7 : Aligner la spec Android IME et les docs techniques
-  - Fichiers : `specs/android-ime-winflowz_app-keyboard.md`, `docs/technical/flutter-app.md`, `docs/technical/supabase-data.md`, `docs/technical/code-docs-map.md`
+  - Fichiers : `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`, `docs/technical/flutter-app.md`, `docs/technical/supabase-data.md`, `docs/technical/code-docs-map.md`
   - Action : Remplacer les formulations "sync Supabase" comme cœur par "API/store clipboard backend-agnostic; Supabase adapter actuel".
   - User story link : empêche les prochaines implémentations de réintroduire le couplage.
   - Depends on : Tâches 1-4.
@@ -302,7 +302,7 @@ Lire d'abord:
 - `lib/features/clipboard/domain/clipboard_normalizer.dart`
 - `lib/data/supabase/clipboard_repository.dart`
 - `lib/features/clipboard/presentation/clipboard_screen.dart`
-- `specs/android-ime-winflowz_app-keyboard.md`
+- `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`
 - `docs/explorations/2026-05-05-backend-provider-pause-risk.md`
 
 Approche:
@@ -331,11 +331,11 @@ None.
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-08 17:48:07 UTC | sf-build | GPT-5 Codex | Created backend-agnostic clipboard API chantier from user decision and current reconciliation work | reviewed | /sf-ready specs/clipboard-backend-agnostic-api.md |
-| 2026-05-08 17:48:07 UTC | sf-ready | GPT-5 Codex | Checked required sections, user-story fit, security/data constraints, docs impact, tasks and acceptance criteria | ready | /sf-start specs/clipboard-backend-agnostic-api.md |
-| 2026-05-08 17:57:25 UTC | sf-start | GPT-5 Codex | Added in-memory clipboard store fallback and aligned technical docs plus Android IME spec around backend-agnostic API/store ownership | partial | /sf-start specs/clipboard-backend-agnostic-api.md task 6 |
-| 2026-05-08 17:57:25 UTC | sf-verify | GPT-5 Codex | Ran Dart format, Flutter analyze, Flutter tests and diff whitespace check for the backend-agnostic clipboard API/store work | partial: local checks pass; Android/IME bridge and live Supabase validation remain pending | /sf-start specs/clipboard-backend-agnostic-api.md task 6 |
-| 2026-05-08 19:22:40 UTC | sf-start | GPT-5 Codex | Implemented native in-memory keyboard clipboard event queue, MethodChannel drain, Flutter importer, clipboard screen drain, and tests for backend-agnostic IME clipboard events | implemented | /sf-verify specs/clipboard-backend-agnostic-api.md |
+| 2026-05-08 17:48:07 UTC | sf-build | GPT-5 Codex | Created backend-agnostic clipboard API chantier from user decision and current reconciliation work | reviewed | /sf-ready shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md |
+| 2026-05-08 17:48:07 UTC | sf-ready | GPT-5 Codex | Checked required sections, user-story fit, security/data constraints, docs impact, tasks and acceptance criteria | ready | /sf-start shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md |
+| 2026-05-08 17:57:25 UTC | sf-start | GPT-5 Codex | Added in-memory clipboard store fallback and aligned technical docs plus Android IME spec around backend-agnostic API/store ownership | partial | /sf-start shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md task 6 |
+| 2026-05-08 17:57:25 UTC | sf-verify | GPT-5 Codex | Ran Dart format, Flutter analyze, Flutter tests and diff whitespace check for the backend-agnostic clipboard API/store work | partial: local checks pass; Android/IME bridge and live Supabase validation remain pending | /sf-start shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md task 6 |
+| 2026-05-08 19:22:40 UTC | sf-start | GPT-5 Codex | Implemented native in-memory keyboard clipboard event queue, MethodChannel drain, Flutter importer, clipboard screen drain, and tests for backend-agnostic IME clipboard events | implemented | /sf-verify shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md |
 | 2026-05-08 19:22:40 UTC | sf-verify | GPT-5 Codex | Ran Dart format, Flutter analyze, Flutter tests, Android debug build attempt and diff whitespace check | partial: Flutter checks pass; Android build blocked by missing Android SDK/ANDROID_HOME and device QA remains pending | /sf-test Android IME clipboard bridge on Android SDK/device |
 
 # Current Chantier Flow

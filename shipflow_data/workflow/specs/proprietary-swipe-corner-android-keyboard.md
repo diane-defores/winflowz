@@ -1,7 +1,7 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-09"
 created_at: "2026-05-09 15:32:50 UTC"
@@ -12,6 +12,7 @@ source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "feature"
 owner: "Diane"
+confidence: high
 user_story: "En tant qu'utilisateur Android de WinFlowzApp, je veux un clavier proprietaire rapide et utilisable, avec caracteres secondaires accessibles par gestes vers les coins, afin de remplacer le prototype actuel inutilisable par une implementation entierement codee par nous."
 risk_level: "high"
 security_impact: "yes"
@@ -37,13 +38,13 @@ depends_on:
   - artifact: "shipflow_data/technical/guidelines.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "specs/android-ime-winflowz_app-keyboard.md"
+  - artifact: "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
     artifact_version: "1.0.0"
-    required_status: "legacy-ready"
-  - artifact: "specs/clipboard-backend-agnostic-api.md"
+    required_status: "reviewed"
+  - artifact: "shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md"
     artifact_version: "0.1.0"
     required_status: "ready"
-  - artifact: "specs/firebase-backend-agnostic-migration.md"
+  - artifact: "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
     artifact_version: "0.1.0"
     required_status: "ready"
 supersedes: []
@@ -378,7 +379,7 @@ Update after implementation:
 - `docs/VERIFICATION.md`: add manual QA matrix for activation assistant, debug tactile overlay, gesture directions, backspace, sensitive fields, rotation, device sizes.
 - `docs/OVERLAY_ANDROID.md`: confirm overlay remains complementary.
 - `README.md`: mention Android keyboard as proprietary WinFlowzApp implementation after QA proof.
-- `specs/android-ime-winflowz_app-keyboard.md`: cross-link this spec as the ergonomic rebuild of the IME surface.
+- `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`: cross-link this spec as the ergonomic rebuild of the IME surface.
 - `CHANGELOG.md`: after code ships, note keyboard usability rewrite.
 
 # Edge Cases
@@ -594,7 +595,7 @@ Update after implementation:
   - Notes : Ne pas promettre d'automatiser les autres apps. Toute action externe doit etre resolue et autorisee par Android avant affichage comme disponible.
 
 - [ ] Tache 18b : Implementer epinglage et retention clipboard
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardEventQueue.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`, `lib/core/platform/android_keyboard_bridge.dart`, `lib/features/keyboard/domain/keyboard_models.dart`, `specs/clipboard-backend-agnostic-api.md`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardEventQueue.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`, `lib/core/platform/android_keyboard_bridge.dart`, `lib/features/keyboard/domain/keyboard_models.dart`, `shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md`
   - Action : Ajouter metadonnees `pinned`, dates de capture/expiration ou equivalent, petit bouton/filtre `Epingles` dans le panneau clipboard pour afficher les elements epingles a la demande sans encombrer l'historique normal, action epingler/desepingler, purge automatique des elements non epingles selon retention choisie, options de retention `24h`, `7 jours`, `30 jours`, `illimite`, defaut `7 jours`, suppression manuelle explicite des elements epingles, et exposition de la preference cote Settings/bridge sans couplage Supabase.
   - User story link : permet de garder les clipboard importants et de limiter le reste dans le temps.
   - Depends on : Taches 5, 6, 14 et contrat clipboard existant.
@@ -767,7 +768,7 @@ Read first:
 - `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`
 - `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardSecurityPolicy.kt`
 - `lib/core/platform/android_keyboard_bridge.dart`
-- `specs/clipboard-backend-agnostic-api.md`
+- `shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md`
 
 Approach:
 
@@ -827,7 +828,7 @@ Stop conditions:
 | 2026-05-10 22:10:51 UTC | sf-ready | GPT-5 Codex | Evaluated readiness gate: structure, metadata, user-story fit, adversarial/security review, language doctrine, docs coherence and fresh Android docs | ready | /sf-start Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-10 22:24:59 UTC | sf-start | GPT-5.3 Codex | Implemented modular keyboard layout engine, tap+swipe-corner classifier, QWERTY/AZERTY and field-context IME behavior, codepoint backspace, native mini-panels, keyboard preference bridge updates, docs updates, and Kotlin unit tests | partial | /sf-verify Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-10 22:35:50 UTC | sf-start | GPT-5.3 Codex | Extended IME with minimal Navigation panel, lightweight Emoji panel with local recents, double-space/auto-spacing corrections, and touch-debug overlay; updated docs and bridge/status contracts | partial | /sf-verify Proprietary Swipe-Corner Android Keyboard |
-| 2026-05-10 22:38:00 UTC | sf-verify | GPT-5.5 | Verified current implementation against spec, local checks, bug gate, docs, and Android SDK compile availability | partial | /sf-start specs/proprietary-swipe-corner-android-keyboard.md |
+| 2026-05-10 22:38:00 UTC | sf-verify | GPT-5.5 | Verified current implementation against spec, local checks, bug gate, docs, and Android SDK compile availability | partial | /sf-start shipflow_data/workflow/specs/proprietary-swipe-corner-android-keyboard.md |
 | 2026-05-10 23:20:00 UTC | sf-start | GPT-5.3 Codex | Fixed post-phone layout reset, hardened InputConnection success/failure handling with visible feedback, aligned punctuation auto-spacing default to French-only, clarified clipboard pins behavior, and documented pending long-press/double-tap implementation | partial | /sf-verify Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-10 22:47:20 UTC | sf-verify | GPT-5 Codex | Verified post-correction gaps: phone context no longer persists Numbers mode, InputConnection failures are surfaced, punctuation default is locale-aware, pins/double-tap/long-press docs are clarified; privacy still leaks emoji recents in private mode and local Kotlin compile is blocked by missing Android SDK | partial | /sf-start targeted private emoji recents fix, then Android SDK/CI compile proof |
 | 2026-05-10 22:55:00 UTC | sf-verify | GPT-5 Codex | Re-verified targeted private emoji recents fix: private fields no longer read recents into the emoji panel and no longer write inserted emoji to recent history; double-space suppression remains gated by private/email/url/phone context; local Dart checks pass, Android Kotlin compile proof remains blocked by missing SDK | verified | /sf-end Proprietary Swipe-Corner Android Keyboard |
@@ -836,7 +837,7 @@ Stop conditions:
 
 # Current Chantier Flow
 
-- sf-spec: done, draft saved in `specs/proprietary-swipe-corner-android-keyboard.md`
+- sf-spec: done, draft saved in `shipflow_data/workflow/specs/proprietary-swipe-corner-android-keyboard.md`
 - sf-ready: ready as of 2026-05-10 22:10:51 UTC
 - sf-start: partial implementation extended on 2026-05-10 with input-path reliability fixes (commit/delete/navigation feedback), post-phone mode reset, locale-aware punctuation default, private emoji recents gating, and clearer pins messaging; Android device QA and broader advanced modules remain
 - sf-verify: verified as of 2026-05-10 22:55:00 UTC for the targeted privacy-recents fix and post-fix warnings; Android Kotlin compile proof remains blocked by missing local SDK and should be covered before sf-ship

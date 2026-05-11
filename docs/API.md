@@ -5,7 +5,7 @@ artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-09"
-status: "legacy"
+status: "stale"
 source_skill: "sf-docs"
 scope: "api"
 owner: "Diane"
@@ -34,7 +34,7 @@ next_step: "$sf-docs api"
 
 > Legacy reference: this document still contains the previous Supabase contract.
 > The active backend target is now backend-agnostic stores with Firebase as the
-> first Android adapter. Use `specs/firebase-backend-agnostic-migration.md` for
+> first Android adapter. Use `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md` for
 > new work.
 
 ## Scope

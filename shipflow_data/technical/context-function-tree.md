@@ -1,7 +1,7 @@
 ---
 artifact: documentation
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-10"
 updated: "2026-05-10"
@@ -10,6 +10,7 @@ source_skill: sf-docs
 scope: technical-function-tree
 owner: "Diane"
 confidence: high
+risk_level: medium
 security_impact: yes
 docs_impact: yes
 linked_systems:
@@ -54,4 +55,3 @@ next_step: "/sf-docs technical audit"
 
 - Update this function tree when a new feature or shared module is added.
 - Keep it aligned with `shipflow_data/technical/code-docs-map.md`.
-

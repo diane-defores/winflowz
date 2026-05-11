@@ -1,7 +1,7 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-10"
 updated: "2026-05-10"
@@ -10,6 +10,7 @@ source_skill: sf-docs
 scope: technical-context
 owner: "Diane"
 confidence: high
+risk_level: medium
 security_impact: yes
 docs_impact: yes
 linked_systems:
@@ -41,7 +42,7 @@ This context file is the technical governance anchor for `shipflow_data`-based w
 - `shipflow_data/technical/code-docs-map.md` (primary route map)
 - `lib/**` and `android/**` (code ownership source)
 - `docs/technical/*.md` (legacy technical runbooks and module notes)
-- `specs/*.md` (ready specs with migration and parity contracts)
+- `shipflow_data/workflow/specs/*.md` (ready specs with migration and parity contracts)
 
 ## Invariants
 
@@ -58,4 +59,3 @@ This context file is the technical governance anchor for `shipflow_data`-based w
 ## Maintenance Rule
 
 Re-run `/sf-docs technical audit` after architecture or platform boundary changes.
-

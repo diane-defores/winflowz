@@ -53,8 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated Android keyboard docs and spec trace to distinguish the implemented MVP from pending double-tap, long-press, drawable gesture, Android compile and device QA work.
 - Switched Firestore CI deploy from interactive Firebase CLI auth to GitHub OIDC/WIF in `.github/workflows/android-build.yml`.
 - Updated Firebase CI documentation to require `GCP_WIF_PROVIDER` and `GCP_WIF_SERVICE_ACCOUNT` instead of long-lived service account JSON secrets.
-- Archived Supabase migration target docs as legacy-only references and pointed execution to `specs/firebase-backend-agnostic-migration.md`.
+- Archived Supabase migration target docs as legacy-only references and pointed execution to `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`.
 - Removed unnecessary Firestore indexes that caused hosted deploy errors on `settings` and `transcriptions` collection groups.
+- Moved active task tracking to `shipflow_data/workflow/TASKS.md` and synced tracker naming to WinFlowzApp.
 
 ### Security
 - Converted the RLS smoke script into a pgTAP-style test covering own-user access, forged user denial, anonymous denial, tombstone preservation and sensitive client-event metadata keys.

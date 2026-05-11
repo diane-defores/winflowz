@@ -1,7 +1,7 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowzApp"
 created: "2026-05-09"
 created_at: "2026-05-09 21:45:00 UTC"
@@ -39,7 +39,7 @@ depends_on:
   - artifact: "shipflow_data/technical/guidelines.md"
     artifact_version: "0.1.0"
     required_status: "reviewed"
-  - artifact: "specs/clipboard-backend-agnostic-api.md"
+  - artifact: "shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md"
     artifact_version: "0.1.0"
     required_status: "ready"
 supersedes:
@@ -54,7 +54,7 @@ evidence:
   - "Firebase official docs checked 2026-05-09: Flutter apps should be configured with FlutterFire CLI."
   - "Firebase official docs checked 2026-05-09: Firebase CLI deploys Firestore rules and indexes from firebase.json."
   - "Firebase official docs checked 2026-05-09: Firestore Security Rules use request.auth and can enforce per-user access; rules are not query filters."
-next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
+next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
 # Title
@@ -241,7 +241,7 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-09 21:45:00 UTC | sf-build | GPT-5 Codex | Created Firebase/backend-agnostic migration chantier after user approved Firebase as first adapter and requested cleanup | implemented | `/sf-start specs/firebase-backend-agnostic-migration.md` |
+| 2026-05-09 21:45:00 UTC | sf-build | GPT-5 Codex | Created Firebase/backend-agnostic migration chantier after user approved Firebase as first adapter and requested cleanup | implemented | `/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md` |
 | 2026-05-10 00:00:00 UTC | sf-start | GPT-5 Codex + gpt-5.3-codex-spark worker + gpt-5.5 low explorer | Added Firebase CLI foundation and initial backend-neutral Dart contracts after user answered technical questions | partial | Finish auth/session, snippets, dictionary contracts, then FlutterFire conditional init |
 | 2026-05-10 00:00:00 UTC | continue | GPT-5 Codex + gpt-5.3-codex-spark workers | Continued implementation through backend-neutral auth/settings/domain stores and Firestore adapters with local fallback | partial | Validate with Firebase CLI/emulator and Android SDK/Blacksmith |
 | 2026-05-10 00:00:00 UTC | continue | GPT-5 Codex | Installed Firebase CLI and validated local Auth/Firestore emulator startup against demo project | partial | Authenticate/deploy real Firebase project or run Blacksmith Android build |
@@ -252,7 +252,7 @@ Les noms exacts peuvent changer si l'implémentation prouve une meilleure conven
 | 2026-05-10 19:02:17 UTC | sf-ship | GPT-5 Codex | Full close ship: archived Supabase target docs, updated project/master tasks and changelog, and shipped Firebase OIDC/WIF Firestore CI proof with hardened IAM bindings | shipped | Continue task 7 (Supabase runtime detachment) and Android device QA tracks |
 | 2026-05-10 19:28:58 UTC | sf-test | GPT-5 Codex | Targeted Firebase/backend-agnostic migration validation: rechecked `docs`/`specs` canonical paths (legacy root paths removed), legacy-compatibility scan (`rg`), and `Supabase` scan in `lib/test/pubspec.yaml` | partial | Task 7 still pending by design; keep Supabase legacy adapters + continue Android device QA for Firebase parity |
 | 2026-05-10 20:31:19 UTC | sf-build | GPT-5 Codex | Finalized Android-current manual pass scope: Android overlay/IME device QA remains tracked separately, iOS/macOS microphone/speech declarations are future-compatible only, non-Android desktop/web proof is out of current runtime scope, web local speech disabled, and local analyze/test/web build passed. | partial | Keep Android real-device QA under overlay/IME tasks. |
-| 2026-05-11 00:00:00 UTC | sf-start | GPT-5 Codex | Completed task 7 by removing Supabase from active runtime bootstrap/provider selection and backend diagnostics while preserving legacy Supabase adapters/tests for compile compatibility. | implemented | `/sf-verify specs/firebase-backend-agnostic-migration.md` |
+| 2026-05-11 00:00:00 UTC | sf-start | GPT-5 Codex | Completed task 7 by removing Supabase from active runtime bootstrap/provider selection and backend diagnostics while preserving legacy Supabase adapters/tests for compile compatibility. | implemented | `/sf-verify shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md` |
 | 2026-05-11 05:48:21 UTC | sf-verify | GPT-5 Codex | Verified task 7 runtime detachment and local checks; `flutter analyze`, `flutter test`, format, diff check, and Firebase emulator smoke passed, but high bug `BUG-2026-05-10-002` remains `fix-attempted` and active docs still present Supabase as reviewed runtime architecture. | partial | Close bug gate with APK/device retest and update stale Supabase-target docs before sf-end |
 
 # Current Chantier Flow
