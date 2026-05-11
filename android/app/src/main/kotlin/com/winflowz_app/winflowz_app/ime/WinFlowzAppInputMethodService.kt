@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz.ime
+package com.winflowz_app.winflowz_app.ime
 
 import android.content.Intent
 import android.inputmethodservice.InputMethodService
@@ -9,14 +9,14 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InputConnection
 import android.widget.Toast
-import com.voiceflowz.voiceflowz.MainActivity
+import com.winflowz_app.winflowz_app.MainActivity
 
-class VoiceFlowzInputMethodService : InputMethodService(), VoiceFlowzKeyboardView.Callbacks {
+class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardView.Callbacks {
     private lateinit var stateStore: KeyboardStateStore
     private lateinit var mediaController: KeyboardMediaController
     private lateinit var clipboardController: KeyboardClipboardController
     private lateinit var voiceController: KeyboardVoiceController
-    private var keyboardView: VoiceFlowzKeyboardView? = null
+    private var keyboardView: WinFlowzAppKeyboardView? = null
     private var fieldPolicy =
         KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var inputContext = KeyboardInputContextResolver.resolve(null)
@@ -58,7 +58,7 @@ class VoiceFlowzInputMethodService : InputMethodService(), VoiceFlowzKeyboardVie
     }
 
     override fun onCreateInputView(): View {
-        val view = VoiceFlowzKeyboardView(this, this)
+        val view = WinFlowzAppKeyboardView(this, this)
         keyboardView = view
         view.applyPolicy(fieldPolicy)
         applyRuntimePreferencesToView()
@@ -180,7 +180,7 @@ class VoiceFlowzInputMethodService : InputMethodService(), VoiceFlowzKeyboardVie
 
     override fun onVoice() {
         if (!stateStore.voiceEnabled) {
-            showStatus("Dictation disabled in VoiceFlowz settings")
+            showStatus("Dictation disabled in WinFlowzApp settings")
             return
         }
         if (!fieldPolicy.voiceAllowed) {

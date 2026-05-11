@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-09"
 status: superseded
@@ -10,7 +10,7 @@ source_skill: sf-spec
 scope: "migration"
 owner: "Diane"
 confidence: "medium"
-user_story: "En tant que mainteneur de VoiceFlowz, je veux migrer toute l'application vers Flutter avec Supabase afin d'obtenir une base unique, performante, multi-plateforme et sans code applicatif JavaScript/TypeScript dans ce repo."
+user_story: "En tant que mainteneur de WinFlowzApp, je veux migrer toute l'application vers Flutter avec Supabase afin d'obtenir une base unique, performante, multi-plateforme et sans code applicatif JavaScript/TypeScript dans ce repo."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
@@ -83,7 +83,7 @@ next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 
 # Title
 
-Migration totale VoiceFlowz vers Flutter + Supabase
+Migration totale WinFlowzApp vers Flutter + Supabase
 
 > Superseded: this spec is no longer the active implementation target after the
 > 2026-05-09 decision to use backend-agnostic contracts with Firebase as the
@@ -98,15 +98,15 @@ Superseded. Do not start new implementation from this spec.
 
 # User Story
 
-En tant que mainteneur de VoiceFlowz, je veux migrer toute l'application vers Flutter avec Supabase afin d'obtenir une base unique, performante, multi-plateforme et sans code applicatif JavaScript/TypeScript dans ce repo.
+En tant que mainteneur de WinFlowzApp, je veux migrer toute l'application vers Flutter avec Supabase afin d'obtenir une base unique, performante, multi-plateforme et sans code applicatif JavaScript/TypeScript dans ce repo.
 
 # Minimal Behavior Contract
 
-VoiceFlowz doit devenir une application Flutter qui fonctionne sur Android, iOS, macOS, Windows, Linux et web, avec les memes workflows produit que l'app actuelle plus les zones deja prevues: dictee locale quand la plateforme la supporte, transcription avancee Whisper, nettoyage Claude optionnel, historique, clipboard synchronise, snippets, dictionnaire personnel, reglages, vraie authentification Supabase et overlay Android. En cas d'echec d'une permission, d'une cle API, d'un appel IA, d'une synchronisation Supabase ou d'une fonctionnalite non disponible sur une plateforme, l'utilisateur doit recevoir un etat explicite et recuperable sans perte de texte deja produit. L'edge case le plus facile a rater est l'overlay Android: il doit rester une capacite native Android isolee avec fallback clipboard, pendant que les autres plateformes gardent une experience complete sans promettre d'overlay systeme equivalent.
+WinFlowzApp doit devenir une application Flutter qui fonctionne sur Android, iOS, macOS, Windows, Linux et web, avec les memes workflows produit que l'app actuelle plus les zones deja prevues: dictee locale quand la plateforme la supporte, transcription avancee Whisper, nettoyage Claude optionnel, historique, clipboard synchronise, snippets, dictionnaire personnel, reglages, vraie authentification Supabase et overlay Android. En cas d'echec d'une permission, d'une cle API, d'un appel IA, d'une synchronisation Supabase ou d'une fonctionnalite non disponible sur une plateforme, l'utilisateur doit recevoir un etat explicite et recuperable sans perte de texte deja produit. L'edge case le plus facile a rater est l'overlay Android: il doit rester une capacite native Android isolee avec fallback clipboard, pendant que les autres plateformes gardent une experience complete sans promettre d'overlay systeme equivalent.
 
 # Success Behavior
 
-Un utilisateur peut installer ou lancer VoiceFlowz sur Android, iOS, macOS, Windows, Linux et web, se connecter via Supabase Auth, configurer ses cles OpenAI et Anthropic en stockage local securise quand la plateforme le permet, dicter du texte via le meilleur mode disponible sur la plateforme, obtenir un resultat nettoye, le copier, l'editer, le sauvegarder, le retrouver dans son historique synchronise, l'envoyer vers le clipboard partage, gerer ses snippets et son dictionnaire, puis retrouver ces donnees sur une autre plateforme connectee au meme compte.
+Un utilisateur peut installer ou lancer WinFlowzApp sur Android, iOS, macOS, Windows, Linux et web, se connecter via Supabase Auth, configurer ses cles OpenAI et Anthropic en stockage local securise quand la plateforme le permet, dicter du texte via le meilleur mode disponible sur la plateforme, obtenir un resultat nettoye, le copier, l'editer, le sauvegarder, le retrouver dans son historique synchronise, l'envoyer vers le clipboard partage, gerer ses snippets et son dictionnaire, puis retrouver ces donnees sur une autre plateforme connectee au meme compte.
 
 Sur Android, l'utilisateur peut aussi activer l'overlay, demarrer une dictee depuis une autre application, arreter ou annuler l'enregistrement, puis recevoir le texte final dans le clipboard ou directement dans le champ actif quand le service d'accessibilite est autorise.
 
@@ -122,7 +122,7 @@ Le repo actuel est une app Expo / React Native avec backend Convex en TypeScript
 
 # Solution
 
-Recreer VoiceFlowz comme app Flutter unique avec Supabase comme backend principal. Remplacer Convex par Supabase Auth, Postgres, Row Level Security et realtime. Porter la logique produit vers Dart, adapter le code Kotlin d'overlay Android via un plugin Flutter ou des platform channels, creer les shells Android/iOS/macOS/Windows/Linux/web, puis purger l'ancien code Expo, React Native, Convex et JavaScript/TypeScript apres verification de parite.
+Recreer WinFlowzApp comme app Flutter unique avec Supabase comme backend principal. Remplacer Convex par Supabase Auth, Postgres, Row Level Security et realtime. Porter la logique produit vers Dart, adapter le code Kotlin d'overlay Android via un plugin Flutter ou des platform channels, creer les shells Android/iOS/macOS/Windows/Linux/web, puis purger l'ancien code Expo, React Native, Convex et JavaScript/TypeScript apres verification de parite.
 
 # Scope In
 
@@ -369,7 +369,7 @@ Docs a creer ou remplacer:
 - [ ] Tache 11 : Implementer pipeline voice
   - Fichier : `lib/features/voice/`, `lib/services/audio/`, `lib/services/speech/`
   - Action : Implementer free speech recognition, advanced recording, Whisper, Claude fallback, limites duree/taille/retries/timeouts, et matrice direct/proxy web
-  - User story link : coeur de valeur VoiceFlowz
+  - User story link : coeur de valeur WinFlowzApp
   - Depends on : Tache 8, Tache 9, Tache 10
   - Validate with : tests unitaires d'etat, erreurs 401/403/429/413/timeout, tests manuels plateformes; verifier que Linux utilise advanced recording + Whisper et affiche le mode local indisponible
   - Notes : utiliser `speech_to_text` 7.3.x pour Android/iOS/macOS/web/Windows et `record` 6.2.x pour l'audio avance toutes plateformes
@@ -424,7 +424,7 @@ Docs a creer ou remplacer:
 
 - [ ] Tache 18 : Refaire theme et design system Flutter
   - Fichier : `lib/core/theme/`, `lib/core/ui/`
-  - Action : Reprendre l'identite VoiceFlowz avec composants Flutter coherents et accessibles
+  - Action : Reprendre l'identite WinFlowzApp avec composants Flutter coherents et accessibles
   - User story link : produit beau, performant, professionnel
   - Depends on : Tache 5
   - Validate with : widget tests de composants critiques et revue visuelle

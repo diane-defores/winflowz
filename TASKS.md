@@ -1,4 +1,4 @@
-# Tasks — VoiceFlowz
+# Tasks — WinFlowzApp
 
 > **Priority:** 🔴 P0 blocker · 🟠 P1 high · 🟡 P2 normal · 🟢 P3 low · ⚪ deferred
 > **Status:** 📋 todo · 🔄 in progress · ✅ done · ⛔ blocked · 💤 deferred
@@ -16,7 +16,7 @@
 | 🟠 | Detach Supabase runtime target path (`task 7`) while preserving legacy compile compatibility until the final parity decision | ✅ done — Supabase removed from active bootstrap/providers/diagnostics; legacy adapters/tests remain in-place for compile compatibility |
 | ⚪ | Retire or archive Supabase schema/tests after Firebase adapter parity is specified | 💤 deferred |
 | ⚪ | Validate auth, transcriptions, snippets, dictionary, clipboard sync, and settings against a real Firebase environment | 💤 deferred — after Firebase adapter setup |
-| 🟠 | Build Android IME VoiceFlowz Keyboard progressively: base native keyboard, Settings bridge, privacy gate, clipboard, media, docs, Android device QA | 🔄 in progress — custom swipe-corner keyboard, Settings bridge, privacy gate, native panels, docs and Dart checks implemented; Android Kotlin compile/device proof and backend-agnostic sync adapter still required |
+| 🟠 | Build Android IME WinFlowzApp Keyboard progressively: base native keyboard, Settings bridge, privacy gate, clipboard, media, docs, Android device QA | 🔄 in progress — custom swipe-corner keyboard, Settings bridge, privacy gate, native panels, docs and Dart checks implemented; Android Kotlin compile/device proof and backend-agnostic sync adapter still required |
 | 🟠 | Repair Flutter Android overlay parity with native floating bubble, event bridge, accessibility delivery, and appearance settings | 🔄 in progress — native bridge and Settings controls implemented; overlay foreground-service type fix attempted for BUG-2026-05-11-001; CI APK and Android device retest still required |
 | ✅ | Run the required Android-current manual platform pass and document non-Android limits | ✅ done — Android remains the only current runtime target; capability/permission limits documented; web local speech disabled; Android real-device QA remains tracked under overlay/IME tasks |
 
@@ -63,7 +63,7 @@
 
 | Pri | Task | Status |
 |-----|------|--------|
-| ✅ | Align Flutter brand tokens, surface tokens, primary shadow, and Settings copy with the VoiceFlowz branding contract | ✅ done |
+| ✅ | Align Flutter brand tokens, surface tokens, primary shadow, and Settings copy with the WinFlowzApp branding contract | ✅ done |
 | ✅ | Add a user-facing Appearance control for System / Light / Dark theme mode | ✅ done |
 | ✅ | Bootstrap Appearance from local settings before `runApp`, keep local cache writes, and route authenticated saves through the backend-agnostic settings store | ✅ done |
 | ✅ | Constrain Firestore settings writes so `themeMode` accepts only `system`, `light`, or `dark` | ✅ done |

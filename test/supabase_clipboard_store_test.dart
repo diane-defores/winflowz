@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voiceflowz/data/supabase/clipboard_repository.dart';
-import 'package:voiceflowz/features/clipboard/domain/clipboard_capture_event.dart';
+import 'package:winflowz_app/data/supabase/clipboard_repository.dart';
+import 'package:winflowz_app/features/clipboard/domain/clipboard_capture_event.dart';
 
 void main() {
   group('SupabaseClipboardStore payload adapter', () {

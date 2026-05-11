@@ -53,15 +53,15 @@ final appThemeModeProvider =
       AppThemeModeController.new,
     );
 
-class VoiceFlowzApp extends ConsumerWidget {
-  const VoiceFlowzApp({super.key});
+class WinFlowzApp extends ConsumerWidget {
+  const WinFlowzApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(appThemeModeProvider);
     return MaterialApp.router(
-      title: 'VoiceFlowz',
+      title: 'WinFlowzApp',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode.materialMode,

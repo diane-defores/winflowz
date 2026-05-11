@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz
+package com.winflowz_app.winflowz_app
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo

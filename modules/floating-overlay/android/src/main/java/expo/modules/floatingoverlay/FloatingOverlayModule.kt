@@ -12,7 +12,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
 
-private const val TAG = "VoiceFlowz"
+private const val TAG = "WinFlowzApp"
 
 class FloatingOverlayModule : Module() {
 

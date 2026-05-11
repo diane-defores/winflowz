@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz.ime
+package com.winflowz_app.winflowz_app.ime
 
 import android.content.Context
 import android.graphics.Canvas
@@ -14,7 +14,7 @@ import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
 
-class VoiceFlowzKeyboardView(
+class WinFlowzAppKeyboardView(
     context: Context,
     private val callbacks: Callbacks,
 ) : View(context) {
@@ -63,7 +63,7 @@ class VoiceFlowzKeyboardView(
     private var fieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var fieldContext = KeyboardFieldContextMode.Text
     private var enterLabel = "Enter"
-    private var statusText = "VoiceFlowz"
+    private var statusText = "WinFlowzApp"
 
     private var gestureStartFrame: KeyFrame? = null
     private var gestureStartX = 0f
@@ -157,9 +157,9 @@ class VoiceFlowzKeyboardView(
         }
         statusText =
             if (policy.privateMode) {
-                "VoiceFlowz - private input (${policy.reason})"
+                "WinFlowzApp - private input (${policy.reason})"
             } else {
-                "VoiceFlowz"
+                "WinFlowzApp"
             }
         refreshLayout()
     }
@@ -488,13 +488,13 @@ class VoiceFlowzKeyboardView(
                 }
             }
             KeyboardKeyAction.ShowClipboardPins -> {
-                setStatus("Pinned clipboard list is in VoiceFlowz app")
+                setStatus("Pinned clipboard list is in WinFlowzApp app")
             }
             KeyboardKeyAction.MediaPrevious -> callbacks.onMediaPrevious()
             KeyboardKeyAction.MediaPlayPause -> callbacks.onMediaPlayPause()
             KeyboardKeyAction.MediaNext -> callbacks.onMediaNext()
             KeyboardKeyAction.InsertSnippetOne -> {
-                val committed = callbacks.onText("Merci - envoye depuis VoiceFlowz")
+                val committed = callbacks.onText("Merci - envoye depuis WinFlowzApp")
                 if (!committed) {
                     setStatus("Snippet insertion unavailable")
                     return
@@ -502,7 +502,7 @@ class VoiceFlowzKeyboardView(
                 callbacks.onSnippets()
                 panelMode = KeyboardPanelMode.None
             }
-            KeyboardKeyAction.OpenVoiceFlowzSettings -> callbacks.onSettings()
+            KeyboardKeyAction.OpenWinFlowzAppSettings -> callbacks.onSettings()
             KeyboardKeyAction.ToggleCornerMode -> {
                 cornerModeEnabled = !cornerModeEnabled
                 callbacks.onCornerModeChanged(cornerModeEnabled)

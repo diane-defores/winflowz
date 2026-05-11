@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz.ime
+package com.winflowz_app.winflowz_app.ime
 
 import android.Manifest
 import android.content.Context

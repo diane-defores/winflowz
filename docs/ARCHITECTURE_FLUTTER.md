@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-27"
 updated: "2026-05-04"
 status: "reviewed"
@@ -23,12 +23,12 @@ evidence:
 next_step: "$sf-docs update"
 ---
 
-# Architecture Flutter — VoiceFlowz
+# Architecture Flutter — WinFlowzApp
 
 ## Runtime Layout
 
 - `lib/main.dart` bootstraps Supabase from `--dart-define` and starts Riverpod.
-- `lib/app/voiceflowz_app.dart` configures MaterialApp + router + theme.
+- `lib/app/winflowz_app.dart` configures MaterialApp + router + theme.
 - `lib/core/*` holds shared bootstrap, routing, theme and platform capability checks.
 - `lib/features/*` holds product domains (auth, voice, clipboard, settings, shell).
 - `lib/data/supabase/*` holds Supabase client wiring and repositories.

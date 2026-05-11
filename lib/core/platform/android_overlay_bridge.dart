@@ -158,7 +158,7 @@ class AndroidOverlayBridgeException implements Exception {
 class AndroidOverlayBridge {
   AndroidOverlayBridge._();
 
-  static const MethodChannel _channel = MethodChannel('voiceflowz/overlay');
+  static const MethodChannel _channel = MethodChannel('winflowz_app/overlay');
 
   static Future<bool> isPermissionGranted() async {
     final status = await getStatus();

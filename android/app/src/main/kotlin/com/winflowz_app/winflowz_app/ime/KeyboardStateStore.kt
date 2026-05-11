@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz.ime
+package com.winflowz_app.winflowz_app.ime
 
 import android.content.Context
 import android.provider.Settings
@@ -106,7 +106,7 @@ class KeyboardStateStore(private val context: Context) {
     private fun isInputMethodEnabled(): Boolean {
         val manager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        return manager.enabledInputMethodList.any(::isVoiceFlowzIme)
+        return manager.enabledInputMethodList.any(::isWinFlowzAppIme)
     }
 
     private fun isInputMethodActive(): Boolean {
@@ -117,13 +117,13 @@ class KeyboardStateStore(private val context: Context) {
             )
                 ?: return false
         return current.contains(context.packageName) &&
-            current.contains(VoiceFlowzInputMethodService::class.java.simpleName)
+            current.contains(WinFlowzAppInputMethodService::class.java.simpleName)
     }
 
-    private fun isVoiceFlowzIme(info: InputMethodInfo): Boolean {
+    private fun isWinFlowzAppIme(info: InputMethodInfo): Boolean {
         val serviceName = info.serviceName ?: return false
         return info.packageName == context.packageName &&
-            serviceName.endsWith(VoiceFlowzInputMethodService::class.java.simpleName)
+            serviceName.endsWith(WinFlowzAppInputMethodService::class.java.simpleName)
     }
 
     private fun defaultPunctuationAutoSpacingForLocale(): Boolean {
@@ -131,7 +131,7 @@ class KeyboardStateStore(private val context: Context) {
     }
 
     companion object {
-        const val PREFERENCES_NAME = "voiceflowz_keyboard_prefs"
+        const val PREFERENCES_NAME = "winflowz_app_keyboard_prefs"
         const val KEY_VOICE_ENABLED = "voice_enabled"
         const val KEY_CLIPBOARD_SYNC_DESIRED = "clipboard_sync_desired"
         const val KEY_MEDIA_CONTROLS_ENABLED = "media_controls_enabled"

@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-04"
 status: "reviewed"
@@ -26,11 +26,11 @@ evidence:
   - "../components/AudioWaveform.tsx"
   - "../components/RecordingControls.tsx"
   - "../modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayModule.kt"
-  - "../android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzInputMethodService.kt"
+  - "../android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt"
 next_step: "$sf-docs components"
 ---
 
-# Components — VoiceFlowz
+# Components — WinFlowzApp
 
 ## Scope
 
@@ -79,9 +79,9 @@ This inventory separates:
 
 ### Keyboard integration (Android)
 
-- `VoiceFlowzInputMethodService`:
+- `WinFlowzAppInputMethodService`:
   native Android `InputMethodService` for system keyboard entry.
-- `VoiceFlowzKeyboardView`:
+- `WinFlowzAppKeyboardView`:
   native minimal QWERTY keyboard with action row for dictation, clipboard,
   snippets entry point, Settings, and media play/pause.
 - `KeyboardSecurityPolicy`:

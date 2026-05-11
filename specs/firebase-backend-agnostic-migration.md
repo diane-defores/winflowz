@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-09"
 created_at: "2026-05-09 21:45:00 UTC"
 updated: "2026-05-09"
@@ -13,7 +13,7 @@ source_model: "GPT-5 Codex"
 scope: "firebase-backend-agnostic-migration"
 owner: "Diane"
 confidence: high
-user_story: "En tant que builder de VoiceFlowz, je veux remplacer la cible Supabase par des contrats backend-agnostiques avec Firebase comme premier adaptateur Android, afin de garder l'app gratuite au départ, pilotable en CLI et remplaçable plus tard."
+user_story: "En tant que builder de WinFlowzApp, je veux remplacer la cible Supabase par des contrats backend-agnostiques avec Firebase comme premier adaptateur Android, afin de garder l'app gratuite au départ, pilotable en CLI et remplaçable plus tard."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
@@ -67,9 +67,9 @@ Ready for staged implementation. This spec replaces the old Supabase-target migr
 
 # User Story
 
-En tant que builder de VoiceFlowz, je veux remplacer la cible Supabase par des contrats backend-agnostiques avec Firebase comme premier adaptateur Android, afin de garder l'app gratuite au départ, pilotable en CLI et remplaçable plus tard.
+En tant que builder de WinFlowzApp, je veux remplacer la cible Supabase par des contrats backend-agnostiques avec Firebase comme premier adaptateur Android, afin de garder l'app gratuite au départ, pilotable en CLI et remplaçable plus tard.
 
-Acteur principal: builder VoiceFlowz.
+Acteur principal: builder WinFlowzApp.
 
 Acteurs secondaires: utilisateur Android, futur utilisateur connecté, GitHub Actions/Blacksmith, futur backend provider.
 
@@ -84,7 +84,7 @@ Résultat observable attendu: l'app garde ses workflows Android actuels, mais le
 
 # Minimal Behavior Contract
 
-VoiceFlowz expose des contrats backend-agnostiques pour les données utilisateur et les settings. Les widgets et services Android ne connaissent pas Firebase, Supabase, Firestore, SQL ou règles provider; ils consomment des stores/domain APIs. Firebase Auth fournit l'identité distante du premier MVP Android, Cloud Firestore porte les documents utilisateur, et Firestore Security Rules imposent que chaque utilisateur ne lise/écrive que ses propres documents. Si Firebase n'est pas configuré, l'app reste utilisable en mode local ou affiche un état de sync indisponible sans crash ni fausse promesse. L'edge case facile à rater est la migration progressive: Supabase legacy peut rester présent pour compiler, mais ne doit pas redevenir le contrat produit ni apparaître comme cible active dans l'UI ou les docs.
+WinFlowzApp expose des contrats backend-agnostiques pour les données utilisateur et les settings. Les widgets et services Android ne connaissent pas Firebase, Supabase, Firestore, SQL ou règles provider; ils consomment des stores/domain APIs. Firebase Auth fournit l'identité distante du premier MVP Android, Cloud Firestore porte les documents utilisateur, et Firestore Security Rules imposent que chaque utilisateur ne lise/écrive que ses propres documents. Si Firebase n'est pas configuré, l'app reste utilisable en mode local ou affiche un état de sync indisponible sans crash ni fausse promesse. L'edge case facile à rater est la migration progressive: Supabase legacy peut rester présent pour compiler, mais ne doit pas redevenir le contrat produit ni apparaître comme cible active dans l'UI ou les docs.
 
 # Scope In
 

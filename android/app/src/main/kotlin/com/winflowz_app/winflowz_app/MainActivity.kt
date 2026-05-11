@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz
+package com.winflowz_app.winflowz_app
 
 import android.content.ComponentName
 import android.content.Context
@@ -8,17 +8,17 @@ import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
 import android.view.inputmethod.InputMethodManager
-import com.voiceflowz.voiceflowz.ime.KeyboardClipboardEventQueue
-import com.voiceflowz.voiceflowz.ime.KeyboardLayoutProfile
-import com.voiceflowz.voiceflowz.ime.KeyboardStateStore
+import com.winflowz_app.winflowz_app.ime.KeyboardClipboardEventQueue
+import com.winflowz_app.winflowz_app.ime.KeyboardLayoutProfile
+import com.winflowz_app.winflowz_app.ime.KeyboardStateStore
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val channelName = "voiceflowz/overlay"
-    private val keyboardChannelName = "voiceflowz/keyboard"
-    private val preferencesName = "voiceflowz_overlay_prefs"
+    private val channelName = "winflowz_app/overlay"
+    private val keyboardChannelName = "winflowz_app/keyboard"
+    private val preferencesName = "winflowz_app_overlay_prefs"
     private val keyOverlayEnabled = "overlay_enabled"
     private val keyOverlaySizeScale = "overlay_size_scale"
     private val keyOverlayOpacity = "overlay_opacity"

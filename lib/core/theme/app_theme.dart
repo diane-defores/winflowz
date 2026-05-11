@@ -19,13 +19,13 @@ enum AppThemeMode {
 }
 
 class AppColors {
-  // VoiceFlowz brand primitives.
+  // WinFlowzApp brand primitives.
   static const primary = Color(0xFF6366F1);
   static const primaryDark = Color(0xFF4F46E5);
   static const secondary = Color(0xFF22D3EE);
   static const accent = secondary;
 
-  // VoiceFlowz neutral primitives.
+  // WinFlowzApp neutral primitives.
   static const dark = Color(0xFF0F172A);
   static const gray = Color(0xFF64748B);
   static const neutral = gray;
@@ -78,7 +78,7 @@ class AppTypography {
     'sans-serif',
   ];
 
-  // VoiceFlowz scale: base 16px, ratio 1.25.
+  // WinFlowzApp scale: base 16px, ratio 1.25.
   static const xs = 12.0;
   static const sm = 14.0;
   static const base = 16.0;

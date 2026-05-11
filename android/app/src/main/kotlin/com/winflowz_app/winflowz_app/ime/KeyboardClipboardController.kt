@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz.ime
+package com.winflowz_app.winflowz_app.ime
 
 import android.content.ClipData
 import android.content.ClipDescription
@@ -17,7 +17,7 @@ class KeyboardClipboardController(private val context: Context) {
         if (selectedText.isNullOrEmpty()) {
             return false
         }
-        val clip = ClipData.newPlainText("VoiceFlowz selection", selectedText)
+        val clip = ClipData.newPlainText("WinFlowzApp selection", selectedText)
         clipboard.setPrimaryClip(clip)
         if (syncDesired) {
             KeyboardClipboardEventQueue.enqueue(

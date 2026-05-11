@@ -40,7 +40,7 @@ class SentryBootstrap {
     if (AppBuildInfo.sha == 'local') {
       return null;
     }
-    return 'voiceflowz@${AppBuildInfo.shortSha}';
+    return 'winflowz_app@${AppBuildInfo.shortSha}';
   }
 
   static String? get dist {
@@ -103,7 +103,7 @@ class SentryBootstrap {
 
   static Future<void> _configureScope() async {
     await Sentry.configureScope((scope) async {
-      await scope.setTag('app', 'voiceflowz');
+      await scope.setTag('app', 'winflowz_app');
       await scope.setTag('backend_contract', 'backend-agnostic');
       await scope.setTag('build_sha', AppBuildInfo.shortSha);
       await scope.setTag('build_ref', AppBuildInfo.refName);
@@ -119,7 +119,7 @@ class SentryBootstrap {
       }
       Sentry.addBreadcrumb(
         Breadcrumb(
-          category: 'voiceflowz.$category',
+          category: 'winflowz_app.$category',
           message: _sanitize(message),
           level: category.endsWith('_error') || category == 'flutter_error'
               ? SentryLevel.error

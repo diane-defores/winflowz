@@ -22,7 +22,7 @@ class AndroidKeyboardBridgeException implements Exception {
 class AndroidKeyboardBridge {
   AndroidKeyboardBridge._();
 
-  static const MethodChannel _channel = MethodChannel('voiceflowz/keyboard');
+  static const MethodChannel _channel = MethodChannel('winflowz_app/keyboard');
 
   static Future<AndroidKeyboardStatus> getStatus() async {
     if (!PlatformCapabilities.keyboardImeSupported) {

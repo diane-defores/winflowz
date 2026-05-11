@@ -2,7 +2,7 @@
 artifact: architecture_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-09"
 status: "reviewed"
@@ -40,7 +40,7 @@ next_review: "2026-05-27"
 next_step: "$sf-docs update"
 ---
 
-# Architecture — VoiceFlowz
+# Architecture — WinFlowzApp
 
 ## Purpose
 

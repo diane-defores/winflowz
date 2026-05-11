@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voiceflowz/features/clipboard/domain/clipboard_capture_event.dart';
-import 'package:voiceflowz/features/clipboard/domain/clipboard_normalizer.dart';
+import 'package:winflowz_app/features/clipboard/domain/clipboard_capture_event.dart';
+import 'package:winflowz_app/features/clipboard/domain/clipboard_normalizer.dart';
 
 void main() {
   group('clipboard normalizer', () {
@@ -11,8 +11,8 @@ void main() {
 
     test('builds stable sha256 hash', () {
       expect(
-        sha256Hex('voiceflowz'),
-        'cbe351a1360ea1f291dff0bf2ae2578ec64389e1e6ccc0dc2375ee456ed7c71b',
+        sha256Hex('winflowz_app'),
+        'fd1753d3ff71c04e9100d53eece3364ee21fabb55460acae8bbab64c1e5ebb80',
       );
     });
 

@@ -25,9 +25,9 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>VoiceFlowz needs microphone access only while you are recording speech.</string>
+	<string>WinFlowzApp needs microphone access only while you are recording speech.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>VoiceFlowz uses speech recognition only when you start dictation.</string>
+	<string>WinFlowzApp uses speech recognition only when you start dictation.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

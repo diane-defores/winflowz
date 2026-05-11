@@ -19,7 +19,7 @@ import android.view.WindowManager
 class FloatingOverlayService : Service() {
 
     companion object {
-        const val CHANNEL_ID = "voiceflowz_overlay"
+        const val CHANNEL_ID = "winflowz_app_overlay"
         const val NOTIFICATION_ID = 1001
         var instance: FloatingOverlayService? = null
         var overlayModule: FloatingOverlayModule? = null
@@ -86,7 +86,7 @@ class FloatingOverlayService : Service() {
     private fun showOverlay() {
         if (isShowing) return
         if (!Settings.canDrawOverlays(this)) {
-            Log.w("VoiceFlowz", "Cannot draw overlays — permission not granted")
+            Log.w("WinFlowzApp", "Cannot draw overlays — permission not granted")
             return
         }
 
@@ -148,7 +148,7 @@ class FloatingOverlayService : Service() {
                     longPressRunnable = Runnable {
                         if (!isDragging) {
                             isHoldRecording = true
-                            Log.d("VoiceFlowz", "Hold-to-record: started")
+                            Log.d("WinFlowzApp", "Hold-to-record: started")
                             overlayModule?.emitBubbleTap()
                         }
                     }
@@ -178,12 +178,12 @@ class FloatingOverlayService : Service() {
                         snapToEdge()
                     } else if (isHoldRecording) {
                         // Release after hold = stop recording
-                        Log.d("VoiceFlowz", "Hold-to-record: released — stopping")
+                        Log.d("WinFlowzApp", "Hold-to-record: released — stopping")
                         overlayModule?.emitRecordStop()
                         isHoldRecording = false
                     } else {
                         // Quick tap (< 200ms) = also start recording (tap mode)
-                        Log.d("VoiceFlowz", "Quick tap: starting recording")
+                        Log.d("WinFlowzApp", "Quick tap: starting recording")
                         overlayModule?.emitBubbleTap()
                     }
                     true
@@ -192,7 +192,7 @@ class FloatingOverlayService : Service() {
             }
         }
 
-        Log.d("VoiceFlowz", "Overlay view added to WindowManager")
+        Log.d("WinFlowzApp", "Overlay view added to WindowManager")
         windowManager?.addView(overlayView, layoutParams)
         isShowing = true
     }
@@ -285,7 +285,7 @@ class FloatingOverlayService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "VoiceFlowz Overlay",
+                "WinFlowzApp Overlay",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Keeps the floating voice button active"
@@ -306,7 +306,7 @@ class FloatingOverlayService : Service() {
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder(this, CHANNEL_ID)
-                .setContentTitle("VoiceFlowz")
+                .setContentTitle("WinFlowzApp")
                 .setContentText(text)
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setContentIntent(pendingIntent)
@@ -315,7 +315,7 @@ class FloatingOverlayService : Service() {
         } else {
             @Suppress("DEPRECATION")
             Notification.Builder(this)
-                .setContentTitle("VoiceFlowz")
+                .setContentTitle("WinFlowzApp")
                 .setContentText(text)
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setContentIntent(pendingIntent)

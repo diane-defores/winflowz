@@ -2,7 +2,7 @@
 artifact: gtm_context
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-04-27"
 status: "reviewed"
@@ -38,11 +38,11 @@ next_review: "2026-05-26"
 next_step: "$sf-docs update"
 ---
 
-# GTM — VoiceFlowz
+# GTM — WinFlowzApp
 
 ## Positionnement
 
-VoiceFlowz est un produit sibling de WinFlowz dans le même écosystème. VoiceFlowz porte l'axe voice-first (dictée, transcription, nettoyage, clipboard), tandis que WinFlowz porte d'autres workflows de productivité.
+WinFlowzApp est un produit sibling de WinFlowz dans le même écosystème. WinFlowzApp porte l'axe voice-first (dictée, transcription, nettoyage, clipboard), tandis que WinFlowz porte d'autres workflows de productivité.
 
 ## Segment prioritaire
 
@@ -54,7 +54,7 @@ Utilisateurs mobiles orientés productivité, en priorité :
 
 ## Promesse publique sûre
 
-"VoiceFlowz transforme la voix en texte copiable sur mobile, avec un mode local gratuit et un mode avancé via vos clés API."
+"WinFlowzApp transforme la voix en texte copiable sur mobile, avec un mode local gratuit et un mode avancé via vos clés API."
 
 ## Promesses à éviter
 

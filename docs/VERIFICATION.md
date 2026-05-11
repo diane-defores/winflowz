@@ -2,7 +2,7 @@
 artifact: verification_plan
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-27"
 updated: "2026-05-10"
 status: "reviewed"
@@ -17,13 +17,13 @@ depends_on:
   - "specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
-  - "specs/android-ime-voiceflowz-keyboard.md"
+  - "specs/android-ime-winflowz_app-keyboard.md"
   - "test/widget_test.dart"
   - "specs/clipboard-backend-agnostic-api.md"
 next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 ---
 
-# Verification — VoiceFlowz Android Firebase Backend-Agnostic Migration
+# Verification — WinFlowzApp Android Firebase Backend-Agnostic Migration
 
 ## Required Automated Checks
 
@@ -38,7 +38,7 @@ next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 
 ## Required Manual Checks
 
-- Android: local speech, advanced recording, VoiceFlowz Keyboard enable/switch/type/private-field behavior, keyboard dictation permission denied/allowed, keyboard clipboard actions, keyboard media play/pause, overlay permission, accessibility fallback, clipboard fallback.
+- Android: local speech, advanced recording, WinFlowzApp Keyboard enable/switch/type/private-field behavior, keyboard dictation permission denied/allowed, keyboard clipboard actions, keyboard media play/pause, overlay permission, accessibility fallback, clipboard fallback.
 - iOS/macOS/Windows/Linux/web: out of current runtime scope. Keep platform limits documented and do not treat desktop/web build or launch as required proof for the Android MVP.
 
 ## Manual Platform Pass — 2026-05-10
@@ -71,8 +71,8 @@ Run on at least one emulator or real Android device before closing the IME chant
 
 | Case | Expected result |
 |---|---|
-| Enable VoiceFlowz in Android input method settings | VoiceFlowz Keyboard appears as an available keyboard. |
-| Switch to VoiceFlowz from a normal text field | Native keyboard opens without launching a Flutter view inside the IME. |
+| Enable WinFlowzApp in Android input method settings | WinFlowzApp Keyboard appears as an available keyboard. |
+| Switch to WinFlowzApp from a normal text field | Native keyboard opens without launching a Flutter view inside the IME. |
 | Type letters, space, backspace, enter | Focused field receives expected `InputConnection` updates; backspace deletes one code point including emoji/surrogate pairs. |
 | Toggle QWERTY/AZERTY in Settings then reopen IME | Letter rows match selected layout profile and persist between sessions. |
 | Enable swipe-corner mode then swipe key corners | Secondary corner glyphs are inserted; center-return gesture cancels insertion. |
@@ -93,7 +93,7 @@ Run on at least one emulator or real Android device before closing the IME chant
 | Toggle clipboard/media/snippets/settings mini-panels | Each panel opens/closes in-place and preserves base typing workflow. |
 | Focus email, URL, phone, and search fields | Keyboard adapts symbols/enter action to the field context. |
 | Tap Media while a media app is active | Android receives a play/pause media key; no metadata permission is requested. |
-| Use Settings keyboard card | Input settings, switch keyboard, voice, clipboard sync intent, media controls, layout profile, corner mode, and privacy mode round-trip through `voiceflowz/keyboard`. |
+| Use Settings keyboard card | Input settings, switch keyboard, voice, clipboard sync intent, media controls, layout profile, corner mode, and privacy mode round-trip through `winflowz_app/keyboard`. |
 
 ## Purge Gate
 

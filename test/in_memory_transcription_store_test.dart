@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voiceflowz/features/voice/data/in_memory_transcription_store.dart';
-import 'package:voiceflowz/features/voice/domain/transcription_draft.dart';
+import 'package:winflowz_app/features/voice/data/in_memory_transcription_store.dart';
+import 'package:winflowz_app/features/voice/domain/transcription_draft.dart';
 
 void main() {
   group('InMemoryTranscriptionStore', () {

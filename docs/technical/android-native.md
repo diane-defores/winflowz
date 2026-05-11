@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-04"
 updated: "2026-05-10"
 status: draft
@@ -35,7 +35,7 @@ next_step: "/sf-docs technical audit"
 ## Purpose
 
 Android native code owns system-level capabilities that Flutter cannot provide
-directly: overlay foreground service, accessibility fallback, and the VoiceFlowz
+directly: overlay foreground service, accessibility fallback, and the WinFlowzApp
 IME. The IME must stay lightweight, native, and privacy-aware because it runs
 inside other apps' input fields.
 
@@ -44,30 +44,30 @@ inside other apps' input fields.
 | Path | Role | Edit notes |
 | --- | --- | --- |
 | `android/app/src/main/AndroidManifest.xml` | Android service, activity, and permission declarations | Keep IME and overlay declarations explicit; avoid broad permissions before use. |
-| `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt` | Flutter MethodChannel owner | Keep `voiceflowz/overlay` and `voiceflowz/keyboard` contracts separate. |
-| `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/Overlay*.kt` | Overlay runtime | Do not allow concurrent overlay and keyboard recording without coordinator logic. |
-| `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/**` | Native IME services/controllers | No raw text logging; sensitive fields disable capture/sync/enriched insertion; clipboard bridge events stay in memory unless durable storage is explicitly selected. |
+| `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt` | Flutter MethodChannel owner | Keep `winflowz_app/overlay` and `winflowz_app/keyboard` contracts separate. |
+| `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/Overlay*.kt` | Overlay runtime | Do not allow concurrent overlay and keyboard recording without coordinator logic. |
+| `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/**` | Native IME services/controllers | No raw text logging; sensitive fields disable capture/sync/enriched insertion; clipboard bridge events stay in memory unless durable storage is explicitly selected. |
 | `android/app/src/main/res/xml/**` | Android service metadata | IME metadata must match manifest service declarations. |
 
 ## Entrypoints
 
-- `VoiceFlowzInputMethodService.onCreateInputView`: creates the native keyboard.
-- `VoiceFlowzInputMethodService.onStartInput`: evaluates the focused field policy and field context (`text`, `email`, `url`, `phone`, `search`).
+- `WinFlowzAppInputMethodService.onCreateInputView`: creates the native keyboard.
+- `WinFlowzAppInputMethodService.onStartInput`: evaluates the focused field policy and field context (`text`, `email`, `url`, `phone`, `search`).
 - `MainActivity.configureFlutterEngine`: registers platform channels used by Settings.
 
 ## Control Flow
 
 ```text
 Android input field
-  -> VoiceFlowzInputMethodService
+  -> WinFlowzAppInputMethodService
   -> KeyboardInputContextResolver + KeyboardSecurityPolicy
-  -> VoiceFlowzKeyboardView (Canvas)
+  -> WinFlowzAppKeyboardView (Canvas)
   -> KeyboardLayoutBuilder + KeyboardGestureClassifier
   -> InputConnection / ClipboardManager / AudioManager
 
 Keyboard clipboard action
   -> KeyboardClipboardEventQueue in memory
-  -> voiceflowz/keyboard MethodChannel drain
+  -> winflowz_app/keyboard MethodChannel drain
   -> ClipboardHistoryApi / ClipboardHistoryStore
 ```
 
@@ -84,7 +84,7 @@ Keyboard clipboard action
 - Debug touch overlay can render key bounds and gesture classifier diagnostics without exposing user text.
 - Password, OTP, `noPersonalizedLearning`, and app-marked sensitive fields must disable voice capture, clipboard sync, snippets, and learning behavior.
 - Base media control sends generic play/pause key events only; it must not read metadata without explicit richer permission.
-- Keyboard preferences are persisted in `KeyboardStateStore` and round-tripped through `voiceflowz/keyboard`:
+- Keyboard preferences are persisted in `KeyboardStateStore` and round-tripped through `winflowz_app/keyboard`:
   - `layoutProfile`: `QWERTY` / `AZERTY`
   - `cornerModeEnabled`: `true` / `false`
   - `privacyMode`: `auto` / `strict` / `standard`
@@ -116,7 +116,7 @@ clipboard, dictation, media keys, and OEM behavior.
 
 ## Reader Checklist
 
-- Manifest or `res/xml` changed -> verify VoiceFlowz appears in Android keyboard settings.
+- Manifest or `res/xml` changed -> verify WinFlowzApp appears in Android keyboard settings.
 - `KeyboardSecurityPolicy` changed -> recheck password/OTP/no-personalized-learning behavior.
 - Clipboard controller changed -> recheck sensitive clipboard flags and no background clipboard capture.
 - Clipboard event queue changed -> recheck no provider credentials/imports in native code and that sensitive clips are not enqueued.

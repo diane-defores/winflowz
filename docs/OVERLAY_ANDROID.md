@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-27"
 updated: "2026-05-10"
 status: "reviewed"
@@ -17,22 +17,22 @@ depends_on:
   - "specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt"
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayView.kt"
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayEventQueue.kt"
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayTextInjectionHelper.kt"
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzInputMethodService.kt"
-  - "specs/android-ime-voiceflowz-keyboard.md"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayView.kt"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayEventQueue.kt"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayTextInjectionHelper.kt"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt"
+  - "specs/android-ime-winflowz_app-keyboard.md"
 next_step: "/sf-verify specs/android-overlay-flutter-parity-repair.md"
 ---
 
-# Android Overlay — VoiceFlowz
+# Android Overlay — WinFlowzApp
 
 ## Contract
 
 Android overlay is an Android-only native capability exposed to Flutter through a narrow Dart bridge. It must not be represented as available on iOS, macOS, Windows, Linux, or web.
 
-VoiceFlowz Keyboard is now the preferred Android text-entry surface for in-field typing, dictation, clipboard actions, snippets entry points, and generic media play/pause. Overlay remains complementary for floating capture flows and fallback delivery, not the primary keyboard path.
+WinFlowzApp Keyboard is now the preferred Android text-entry surface for in-field typing, dictation, clipboard actions, snippets entry points, and generic media play/pause. Overlay remains complementary for floating capture flows and fallback delivery, not the primary keyboard path.
 
 The Flutter port now owns an actual native overlay bubble through `OverlayForegroundService`, `OverlayView`, `WaveformView`, `OverlayEventQueue`, and `OverlayTextInjectionHelper`. The old Expo module remains a legacy reference only and must not be used at runtime.
 
@@ -54,7 +54,7 @@ The Flutter port now owns an actual native overlay bubble through `OverlayForegr
 - Rapid tap/stop/cancel events are debounced and cannot start concurrent recordings.
 - Service cleanup must run on app logout, permission revoke, crash recovery, and app shutdown where the platform allows.
 
-## Flutter Bridge (MethodChannel `voiceflowz/overlay`)
+## Flutter Bridge (MethodChannel `winflowz_app/overlay`)
 
 - `getOverlayStatus`: returns `enabled`, `requestedEnabled`, `running`, `overlayPermissionGranted`, `accessibilityPermissionGranted`, `deliveryMode`.
 - `setOverlayEnabled`: enables/disables overlay runtime capability.
@@ -80,7 +80,7 @@ Clipboard fallback is required for every successful overlay transcription. Direc
 
 ## Legacy Reference
 
-Keep `modules/floating-overlay/` and `voiceflowz_snapshots/voiceflowz-pre-flutter-migration-20260427-081046.tar.gz` until a real Android QA pass confirms parity. Cleanup belongs in a separate chantier after proof.
+Keep `modules/floating-overlay/` and `winflowz_app_snapshots/winflowz_app-pre-flutter-migration-20260427-081046.tar.gz` until a real Android QA pass confirms parity. Cleanup belongs in a separate chantier after proof.
 
 ## Required Tests
 
@@ -92,4 +92,4 @@ Keep `modules/floating-overlay/` and `voiceflowz_snapshots/voiceflowz-pre-flutte
 - Rapid start/stop/cancel race.
 - App logout while overlay is active.
 - Android build with service and accessibility declarations.
-- VoiceFlowz Keyboard appears in Android input method settings and can type in a standard text field.
+- WinFlowzApp Keyboard appears in Android input method settings and can type in a standard text field.

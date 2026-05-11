@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-09"
 created_at: "2026-05-09 15:19:23 UTC"
 updated: "2026-05-09"
@@ -13,7 +13,7 @@ source_model: "GPT-5 Codex"
 scope: "design-system-settings"
 owner: "Diane"
 confidence: medium
-user_story: "En tant qu'utilisateur VoiceFlowz, je veux que mes préférences d'apparence et les réglages visuels restent cohérents sur mes appareils, afin de travailler dans une interface lisible, stable et alignée avec la famille Flowz."
+user_story: "En tant qu'utilisateur WinFlowzApp, je veux que mes préférences d'apparence et les réglages visuels restent cohérents sur mes appareils, afin de travailler dans une interface lisible, stable et alignée avec la famille Flowz."
 risk_level: "medium"
 security_impact: "yes"
 docs_impact: "yes"
@@ -45,7 +45,7 @@ supersedes: []
 evidence:
   - "2026-05-09 design audit adopted ContentFlow family colors, spacing, radii, motion names and component defaults in lib/core/theme/app_theme.dart."
   - "2026-05-09 design audit added a transient Settings Appearance selector in lib/features/settings/presentation/settings_screen.dart."
-  - "Current appThemeModeProvider is in-memory only in lib/app/voiceflowz_app.dart."
+  - "Current appThemeModeProvider is in-memory only in lib/app/winflowz_app.dart."
   - "User decision 2026-05-09: settings and backend data must be backend-agnostic; Firebase is the first adapter."
   - "User decision 2026-05-09: Supabase is no longer the target backend."
 next_step: "/sf-ready specs/settings-driven-design-system.md after Firebase adapter spec"
@@ -61,11 +61,11 @@ Draft. The Settings architecture decision is now made: preferences must go throu
 
 # User Story
 
-En tant qu'utilisateur VoiceFlowz, je veux que mes préférences d'apparence et les réglages visuels restent cohérents sur mes appareils, afin de travailler dans une interface lisible, stable et alignée avec la famille Flowz.
+En tant qu'utilisateur WinFlowzApp, je veux que mes préférences d'apparence et les réglages visuels restent cohérents sur mes appareils, afin de travailler dans une interface lisible, stable et alignée avec la famille Flowz.
 
-Acteur principal: utilisateur VoiceFlowz connecté ou en mode local.
+Acteur principal: utilisateur WinFlowzApp connecté ou en mode local.
 
-Acteurs secondaires: builder VoiceFlowz, futur backend/settings provider, surfaces Android IME/overlay.
+Acteurs secondaires: builder WinFlowzApp, futur backend/settings provider, surfaces Android IME/overlay.
 
 Déclencheurs:
 
@@ -73,13 +73,13 @@ Déclencheurs:
 - L'application redémarre.
 - L'utilisateur se connecte, se déconnecte ou change d'appareil.
 - Le contrat Firebase définit les règles, indexes, offline behavior et sync.
-- Les écrans VoiceFlowz migrent vers les tokens partagés.
+- Les écrans WinFlowzApp migrent vers les tokens partagés.
 
 Résultat observable attendu: le mode d'apparence choisi s'applique sans flash incohérent, persiste localement, se synchronise par compte si un settings backend est disponible, et tous les écrans utilisent le même système de tokens plutôt que des valeurs visuelles dispersées.
 
 # Minimal Behavior Contract
 
-VoiceFlowz expose un contrat de settings d'apparence qui accepte uniquement `system`, `light` et `dark`, normalise toute valeur inconnue vers `system`, applique le mode avant ou au plus tôt dans le bootstrap Flutter, persiste le choix localement, et synchronise le choix vers les settings utilisateur authentifiés via un `SettingsStore` backend-agnostique. Si le store local, le backend ou la session auth est indisponible, l'app continue en `system` ou avec la dernière valeur locale valide, affiche un état récupérable dans Settings, et ne bloque jamais l'utilisation du produit. L'edge case facile à rater est le changement de compte: la préférence visuelle locale ne doit pas exposer ni écraser silencieusement les settings serveur d'un autre utilisateur.
+WinFlowzApp expose un contrat de settings d'apparence qui accepte uniquement `system`, `light` et `dark`, normalise toute valeur inconnue vers `system`, applique le mode avant ou au plus tôt dans le bootstrap Flutter, persiste le choix localement, et synchronise le choix vers les settings utilisateur authentifiés via un `SettingsStore` backend-agnostique. Si le store local, le backend ou la session auth est indisponible, l'app continue en `system` ou avec la dernière valeur locale valide, affiche un état récupérable dans Settings, et ne bloque jamais l'utilisation du produit. L'edge case facile à rater est le changement de compte: la préférence visuelle locale ne doit pas exposer ni écraser silencieusement les settings serveur d'un autre utilisateur.
 
 # Success Behavior
 
@@ -106,7 +106,7 @@ Le design audit du 2026-05-09 a ajouté une première base visuelle partagée av
 
 # Solution
 
-Transformer l'Appearance selector en préférence produit complète: module Settings centralisé, persistence locale, sync authentifiée via `SettingsStore`, résolution des conflits local/distant, tests, et migration progressive des écrans vers les tokens `AppTheme`. La base ContentFlow reste la référence familiale, mais VoiceFlowz conserve son identité produit orientée dictée, contrôle et état système.
+Transformer l'Appearance selector en préférence produit complète: module Settings centralisé, persistence locale, sync authentifiée via `SettingsStore`, résolution des conflits local/distant, tests, et migration progressive des écrans vers les tokens `AppTheme`. La base ContentFlow reste la référence familiale, mais WinFlowzApp conserve son identité produit orientée dictée, contrôle et état système.
 
 # Scope In
 
@@ -125,7 +125,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - Coupler les écrans directement à Firebase ou Supabase.
 - Migrer tout le backend dans cette spec.
 - Ajouter billing, entitlements, quotas ou segmentation premium.
-- Refaire entièrement l'UI VoiceFlowz.
+- Refaire entièrement l'UI WinFlowzApp.
 - Créer un design system multi-produit versionné publiquement.
 - Implémenter des thèmes personnalisés utilisateur, palettes marketplace ou thème par organisation.
 - Changer les flows Android IME/overlay hors impact visuel/settings.
@@ -139,7 +139,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - Le choix utilisateur ne doit pas bloquer auth, dictée, clipboard, clavier ou overlay.
 - Les settings compte sont user-scoped; aucune mutation ne doit contourner les règles de sécurité du backend actif.
 - Les clés OpenAI/Anthropic restent dans secure local storage et ne doivent pas être mélangées avec les préférences syncables.
-- Les tokens ContentFlow sont une base familiale, pas une copie aveugle: VoiceFlowz peut garder des ajustements de contraste, état audio et surfaces utilitaires.
+- Les tokens ContentFlow sont une base familiale, pas une copie aveugle: WinFlowzApp peut garder des ajustements de contraste, état audio et surfaces utilitaires.
 - Les changements visuels doivent rester testables sans appareil Android réel, sauf statut IME/overlay qui demande QA manuelle.
 
 # Dependencies
@@ -149,7 +149,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
   - Le contrat Firebase doit encore préciser conflict resolution, offline behavior, account switch behavior et séparation secrets/preferences.
 - Code existant:
   - `lib/core/theme/app_theme.dart`
-  - `lib/app/voiceflowz_app.dart`
+  - `lib/app/winflowz_app.dart`
   - `lib/features/settings/presentation/settings_screen.dart`
   - `lib/features/settings/data/secure_secret_store.dart`
   - `lib/data/**`
@@ -172,7 +172,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 # Links & Consequences
 
-- `lib/app/voiceflowz_app.dart`: le provider actuel devra devenir async/hydraté ou dépendre d'un Settings controller.
+- `lib/app/winflowz_app.dart`: le provider actuel devra devenir async/hydraté ou dépendre d'un Settings controller.
 - `lib/core/theme/app_theme.dart`: reste la source de tokens; ajouter éventuellement extensions de thème au lieu de valeurs dispersées.
 - `lib/features/settings/presentation/settings_screen.dart`: Appearance doit afficher état local/sync si pertinent.
 - `lib/features/settings/data/**`: peut recevoir un `SettingsStore` ou `UserPreferencesStore`.
@@ -228,7 +228,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
   - Validate with : test fake store + redémarrage logique du controller.
 
 - [ ] Tâche 4 : Hydrater le thème au bootstrap
-  - Fichiers : `lib/app/voiceflowz_app.dart`, `lib/main.dart` si nécessaire
+  - Fichiers : `lib/app/winflowz_app.dart`, `lib/main.dart` si nécessaire
   - Action : remplacer le provider in-memory par un controller hydraté, appliquer `ThemeMode` depuis le store et gérer loading/fallback sans bloquer le produit.
   - User story link : évite que Settings soit purement temporaire.
   - Depends on : Tâche 3.
@@ -291,7 +291,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
   - serialization stable.
   - conflict resolution local/distant selon décision Settings.
 - Widget tests:
-  - `VoiceFlowzApp` applique le mode choisi.
+  - `WinFlowzApp` applique le mode choisi.
   - Settings selector change le controller.
   - Settings affiche état sync/pending/error si applicable.
 - Adapter tests:
@@ -331,7 +331,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - Quelle règle gagne au premier login sur un appareil qui a déjà une préférence locale différente du compte?
 - Les préférences Android IME/overlay doivent-elles utiliser le même store Settings que Appearance?
 - Le design playground doit-il être une route debug cachée, une section Settings visible, ou un outil dev-only?
-- Doit-on versionner formellement les tokens Flowz partagés entre ContentFlow et VoiceFlowz?
+- Doit-on versionner formellement les tokens Flowz partagés entre ContentFlow et WinFlowzApp?
 
 # Skill Run History
 

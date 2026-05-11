@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.2.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-03-18"
 updated: "2026-05-04"
 status: "reviewed"
@@ -30,11 +30,11 @@ next_review: "2026-05-26"
 next_step: "$sf-docs update"
 ---
 
-# CLAUDE.md — VoiceFlowz
+# CLAUDE.md — WinFlowzApp
 
 ## Project Overview
 
-VoiceFlowz is now a Flutter application using Supabase for authentication and data persistence.
+WinFlowzApp is now a Flutter application using Supabase for authentication and data persistence.
 The app targets multi-platform delivery with Android-specific overlay capabilities exposed through a Flutter method channel.
 
 Current migration baseline includes:
@@ -98,7 +98,7 @@ lib/
 └── main.dart
 
 android/
-└── app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt
+└── app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt
 
 supabase/
 ├── migrations/

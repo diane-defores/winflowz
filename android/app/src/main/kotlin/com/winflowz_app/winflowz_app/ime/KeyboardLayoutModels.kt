@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz.ime
+package com.winflowz_app.winflowz_app.ime
 
 enum class KeyboardLayoutProfile {
     QWERTY,
@@ -67,7 +67,7 @@ enum class KeyboardKeyAction {
     MediaPlayPause,
     MediaNext,
     InsertSnippetOne,
-    OpenVoiceFlowzSettings,
+    OpenWinFlowzAppSettings,
     ToggleCornerMode,
     ToggleLayoutProfile,
     ToggleDebugTouchOverlay,
@@ -323,7 +323,7 @@ object KeyboardLayoutBuilder {
                     KeyboardKeySpec(
                         id = "snippet-open",
                         label = "App",
-                        action = KeyboardKeyAction.OpenVoiceFlowzSettings,
+                        action = KeyboardKeyAction.OpenWinFlowzAppSettings,
                         weight = 1.2f,
                     ),
                     KeyboardKeySpec("snippet-close", "Close", KeyboardKeyAction.ClosePanel),
@@ -370,7 +370,7 @@ object KeyboardLayoutBuilder {
                     KeyboardKeySpec(
                         id = "setting-app",
                         label = "App",
-                        action = KeyboardKeyAction.OpenVoiceFlowzSettings,
+                        action = KeyboardKeyAction.OpenWinFlowzAppSettings,
                     ),
                     KeyboardKeySpec(
                         id = "setting-close",

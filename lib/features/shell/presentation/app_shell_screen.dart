@@ -69,7 +69,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('VoiceFlowz • ${titles[_index]}')),
+        appBar: AppBar(title: Text('WinFlowzApp • ${titles[_index]}')),
         body: Column(
           children: [
             if (!PlatformCapabilities.localSpeechSupported)
@@ -193,7 +193,7 @@ class _OnboardingOverlay extends StatelessWidget {
                           AppGaps.x2,
                           const _OnboardingStep(
                             number: '1',
-                            text: 'Enable VoiceFlowz Keyboard in Settings.',
+                            text: 'Enable WinFlowzApp Keyboard in Settings.',
                           ),
                           const _OnboardingStep(
                             number: '2',
@@ -214,7 +214,7 @@ class _OnboardingOverlay extends StatelessWidget {
                             icon: Icons.keyboard_outlined,
                             title: 'Keyboard',
                             text:
-                                'Android must enable VoiceFlowz as an input method before it can type dictated text into other apps.',
+                                'Android must enable WinFlowzApp as an input method before it can type dictated text into other apps.',
                           ),
                           const _PermissionNote(
                             icon: Icons.mic_none_outlined,
@@ -232,7 +232,7 @@ class _OnboardingOverlay extends StatelessWidget {
                             icon: Icons.accessibility_new_outlined,
                             title: 'Accessibility',
                             text:
-                                'Accessibility is optional but required when VoiceFlowz should insert text directly into the active field instead of falling back to the clipboard.',
+                                'Accessibility is optional but required when WinFlowzApp should insert text directly into the active field instead of falling back to the clipboard.',
                           ),
                           const _PermissionNote(
                             icon: Icons.cloud_outlined,

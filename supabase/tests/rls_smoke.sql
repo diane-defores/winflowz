@@ -18,8 +18,8 @@ $$;
 
 insert into auth.users (id, email)
 values
-  ('00000000-0000-0000-0000-000000000001', 'voiceflowz-user-a@example.test'),
-  ('00000000-0000-0000-0000-000000000002', 'voiceflowz-user-b@example.test');
+  ('00000000-0000-0000-0000-000000000001', 'winflowz_app-user-a@example.test'),
+  ('00000000-0000-0000-0000-000000000002', 'winflowz_app-user-b@example.test');
 
 insert into public.clipboard_items (id, user_id, content, source)
 values (

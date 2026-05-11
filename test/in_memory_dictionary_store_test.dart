@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voiceflowz/features/dictionary/data/in_memory_dictionary_store.dart';
+import 'package:winflowz_app/features/dictionary/data/in_memory_dictionary_store.dart';
 
 void main() {
   group('InMemoryDictionaryStore', () {

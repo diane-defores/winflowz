@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "0.2.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-03-18"
 updated: "2026-04-27"
 status: "draft"
@@ -25,12 +25,12 @@ supersedes: []
 evidence:
   - "pubspec.yaml"
   - "lib/core/bootstrap/supabase_bootstrap.dart"
-  - "supabase/migrations/20260427084000_init_voiceflowz.sql"
+  - "supabase/migrations/20260427084000_init_winflowz_app.sql"
   - "shipflow_data/business/product.md"
 next_step: "$sf-docs update"
 ---
 
-# Sources — VoiceFlowz
+# Sources — WinFlowzApp
 
 ## APIs et services (observés dans le repo)
 
@@ -55,5 +55,5 @@ next_step: "$sf-docs update"
 
 ## Questions ouvertes
 
-- Quelles 3 sources externes "marché" sont validées officiellement pour les docs VoiceFlowz ?
+- Quelles 3 sources externes "marché" sont validées officiellement pour les docs WinFlowzApp ?
 - Faut-il maintenir une section "Communautés" ici, ou la déplacer dans `shipflow_data/business/gtm.md` ?

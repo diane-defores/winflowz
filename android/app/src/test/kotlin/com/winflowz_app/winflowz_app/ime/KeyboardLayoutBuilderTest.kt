@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz.ime
+package com.winflowz_app.winflowz_app.ime
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

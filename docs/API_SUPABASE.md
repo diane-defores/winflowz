@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-27"
 updated: "2026-05-09"
 status: "legacy"
@@ -18,13 +18,13 @@ depends_on:
 supersedes:
   - "docs/API.md as target Supabase contract"
 evidence:
-  - "supabase/migrations/20260427084000_init_voiceflowz.sql"
+  - "supabase/migrations/20260427084000_init_winflowz_app.sql"
   - "supabase/migrations/20260504210000_android_keyboard_ime.sql"
   - "supabase/tests/rls_smoke.sql"
 next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 ---
 
-# API Supabase — VoiceFlowz
+# API Supabase — WinFlowzApp
 
 > Legacy reference: Supabase is no longer the active backend target after the
 > 2026-05-09 Firebase/backend-agnostic decision. Keep this document only for

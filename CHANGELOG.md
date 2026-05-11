@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-03-18"
 updated: "2026-05-10"
 status: "draft"
@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added native Android overlay bridge support for persisted bubble appearance preferences.
 - Added first-run onboarding that explains the startup path, Android keyboard setup, microphone, overlay, accessibility and cloud sync permissions.
 - Added a Settings backend-provider diagnostic card with a copyable Supabase/local-mode error.
-- Added the Android VoiceFlowz Keyboard IME foundation with a custom swipe-corner keyboard surface, native input service declaration, Settings bridge, Android speech recognition trigger, explicit clipboard actions, emoji/navigation panels, touch-debug overlay and generic media play/pause.
+- Added the Android WinFlowzApp Keyboard IME foundation with a custom swipe-corner keyboard surface, native input service declaration, Settings bridge, Android speech recognition trigger, explicit clipboard actions, emoji/navigation panels, touch-debug overlay and generic media play/pause.
 - Added keyboard-origin Supabase schema fields, source allowlists, clipboard hash dedupe metadata, RLS smoke coverage and Dart model/bridge tests.
 - Added project technical governance docs and a content map for future ShipFlow code/doc update gates.
 - Added `docs/technical/firebase-oidc-ci-playbook.md` with a reusable GitHub OIDC/WIF Firestore deploy runbook and troubleshooting matrix.

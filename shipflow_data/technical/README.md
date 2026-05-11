@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-04"
 updated: "2026-05-09"
 status: draft
@@ -23,12 +23,12 @@ depends_on:
   - "shipflow_data/technical/guidelines.md@0.1.0"
 supersedes: []
 evidence:
-  - "Bootstrapped for specs/android-ime-voiceflowz-keyboard.md execution."
+  - "Bootstrapped for specs/android-ime-winflowz_app-keyboard.md execution."
 next_review: "2026-06-04"
 next_step: "/sf-docs technical audit"
 ---
 
-# Technical Docs — VoiceFlowz
+# Technical Docs — WinFlowzApp
 
 This internal layer maps code areas to the technical context an agent must read
 before editing. It is not public product documentation.

@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz
+package com.winflowz_app.winflowz_app
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -18,14 +18,14 @@ import android.view.WindowManager
 
 class OverlayForegroundService : Service() {
     companion object {
-        const val ACTION_START = "com.voiceflowz.voiceflowz.overlay.START"
-        const val ACTION_STOP = "com.voiceflowz.voiceflowz.overlay.STOP"
-        const val ACTION_CANCEL = "com.voiceflowz.voiceflowz.overlay.CANCEL"
-        const val ACTION_SET_STATE = "com.voiceflowz.voiceflowz.overlay.SET_STATE"
-        const val ACTION_UPDATE_METER = "com.voiceflowz.voiceflowz.overlay.UPDATE_METER"
-        const val ACTION_SET_RESULT_TEXT = "com.voiceflowz.voiceflowz.overlay.SET_RESULT_TEXT"
-        const val ACTION_DELIVER_TEXT = "com.voiceflowz.voiceflowz.overlay.DELIVER_TEXT"
-        const val ACTION_SET_APPEARANCE = "com.voiceflowz.voiceflowz.overlay.SET_APPEARANCE"
+        const val ACTION_START = "com.winflowz_app.winflowz_app.overlay.START"
+        const val ACTION_STOP = "com.winflowz_app.winflowz_app.overlay.STOP"
+        const val ACTION_CANCEL = "com.winflowz_app.winflowz_app.overlay.CANCEL"
+        const val ACTION_SET_STATE = "com.winflowz_app.winflowz_app.overlay.SET_STATE"
+        const val ACTION_UPDATE_METER = "com.winflowz_app.winflowz_app.overlay.UPDATE_METER"
+        const val ACTION_SET_RESULT_TEXT = "com.winflowz_app.winflowz_app.overlay.SET_RESULT_TEXT"
+        const val ACTION_DELIVER_TEXT = "com.winflowz_app.winflowz_app.overlay.DELIVER_TEXT"
+        const val ACTION_SET_APPEARANCE = "com.winflowz_app.winflowz_app.overlay.SET_APPEARANCE"
         const val EXTRA_STATE = "state"
         const val EXTRA_LEVEL = "level"
         const val EXTRA_TEXT = "text"
@@ -33,14 +33,14 @@ class OverlayForegroundService : Service() {
         const val EXTRA_OPACITY = "opacity"
 
         private const val NOTIFICATION_ID = 71011
-        private const val notificationChannelId = "voiceflowz_overlay_recording"
-        private const val notificationChannelName = "VoiceFlowz Overlay Recording"
+        private const val notificationChannelId = "winflowz_app_overlay_recording"
+        private const val notificationChannelName = "WinFlowzApp Overlay Recording"
         private const val HOLD_TO_RECORD_DELAY_MS = 220L
-        private const val TAG = "VoiceFlowzOverlay"
+        private const val TAG = "WinFlowzAppOverlay"
 
         private const val maxXOffset = 16
         private const val defaultCollapsedWidth = 44
-        private const val preferencesName = "voiceflowz_overlay_prefs"
+        private const val preferencesName = "winflowz_app_overlay_prefs"
         private const val keyOverlaySizeScale = "overlay_size_scale"
         private const val keyOverlayOpacity = "overlay_opacity"
 
@@ -514,7 +514,7 @@ class OverlayForegroundService : Service() {
                 Notification.Builder(this)
             }
         return builder
-            .setContentTitle("VoiceFlowz overlay")
+            .setContentTitle("WinFlowzApp overlay")
             .setContentText(contentText)
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setContentIntent(pendingIntent)

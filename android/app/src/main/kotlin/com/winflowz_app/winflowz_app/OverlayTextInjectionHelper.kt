@@ -1,4 +1,4 @@
-package com.voiceflowz.voiceflowz
+package com.winflowz_app.winflowz_app
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -86,7 +86,7 @@ object OverlayTextInjectionHelper {
         return try {
             val clipboard =
                 context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("VoiceFlowz", text)
+            val clip = ClipData.newPlainText("WinFlowzApp", text)
             clipboard.setPrimaryClip(clip)
             true
         } catch (_: Exception) {

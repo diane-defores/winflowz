@@ -2,7 +2,7 @@
 artifact: business_context
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-03-18"
 updated: "2026-05-09"
 status: "reviewed"
@@ -30,7 +30,7 @@ next_review: "2026-05-26"
 next_step: "$sf-docs update"
 ---
 
-# Business — VoiceFlowz
+# Business — WinFlowzApp
 
 ## Statut de preuve
 
@@ -46,7 +46,7 @@ Libérer les mains des professionnels grâce à la dictée vocale intelligente, 
 
 ## Proposition de valeur
 
-VoiceFlowz cible une application Flutter Android-first avec contrats backend-agnostiques et Firebase comme premier adaptateur distant. Le produit combine dictée locale quand disponible, transcription avancée Whisper avec clé OpenAI locale BYO, nettoyage IA Claude optionnel avec clé Anthropic locale BYO, historique synchronisé, snippets, dictionnaire personnel, clavier Android natif, et overlay Android natif avec fallback clipboard.
+WinFlowzApp cible une application Flutter Android-first avec contrats backend-agnostiques et Firebase comme premier adaptateur distant. Le produit combine dictée locale quand disponible, transcription avancée Whisper avec clé OpenAI locale BYO, nettoyage IA Claude optionnel avec clé Anthropic locale BYO, historique synchronisé, snippets, dictionnaire personnel, clavier Android natif, et overlay Android natif avec fallback clipboard.
 
 ## Capacités business de référence
 
@@ -56,7 +56,7 @@ VoiceFlowz cible une application Flutter Android-first avec contrats backend-agn
 | Backend-agnostic stores + Firebase first adapter | target-reviewed | `docs/DECISIONS.md` |
 | Clés OpenAI/Anthropic BYO stockées localement | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
 | Snippets + dictionnaire comme fonctionnalités produit | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
-| Clavier Android natif VoiceFlowz | target-reviewed | `specs/android-ime-voiceflowz-keyboard.md` |
+| Clavier Android natif WinFlowzApp | target-reviewed | `specs/android-ime-winflowz_app-keyboard.md` |
 | Overlay Android natif uniquement | target-reviewed | `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md` |
 | Expo/Convex/Clerk comme implémentation cible | out-of-scope | explicitement exclu de la cible finale |
 | Quotas gratuits / premium / billing | out-of-scope | non inclus dans le scope migration |
@@ -71,7 +71,7 @@ Le modèle reste freemium BYO pour la migration. Les plans payants restent hors 
 - Les données utilisateur sont isolées via les règles de sécurité de l'adaptateur actif.
 - Les clés OpenAI/Anthropic restent locales à l'appareil et ne sont pas stockées dans le backend distant.
 - L'utilisateur gère transcriptions, clipboard, snippets et dictionnaire depuis son compte.
-- Le clavier Android VoiceFlowz reste disponible uniquement sur Android et sert de surface prioritaire dans les champs texte.
+- Le clavier Android WinFlowzApp reste disponible uniquement sur Android et sert de surface prioritaire dans les champs texte.
 - L'overlay Android reste disponible uniquement sur Android avec fallback clipboard.
 
 ### État legacy-current (pré-migration, à ne pas présenter comme cible)

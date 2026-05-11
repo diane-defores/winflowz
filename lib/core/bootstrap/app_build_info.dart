@@ -2,15 +2,15 @@ class AppBuildInfo {
   AppBuildInfo._();
 
   static const sha = String.fromEnvironment(
-    'VOICEFLOWZ_BUILD_SHA',
+    'WINFLOWZ_APP_BUILD_SHA',
     defaultValue: 'local',
   );
   static const runId = String.fromEnvironment(
-    'VOICEFLOWZ_BUILD_RUN_ID',
+    'WINFLOWZ_APP_BUILD_RUN_ID',
     defaultValue: 'local',
   );
   static const refName = String.fromEnvironment(
-    'VOICEFLOWZ_BUILD_REF',
+    'WINFLOWZ_APP_BUILD_REF',
     defaultValue: 'local',
   );
 

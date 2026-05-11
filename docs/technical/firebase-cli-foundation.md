@@ -2,7 +2,7 @@
 artifact: firebase_foundation
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-10"
 updated: "2026-05-10"
 status: "reviewed"
@@ -74,7 +74,7 @@ firebase emulators:start --only firestore,auth --import=./.firebase/emulator-dat
 Android package name for Firebase app registration:
 
 ```text
-com.voiceflowz.voiceflowz
+com.winflowz_app.winflowz_app
 ```
 
 Google Sign-In on Android also needs the app signing SHA fingerprints in the
@@ -82,7 +82,7 @@ Firebase Android app settings before a real-device auth smoke can pass.
 
 ## Flutter runtime defines
 
-VoiceFlowz initializes Firebase conditionally. Missing values keep the app in
+WinFlowzApp initializes Firebase conditionally. Missing values keep the app in
 local mode instead of crashing.
 
 ```bash

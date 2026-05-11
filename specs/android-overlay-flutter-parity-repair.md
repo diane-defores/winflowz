@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-10"
 created_at: "2026-05-10 09:52:03 UTC"
 updated: "2026-05-10"
@@ -12,19 +12,19 @@ source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "android-overlay-bugfix"
 owner: "Diane"
-user_story: "En tant qu'utilisateur Android de VoiceFlowz, je veux retrouver l'overlay flottant fonctionnel de la version Expo dans l'application Flutter, afin de dicter, arreter, annuler et livrer du texte depuis n'importe quelle app sans ouvrir VoiceFlowz."
+user_story: "En tant qu'utilisateur Android de WinFlowzApp, je veux retrouver l'overlay flottant fonctionnel de la version Expo dans l'application Flutter, afin de dicter, arreter, annuler et livrer du texte depuis n'importe quelle app sans ouvrir WinFlowzApp."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
   - "Flutter app"
-  - "Android MethodChannel voiceflowz/overlay"
+  - "Android MethodChannel winflowz_app/overlay"
   - "Android foreground service"
   - "Android WindowManager TYPE_APPLICATION_OVERLAY"
   - "Android accessibility service"
   - "Clipboard fallback"
   - "Voice recording pipeline"
-  - "VoiceFlowz Keyboard IME"
+  - "WinFlowzApp Keyboard IME"
   - "Firebase/backend-agnostic stores"
 depends_on:
   - artifact: "docs/OVERLAY_ANDROID.md"
@@ -33,7 +33,7 @@ depends_on:
   - artifact: "docs/PLATFORM_BEHAVIOR.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
-  - artifact: "specs/android-ime-voiceflowz-keyboard.md"
+  - artifact: "specs/android-ime-winflowz_app-keyboard.md"
     artifact_version: "1.0.0"
     required_status: "legacy-ready"
   - artifact: "specs/firebase-backend-agnostic-migration.md"
@@ -42,13 +42,13 @@ depends_on:
 supersedes: []
 evidence:
   - "docs/OVERLAY_ANDROID.md defines the Android overlay contract but not an executable parity repair plan."
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt only starts a foreground notification and tracks running state."
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayAccessibilityService.kt does not retain a service instance or implement text injection."
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt exposes permission/status/start/stop/cancel but no native event stream from overlay bubble actions back to Flutter."
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt only starts a foreground notification and tracks running state."
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayAccessibilityService.kt does not retain a service instance or implement text injection."
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt exposes permission/status/start/stop/cancel but no native event stream from overlay bubble actions back to Flutter."
   - "modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/FloatingOverlayService.kt contains the legacy working WindowManager bubble, drag, hold-to-record, notification, state, meter, and callback behavior."
   - "modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/OverlayView.kt contains the legacy collapsed/recording/processing/result UI states."
   - "modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/TextInjectionHelper.kt contains the legacy accessibility injection plus clipboard fallback."
-  - "voiceflowz_snapshots/voiceflowz-pre-flutter-migration-20260427-081046.tar.gz contains the pre-Flutter Expo source and must be kept until overlay parity is verified."
+  - "winflowz_app_snapshots/winflowz_app-pre-flutter-migration-20260427-081046.tar.gz contains the pre-Flutter Expo source and must be kept until overlay parity is verified."
   - "Android Developers: WindowManager.LayoutParams TYPE_APPLICATION_OVERLAY documentation checked 2026-05-10."
   - "Android Developers: Android 14 foreground service type requirements checked 2026-05-10."
 next_step: "/sf-ready specs/android-overlay-flutter-parity-repair.md"
@@ -64,9 +64,9 @@ Draft spec created after comparing the current Flutter Android implementation wi
 
 # User Story
 
-En tant qu'utilisateur Android de VoiceFlowz, je veux retrouver l'overlay flottant fonctionnel de la version Expo dans l'application Flutter, afin de dicter, arreter, annuler et livrer du texte depuis n'importe quelle app sans ouvrir VoiceFlowz.
+En tant qu'utilisateur Android de WinFlowzApp, je veux retrouver l'overlay flottant fonctionnel de la version Expo dans l'application Flutter, afin de dicter, arreter, annuler et livrer du texte depuis n'importe quelle app sans ouvrir WinFlowzApp.
 
-Acteur principal: utilisateur Android de VoiceFlowz, connecte ou en fallback local.
+Acteur principal: utilisateur Android de WinFlowzApp, connecte ou en fallback local.
 
 Declencheurs principaux:
 
@@ -78,18 +78,18 @@ Resultat observable attendu: une vraie bulle flottante apparait au-dessus des au
 
 # Minimal Behavior Contract
 
-Quand l'overlay est active sur Android avec la permission systeme, VoiceFlowz doit afficher une bulle native draggable, visible hors de l'application. Une action explicite sur la bulle lance une session voix unique; stop produit le texte final, cancel jette la session, et chaque etat est reflechi dans la bulle et la notification. Si l'overlay, le micro, l'accessibilite, le champ cible, le backend ou le recorder n'est pas disponible, l'app doit refuser proprement ou tomber sur clipboard/local fallback sans session fantome. L'edge case facile a rater est que l'ancienne version Expo avait deux pieces indispensables que Flutter n'a pas encore: la vue `WindowManager` interactive et le canal d'evenements natif vers la logique voix.
+Quand l'overlay est active sur Android avec la permission systeme, WinFlowzApp doit afficher une bulle native draggable, visible hors de l'application. Une action explicite sur la bulle lance une session voix unique; stop produit le texte final, cancel jette la session, et chaque etat est reflechi dans la bulle et la notification. Si l'overlay, le micro, l'accessibilite, le champ cible, le backend ou le recorder n'est pas disponible, l'app doit refuser proprement ou tomber sur clipboard/local fallback sans session fantome. L'edge case facile a rater est que l'ancienne version Expo avait deux pieces indispensables que Flutter n'a pas encore: la vue `WindowManager` interactive et le canal d'evenements natif vers la logique voix.
 
 # Success Behavior
 
-- Given l'utilisateur active l'overlay et `Settings.canDrawOverlays` est vrai, when il quitte l'app, then une bulle VoiceFlowz native reste visible au-dessus des autres apps.
-- Given la bulle est visible et l'utilisateur appuie dessus, when aucune session voix n'est active, then VoiceFlowz demarre une session overlay et passe la bulle en etat `recording`.
+- Given l'utilisateur active l'overlay et `Settings.canDrawOverlays` est vrai, when il quitte l'app, then une bulle WinFlowzApp native reste visible au-dessus des autres apps.
+- Given la bulle est visible et l'utilisateur appuie dessus, when aucune session voix n'est active, then WinFlowzApp demarre une session overlay et passe la bulle en etat `recording`.
 - Given l'utilisateur maintient la bulle, when il relache apres le delai hold-to-record, then la session s'arrete et le traitement commence.
 - Given l'utilisateur appuie sur stop dans l'etat recording, when le recorder retourne du texte, then le texte est enregistre comme transcription source `overlay`, copie au clipboard, et injecte dans le champ actif si l'accessibilite le permet.
 - Given l'utilisateur appuie sur cancel, when une session est active, then l'audio/resultat partiel est abandonne, aucun item vide n'est cree, et la bulle revient en collapsed.
 - Given l'accessibilite est desactivee ou aucun champ editable n'est cible, when un texte final existe, then le texte est copie au clipboard et l'utilisateur voit un feedback recuperable.
 - Given l'utilisateur revoke l'overlay permission ou desactive l'overlay dans Settings, when le statut est rafraichi, then la vue overlay et le service foreground sont arretes.
-- Given VoiceFlowz Keyboard est en train d'enregistrer, when l'overlay tente de demarrer, then la nouvelle session est refusee ou attend une arbitration explicite; aucun double micro ne demarre.
+- Given WinFlowzApp Keyboard est en train d'enregistrer, when l'overlay tente de demarrer, then la nouvelle session est refusee ou attend une arbitration explicite; aucun double micro ne demarre.
 
 # Error Behavior
 
@@ -104,9 +104,9 @@ Quand l'overlay est active sur Android avec la permission systeme, VoiceFlowz do
 
 # Problem
 
-L'overlay ne fonctionne pas dans l'application Flutter parce que le port actuel a garde le contrat de surface mais pas la mecanique de l'ancien module Expo. Le code Flutter expose bien un MethodChannel `voiceflowz/overlay`, des permissions et un `OverlayForegroundService`, mais ce service ne cree aucune bulle `WindowManager`, ne remonte aucun evenement de bulle vers Dart, ne met pas a jour un etat visuel, et l'accessibility service actuel ne sait pas injecter de texte.
+L'overlay ne fonctionne pas dans l'application Flutter parce que le port actuel a garde le contrat de surface mais pas la mecanique de l'ancien module Expo. Le code Flutter expose bien un MethodChannel `winflowz_app/overlay`, des permissions et un `OverlayForegroundService`, mais ce service ne cree aucune bulle `WindowManager`, ne remonte aucun evenement de bulle vers Dart, ne met pas a jour un etat visuel, et l'accessibility service actuel ne sait pas injecter de texte.
 
-La version Expo qui fonctionnait est encore disponible dans `modules/floating-overlay/` et dans `voiceflowz_snapshots/voiceflowz-pre-flutter-migration-20260427-081046.tar.gz`. Ces sources sont des references a conserver jusqu'a validation Android reelle.
+La version Expo qui fonctionnait est encore disponible dans `modules/floating-overlay/` et dans `winflowz_app_snapshots/winflowz_app-pre-flutter-migration-20260427-081046.tar.gz`. Ces sources sont des references a conserver jusqu'a validation Android reelle.
 
 # Solution
 
@@ -122,7 +122,7 @@ Porter la logique utile du module Expo vers l'app Android Flutter native en gard
 - Reglages Settings pour ajuster la taille et l'opacite de l'unique bulle overlay Android.
 - Foreground service conforme Android 14+ avec `foregroundServiceType="microphone"` et permissions deja declarees.
 - Injection accessibility best-effort avec clipboard fallback obligatoire.
-- Arbitration avec l'IME VoiceFlowz et toute session voix app/overlay existante.
+- Arbitration avec l'IME WinFlowzApp et toute session voix app/overlay existante.
 - Settings/Voice UI pour afficher les statuts reels overlay, accessibilite, notification/micro et erreurs recuperables.
 - Logs techniques non sensibles pour diagnostiquer permissions, lifecycle service, evenements overlay et delivery mode.
 - Tests unitaires Dart pour le bridge/status et tests manuels Android reels pour la bulle.
@@ -134,7 +134,7 @@ Porter la logique utile du module Expo vers l'app Android Flutter native en gard
 - Refonte du pipeline voix complet.
 - Capture clipboard en arriere-plan.
 - Injection dans champs password/OTP/sensibles.
-- Suppression de `modules/floating-overlay/` ou de `voiceflowz_snapshots/` avant validation de parite.
+- Suppression de `modules/floating-overlay/` ou de `winflowz_app_snapshots/` avant validation de parite.
 - Rich media controls et features IME hors arbitration recording.
 
 # Constraints
@@ -151,10 +151,10 @@ Porter la logique utile du module Expo vers l'app Android Flutter native en gard
 # Dependencies
 
 - Flutter `MethodChannel` existant dans `lib/core/platform/android_overlay_bridge.dart`.
-- Android Kotlin dans `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/`.
+- Android Kotlin dans `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/`.
 - Legacy reference dans `modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/`.
 - `docs/OVERLAY_ANDROID.md` pour le contrat permission/runtime.
-- `specs/android-ime-voiceflowz-keyboard.md` pour la coexistence avec l'IME.
+- `specs/android-ime-winflowz_app-keyboard.md` pour la coexistence avec l'IME.
 - Android official docs checked 2026-05-10:
   - `WindowManager.LayoutParams`: `TYPE_APPLICATION_OVERLAY` est le type attendu pour une fenetre overlay d'application moderne.
   - Android 14 foreground service requirements: un foreground service qui utilise le micro doit declarer le type et les permissions appropries.
@@ -173,17 +173,17 @@ Porter la logique utile du module Expo vers l'app Android Flutter native en gard
 
 # Links & Consequences
 
-- `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt`: doit redevenir le service qui gere aussi la vue overlay, pas seulement la notification.
-- `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt`: doit exposer les nouvelles methodes et brancher un canal d'evenements vers Flutter.
-- `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayAccessibilityService.kt`: doit conserver une instance active et permettre l'injection best-effort.
-- `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/`: peut gagner `OverlayView.kt`, `WaveformView.kt`, `OverlayTextInjectionHelper.kt`, `OverlayEventQueue.kt`, `OverlayState.kt`.
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt`: doit redevenir le service qui gere aussi la vue overlay, pas seulement la notification.
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt`: doit exposer les nouvelles methodes et brancher un canal d'evenements vers Flutter.
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayAccessibilityService.kt`: doit conserver une instance active et permettre l'injection best-effort.
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/`: peut gagner `OverlayView.kt`, `WaveformView.kt`, `OverlayTextInjectionHelper.kt`, `OverlayEventQueue.kt`, `OverlayState.kt`.
 - `lib/core/platform/android_overlay_bridge.dart`: doit supporter status, commands et event stream.
 - `lib/features/voice/presentation/voice_screen.dart` ou le store voix: doit consommer les evenements overlay.
 - `lib/features/settings/presentation/settings_screen.dart`: doit afficher les etats reels et actions de recovery.
 - `lib/features/settings/presentation/settings_screen.dart`: expose la taille et l'opacite persistantes de la bulle.
 - `docs/OVERLAY_ANDROID.md`: doit etre mis a jour apres implementation avec le contrat effectif.
 - `docs/VERIFICATION.md` si present, ou nouveau guide QA: doit contenir la matrice appareil Android.
-- `modules/floating-overlay/` et `voiceflowz_snapshots/`: restent references legacy jusqu'a validation, puis nettoyage possible dans un chantier separe.
+- `modules/floating-overlay/` et `winflowz_app_snapshots/`: restent references legacy jusqu'a validation, puis nettoyage possible dans un chantier separe.
 
 # Documentation Coherence
 
@@ -216,12 +216,12 @@ Mettre a jour apres implementation:
 # Implementation Tasks
 
 - [x] Tache 1 : Diagnostiquer et figer le comportement actuel
-  - Fichiers : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt`, `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt`, `lib/core/platform/android_overlay_bridge.dart`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt`, `lib/core/platform/android_overlay_bridge.dart`
   - Action : Ajouter ou verifier des logs non sensibles pour start/stop/status, reproduire sur appareil/emulateur Android, confirmer que la bulle n'est pas creee aujourd'hui.
   - Validate with : logcat + capture manuelle; `running` ne doit plus etre considere suffisant sans vue overlay.
 
 - [x] Tache 2 : Porter la vue overlay legacy en Kotlin Flutter
-  - Fichiers : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayView.kt`, `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/WaveformView.kt`, `OverlayForegroundService.kt`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/WaveformView.kt`, `OverlayForegroundService.kt`
   - Action : Reprendre la logique utile de `modules/floating-overlay/.../OverlayView.kt` et `FloatingOverlayService.kt`: collapsed, recording, processing, result, drag, snap-to-edge, hold-to-record, stop, cancel.
   - Validate with : la bulle apparait hors app, se deplace, snap, et change d'etat.
 
@@ -247,13 +247,13 @@ Mettre a jour apres implementation:
   - Validate with : UI theme global conserve; pas de style inline ni hardcode hors tokens Flutter.
 
 - [ ] Tache 7 : Ajouter l'arbitration app/overlay/IME
-  - Fichiers : `lib/features/voice/`, `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/`, `OverlayForegroundService.kt`
+  - Fichiers : `lib/features/voice/`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/`, `OverlayForegroundService.kt`
   - Action : Centraliser l'etat "voice session active" pour refuser ou arreter proprement les sessions concurrentes.
   - Validate with : overlay et IME ne peuvent pas enregistrer simultanement.
   - Status 2026-05-10 : non termine; a verifier sur appareil avec IME actif.
 
 - [x] Tache 8 : Nettoyer seulement apres parite
-  - Fichiers : `modules/floating-overlay/`, `voiceflowz_snapshots/`, docs de migration
+  - Fichiers : `modules/floating-overlay/`, `winflowz_app_snapshots/`, docs de migration
   - Action : Garder ces sources tant que la QA overlay Flutter n'est pas passee. Ouvrir un chantier de nettoyage separe apres validation.
   - Validate with : aucun nettoyage destructif avant preuve appareil.
 
@@ -281,7 +281,7 @@ Mettre a jour apres implementation:
 2. Valider en dev local avec fallback local et logs non sensibles.
 3. Faire un APK debug via Blacksmith/GitHub Actions si Android SDK local reste indisponible.
 4. Tester sur au moins un appareil Android reel avant suppression de tout legacy.
-5. Mettre a jour docs et seulement ensuite planifier le nettoyage `modules/floating-overlay/` et `voiceflowz_snapshots/`.
+5. Mettre a jour docs et seulement ensuite planifier le nettoyage `modules/floating-overlay/` et `winflowz_app_snapshots/`.
 
 # Risks
 

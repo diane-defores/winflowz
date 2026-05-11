@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-10"
 status: "reviewed"
@@ -27,21 +27,21 @@ depends_on:
 supersedes: []
 evidence:
   - "docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md"
-  - "specs/android-ime-voiceflowz-keyboard.md"
+  - "specs/android-ime-winflowz_app-keyboard.md"
   - "android/app/src/main/AndroidManifest.xml"
 next_step: "$sf-docs update"
 ---
 
-# VoiceFlowz
+# WinFlowzApp
 
-VoiceFlowz is migrating to a Flutter Android-first architecture with backend-agnostic data/settings contracts. Firebase Auth + Firestore is the first planned remote adapter.
+WinFlowzApp is migrating to a Flutter Android-first architecture with backend-agnostic data/settings contracts. Firebase Auth + Firestore is the first planned remote adapter.
 
-VoiceFlowz is positioned as a sibling product of WinFlowz in the same ecosystem, with a product focus on voice-first capture and text workflow acceleration.
+WinFlowzApp is positioned as a sibling product of WinFlowz in the same ecosystem, with a product focus on voice-first capture and text workflow acceleration.
 
 This repository now contains:
 - A Flutter multi-platform project scaffold.
 - Legacy Supabase SQL migrations with RLS-first contracts from the prior migration path.
-- Android native overlay and a first native VoiceFlowz Keyboard IME foundation.
+- Android native overlay and a first native WinFlowzApp Keyboard IME foundation.
 - Migration docs and verification gates.
 - Legacy Expo/Convex contracts preserved in docs for parity validation; no app-level JS/TS implementation remains in the repo.
 
@@ -61,14 +61,14 @@ flutter run
 ## Firebase Runtime Defines
 
 Firebase is now wired as the first backend adapter behind backend-agnostic stores.
-If these values are missing, VoiceFlowz stays in local mode so UI development does
+If these values are missing, WinFlowzApp stays in local mode so UI development does
 not crash.
 
 Never use backend admin/service credentials in Flutter/web/desktop/mobile clients.
 
 ## Sentry Runtime Defines
 
-Sentry is optional. If `SENTRY_DSN` is missing, VoiceFlowz does not initialize
+Sentry is optional. If `SENTRY_DSN` is missing, WinFlowzApp does not initialize
 Sentry and keeps diagnostics local-only.
 
 Use Dart defines for builds that should report Flutter/native crashes:
@@ -79,8 +79,8 @@ flutter run \
   --dart-define=SENTRY_ENVIRONMENT=debug
 ```
 
-VoiceFlowz configures Sentry with `sendDefaultPii=false`, screenshots disabled,
-view hierarchy disabled, and build tags from `VOICEFLOWZ_BUILD_*` defines.
+WinFlowzApp configures Sentry with `sendDefaultPii=false`, screenshots disabled,
+view hierarchy disabled, and build tags from `WINFLOWZ_APP_BUILD_*` defines.
 
 ## GitHub Actions / Blacksmith APK
 
@@ -117,7 +117,7 @@ instead of a long-lived service account JSON key.
 - UI: Flutter shell + auth gate + settings key storage baseline is in place.
 - Security: Firestore rules and indexes are versioned; emulator and real Firebase validation still require `firebase-tools`.
 - Android overlay: Flutter now has a native foreground overlay bubble foundation with queued native events, visual states, accessibility delivery, clipboard fallback, and Settings size/opacity controls. Real-device QA is still required before deleting the legacy Expo overlay reference or snapshot archive.
-- Android IME: VoiceFlowz can be enabled as a native Android keyboard. The current foundation provides modular Canvas rows, tap + swipe-corner character selection, QWERTY/AZERTY profiles, normal/corner modes, numbers/accents/symbol layers, field-context variants (email/URL/phone/search), private-field gating, minimal navigation/emoji/clipboard/media/snippets/settings panels, basic double-space + punctuation auto-spacing corrections with exclusions, optional touch-debug overlay, local Android speech recognition, media key dispatch, and Settings status/preferences. Double-tap/long-press action policies from the full keyboard spec are still pending implementation. Cloud sync from the keyboard waits for Firebase CLI/emulator and real-device QA before it should be treated as production-ready.
+- Android IME: WinFlowzApp can be enabled as a native Android keyboard. The current foundation provides modular Canvas rows, tap + swipe-corner character selection, QWERTY/AZERTY profiles, normal/corner modes, numbers/accents/symbol layers, field-context variants (email/URL/phone/search), private-field gating, minimal navigation/emoji/clipboard/media/snippets/settings panels, basic double-space + punctuation auto-spacing corrections with exclusions, optional touch-debug overlay, local Android speech recognition, media key dispatch, and Settings status/preferences. Double-tap/long-press action policies from the full keyboard spec are still pending implementation. Cloud sync from the keyboard waits for Firebase CLI/emulator and real-device QA before it should be treated as production-ready.
 - Non-Android limits: iOS/macOS declare microphone and speech permission prompts; Linux and web keep local speech unavailable/degraded where the current stack cannot support it; overlay and IME remain Android-only.
 
 ## Project Structure (target)

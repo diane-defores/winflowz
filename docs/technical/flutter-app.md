@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-04"
 updated: "2026-05-09"
 status: draft
@@ -58,7 +58,7 @@ unavailable on non-Android platforms.
 ## Entrypoints
 
 - `lib/main.dart`: app bootstrap.
-- `lib/app/voiceflowz_app.dart`: application shell.
+- `lib/app/winflowz_app.dart`: application shell.
 - `lib/features/settings/presentation/settings_screen.dart`: Android permission and feature status surface.
 
 ## Control Flow

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 
-import '../../../app/voiceflowz_app.dart';
+import '../../../app/winflowz_app.dart';
 import '../../../core/bootstrap/app_build_info.dart';
 import '../../../core/bootstrap/firebase_bootstrap.dart';
 import '../../../core/bootstrap/sentry_bootstrap.dart';
@@ -466,7 +466,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ? 'firebase_remote'
         : 'local_mode';
     final lines = <String>[
-      'VoiceFlowz backend diagnostic',
+      'WinFlowzApp backend diagnostic',
       'diagnostic_version: 5',
       'generated_at_utc: ${DateTime.now().toUtc().toIso8601String()}',
       'secret_values_redacted: true',
@@ -677,7 +677,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 AppGaps.x2,
                 Text(
-                  'Uses the VoiceFlowz palette and shared Flowz interface tokens.',
+                  'Uses the WinFlowzApp palette and shared Flowz interface tokens.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -726,7 +726,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   subtitle: Text(
                     FirebaseBootstrap.isConfigured
                         ? 'Firebase is the active backend adapter. Legacy Supabase may remain unconfigured.'
-                        : 'Remote sync is not configured. VoiceFlowz stays in local mode.',
+                        : 'Remote sync is not configured. WinFlowzApp stays in local mode.',
                   ),
                 ),
                 SelectableText(_backendDiagnosticText()),
@@ -826,7 +826,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 : 'Android keyboard IME unavailable on this platform',
           ),
           subtitle: const Text(
-            'VoiceFlowz Keyboard is Android-only and runs as a native input method.',
+            'WinFlowzApp Keyboard is Android-only and runs as a native input method.',
           ),
         ),
         if (PlatformCapabilities.keyboardImeSupported)
@@ -834,7 +834,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
               children: [
                 ListTile(
-                  title: const Text('VoiceFlowz Keyboard status'),
+                  title: const Text('WinFlowzApp Keyboard status'),
                   subtitle: Text(
                     'enabled=${keyboardStatus?.enabled ?? false} | '
                     'active=${keyboardStatus?.active ?? false} | '
@@ -860,7 +860,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     leading: Icon(Icons.info_outline),
                     title: Text('Keyboard not enabled'),
                     subtitle: Text(
-                      'Enable VoiceFlowz in Android input method settings, then switch to it from any text field.',
+                      'Enable WinFlowzApp in Android input method settings, then switch to it from any text field.',
                     ),
                   ),
                 Padding(

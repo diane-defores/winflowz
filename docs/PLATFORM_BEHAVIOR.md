@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-27"
 updated: "2026-05-10"
 status: "reviewed"
@@ -17,13 +17,13 @@ depends_on:
   - "specs/firebase-backend-agnostic-migration.md@0.1.0"
 supersedes: []
 evidence:
-  - "specs/android-ime-voiceflowz-keyboard.md"
+  - "specs/android-ime-winflowz_app-keyboard.md"
   - "lib/core/platform/platform_capabilities.dart"
-  - "android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzInputMethodService.kt"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt"
 next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 ---
 
-# Platform Behavior — VoiceFlowz
+# Platform Behavior — WinFlowzApp
 
 ## Shared Rules
 
@@ -35,7 +35,7 @@ next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 
 ## Capability Matrix
 
-| Platform | Local speech | Advanced recording + Whisper | Secure key storage | Clipboard sync | Overlay | VoiceFlowz Keyboard IME |
+| Platform | Local speech | Advanced recording + Whisper | Secure key storage | Clipboard sync | Overlay | WinFlowzApp Keyboard IME |
 |---|---|---|---|---|---|---|
 | Android | supported when `speech_to_text` or Android speech recognition supports locale/device | supported | Android keystore via `flutter_secure_storage` | opt-in; respect background limits | supported | supported as native Kotlin IME |
 | iOS | supported when permission and locale allow | supported | Keychain via `flutter_secure_storage` | opt-in; no Android-style overlay | unavailable | unavailable |
@@ -46,7 +46,7 @@ next_step: "/sf-start specs/firebase-backend-agnostic-migration.md"
 
 ## Android Keyboard IME
 
-- VoiceFlowz Keyboard is declared as an Android `InputMethodService` and is configurable from Settings through the `voiceflowz/keyboard` MethodChannel.
+- WinFlowzApp Keyboard is declared as an Android `InputMethodService` and is configurable from Settings through the `winflowz_app/keyboard` MethodChannel.
 - The keyboard provides a native Canvas layout engine with QWERTY/AZERTY profiles, explicit clipboard copy/paste actions, Android speech recognition, and media keys (previous/play-pause/next).
 - Tap and swipe-corner classification is local and deterministic: tap emits the primary glyph, corner swipes emit secondary glyphs when corner mode is enabled, and return-to-center cancels the gesture.
 - Keyboard field context adapts controls for email/URL/phone/search: email and URL expose `@`/`/` plus `.com`, phone forces number layer, search sets enter action to search.

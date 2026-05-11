@@ -3,18 +3,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voiceflowz/core/theme/app_theme.dart';
-import 'package:voiceflowz/core/bootstrap/supabase_bootstrap.dart';
-import 'package:voiceflowz/core/platform/android_keyboard_bridge.dart';
-import 'package:voiceflowz/core/platform/android_overlay_bridge.dart';
-import 'package:voiceflowz/core/platform/platform_capabilities.dart';
-import 'package:voiceflowz/features/keyboard/domain/keyboard_models.dart';
-import 'package:voiceflowz/features/clipboard/domain/clipboard_normalizer.dart';
-import 'package:voiceflowz/features/shell/presentation/app_shell_screen.dart';
-import 'package:voiceflowz/features/voice/domain/transcription_draft.dart';
+import 'package:winflowz_app/core/theme/app_theme.dart';
+import 'package:winflowz_app/core/bootstrap/supabase_bootstrap.dart';
+import 'package:winflowz_app/core/platform/android_keyboard_bridge.dart';
+import 'package:winflowz_app/core/platform/android_overlay_bridge.dart';
+import 'package:winflowz_app/core/platform/platform_capabilities.dart';
+import 'package:winflowz_app/features/keyboard/domain/keyboard_models.dart';
+import 'package:winflowz_app/features/clipboard/domain/clipboard_normalizer.dart';
+import 'package:winflowz_app/features/shell/presentation/app_shell_screen.dart';
+import 'package:winflowz_app/features/voice/domain/transcription_draft.dart';
 
-const _overlayChannel = MethodChannel('voiceflowz/overlay');
-const _keyboardChannel = MethodChannel('voiceflowz/keyboard');
+const _overlayChannel = MethodChannel('winflowz_app/overlay');
+const _keyboardChannel = MethodChannel('winflowz_app/keyboard');
 const _secureStorageChannel = MethodChannel(
   'plugins.it_nomads.com/flutter_secure_storage',
 );
@@ -282,7 +282,7 @@ void main() {
 
     await tester.tap(find.text('Snippets').last);
     await tester.pumpAndSettle();
-    expect(find.text('VoiceFlowz • Snippets'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Snippets'), findsOneWidget);
     expect(find.text('Trigger'), findsOneWidget);
     expect(find.text('Snippets'), findsWidgets);
 
@@ -290,7 +290,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(handled, isTrue);
-    expect(find.text('VoiceFlowz • Voice'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Voice'), findsOneWidget);
   });
 
   testWidgets('settings can resume onboarding overlay', (tester) async {
@@ -307,14 +307,14 @@ void main() {
 
     expect(find.text('Start here'), findsOneWidget);
     expect(
-      find.text('Enable VoiceFlowz Keyboard in Settings.'),
+      find.text('Enable WinFlowzApp Keyboard in Settings.'),
       findsOneWidget,
     );
 
     await tester.tap(find.byTooltip('Close onboarding'));
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Start here'), findsNothing);
-    expect(find.text('VoiceFlowz • Settings'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
   });
 
   testWidgets('android shell renders every main tab body', (tester) async {
@@ -329,7 +329,7 @@ void main() {
     await tester.pumpWidget(_appShellTestWidget());
     await tester.pumpAndSettle();
 
-    expect(find.text('VoiceFlowz • Voice'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Voice'), findsOneWidget);
     expect(find.text('Raw text'), findsOneWidget);
     final addTranscriptionButton = find.widgetWithText(
       FilledButton,
@@ -344,32 +344,32 @@ void main() {
 
     await tester.tap(find.text('Clipboard').last);
     await tester.pumpAndSettle();
-    expect(find.text('VoiceFlowz • Clipboard'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Clipboard'), findsOneWidget);
     expect(find.text('Clipboard content'), findsOneWidget);
     expect(find.text('Add clipboard item'), findsOneWidget);
 
     await tester.tap(find.text('Snippets').last);
     await tester.pumpAndSettle();
-    expect(find.text('VoiceFlowz • Snippets'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Snippets'), findsOneWidget);
     expect(find.text('Trigger'), findsOneWidget);
     expect(find.text('Add snippet'), findsOneWidget);
 
     await tester.tap(find.text('Dictionary').last);
     await tester.pumpAndSettle();
-    expect(find.text('VoiceFlowz • Dictionary'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Dictionary'), findsOneWidget);
     expect(find.text('Term'), findsOneWidget);
     expect(find.text('Add term'), findsOneWidget);
 
     await tester.tap(find.text('Settings').last);
     await tester.pumpAndSettle();
-    expect(find.text('VoiceFlowz • Settings'), findsOneWidget);
+    expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
     expect(find.text('Appearance'), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.text('VoiceFlowz Keyboard status'),
+      find.text('WinFlowzApp Keyboard status'),
       260,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('VoiceFlowz Keyboard status'), findsOneWidget);
+    expect(find.text('WinFlowzApp Keyboard status'), findsOneWidget);
 
     debugDefaultTargetPlatformOverride = previousPlatform;
     _clearAndroidBridgeMocks();

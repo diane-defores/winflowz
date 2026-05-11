@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "0.2.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-03-18"
 updated: "2026-04-27"
 status: "draft"
@@ -24,7 +24,7 @@ evidence:
 next_step: "$sf-docs update"
 ---
 
-# Inspiration — VoiceFlowz
+# Inspiration — WinFlowzApp
 
 ## Transcription IA
 
@@ -32,7 +32,7 @@ next_step: "$sf-docs update"
 Référence produit pour les fonctionnalités de transcription en temps réel, la gestion de l'historique et l'intégration avec les outils de visioconférence.
 
 ### OpenAI Whisper
-Moteur de transcription utilisé dans VoiceFlowz pour le pipeline de transcription avancée.
+Moteur de transcription utilisé dans WinFlowzApp pour le pipeline de transcription avancée.
 
 ### Notta
 Inspiration potentielle pour le post-traitement du texte transcrit et la présentation des résultats.

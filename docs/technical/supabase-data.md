@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-05-04"
 updated: "2026-05-09"
 status: legacy

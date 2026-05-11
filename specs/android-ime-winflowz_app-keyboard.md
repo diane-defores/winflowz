@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-29"
 created_at: "2026-04-29 16:48:07 UTC"
 updated: "2026-05-09"
@@ -13,7 +13,7 @@ source_model: "GPT-5 Codex"
 scope: "android-ime-keyboard"
 owner: "Diane"
 confidence: high
-user_story: "En tant qu'utilisateur Android de VoiceFlowz, je veux remplacer ou completer mon clavier par un IME VoiceFlowz avec dictee, presse-papiers synchronise et controles media, afin de produire, reutiliser et piloter du texte sans quitter l'application active."
+user_story: "En tant qu'utilisateur Android de WinFlowzApp, je veux remplacer ou completer mon clavier par un IME WinFlowzApp avec dictee, presse-papiers synchronise et controles media, afin de produire, reutiliser et piloter du texte sans quitter l'application active."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
@@ -55,10 +55,10 @@ depends_on:
 supersedes: []
 evidence:
   - "No current Android IME declaration found in android/app/src/main/AndroidManifest.xml: no InputMethodService, BIND_INPUT_METHOD, or input_method metadata."
-  - "Existing Android bridge covers overlay permission/status/start/stop/cancel in lib/core/platform/android_overlay_bridge.dart and android/app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt."
-  - "Existing Android service is overlay foreground recording state only in android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt."
+  - "Existing Android bridge covers overlay permission/status/start/stop/cancel in lib/core/platform/android_overlay_bridge.dart and android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt."
+  - "Existing Android service is overlay foreground recording state only in android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt."
   - "Legacy Expo overlay contains reusable concepts for bubble UI, waveform, accessibility injection, and clipboard fallback in modules/floating-overlay/android/src/main/java/expo/modules/floatingoverlay/."
-  - "Supabase already has user-scoped transcriptions, clipboard_items, snippets, dictionary_terms, user_settings, client_events with RLS and realtime in supabase/migrations/20260427084000_init_voiceflowz.sql."
+  - "Supabase already has user-scoped transcriptions, clipboard_items, snippets, dictionary_terms, user_settings, client_events with RLS and realtime in supabase/migrations/20260427084000_init_winflowz_app.sql."
   - "specs/clipboard-backend-agnostic-api.md records the 2026-05-08 decision that clipboard behavior must go through ClipboardHistoryApi/ClipboardHistoryStore and keep Supabase as a replaceable adapter."
   - "Android Developers: Create an input method, https://developer.android.com/develop/ui/views/touch-and-input/creating-input-method"
   - "Android Developers: Copy and paste, https://developer.android.com/guide/topics/text/copy-paste"
@@ -69,7 +69,7 @@ next_step: "/sf-ready specs/proprietary-swipe-corner-android-keyboard.md"
 
 # Title
 
-Android IME VoiceFlowz Keyboard
+Android IME WinFlowzApp Keyboard
 
 # Status
 
@@ -77,13 +77,13 @@ Legacy-ready for the already implemented IME foundation. New keyboard work shoul
 
 # User Story
 
-En tant qu'utilisateur Android de VoiceFlowz, je veux remplacer ou completer mon clavier par un IME VoiceFlowz avec dictee, presse-papiers synchronise et controles media, afin de produire, reutiliser et piloter du texte sans quitter l'application active.
+En tant qu'utilisateur Android de WinFlowzApp, je veux remplacer ou completer mon clavier par un IME WinFlowzApp avec dictee, presse-papiers synchronise et controles media, afin de produire, reutiliser et piloter du texte sans quitter l'application active.
 
 Acteur principal: utilisateur Android authentifie ou en mode local degrade.
 
 Declencheurs principaux:
 
-- L'utilisateur choisit VoiceFlowz comme clavier Android actif.
+- L'utilisateur choisit WinFlowzApp comme clavier Android actif.
 - L'utilisateur tape, dicte, colle, copie une selection, insere un snippet ou lance une action depuis la barre d'outils du clavier.
 - L'utilisateur appuie sur play/pause media depuis le clavier.
 
@@ -91,49 +91,49 @@ Resultat observable attendu: le champ actif recoit le texte demande, l'utilisate
 
 # Minimal Behavior Contract
 
-Quand VoiceFlowz est selectionne comme clavier Android, il affiche un clavier utilisable dans tout champ texte compatible avec une barre d'actions VoiceFlowz; l'utilisateur peut saisir du texte, lancer/arreter/annuler une dictee, inserer le resultat dans le champ actif, enregistrer ce resultat dans l'historique et le clipboard synchronise si l'option est activee, ouvrir un panneau clipboard/snippets, et envoyer play/pause au media courant. Si une permission, un backend de sync, le micro, le presse-papiers, la session media ou le champ actif n'est pas disponible, le clavier doit afficher une action de recuperation ou tomber sur un mode degrade sans perte du texte deja produit. L'edge case facile a rater est que l'IME fonctionne dans des champs sensibles ou limites: il ne doit jamais capturer, synchroniser, journaliser ou injecter silencieusement du texte dans un champ password/OTP/sensible detecte ou dans un contexte ou Android refuse l'acces.
+Quand WinFlowzApp est selectionne comme clavier Android, il affiche un clavier utilisable dans tout champ texte compatible avec une barre d'actions WinFlowzApp; l'utilisateur peut saisir du texte, lancer/arreter/annuler une dictee, inserer le resultat dans le champ actif, enregistrer ce resultat dans l'historique et le clipboard synchronise si l'option est activee, ouvrir un panneau clipboard/snippets, et envoyer play/pause au media courant. Si une permission, un backend de sync, le micro, le presse-papiers, la session media ou le champ actif n'est pas disponible, le clavier doit afficher une action de recuperation ou tomber sur un mode degrade sans perte du texte deja produit. L'edge case facile a rater est que l'IME fonctionne dans des champs sensibles ou limites: il ne doit jamais capturer, synchroniser, journaliser ou injecter silencieusement du texte dans un champ password/OTP/sensible detecte ou dans un contexte ou Android refuse l'acces.
 
 # Success Behavior
 
-- Given VoiceFlowz est active comme clavier, when l'utilisateur ouvre un champ texte standard, then le clavier apparait avec les touches essentielles, la barre VoiceFlowz, un bouton dictee, un bouton clipboard, un bouton snippets/settings, et un bouton play/pause.
+- Given WinFlowzApp est active comme clavier, when l'utilisateur ouvre un champ texte standard, then le clavier apparait avec les touches essentielles, la barre WinFlowzApp, un bouton dictee, un bouton clipboard, un bouton snippets/settings, et un bouton play/pause.
 - Given un champ texte standard est focalise, when l'utilisateur tape, then le texte est insere via `InputConnection.commitText` et les actions retour/arriere/espace/entree suivent le comportement attendu du champ.
 - Given le micro est autorise et aucun enregistrement n'est actif, when l'utilisateur appuie sur dictee, then le clavier affiche un etat recording, une action stop, une action cancel, et une notification foreground si Android l'exige.
 - Given une dictee se termine avec du texte, when le resultat est accepte, then le texte est insere dans le champ actif, cree une transcription source `keyboard`, et cree un item clipboard source `keyboard_voice` seulement si la sync clipboard clavier est activee.
-- Given clipboard sync clavier est activee et l'utilisateur colle depuis le panneau VoiceFlowz, when le contenu est insere, then l'item est marque avec son origine, dedupe par hash normalise, borne en taille, et remis a `ClipboardHistoryApi`/`ClipboardHistoryStore` pour stockage local puis sync provider.
-- Given un media joue dans une autre app, when l'utilisateur appuie sur play/pause, then VoiceFlowz envoie un media key event au consommateur media courant et affiche un etat bref de succes ou d'indisponibilite.
+- Given clipboard sync clavier est activee et l'utilisateur colle depuis le panneau WinFlowzApp, when le contenu est insere, then l'item est marque avec son origine, dedupe par hash normalise, borne en taille, et remis a `ClipboardHistoryApi`/`ClipboardHistoryStore` pour stockage local puis sync provider.
+- Given un media joue dans une autre app, when l'utilisateur appuie sur play/pause, then WinFlowzApp envoie un media key event au consommateur media courant et affiche un etat bref de succes ou d'indisponibilite.
 - Given l'utilisateur n'est pas connecte, when il utilise le clavier, then la saisie, la dictee locale et le clipboard local restent utilisables; les sync cloud sont en etat pending ou disabled avec une explication visible dans Settings.
 - Given l'app principale est ouverte, when l'utilisateur consulte Settings, then il voit les statuts: IME actif/inactif, micro, clipboard sync, media controls, overlay, accessibility, backend sync et sync pending/error.
 
 # Error Behavior
 
-- Si VoiceFlowz n'est pas active comme clavier systeme, Settings doit proposer un lien vers les reglages Android d'input method et ne pas pretendre que le clavier est disponible.
+- Si WinFlowzApp n'est pas active comme clavier systeme, Settings doit proposer un lien vers les reglages Android d'input method et ne pas pretendre que le clavier est disponible.
 - Si le champ actif est password, OTP, noPersonalizedLearning, non-editable, absent ou limite par l'app hote, l'IME doit desactiver capture/sync/injection enrichie et afficher un mode "saisie privee" ou "champ limite".
 - Si le micro est refuse ou revoke, la dictee ne demarre pas, aucun enregistrement fantome ne tourne, et l'utilisateur voit une action vers les permissions.
 - Si la dictee echoue, timeout, retourne vide ou est annulee, aucun item transcription/clipboard vide n'est cree; le texte partiel reste localement visible seulement si l'utilisateur choisit de le conserver.
 - Si le backend de sync est indisponible, les items eligibles restent dans un store/queue local borne et visible; les retries sont bornes; aucune mutation partielle ne peut creer de donnees cross-user.
 - Si la session auth change ou logout arrive pendant que l'IME est ouvert, la sync cloud se coupe immediatement, la queue de l'ancien compte n'est pas exposee au nouveau compte, et le clavier continue en mode local.
-- Si play/pause n'a aucun media consumer, VoiceFlowz affiche un feedback bref "Aucun media actif" et ne demande pas de permission invasive.
+- Si play/pause n'a aucun media consumer, WinFlowzApp affiche un feedback bref "Aucun media actif" et ne demande pas de permission invasive.
 - Si les permissions notification listener/media session enrichie sont absentes, seul le play/pause generique par media key est disponible; les metadonnees media restent masquees.
 - Si le texte depasse les limites, il est tronque uniquement apres confirmation utilisateur ou rejete avec un message recuperable; aucun secret, audio brut, texte brut sensible ou provider payload n'est loggue dans `client_events`.
 
 # Problem
 
-VoiceFlowz a deja une base Flutter + Supabase et un debut de pont Android overlay, mais le vrai point d'entree systeme souhaite pour Android est le clavier. L'overlay reste utile, mais il depend de permissions fragiles et d'un modele hors-IME. Un IME donne une surface plus naturelle pour dicter, inserer, reutiliser des snippets, gerer un clipboard VoiceFlowz et controler le media en cours pendant que l'utilisateur ecrit dans n'importe quelle app. Depuis le 2026-05-08, le clipboard doit rester backend-agnostic: l'IME emet des actions vers `ClipboardHistoryApi`/`ClipboardHistoryStore`, et Supabase n'est qu'un adaptateur de sync possible.
+WinFlowzApp a deja une base Flutter + Supabase et un debut de pont Android overlay, mais le vrai point d'entree systeme souhaite pour Android est le clavier. L'overlay reste utile, mais il depend de permissions fragiles et d'un modele hors-IME. Un IME donne une surface plus naturelle pour dicter, inserer, reutiliser des snippets, gerer un clipboard WinFlowzApp et controler le media en cours pendant que l'utilisateur ecrit dans n'importe quelle app. Depuis le 2026-05-08, le clipboard doit rester backend-agnostic: l'IME emet des actions vers `ClipboardHistoryApi`/`ClipboardHistoryStore`, et Supabase n'est qu'un adaptateur de sync possible.
 
 # Solution
 
-Ajouter un IME Android natif Kotlin `VoiceFlowzInputMethodService` avec une UI clavier native et une barre d'actions VoiceFlowz. Le clavier s'integre avec les fondations Flutter via des ponts limites: Settings et historique restent dans Flutter, les operations clavier temps reel restent natives, et les donnees clipboard synchronisables passent par l'API/store backend-agnostic avant tout adaptateur provider. Les capacites sensibles sont progressives: saisie de base sans compte, dictee avec micro, clipboard sync opt-in avec auth/backend configure, play/pause media sans metadata par defaut, metadata/media sessions uniquement apres permission utilisateur explicite.
+Ajouter un IME Android natif Kotlin `WinFlowzAppInputMethodService` avec une UI clavier native et une barre d'actions WinFlowzApp. Le clavier s'integre avec les fondations Flutter via des ponts limites: Settings et historique restent dans Flutter, les operations clavier temps reel restent natives, et les donnees clipboard synchronisables passent par l'API/store backend-agnostic avant tout adaptateur provider. Les capacites sensibles sont progressives: saisie de base sans compte, dictee avec micro, clipboard sync opt-in avec auth/backend configure, play/pause media sans metadata par defaut, metadata/media sessions uniquement apres permission utilisateur explicite.
 
 # Scope In
 
 - Android uniquement pour l'IME initial.
 - Declaration systeme IME: service, permission `android.permission.BIND_INPUT_METHOD`, intent `android.view.InputMethod`, metadata XML input method, label et settings activity.
-- UI clavier native Kotlin pour layout texte minimal, backspace, enter, space, shift/case, punctuation de base, action row VoiceFlowz.
-- Barre d'actions: dictee, clipboard VoiceFlowz, snippets, settings, play/pause media.
+- UI clavier native Kotlin pour layout texte minimal, backspace, enter, space, shift/case, punctuation de base, action row WinFlowzApp.
+- Barre d'actions: dictee, clipboard WinFlowzApp, snippets, settings, play/pause media.
 - Dictee depuis le clavier avec etats idle/recording/processing/result/error/canceled.
 - Insertion directe via `InputConnection` dans le champ actif quand autorise.
 - Detection et mode degrade pour champs sensibles ou limites a partir de `EditorInfo.inputType`, `imeOptions`, `privateImeOptions` quand disponibles, et contraintes `InputConnection`.
-- Clipboard VoiceFlowz: copier la selection via action explicite, coller depuis clipboard systeme via action explicite, inserer un item VoiceFlowz, afficher recents, pin/delete, dedupe, queue/store local, sync backend opt-in via `ClipboardHistoryApi`/`ClipboardHistoryStore`.
+- Clipboard WinFlowzApp: copier la selection via action explicite, coller depuis clipboard systeme via action explicite, inserer un item WinFlowzApp, afficher recents, pin/delete, dedupe, queue/store local, sync backend opt-in via `ClipboardHistoryApi`/`ClipboardHistoryStore`.
 - Adapter/schema evolution pour distinguer origines clavier, hashes de dedupe, device id, sync state et preferences clavier; Supabase reste l'adaptateur cloud actuel.
 - Settings Flutter pour activer/configurer: clavier, dictee, clipboard sync clavier, media controls, privacy mode, queue sync.
 - Controle media initial: play/pause generique via media key event; feedback utilisateur.
@@ -147,7 +147,7 @@ Ajouter un IME Android natif Kotlin `VoiceFlowzInputMethodService` avec une UI c
 - iOS custom keyboard dans cette phase.
 - Desktop/web keyboard equivalent.
 - Remplacement complet de Gboard avec prediction avancee, autocorrect multilingue, glide typing, emoji/sticker complet, themes publics ou marketplace.
-- Capture globale de tout le presse-papiers Android en arriere-plan. Le scope initial capture uniquement les actions explicites realisees via le clavier VoiceFlowz ou les elements synchronises depuis le compte.
+- Capture globale de tout le presse-papiers Android en arriere-plan. Le scope initial capture uniquement les actions explicites realisees via le clavier WinFlowzApp ou les elements synchronises depuis le compte.
 - Lecture de metadata media, pochette, file d'attente ou controle par app sans permission notification listener/media session explicite.
 - Synchronisation de secrets BYOK, audio brut, contenu de champs password/OTP/sensibles.
 - Accessibilite comme mecanisme principal d'injection pour le clavier. L'IME utilise `InputConnection`; accessibility reste reservee a l'overlay.
@@ -170,7 +170,7 @@ Ajouter un IME Android natif Kotlin `VoiceFlowzInputMethodService` avec une UI c
 # Dependencies
 
 - Flutter 3.x / Dart 3.x, `flutter_riverpod`, `go_router`, `supabase_flutter`, `flutter_secure_storage`, `permission_handler`, `record`, `speech_to_text`.
-- Android Kotlin native in `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/`.
+- Android Kotlin native in `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/`.
 - Android official docs checked:
   - `InputMethodService` / custom IME: official docs state an Android IME is an app service extending `InputMethodService`, declared in manifest with `BIND_INPUT_METHOD`, `android.view.InputMethod` intent, and metadata XML.
   - Clipboard: official docs define `ClipboardManager`, Android 13 clipboard UI behavior, and sensitive content flags for `ClipDescription`.
@@ -185,7 +185,7 @@ Ajouter un IME Android natif Kotlin `VoiceFlowzInputMethodService` avec une UI c
 
 - User text ownership is per backend auth user and per local account/session boundary.
 - IME operations are explicit user actions; no background recorder, no background clipboard siphon.
-- Sensitive fields disable VoiceFlowz learning/sync/capture features.
+- Sensitive fields disable WinFlowzApp learning/sync/capture features.
 - Clipboard fallback remains available for voice output, but sync is independent and opt-in.
 - Logout clears account-scoped sync state from active keyboard memory.
 - Dedupe never crosses users.
@@ -199,7 +199,7 @@ Ajouter un IME Android natif Kotlin `VoiceFlowzInputMethodService` avec une UI c
 
 - `android/app/src/main/AndroidManifest.xml`: gains IME service declaration and possibly notification listener declaration if rich media controls are enabled in a later task.
 - `android/app/src/main/res/xml/`: gains input method metadata XML.
-- `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/`: gains native IME services/controllers and may refactor shared overlay recording state to prevent concurrent sessions.
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/`: gains native IME services/controllers and may refactor shared overlay recording state to prevent concurrent sessions.
 - `lib/core/platform/`: gains Android keyboard bridge/capabilities parallel to overlay bridge.
 - `lib/features/settings/`: gains keyboard settings/status and permission recovery flows.
 - `lib/features/clipboard/`: exposes source-aware keyboard clipboard history and sync state through `ClipboardHistoryApi`/`ClipboardHistoryStore`.
@@ -227,7 +227,7 @@ Update or create:
 
 # Edge Cases
 
-- VoiceFlowz IME selected before user ever opens the app.
+- WinFlowzApp IME selected before user ever opens the app.
 - User opens IME while logged out or after session expiry.
 - Device offline during dictation result save.
 - User switches to another keyboard mid-recording.
@@ -237,7 +237,7 @@ Update or create:
 - Host app denies `InputConnection` reads or selected text access.
 - Very long selected text or paste payload.
 - Clipboard system returns null, stale item, non-text content or sensitive flag.
-- Android 13+ clipboard preview reveals content unless sensitive flag is set for VoiceFlowz-origin sensitive copies.
+- Android 13+ clipboard preview reveals content unless sensitive flag is set for WinFlowzApp-origin sensitive copies.
 - Multiple devices sync same clipboard content in different order.
 - User A logs out and User B logs in on same device before local queue syncs.
 - Supabase realtime delivers stale update after local delete.
@@ -259,14 +259,14 @@ Update or create:
 
 - [x] Tache 2 : Ajouter la declaration Android IME
   - Fichier : `android/app/src/main/AndroidManifest.xml`
-  - Action : Declarer `VoiceFlowzInputMethodService` avec `android.permission.BIND_INPUT_METHOD`, intent `android.view.InputMethod`, exported true selon contrat Android IME, et metadata `@xml/voiceflowz_input_method`.
-  - User story link : rendre VoiceFlowz selectable comme clavier Android.
+  - Action : Declarer `WinFlowzAppInputMethodService` avec `android.permission.BIND_INPUT_METHOD`, intent `android.view.InputMethod`, exported true selon contrat Android IME, et metadata `@xml/winflowz_app_input_method`.
+  - User story link : rendre WinFlowzApp selectable comme clavier Android.
   - Depends on : Tache 1.
-  - Validate with : build Android et verification que VoiceFlowz apparait dans les reglages clavier.
+  - Validate with : build Android et verification que WinFlowzApp apparait dans les reglages clavier.
   - Notes : ne pas casser les declarations overlay/accessibility existantes.
 
 - [x] Tache 3 : Ajouter metadata et libelles IME
-  - Fichier : `android/app/src/main/res/xml/voiceflowz_input_method.xml`, `android/app/src/main/res/values/strings.xml`
+  - Fichier : `android/app/src/main/res/xml/winflowz_app_input_method.xml`, `android/app/src/main/res/values/strings.xml`
   - Action : Definir le label, settings activity, subtype(s) initiales et description utilisateur.
   - User story link : permettre a Android d'exposer proprement le clavier.
   - Depends on : Tache 2.
@@ -274,7 +274,7 @@ Update or create:
   - Notes : commencer avec une subtype generique multilangue plutot que promettre des layouts complets.
 
 - [x] Tache 4 : Creer le service IME natif
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzInputMethodService.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`
   - Action : Etendre `InputMethodService`, gerer lifecycle, `onCreateInputView`, `onStartInputView`, `onFinishInputView`, et exposer un `InputConnection` controller.
   - User story link : afficher le clavier dans les apps.
   - Depends on : Tache 3.
@@ -282,15 +282,15 @@ Update or create:
   - Notes : ne pas demarrer Flutter depuis l'IME pour le rendu initial.
 
 - [x] Tache 5 : Implementer UI clavier minimale native
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/VoiceFlowzKeyboardView.kt`
-  - Action : Construire layout QWERTY minimal, espace, entree, backspace, shift/case, ponctuation de base, action row VoiceFlowz.
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`
+  - Action : Construire layout QWERTY minimal, espace, entree, backspace, shift/case, ponctuation de base, action row WinFlowzApp.
   - User story link : permettre la saisie de base sans dependance IA.
   - Depends on : Tache 4.
   - Validate with : saisie dans plusieurs champs, latence acceptable, touches accessibles.
   - Notes : garder les dimensions stables et eviter une UI marketing.
 
 - [x] Tache 6 : Ajouter policy de champ sensible
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/KeyboardSecurityPolicy.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardSecurityPolicy.kt`
   - Action : Detecter password/visible password/web password/number password/OTP-like/noPersonalizedLearning/private flags quand disponibles et desactiver capture, sync, suggestions et dictee persistante.
   - User story link : proteger l'utilisateur dans les champs sensibles.
   - Depends on : Tache 4.
@@ -298,7 +298,7 @@ Update or create:
   - Notes : preferer faux negatif securise: si doute fort, mode prive.
 
 - [x] Tache 7 : Centraliser l'etat clavier local
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/KeyboardStateStore.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
   - Action : Stocker preferences locales non sensibles: enable voice row, clipboard sync desired, media controls enabled, pending queue counters, last error.
   - User story link : garder le clavier coherent entre sessions.
   - Depends on : Tache 4.
@@ -306,8 +306,8 @@ Update or create:
   - Notes : ne pas stocker texte sensible dans SharedPreferences non chiffrees.
 
 - [x] Tache 8 : Creer pont Flutter pour statut IME
-  - Fichier : `lib/core/platform/android_keyboard_bridge.dart`, `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt`
-  - Action : Ajouter un `MethodChannel` `voiceflowz/keyboard` pour lire statut IME, ouvrir settings input method, lire/ecrire preferences clavier.
+  - Fichier : `lib/core/platform/android_keyboard_bridge.dart`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt`
+  - Action : Ajouter un `MethodChannel` `winflowz_app/keyboard` pour lire statut IME, ouvrir settings input method, lire/ecrire preferences clavier.
   - User story link : permettre a Settings d'accompagner l'activation.
   - Depends on : Tache 7.
   - Validate with : tests Dart de parsing + test manuel Settings.
@@ -322,7 +322,7 @@ Update or create:
   - Notes : ne pas afficher ces controles comme disponibles hors Android.
 
 - [x] Tache 10 : Ajouter controle media play/pause de base
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/KeyboardMediaController.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardMediaController.kt`
   - Action : Envoyer `KEYCODE_MEDIA_PLAY_PAUSE` press/release via `AudioManager.dispatchMediaKeyEvent` depuis le bouton clavier.
   - User story link : permettre play/pause depuis le clavier.
   - Depends on : Tache 5.
@@ -330,7 +330,7 @@ Update or create:
   - Notes : ne pas lire metadata media dans cette tache.
 
 - [ ] Tache 11 : Preparer media controls enrichis optionnels
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/media/VoiceFlowzNotificationListenerService.kt`, `android/app/src/main/AndroidManifest.xml`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/media/WinFlowzAppNotificationListenerService.kt`, `android/app/src/main/AndroidManifest.xml`
   - Action : Ajouter un service notification listener desactive par defaut pour future lecture active sessions, avec Settings recovery.
   - User story link : ouvrir la porte a boutons media plus riches sans bloquer play/pause.
   - Depends on : Tache 10.
@@ -386,7 +386,7 @@ Update or create:
   - Notes : choisir storage avant implementation; ne pas stocker champs sensibles.
 
 - [ ] Tache 18 : Implementer panneau clipboard clavier
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/KeyboardClipboardController.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`
   - Action : Lire items locaux recents, inserer dans champ, copier selection explicite, coller system clipboard sur action explicite, remonter events syncables.
   - User story link : avoir un registre de ce qui est copie/colle via le clavier.
   - Depends on : Tache 17.
@@ -394,7 +394,7 @@ Update or create:
   - Notes : pas de surveillance globale en background.
 
 - [ ] Tache 19 : Integrer snippets dans le clavier
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/KeyboardSnippetController.kt`, `lib/data/supabase/snippet_repository.dart`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardSnippetController.kt`, `lib/data/supabase/snippet_repository.dart`
   - Action : Exposer snippets recents/favoris dans action row et insertion directe.
   - User story link : reutiliser du texte structure sans quitter l'app.
   - Depends on : Tache 18.
@@ -402,7 +402,7 @@ Update or create:
   - Notes : les snippets sont user-scoped.
 
 - [ ] Tache 20 : Brancher dictee clavier
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/ime/KeyboardVoiceController.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardVoiceController.kt`
   - Action : Demarrer/stop/cancel dictee depuis IME, partager un verrou avec overlay, produire resultat inserable, transcription et clipboard event eligible.
   - User story link : faire du clavier la porte d'entree principale de la dictee.
   - Depends on : Tache 6, Tache 13, Tache 17.
@@ -410,7 +410,7 @@ Update or create:
   - Notes : reutiliser le pipeline existant quand possible; sinon isoler un service Android natif explicite.
 
 - [ ] Tache 21 : Verrouiller concurrence IME/overlay
-  - Fichier : `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/RecordingCoordinator.kt`, `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/OverlayForegroundService.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/RecordingCoordinator.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayForegroundService.kt`
   - Action : Garantir une seule session recording active entre overlay, app et clavier.
   - User story link : eviter doublons et etats contradictoires.
   - Depends on : Tache 20.
@@ -467,8 +467,8 @@ Update or create:
 
 # Acceptance Criteria
 
-- [ ] CA 1 : Given l'app est installee sur Android, when l'utilisateur ouvre les reglages clavier Android, then VoiceFlowz apparait comme clavier activable.
-- [ ] CA 2 : Given VoiceFlowz est le clavier actif, when un champ texte standard est focalise, then le clavier s'affiche sans ouvrir l'app principale.
+- [ ] CA 1 : Given l'app est installee sur Android, when l'utilisateur ouvre les reglages clavier Android, then WinFlowzApp apparait comme clavier activable.
+- [ ] CA 2 : Given WinFlowzApp est le clavier actif, when un champ texte standard est focalise, then le clavier s'affiche sans ouvrir l'app principale.
 - [ ] CA 3 : Given le clavier est affiche, when l'utilisateur tape lettres/espace/backspace/entree, then le champ actif recoit les modifications attendues.
 - [ ] CA 4 : Given un champ password est focalise, when le clavier s'affiche, then dictee persistante, clipboard sync, snippets et apprentissage sont desactives ou en mode prive.
 - [ ] CA 5 : Given le micro est refuse, when l'utilisateur appuie sur dictee, then aucun enregistrement ne demarre et une action de recuperation est affichee.
@@ -489,7 +489,7 @@ Update or create:
 - [ ] CA 20 : Given notification listener est autorise dans une phase enrichie, when Settings affiche les sessions media, then l'utilisateur peut desactiver cette capacite et les metadata cessent d'etre lues.
 - [ ] CA 21 : Given l'utilisateur logout pendant IME ouvert, when il continue a taper, then cloud sync se desactive et l'IME reste en local sans crash.
 - [ ] CA 22 : Given Android tue le process app, when l'utilisateur rouvre un champ texte, then le clavier redemarre dans un etat coherent sans session recording fantome.
-- [ ] CA 23 : Given une app hote refuse `InputConnection` selected text, when l'utilisateur tente copy selection, then VoiceFlowz affiche une erreur recuperable.
+- [ ] CA 23 : Given une app hote refuse `InputConnection` selected text, when l'utilisateur tente copy selection, then WinFlowzApp affiche une erreur recuperable.
 - [ ] CA 24 : Given l'utilisateur est sur iOS/web/desktop, when il ouvre Settings, then aucune activation IME Android n'est promise.
 - [ ] CA 25 : Given les tests RLS sont executes, when User A tente de lire/modifier les rows clavier User B, then l'acces est refuse.
 - [ ] CA 26 : Given `client_events` recoit metadata avec `token`, `raw_text`, `audio` ou `transcript`, when l'insert est tente, then la contrainte SQL refuse la row.
@@ -529,8 +529,8 @@ Update or create:
   - `docs/SPEC_FLUTTER_SUPABASE_MIGRATION.md`
   - `docs/OVERLAY_ANDROID.md`
   - `android/app/src/main/AndroidManifest.xml`
-  - `android/app/src/main/kotlin/com/voiceflowz/voiceflowz/MainActivity.kt`
-  - `supabase/migrations/20260427084000_init_voiceflowz.sql`
+  - `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt`
+  - `supabase/migrations/20260427084000_init_winflowz_app.sql`
 - Implementation order:
   1. Native IME declaration + minimal input UI.
   2. Safety policy for sensitive fields.
@@ -543,7 +543,7 @@ Update or create:
 - Prefer native Kotlin for IME UI and lifecycle. Use Flutter for app Settings/history and backend-agnostic clipboard API/store orchestration.
 - Do not add broad permissions before a feature needs them. Base play/pause should not require notification listener.
 - Stop conditions:
-  - If VoiceFlowz does not appear as an input method after manifest/XML tasks, stop and fix platform registration before UI work.
+  - If WinFlowzApp does not appear as an input method after manifest/XML tasks, stop and fix platform registration before UI work.
   - If sensitive field detection is unreliable, ship a stricter privacy mode rather than broad capture.
   - If IME cannot safely share the existing Flutter voice pipeline, create a separate spec/spike for native Android dictation service before implementing advanced transcription.
   - If sync queue storage cannot guarantee account separation, do not enable cloud sync from IME.
@@ -560,12 +560,12 @@ Update or create:
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-04-29 16:48:07 UTC | sf-spec | GPT-5 Codex | Created Android IME VoiceFlowz Keyboard chantier spec from user request and repo investigation. | Draft saved in `specs/android-ime-voiceflowz-keyboard.md`. | `/sf-ready Android IME VoiceFlowz Keyboard` |
-| 2026-04-30 09:12:44 UTC | sf-ready | GPT-5 Codex | Checked readiness gate for Android IME spec, including structure, metadata, user story alignment, adversarial review, security review, and documentation freshness. | Not ready: core IME dictation/media scope decisions and secure local queue/hash contract need to be fixed in spec. | `/sf-spec Android IME VoiceFlowz Keyboard` |
-| 2026-05-04 00:00:00 UTC | sf-ready | GPT-5 Codex | Rechecked readiness inside sf-build after confirming the spec now contains the missing queue, hash/dedupe, media scope, privacy and implementation-order contracts. | Ready for staged implementation. | `/sf-start Android IME VoiceFlowz Keyboard` |
-| 2026-05-04 21:15:11 UTC | sf-start | GPT-5 Codex | Implemented the native Android IME foundation, Flutter keyboard bridge/Settings card, keyboard schema metadata, source-aware repository hashing, docs and tests. | Partial: local Dart/web/docs checks pass; Android APK proof is blocked by ARM64 AAPT2 tooling and Supabase RLS smoke needs a running/linked database. | `/sf-test Android IME VoiceFlowz Keyboard on Android device and linked Supabase` |
-| 2026-05-04 21:15:11 UTC | sf-verify | GPT-5 Codex | Verified the implemented foundation against the spec with format, analyze, Flutter tests, web build, metadata lint, diff check, Android debug build attempt and Supabase lint attempt. | Partial: Android device/IME visibility, native APK build on x64, and SQL/RLS execution remain unproven. | `/sf-test Android IME VoiceFlowz Keyboard on Android device and linked Supabase` |
-| 2026-05-04 21:15:11 UTC | sf-build | GPT-5 Codex | Orchestrated readiness recovery, governance bootstrap, implementation, docs alignment and verification for the Android IME chantier. | Partial: stopped before sf-end/sf-ship because required Android/Supabase/manual proof is incomplete. | `/sf-test Android IME VoiceFlowz Keyboard on Android device and linked Supabase` |
+| 2026-04-29 16:48:07 UTC | sf-spec | GPT-5 Codex | Created Android IME WinFlowzApp Keyboard chantier spec from user request and repo investigation. | Draft saved in `specs/android-ime-winflowz_app-keyboard.md`. | `/sf-ready Android IME WinFlowzApp Keyboard` |
+| 2026-04-30 09:12:44 UTC | sf-ready | GPT-5 Codex | Checked readiness gate for Android IME spec, including structure, metadata, user story alignment, adversarial review, security review, and documentation freshness. | Not ready: core IME dictation/media scope decisions and secure local queue/hash contract need to be fixed in spec. | `/sf-spec Android IME WinFlowzApp Keyboard` |
+| 2026-05-04 00:00:00 UTC | sf-ready | GPT-5 Codex | Rechecked readiness inside sf-build after confirming the spec now contains the missing queue, hash/dedupe, media scope, privacy and implementation-order contracts. | Ready for staged implementation. | `/sf-start Android IME WinFlowzApp Keyboard` |
+| 2026-05-04 21:15:11 UTC | sf-start | GPT-5 Codex | Implemented the native Android IME foundation, Flutter keyboard bridge/Settings card, keyboard schema metadata, source-aware repository hashing, docs and tests. | Partial: local Dart/web/docs checks pass; Android APK proof is blocked by ARM64 AAPT2 tooling and Supabase RLS smoke needs a running/linked database. | `/sf-test Android IME WinFlowzApp Keyboard on Android device and linked Supabase` |
+| 2026-05-04 21:15:11 UTC | sf-verify | GPT-5 Codex | Verified the implemented foundation against the spec with format, analyze, Flutter tests, web build, metadata lint, diff check, Android debug build attempt and Supabase lint attempt. | Partial: Android device/IME visibility, native APK build on x64, and SQL/RLS execution remain unproven. | `/sf-test Android IME WinFlowzApp Keyboard on Android device and linked Supabase` |
+| 2026-05-04 21:15:11 UTC | sf-build | GPT-5 Codex | Orchestrated readiness recovery, governance bootstrap, implementation, docs alignment and verification for the Android IME chantier. | Partial: stopped before sf-end/sf-ship because required Android/Supabase/manual proof is incomplete. | `/sf-test Android IME WinFlowzApp Keyboard on Android device and linked Supabase` |
 | 2026-05-08 17:57:25 UTC | sf-build | GPT-5 Codex | Aligned clipboard sync wording with the backend-agnostic clipboard API chantier. | partial | `/sf-start specs/clipboard-backend-agnostic-api.md task 6` |
 
 # Current Chantier Flow

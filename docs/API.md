@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "VoiceFlowz"
+project: "WinFlowzApp"
 created: "2026-04-26"
 updated: "2026-05-09"
 status: "legacy"
@@ -30,7 +30,7 @@ evidence:
 next_step: "$sf-docs api"
 ---
 
-# API — VoiceFlowz
+# API — WinFlowzApp
 
 > Legacy reference: this document still contains the previous Supabase contract.
 > The active backend target is now backend-agnostic stores with Firebase as the
