@@ -36,6 +36,7 @@ class AppDiagnostics {
   static const _maxEvents = 80;
   static const _firstFrameAssertionNeedle = 'debugFrameWasSentToEngine';
   static final List<AppDiagnosticEvent> _events = <AppDiagnosticEvent>[];
+  static void Function(String category, String message)? breadcrumbRecorder;
 
   static List<AppDiagnosticEvent> get recentEvents =>
       List<AppDiagnosticEvent>.unmodifiable(_events);
@@ -59,6 +60,7 @@ class AppDiagnostics {
     if (_events.length > _maxEvents) {
       _events.removeRange(0, _events.length - _maxEvents);
     }
+    breadcrumbRecorder?.call(category, normalizedMessage);
   }
 
   static bool recordFlutterError(FlutterErrorDetails details) {

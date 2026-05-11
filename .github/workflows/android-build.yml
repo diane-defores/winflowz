@@ -49,6 +49,8 @@ jobs:
           FIREBASE_DEV_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_DEV_MESSAGING_SENDER_ID }}
           FIREBASE_DEV_AUTH_DOMAIN: ${{ secrets.FIREBASE_DEV_AUTH_DOMAIN }}
           FIREBASE_DEV_STORAGE_BUCKET: ${{ secrets.FIREBASE_DEV_STORAGE_BUCKET }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT }}
         run: |
           if [ -z "$FIREBASE_PROJECT_ID" ] || [ -z "$FIREBASE_DEV_API_KEY" ] || [ -z "$FIREBASE_DEV_APP_ID" ] || [ -z "$FIREBASE_DEV_MESSAGING_SENDER_ID" ]; then
             echo "Firebase client secrets are missing; building debug APK with local fallback."
@@ -59,6 +61,13 @@ jobs:
             FIREBASE_DEV_AUTH_DOMAIN=""
             FIREBASE_DEV_STORAGE_BUCKET=""
           fi
+          if [ -z "$SENTRY_DSN" ]; then
+            echo "Sentry DSN is missing; crash reporting stays disabled."
+            SENTRY_DSN=""
+          fi
+          if [ -z "$SENTRY_ENVIRONMENT" ]; then
+            SENTRY_ENVIRONMENT="debug"
+          fi
 
           flutter build apk --debug \
             --dart-define=FIREBASE_PROJECT_ID="$FIREBASE_PROJECT_ID" \
@@ -67,6 +76,8 @@ jobs:
             --dart-define=FIREBASE_DEV_MESSAGING_SENDER_ID="$FIREBASE_DEV_MESSAGING_SENDER_ID" \
             --dart-define=FIREBASE_DEV_AUTH_DOMAIN="$FIREBASE_DEV_AUTH_DOMAIN" \
             --dart-define=FIREBASE_DEV_STORAGE_BUCKET="$FIREBASE_DEV_STORAGE_BUCKET" \
+            --dart-define=SENTRY_DSN="$SENTRY_DSN" \
+            --dart-define=SENTRY_ENVIRONMENT="$SENTRY_ENVIRONMENT" \
             --dart-define=VOICEFLOWZ_BUILD_SHA="${GITHUB_SHA}" \
             --dart-define=VOICEFLOWZ_BUILD_RUN_ID="${GITHUB_RUN_ID}" \
             --dart-define=VOICEFLOWZ_BUILD_REF="${GITHUB_REF_NAME}"

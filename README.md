@@ -66,6 +66,22 @@ not crash.
 
 Never use backend admin/service credentials in Flutter/web/desktop/mobile clients.
 
+## Sentry Runtime Defines
+
+Sentry is optional. If `SENTRY_DSN` is missing, VoiceFlowz does not initialize
+Sentry and keeps diagnostics local-only.
+
+Use Dart defines for builds that should report Flutter/native crashes:
+
+```bash
+flutter run \
+  --dart-define=SENTRY_DSN=https://examplePublicKey@o0.ingest.sentry.io/0 \
+  --dart-define=SENTRY_ENVIRONMENT=debug
+```
+
+VoiceFlowz configures Sentry with `sendDefaultPii=false`, screenshots disabled,
+view hierarchy disabled, and build tags from `VOICEFLOWZ_BUILD_*` defines.
+
 ## GitHub Actions / Blacksmith APK
 
 The Android CI workflow runs on Blacksmith and uses GitHub Secrets for build-time configuration.
@@ -82,6 +98,8 @@ Prepare these Firebase names now for the MVP adapter (do not introduce Doppler):
 - `FIREBASE_DEV_MESSAGING_SENDER_ID`
 - `FIREBASE_DEV_AUTH_DOMAIN`
 - `FIREBASE_DEV_STORAGE_BUCKET`
+- `SENTRY_DSN` (optional crash reporting)
+- `SENTRY_ENVIRONMENT` (optional, for example `debug`, `staging`, `production`)
 
 Use `docs/technical/firebase-cli-foundation.md` for exact Firebase CLI commands:
 

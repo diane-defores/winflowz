@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../../app/voiceflowz_app.dart';
 import '../../../core/bootstrap/app_build_info.dart';
 import '../../../core/bootstrap/firebase_bootstrap.dart';
+import '../../../core/bootstrap/sentry_bootstrap.dart';
 import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
@@ -407,7 +408,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : 'local_mode';
     final lines = <String>[
       'VoiceFlowz backend diagnostic',
-      'diagnostic_version: 4',
+      'diagnostic_version: 5',
       'generated_at_utc: ${DateTime.now().toUtc().toIso8601String()}',
       'secret_values_redacted: true',
       'provider_contract: backend-agnostic',
@@ -417,6 +418,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       'firebase_initialized: ${FirebaseBootstrap.isInitialized}',
       'firebase_configured: ${FirebaseBootstrap.isConfigured}',
       'firebase_detail: ${_sanitizeDiagnostic(FirebaseBootstrap.initError ?? 'configured_or_not_required')}',
+      'sentry_configured: ${SentryBootstrap.isConfigured}',
+      'sentry_initialized: ${SentryBootstrap.isInitialized}',
+      'sentry_environment: ${SentryBootstrap.environment}',
+      'sentry_release: ${SentryBootstrap.release ?? 'auto_or_unset'}',
+      'sentry_dist: ${SentryBootstrap.dist ?? 'unset'}',
+      'sentry_detail: ${_sanitizeDiagnostic(SentryBootstrap.initError ?? 'configured_or_not_required')}',
       'auth_store: ${ref.read(authSessionStoreProvider).runtimeType}',
       'auth_session: ${_authDiagnostic(authAsync)}',
       'settings_store: ${ref.read(settingsStoreProvider).runtimeType}',
