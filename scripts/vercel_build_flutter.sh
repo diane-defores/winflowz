@@ -16,6 +16,8 @@ if ! command -v flutter >/dev/null 2>&1; then
   export PATH="${FLUTTER_HOME}/bin:${PATH}"
 fi
 
+git config --global --add safe.directory "${FLUTTER_HOME}" || true
+git config --global --add safe.directory "$(pwd)" || true
 flutter --disable-analytics
 flutter --version
 flutter config --enable-web
