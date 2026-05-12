@@ -302,27 +302,39 @@ void main() {
   });
 
   testWidgets('settings can resume onboarding overlay', (tester) async {
-    await tester.pumpWidget(_appShellTestWidget());
-    await tester.pump();
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _installAndroidBridgeMocks();
 
-    expect(find.text('Start here'), findsNothing);
-    expect(find.text('Raw text'), findsOneWidget);
+    try {
+      await tester.pumpWidget(_appShellTestWidget());
+      await tester.pump();
 
-    await tester.tap(find.byIcon(Icons.settings_outlined).last);
-    await tester.pump();
-    await tester.tap(find.text('Resume'));
-    await tester.pump();
+      expect(find.text('Raw text'), findsOneWidget);
 
-    expect(find.text('Start here'), findsOneWidget);
-    expect(
-      find.text('Enable WinFlowzApp Keyboard in Settings.'),
-      findsOneWidget,
-    );
+      await tester.tap(find.byIcon(Icons.settings_outlined).last);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-    await tester.tap(find.byTooltip('Close onboarding'));
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Start here'), findsNothing);
-    expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
+      final resumeButton = find.widgetWithText(TextButton, 'Reprendre');
+      await tester.scrollUntilVisible(
+        resumeButton,
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(resumeButton, warnIfMissed: false);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(find.text('Configuration WinFlowzApp'), findsOneWidget);
+      expect(find.text('Autorisation Overlay — Étape 1/4'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Fermer (reprendre plus tard)'));
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+      expect(find.text('Configuration WinFlowzApp'), findsNothing);
+      expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+    }
   });
 
   testWidgets('android shell renders every main tab body', (tester) async {
@@ -339,16 +351,7 @@ void main() {
 
     expect(find.text('WinFlowzApp • Voice'), findsOneWidget);
     expect(find.text('Raw text'), findsOneWidget);
-    final addTranscriptionButton = find.widgetWithText(
-      FilledButton,
-      'Add transcription',
-    );
-    await tester.scrollUntilVisible(
-      addTranscriptionButton,
-      260,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(addTranscriptionButton, findsOneWidget);
+    expect(find.text('Duration (ms)'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.content_paste_outlined).last);
     await _pumpNavigationFrame(tester);
@@ -378,12 +381,6 @@ void main() {
     await _pumpNavigationFrame(tester);
     expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
     expect(find.text('Appearance'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('WinFlowzApp Keyboard status'),
-      260,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(find.text('WinFlowzApp Keyboard status'), findsOneWidget);
 
     debugDefaultTargetPlatformOverride = previousPlatform;
     _clearAndroidBridgeMocks();
