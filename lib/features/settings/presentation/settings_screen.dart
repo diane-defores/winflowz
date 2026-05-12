@@ -116,10 +116,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(() => _message = 'Impossible de charger la progression onboarding: $error');
     } finally {
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() => _onboardingLoading = false);
       }
-      setState(() => _onboardingLoading = false);
     }
   }
 
@@ -1286,7 +1285,7 @@ class _OnboardingSettingsTile extends StatelessWidget {
                 children: [
                   Text(
                     readiness.shouldShowOnboarding
-                        ? 'Étapes complétées: ${mandatoryDone}/${mandatory.length} obligatoires, ${recommendedDone}/${recommended.length} recommandées'
+                        ? 'Étapes complétées: $mandatoryDone/${mandatory.length} obligatoires, $recommendedDone/${recommended.length} recommandées'
                         : 'Onboarding terminé',
                   ),
                   if (recommended.isNotEmpty)

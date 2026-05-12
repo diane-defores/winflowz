@@ -48,8 +48,6 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   OnboardingReadiness? _onboardingReadiness;
   String? _onboardingMessage;
   UserSettingsSnapshot? _onboardingSettings;
-  AndroidOverlayStatus? _onboardingOverlayStatus;
-  AndroidKeyboardStatus? _onboardingKeyboardStatus;
 
   void _selectTab(int value) {
     if (value == _index) {
@@ -147,8 +145,6 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
           currentStep: 0,
           onboardingCompleted: false,
         );
-        _onboardingOverlayStatus = _unsupportedOverlayStatus;
-        _onboardingKeyboardStatus = AndroidKeyboardStatus.unsupported();
         _onboardingVisible = false;
         _onboardingDismissed = true;
       });
@@ -191,8 +187,6 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       setState(() {
         _onboardingReadiness = readiness;
         _onboardingSettings = nextSettings;
-        _onboardingOverlayStatus = overlayStatus;
-        _onboardingKeyboardStatus = keyboardStatus;
         _onboardingBusy = false;
         if (readiness.shouldShowOnboarding && !_onboardingDismissed) {
           _onboardingVisible = true;
@@ -205,7 +199,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
 
       AppDiagnostics.record(
         'onboarding_refresh',
-        'current=${readiness.currentStep}/${readiness.steps.length};mandatory=${readiness.hasPendingMandatory};recommended=${readiness.hasPendingRecommended};visible=${_onboardingVisible}',
+        'current=$readiness.currentStep/${readiness.steps.length};mandatory=$readiness.hasPendingMandatory;recommended=$readiness.hasPendingRecommended;visible=$_onboardingVisible',
       );
     } catch (error) {
       if (!mounted) {
@@ -262,11 +256,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       }
       setState(() => _onboardingMessage = 'Action impossible: $error');
     } finally {
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() => _onboardingBusy = false);
+        await _refreshOnboardingState();
       }
-      setState(() => _onboardingBusy = false);
-      await _refreshOnboardingState();
     }
   }
 
@@ -298,11 +291,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         () => _onboardingMessage = 'Impossible d’ouvrir le sélecteur: $error',
       );
     } finally {
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() => _onboardingBusy = false);
+        await _refreshOnboardingState();
       }
-      setState(() => _onboardingBusy = false);
-      await _refreshOnboardingState();
     }
   }
 
