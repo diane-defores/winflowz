@@ -1,5 +1,5 @@
-import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
+import '../../keyboard/domain/keyboard_models.dart';
 
 enum OnboardingStepCategory {
   mandatory,

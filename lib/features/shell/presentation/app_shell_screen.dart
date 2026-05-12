@@ -8,6 +8,7 @@ import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../clipboard/presentation/clipboard_screen.dart';
 import '../../dictionary/presentation/dictionary_screen.dart';
+import '../../keyboard/domain/keyboard_models.dart';
 import '../../keyboard/presentation/keyboard_preview_screen.dart';
 import '../../settings/application/settings_store_provider.dart';
 import '../../settings/domain/onboarding_permission_contract.dart';
@@ -569,7 +570,34 @@ class _OnboardingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeStep = readiness?.activeStep;
+    final activeReadiness = readiness;
+    final activeStep = activeReadiness?.activeStep;
+    final Widget onboardingContent;
+    if (activeReadiness == null) {
+      onboardingContent = const Text('Onboarding indisponible sur ce terminal.');
+    } else if (!activeReadiness.platformSupported) {
+      onboardingContent = const Text('Onboarding indisponible sur ce terminal.');
+    } else if (activeReadiness.shouldShowCompletion) {
+      onboardingContent = _OnboardingCompletionContent(
+        readiness: activeReadiness,
+        isBusy: isBusy,
+        onOpenSettings: onOpenSettings,
+        onComplete: onComplete,
+      );
+    } else if (activeStep == null) {
+      onboardingContent = const Text('Onboarding en cours de vérification...');
+    } else {
+      onboardingContent = _OnboardingStepContent(
+        readiness: activeReadiness,
+        step: activeStep,
+        isBusy: isBusy,
+        onPrimaryAction: onPrimaryAction,
+        onSecondaryAction: onSecondaryAction,
+        onSkip: onSkip,
+        onRefresh: onRefresh,
+        onOpenSettings: onOpenSettings,
+      );
+    }
     return Positioned.fill(
       child: BlockSemantics(
         child: Semantics(
@@ -619,29 +647,7 @@ class _OnboardingOverlay extends StatelessWidget {
                             ],
                           ),
                           AppGaps.x2,
-                          if (readiness == null ||
-                              !readiness.platformSupported)
-                            const Text('Onboarding indisponible sur ce terminal.')
-                          else if (readiness.shouldShowCompletion)
-                            _OnboardingCompletionContent(
-                              readiness: readiness,
-                              isBusy: isBusy,
-                              onOpenSettings: onOpenSettings,
-                              onComplete: onComplete,
-                            )
-                          else if (activeStep == null)
-                            const Text('Onboarding en cours de vérification...')
-                          else
-                            _OnboardingStepContent(
-                              readiness: readiness,
-                              step: activeStep,
-                              isBusy: isBusy,
-                              onPrimaryAction: onPrimaryAction,
-                              onSecondaryAction: onSecondaryAction,
-                              onSkip: onSkip,
-                              onRefresh: onRefresh,
-                              onOpenSettings: onOpenSettings,
-                            ),
+                          onboardingContent,
                           if (message != null) ...[
                             AppGaps.x2,
                             Text(
