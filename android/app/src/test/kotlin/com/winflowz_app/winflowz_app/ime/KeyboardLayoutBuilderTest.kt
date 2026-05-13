@@ -37,6 +37,42 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
+    fun `places shift and backspace above bottom controls in letter mode`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.None,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val bottomLetterRow = snapshot.rows[3]
+        val controlRow = snapshot.rows.last()
+
+        assertEquals("Maj", bottomLetterRow.keys.first().label)
+        assertEquals(KeyboardKeyAction.Shift, bottomLetterRow.keys.first().action)
+        assertEquals("Del", bottomLetterRow.keys.last().label)
+        assertEquals(KeyboardKeyAction.Backspace, bottomLetterRow.keys.last().action)
+        assertEquals("Ctrl", controlRow.keys.first().label)
+        assertTrue(controlRow.keys.any { it.action == KeyboardKeyAction.Enter })
+        assertTrue(controlRow.keys.none { it.action == KeyboardKeyAction.Shift || it.action == KeyboardKeyAction.Backspace })
+    }
+
+    @Test
     fun `forces number mode on phone fields`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
@@ -97,7 +133,38 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
-    fun `navigation panel exposes forward deletion and selection cancel`() {
+    fun `number mode uses a centered three by three keypad with side special keys`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Numbers,
+                    panel = KeyboardPanelMode.None,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val numericRows = snapshot.rows.drop(1).take(3).map { row -> row.keys.map { it.label } }
+
+        assertEquals(listOf("@", "+", "1", "2", "3", "-", "#"), numericRows[0])
+        assertEquals(listOf("?", "*", "4", "5", "6", "/", "!"), numericRows[1])
+        assertEquals(listOf(":", ".", "7", "8", "9", ",", ";"), numericRows[2])
+    }
+
+    @Test
+    fun `navigation panel is dedicated to navigation and editing controls`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
                 KeyboardLayoutRequest(
@@ -120,10 +187,65 @@ class KeyboardLayoutBuilderTest {
                 ),
             )
 
-        val panelActions = snapshot.rows.take(3).flatMap { row -> row.keys.map { it.action } }
+        val panelRows = snapshot.rows.drop(1).take(snapshot.panelRowCount)
+        val panelActions = panelRows.flatMap { row -> row.keys.map { it.action } }
+        val labels = panelRows.flatMap { row -> row.keys.map { it.label } }
+
+        assertEquals(5, snapshot.panelRowCount)
+        assertTrue(labels.take(4).containsAll(listOf("All", "Copy", "Cut", "Paste")))
+        assertTrue(panelActions.contains(KeyboardKeyAction.SelectAll))
+        assertTrue(panelActions.contains(KeyboardKeyAction.CopySelection))
+        assertTrue(panelActions.contains(KeyboardKeyAction.CutSelection))
+        assertTrue(panelActions.contains(KeyboardKeyAction.PasteClipboard))
+        assertTrue(panelActions.contains(KeyboardKeyAction.Undo))
+        assertTrue(panelActions.contains(KeyboardKeyAction.Redo))
+        assertTrue(panelActions.contains(KeyboardKeyAction.NavigateLineUp))
+        assertTrue(panelActions.contains(KeyboardKeyAction.NavigateLineDown))
+        assertTrue(panelActions.contains(KeyboardKeyAction.NavigateParagraphUp))
+        assertTrue(panelActions.contains(KeyboardKeyAction.NavigateParagraphDown))
+        assertTrue(panelActions.contains(KeyboardKeyAction.NavigateWordLeft))
+        assertTrue(panelActions.contains(KeyboardKeyAction.NavigateWordRight))
         assertTrue(panelActions.contains(KeyboardKeyAction.ForwardDelete))
         assertTrue(panelActions.contains(KeyboardKeyAction.DeleteWordAfter))
-        assertTrue(panelActions.contains(KeyboardKeyAction.CancelSelection))
+        assertTrue(panelActions.none { it == KeyboardKeyAction.Text || it == KeyboardKeyAction.KeyValue })
+        assertTrue(snapshot.rows.drop(1 + snapshot.panelRowCount).any { row ->
+            row.keys.any { it.action == KeyboardKeyAction.Text || it.action == KeyboardKeyAction.KeyValue }
+        })
+    }
+
+    @Test
+    fun `accent panel exposes french accents without replacing typing rows`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.Accents,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = true,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val panelRows = snapshot.rows.drop(1).take(snapshot.panelRowCount)
+        val labels = panelRows.flatMap { row -> row.keys.map { it.label } }
+
+        assertEquals(2, snapshot.panelRowCount)
+        assertTrue(labels.containsAll(listOf("é", "è", "ê", "ë", "à", "â", "ç")))
+        assertTrue(labels.containsAll(listOf("ù", "û", "ü", "î", "ï", "ô", "œ", "æ")))
+        assertTrue(snapshot.rows.drop(1 + snapshot.panelRowCount).any { row ->
+            row.keys.any { it.label == "q" }
+        })
     }
 
     @Test
@@ -156,6 +278,42 @@ class KeyboardLayoutBuilderTest {
         assertTrue(panelActions.contains(KeyboardKeyAction.SelectAll))
         assertTrue(panelActions.contains(KeyboardKeyAction.Undo))
         assertTrue(panelActions.contains(KeyboardKeyAction.Redo))
+    }
+
+    @Test
+    fun `media panel exposes controls and now playing line`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.Media,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                    mediaNowPlayingLabel = "Daft Punk - Digital Love",
+                ),
+            )
+
+        val panelRows = snapshot.rows.drop(1).take(snapshot.panelRowCount)
+        val actions = panelRows.flatMap { row -> row.keys.map { it.action } }
+
+        assertEquals(2, snapshot.panelRowCount)
+        assertTrue(actions.contains(KeyboardKeyAction.MediaPrevious))
+        assertTrue(actions.contains(KeyboardKeyAction.MediaPlayPause))
+        assertTrue(actions.contains(KeyboardKeyAction.MediaNext))
+        assertTrue(actions.contains(KeyboardKeyAction.MediaNowPlaying))
+        assertEquals("Daft Punk - Digital Love", panelRows[1].keys.single().label)
     }
 
     @Test

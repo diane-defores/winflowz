@@ -442,6 +442,13 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
         showStatus("Next sent")
     }
 
+    override fun onMediaNowPlaying(): String {
+        if (!stateStore.mediaControlsEnabled) {
+            return "Now playing: media controls disabled"
+        }
+        return mediaController.nowPlayingLabel()
+    }
+
     override fun onNavigateCharLeft(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_LEFT, 0)
 
     override fun onNavigateCharRight(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_RIGHT, 0)
@@ -454,6 +461,20 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
     override fun onNavigateWordRight(): Boolean {
         val moved = if (inputContext.selectionModeAllowed) editor().moveWordCursor(left = false).applied else false
         return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON)
+    }
+
+    override fun onNavigateLineUp(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_UP, 0)
+
+    override fun onNavigateLineDown(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_DOWN, 0)
+
+    override fun onNavigateParagraphUp(): Boolean {
+        val moved = if (inputContext.selectionModeAllowed) editor().moveParagraphCursor(up = true).applied else false
+        return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_UP, KeyEvent.META_CTRL_ON)
+    }
+
+    override fun onNavigateParagraphDown(): Boolean {
+        val moved = if (inputContext.selectionModeAllowed) editor().moveParagraphCursor(up = false).applied else false
+        return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.META_CTRL_ON)
     }
 
     override fun onNavigateLineStart(): Boolean {

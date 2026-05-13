@@ -35,6 +35,18 @@ class KeyboardTextNavigationTest {
     }
 
     @Test
+    fun `paragraph boundaries target blank-line separated paragraphs`() {
+        val text = "first paragraph\n\nsecond paragraph\n\nthird paragraph"
+        val secondStart = text.indexOf("second")
+        val thirdStart = text.indexOf("third")
+
+        assertEquals(secondStart, KeyboardTextNavigation.paragraphBoundary(text, secondStart + 4, up = true))
+        assertEquals(0, KeyboardTextNavigation.paragraphBoundary(text, secondStart, up = true))
+        assertEquals(thirdStart, KeyboardTextNavigation.paragraphBoundary(text, secondStart, up = false))
+        assertEquals(text.length, KeyboardTextNavigation.paragraphBoundary(text, thirdStart, up = false))
+    }
+
+    @Test
     fun `selection state marks ranges only when bounds are valid and different`() {
         val selected = KeyboardSelectionState.fromEditorBounds(2, 5)
         val cursor = KeyboardSelectionState.fromEditorBounds(5, 5)

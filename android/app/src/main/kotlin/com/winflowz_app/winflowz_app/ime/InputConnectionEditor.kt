@@ -196,6 +196,14 @@ class InputConnectionEditor(
         return moveSelectionFromExtracted(extracted, target)
     }
 
+    fun moveParagraphCursor(up: Boolean): KeyboardEditorResult {
+        val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
+        val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
+        val selection = extracted.selectionStart.coerceIn(0, text.length)
+        val target = KeyboardTextNavigation.paragraphBoundary(text, selection, up)
+        return moveSelectionFromExtracted(extracted, target)
+    }
+
     fun cancelSelection(): KeyboardEditorResult {
         val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
         val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
@@ -289,5 +297,47 @@ object KeyboardTextNavigation {
             val nextLineBreak = text.indexOf('\n', selection)
             if (nextLineBreak < 0) text.length else nextLineBreak
         }
+    }
+
+    fun paragraphBoundary(
+        text: String,
+        cursor: Int,
+        up: Boolean,
+    ): Int {
+        if (text.isEmpty()) {
+            return 0
+        }
+        val starts = paragraphStarts(text)
+        val selection = cursor.coerceIn(0, text.length)
+        val currentStart = starts.lastOrNull { it <= selection } ?: 0
+        return if (up) {
+            if (selection > currentStart) {
+                currentStart
+            } else {
+                starts.lastOrNull { it < currentStart } ?: 0
+            }
+        } else {
+            starts.firstOrNull { it > currentStart } ?: text.length
+        }
+    }
+
+    private fun paragraphStarts(text: String): List<Int> {
+        val starts = mutableListOf(0)
+        var index = 0
+        while (index < text.length - 1) {
+            if (text[index] == '\n' && text[index + 1] == '\n') {
+                var start = index + 2
+                while (start < text.length && text[start] == '\n') {
+                    start++
+                }
+                if (start < text.length && starts.last() != start) {
+                    starts.add(start)
+                }
+                index = start
+            } else {
+                index++
+            }
+        }
+        return starts
     }
 }

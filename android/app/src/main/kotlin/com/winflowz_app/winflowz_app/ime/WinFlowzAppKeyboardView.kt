@@ -41,10 +41,15 @@ class WinFlowzAppKeyboardView(
         fun onMediaPlayPause()
         fun onMediaPrevious()
         fun onMediaNext()
+        fun onMediaNowPlaying(): String
         fun onNavigateCharLeft(): Boolean
         fun onNavigateCharRight(): Boolean
         fun onNavigateWordLeft(): Boolean
         fun onNavigateWordRight(): Boolean
+        fun onNavigateLineUp(): Boolean
+        fun onNavigateLineDown(): Boolean
+        fun onNavigateParagraphUp(): Boolean
+        fun onNavigateParagraphDown(): Boolean
         fun onNavigateLineStart(): Boolean
         fun onNavigateLineEnd(): Boolean
         fun onKeyEvent(keyCode: Int, metaState: Int): Boolean
@@ -75,6 +80,7 @@ class WinFlowzAppKeyboardView(
     private var enterLabel = "Enter"
     private var statusText = "WinFlowzApp"
     private var suggestions = emptyList<String>()
+    private var mediaNowPlayingLabel = "Now playing: tap Now"
     private val activeSystemModifiers = linkedSetOf<KeyboardSystemModifier>()
 
     private var gestureStartFrame: KeyFrame? = null
@@ -186,6 +192,10 @@ class WinFlowzAppKeyboardView(
             KeyboardKeyAction.NavigateCharRight,
             KeyboardKeyAction.NavigateWordLeft,
             KeyboardKeyAction.NavigateWordRight,
+            KeyboardKeyAction.NavigateLineUp,
+            KeyboardKeyAction.NavigateLineDown,
+            KeyboardKeyAction.NavigateParagraphUp,
+            KeyboardKeyAction.NavigateParagraphDown,
         )
 
     init {
@@ -673,6 +683,7 @@ class WinFlowzAppKeyboardView(
                 panelMode = KeyboardPanelMode.None
             }
             KeyboardKeyAction.ToggleNavigationPanel -> togglePanel(KeyboardPanelMode.Navigation)
+            KeyboardKeyAction.ToggleAccentPanel -> togglePanel(KeyboardPanelMode.Accents)
             KeyboardKeyAction.ToggleEmojiPanel -> togglePanel(KeyboardPanelMode.Emoji)
             KeyboardKeyAction.ToggleClipboardPanel -> togglePanel(KeyboardPanelMode.Clipboard)
             KeyboardKeyAction.ToggleMediaPanel -> togglePanel(KeyboardPanelMode.Media)
@@ -732,6 +743,11 @@ class WinFlowzAppKeyboardView(
             KeyboardKeyAction.MediaPrevious -> callbacks.onMediaPrevious()
             KeyboardKeyAction.MediaPlayPause -> callbacks.onMediaPlayPause()
             KeyboardKeyAction.MediaNext -> callbacks.onMediaNext()
+            KeyboardKeyAction.MediaNowPlaying -> {
+                mediaNowPlayingLabel = callbacks.onMediaNowPlaying()
+                setStatus(mediaNowPlayingLabel)
+                refreshLayout()
+            }
             KeyboardKeyAction.InsertSnippetOne -> {
                 callbacks.onSnippets()
                 panelMode = KeyboardPanelMode.None
@@ -789,6 +805,26 @@ class WinFlowzAppKeyboardView(
             KeyboardKeyAction.NavigateWordRight -> {
                 if (!callbacks.onNavigateWordRight()) {
                     setStatus("Word-right unavailable")
+                }
+            }
+            KeyboardKeyAction.NavigateLineUp -> {
+                if (!callbacks.onNavigateLineUp()) {
+                    setStatus("Line-up unavailable")
+                }
+            }
+            KeyboardKeyAction.NavigateLineDown -> {
+                if (!callbacks.onNavigateLineDown()) {
+                    setStatus("Line-down unavailable")
+                }
+            }
+            KeyboardKeyAction.NavigateParagraphUp -> {
+                if (!callbacks.onNavigateParagraphUp()) {
+                    setStatus("Paragraph-up unavailable")
+                }
+            }
+            KeyboardKeyAction.NavigateParagraphDown -> {
+                if (!callbacks.onNavigateParagraphDown()) {
+                    setStatus("Paragraph-down unavailable")
                 }
             }
             KeyboardKeyAction.NavigateLineStart -> {
@@ -941,6 +977,7 @@ class WinFlowzAppKeyboardView(
                 voiceAllowed = fieldPolicy.voiceAllowed,
                 snippetsAllowed = fieldPolicy.snippetsAllowed,
                 suggestions = suggestions,
+                mediaNowPlayingLabel = mediaNowPlayingLabel,
             ),
         )
     }
@@ -958,6 +995,9 @@ class WinFlowzAppKeyboardView(
     }
 
     private fun displayLabel(key: KeyboardKeySpec): String {
+        if (key.id == "media-now-playing-label" && key.label.length > 52) {
+            return key.label.take(49) + "..."
+        }
         if (key.action != KeyboardKeyAction.Text) {
             return key.label
         }
@@ -978,6 +1018,7 @@ class WinFlowzAppKeyboardView(
     private fun keyTextSize(key: KeyboardKeySpec): Float {
         return when {
             key.label.length <= 1 -> sp(19f)
+            key.id == "media-now-playing-label" -> sp(10f)
             key.weight >= 3f -> sp(15f)
             key.label.length >= 5 -> sp(11f)
             else -> sp(12.5f)

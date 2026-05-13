@@ -504,4 +504,116 @@ void main() {
       expect(_simulatedStatusText(tester), contains('non simulated'));
     },
   );
+
+  testWidgets(
+    'keyboard preview navigation panel adds controls while typing keys remain available',
+    (tester) async {
+      _useLargeViewport(tester);
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      await tester.pumpWidget(_keyboardPreviewTestWidget());
+      await tester.pumpAndSettle();
+
+      await _tapVisible(tester, find.text('Nav'));
+
+      expect(find.text('All'), findsOneWidget);
+      expect(find.text('Copy'), findsOneWidget);
+      expect(find.text('Cut'), findsOneWidget);
+      expect(find.text('Paste'), findsOneWidget);
+      expect(find.text('Undo'), findsOneWidget);
+      expect(find.text('Redo'), findsOneWidget);
+      expect(find.text('Para↑'), findsOneWidget);
+      expect(find.text('Line↑'), findsOneWidget);
+      expect(find.text('Word←'), findsOneWidget);
+      expect(find.text('←'), findsOneWidget);
+      expect(find.text('→'), findsOneWidget);
+      expect(find.text('Word→'), findsOneWidget);
+      expect(find.text('Line↓'), findsOneWidget);
+      expect(find.text('Para↓'), findsOneWidget);
+      expect(find.text('Del←'), findsOneWidget);
+      expect(find.text('DelW←'), findsOneWidget);
+      expect(find.text('Del→'), findsOneWidget);
+      expect(find.text('DelW→'), findsOneWidget);
+      expect(find.text('q'), findsOneWidget);
+      expect(find.text('Space'), findsOneWidget);
+      expect(find.text('Ctrl'), findsOneWidget);
+      expect(find.text('Shift'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'keyboard preview accent panel adds french accents without replacing letters',
+    (tester) async {
+      _useLargeViewport(tester);
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      await tester.pumpWidget(_keyboardPreviewTestWidget());
+      await tester.pumpAndSettle();
+
+      await _tapVisible(tester, find.text('Acc'));
+
+      expect(find.text('œ'), findsOneWidget);
+      expect(find.text('Shift'), findsOneWidget);
+      expect(find.text('Ctrl'), findsOneWidget);
+      expect(find.text('q'), findsOneWidget);
+
+      await _tapVisible(tester, find.text('œ'));
+      expect(_simulatedBufferText(tester), 'œ|');
+    },
+  );
+
+  testWidgets('keyboard preview media panel can show now playing line', (
+    tester,
+  ) async {
+    _useLargeViewport(tester);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    await tester.pumpWidget(_keyboardPreviewTestWidget());
+    await tester.pumpAndSettle();
+
+    await _tapVisible(tester, find.text('Media'));
+
+    expect(find.text('Now'), findsOneWidget);
+    expect(find.text('Now playing: tap Now'), findsOneWidget);
+
+    await _tapVisible(tester, find.text('Now'));
+    expect(find.text('Daft Punk - Digital Love'), findsWidgets);
+  });
+
+  testWidgets('keyboard preview number mode uses three by three keypad rows', (
+    tester,
+  ) async {
+    _useLargeViewport(tester);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    await tester.pumpWidget(_keyboardPreviewTestWidget());
+    await tester.pumpAndSettle();
+
+    await _tapVisible(tester, find.text('123'));
+
+    expect(find.text('+'), findsOneWidget);
+    expect(find.text('-'), findsOneWidget);
+    expect(find.text('*'), findsOneWidget);
+    expect(find.text('/'), findsOneWidget);
+    expect(find.text('.'), findsOneWidget);
+    expect(find.text(','), findsOneWidget);
+    expect(find.text('@'), findsOneWidget);
+    expect(find.text('#'), findsOneWidget);
+    expect(find.text('?'), findsOneWidget);
+    expect(find.text('!'), findsOneWidget);
+    expect(find.text(':'), findsOneWidget);
+    expect(find.text(';'), findsOneWidget);
+    for (final digit in ['1', '2', '3', '4', '5', '6', '7', '8', '9']) {
+      expect(find.text(digit), findsOneWidget);
+    }
+    expect(find.text('0'), findsNothing);
+  });
 }

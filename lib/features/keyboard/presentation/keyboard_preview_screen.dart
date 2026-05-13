@@ -22,6 +22,7 @@ enum KeyboardPreviewFieldContext {
 enum KeyboardPreviewPanel {
   none('Typing'),
   navigation('Navigation'),
+  accents('Accents'),
   emoji('Emoji'),
   clipboard('Clipboard'),
   snippets('Snippets'),
@@ -36,7 +37,6 @@ enum KeyboardPreviewPanel {
 enum KeyboardPreviewMode {
   letters('ABC'),
   numbers('123'),
-  accents('Acc'),
   symbols('#+=');
 
   const KeyboardPreviewMode(this.label);
@@ -60,6 +60,7 @@ class _KeyboardPreviewScreenState extends State<KeyboardPreviewScreen> {
   bool _corners = true;
   bool _debug = false;
   bool _shiftEnabled = false;
+  String _mediaNowPlaying = 'Now playing: tap Now';
   String _buffer = '';
   int _cursor = 0;
   String _status =
@@ -115,6 +116,7 @@ class _KeyboardPreviewScreenState extends State<KeyboardPreviewScreen> {
       _buffer = '';
       _cursor = 0;
       _shiftEnabled = false;
+      _mediaNowPlaying = 'Now playing: tap Now';
       _panel = KeyboardPreviewPanel.none;
       _mode = _fieldContext.numeric
           ? KeyboardPreviewMode.numbers
@@ -206,6 +208,12 @@ class _KeyboardPreviewScreenState extends State<KeyboardPreviewScreen> {
       case KeyboardPreviewKeyAction.enter:
         _insertText('\n', status: 'Enter inserted.');
         break;
+      case KeyboardPreviewKeyAction.mediaNowPlaying:
+        setState(() {
+          _mediaNowPlaying = 'Daft Punk - Digital Love';
+          _status = _mediaNowPlaying;
+        });
+        break;
       case KeyboardPreviewKeyAction.suggestion:
         _insertSuggestion(key.output ?? key.label);
         break;
@@ -240,6 +248,7 @@ class _KeyboardPreviewScreenState extends State<KeyboardPreviewScreen> {
       corners: _corners,
       debug: _debug,
       shiftEnabled: _shiftEnabled,
+      mediaNowPlaying: _mediaNowPlaying,
     );
 
     return ListView(
@@ -782,6 +791,7 @@ class KeyboardPreviewSnapshot {
     required this.corners,
     required this.debug,
     required this.shiftEnabled,
+    required this.mediaNowPlaying,
   });
 
   final KeyboardLayoutProfile profile;
@@ -792,6 +802,7 @@ class KeyboardPreviewSnapshot {
   final bool corners;
   final bool debug;
   final bool shiftEnabled;
+  final String mediaNowPlaying;
 
   List<KeyboardPreviewRow> get rows {
     final rows = <KeyboardPreviewRow>[_actionRow()];
@@ -808,7 +819,7 @@ class KeyboardPreviewSnapshot {
       keys: [
         _modeKey('ABC', KeyboardPreviewMode.letters),
         _modeKey('123', KeyboardPreviewMode.numbers),
-        _modeKey('Acc', KeyboardPreviewMode.accents),
+        _panelKey('Acc', KeyboardPreviewPanel.accents),
         _modeKey('#+=', KeyboardPreviewMode.symbols),
         _panelKey('Nav', KeyboardPreviewPanel.navigation),
         _panelKey('Emoji', KeyboardPreviewPanel.emoji),
@@ -875,26 +886,12 @@ class KeyboardPreviewSnapshot {
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightCompact,
             keys: [
-              _unsupportedKey('Start'),
-              _unsupportedKey('Word<'),
-              _unsupportedKey('<'),
-              _unsupportedKey('>'),
-              _unsupportedKey('Word>'),
-              _unsupportedKey('End'),
-            ],
-          ),
-          KeyboardPreviewRow(
-            height: AppKeyboardPreview.rowHeightCompact,
-            keys: [
-              KeyboardPreviewKey(
-                label: 'Del',
-                special: true,
-                action: KeyboardPreviewKeyAction.backspace,
-              ),
-              _unsupportedKey('DelW<'),
-              _unsupportedKey('FDel'),
-              _unsupportedKey('DelW>'),
-              _unsupportedKey('Esc'),
+              _unsupportedKey('All'),
+              _unsupportedKey('Copy'),
+              _unsupportedKey('Cut'),
+              _unsupportedKey('Paste'),
+              _unsupportedKey('Undo'),
+              _unsupportedKey('Redo'),
               const KeyboardPreviewKey(
                 label: 'Back',
                 special: true,
@@ -902,6 +899,80 @@ class KeyboardPreviewSnapshot {
                 action: KeyboardPreviewKeyAction.closePanel,
               ),
             ],
+          ),
+          KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightRegular,
+            keys: [
+              _unsupportedKey('Para↑', weight: 1.3),
+              _unsupportedKey('Line↑', weight: 1.3),
+            ],
+            leadingWeight: 1.5,
+            trailingWeight: 1.5,
+          ),
+          KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightRegular,
+            keys: [
+              _unsupportedKey('Word←', weight: 1.3),
+              _unsupportedKey('←', weight: 1.1),
+              _unsupportedKey('→', weight: 1.1),
+              _unsupportedKey('Word→', weight: 1.3),
+            ],
+            leadingWeight: .6,
+            trailingWeight: .6,
+          ),
+          KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightRegular,
+            keys: [
+              _unsupportedKey('Line↓', weight: 1.3),
+              _unsupportedKey('Para↓', weight: 1.3),
+            ],
+            leadingWeight: 1.5,
+            trailingWeight: 1.5,
+          ),
+          KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightCompact,
+            keys: [
+              KeyboardPreviewKey(
+                label: 'Del←',
+                special: true,
+                action: KeyboardPreviewKeyAction.backspace,
+              ),
+              _unsupportedKey('DelW←', weight: 1.2),
+              _unsupportedKey('Del→', weight: 1.1),
+              _unsupportedKey('DelW→', weight: 1.2),
+            ],
+          ),
+        ];
+      case KeyboardPreviewPanel.accents:
+        return [
+          const KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightCompact,
+            keys: [
+              KeyboardPreviewKey(label: 'é', special: true),
+              KeyboardPreviewKey(label: 'è', special: true),
+              KeyboardPreviewKey(label: 'ê', special: true),
+              KeyboardPreviewKey(label: 'ë', special: true),
+              KeyboardPreviewKey(label: 'à', special: true),
+              KeyboardPreviewKey(label: 'â', special: true),
+              KeyboardPreviewKey(label: 'ç', special: true),
+            ],
+            leadingWeight: .35,
+            trailingWeight: .35,
+          ),
+          const KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightCompact,
+            keys: [
+              KeyboardPreviewKey(label: 'ù', special: true),
+              KeyboardPreviewKey(label: 'û', special: true),
+              KeyboardPreviewKey(label: 'ü', special: true),
+              KeyboardPreviewKey(label: 'î', special: true),
+              KeyboardPreviewKey(label: 'ï', special: true),
+              KeyboardPreviewKey(label: 'ô', special: true),
+              KeyboardPreviewKey(label: 'œ', special: true),
+              KeyboardPreviewKey(label: 'æ', special: true),
+            ],
+            leadingWeight: .2,
+            trailingWeight: .2,
           ),
         ];
       case KeyboardPreviewPanel.emoji:
@@ -975,9 +1046,25 @@ class KeyboardPreviewSnapshot {
               _unsupportedKey('>||', weight: 1.2),
               _unsupportedKey('Next'),
               const KeyboardPreviewKey(
+                label: 'Now',
+                special: true,
+                action: KeyboardPreviewKeyAction.mediaNowPlaying,
+              ),
+              const KeyboardPreviewKey(
                 label: 'Close',
                 special: true,
                 action: KeyboardPreviewKeyAction.closePanel,
+              ),
+            ],
+          ),
+          KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightCompact,
+            keys: [
+              KeyboardPreviewKey(
+                label: mediaNowPlaying,
+                special: true,
+                weight: 5,
+                action: KeyboardPreviewKeyAction.mediaNowPlaying,
               ),
             ],
           ),
@@ -1030,62 +1117,38 @@ class KeyboardPreviewSnapshot {
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightRegular,
             keys: [
-              KeyboardPreviewKey(label: '1'),
-              KeyboardPreviewKey(label: '2'),
-              KeyboardPreviewKey(label: '3'),
-              KeyboardPreviewKey(label: '4'),
-              KeyboardPreviewKey(label: '5'),
-              KeyboardPreviewKey(label: '6'),
-              KeyboardPreviewKey(label: '7'),
-              KeyboardPreviewKey(label: '8'),
-              KeyboardPreviewKey(label: '9'),
-              KeyboardPreviewKey(label: '0'),
+              KeyboardPreviewKey(label: '@', special: true, weight: .9),
+              KeyboardPreviewKey(label: '+', special: true, weight: .9),
+              KeyboardPreviewKey(label: '1', weight: 1.1),
+              KeyboardPreviewKey(label: '2', weight: 1.1),
+              KeyboardPreviewKey(label: '3', weight: 1.1),
+              KeyboardPreviewKey(label: '-', special: true, weight: .9),
+              KeyboardPreviewKey(label: '#', special: true, weight: .9),
             ],
           ),
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightRegular,
             keys: [
-              KeyboardPreviewKey(label: '+'),
-              KeyboardPreviewKey(label: '-'),
-              KeyboardPreviewKey(label: '*'),
-              KeyboardPreviewKey(label: '/'),
-              KeyboardPreviewKey(label: '='),
-              KeyboardPreviewKey(label: '%'),
-              KeyboardPreviewKey(label: '.'),
-              KeyboardPreviewKey(label: ','),
-            ],
-            leadingWeight: .6,
-            trailingWeight: .6,
-          ),
-        ];
-      case KeyboardPreviewMode.accents:
-        return [
-          KeyboardPreviewRow(
-            height: AppKeyboardPreview.rowHeightRegular,
-            keys: [
-              KeyboardPreviewKey(label: 'à'),
-              KeyboardPreviewKey(label: 'â'),
-              KeyboardPreviewKey(label: 'ä'),
-              KeyboardPreviewKey(label: 'é'),
-              KeyboardPreviewKey(label: 'è'),
-              KeyboardPreviewKey(label: 'ê'),
-              KeyboardPreviewKey(label: 'ë'),
-              KeyboardPreviewKey(label: 'ç'),
+              KeyboardPreviewKey(label: '?', special: true, weight: .9),
+              KeyboardPreviewKey(label: '*', special: true, weight: .9),
+              KeyboardPreviewKey(label: '4', weight: 1.1),
+              KeyboardPreviewKey(label: '5', weight: 1.1),
+              KeyboardPreviewKey(label: '6', weight: 1.1),
+              KeyboardPreviewKey(label: '/', special: true, weight: .9),
+              KeyboardPreviewKey(label: '!', special: true, weight: .9),
             ],
           ),
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightRegular,
             keys: [
-              KeyboardPreviewKey(label: 'î'),
-              KeyboardPreviewKey(label: 'ï'),
-              KeyboardPreviewKey(label: 'ô'),
-              KeyboardPreviewKey(label: 'ö'),
-              KeyboardPreviewKey(label: 'ù'),
-              KeyboardPreviewKey(label: 'û'),
-              KeyboardPreviewKey(label: 'ü'),
+              KeyboardPreviewKey(label: ':', special: true, weight: .9),
+              KeyboardPreviewKey(label: '.', special: true, weight: .9),
+              KeyboardPreviewKey(label: '7', weight: 1.1),
+              KeyboardPreviewKey(label: '8', weight: 1.1),
+              KeyboardPreviewKey(label: '9', weight: 1.1),
+              KeyboardPreviewKey(label: ',', special: true, weight: .9),
+              KeyboardPreviewKey(label: ';', special: true, weight: .9),
             ],
-            leadingWeight: .5,
-            trailingWeight: .5,
           ),
         ];
       case KeyboardPreviewMode.symbols:
@@ -1143,9 +1206,22 @@ class KeyboardPreviewSnapshot {
       ),
       KeyboardPreviewRow(
         height: AppKeyboardPreview.rowHeightRegular,
-        leadingWeight: 1,
-        trailingWeight: 1,
-        keys: _letterKeys(bottom),
+        keys: [
+          KeyboardPreviewKey(
+            label: 'Shift',
+            special: true,
+            active: shiftEnabled,
+            weight: 1.2,
+            action: KeyboardPreviewKeyAction.shift,
+          ),
+          ..._letterKeys(bottom),
+          const KeyboardPreviewKey(
+            label: 'Back',
+            special: true,
+            weight: 1.2,
+            action: KeyboardPreviewKeyAction.backspace,
+          ),
+        ],
       ),
     ];
   }
@@ -1160,6 +1236,65 @@ class KeyboardPreviewSnapshot {
       KeyboardPreviewFieldContext.search ||
       KeyboardPreviewFieldContext.text => 'Back',
     };
+    if (mode == KeyboardPreviewMode.letters) {
+      final leftSymbol = switch (fieldContext) {
+        KeyboardPreviewFieldContext.email => '@',
+        KeyboardPreviewFieldContext.url => '/',
+        KeyboardPreviewFieldContext.phone ||
+        KeyboardPreviewFieldContext.number => '+',
+        KeyboardPreviewFieldContext.search ||
+        KeyboardPreviewFieldContext.text => ',',
+      };
+      final rightSymbol = switch (fieldContext) {
+        KeyboardPreviewFieldContext.email ||
+        KeyboardPreviewFieldContext.url => '.com',
+        KeyboardPreviewFieldContext.phone => '#',
+        KeyboardPreviewFieldContext.number => '-',
+        KeyboardPreviewFieldContext.search ||
+        KeyboardPreviewFieldContext.text => '.',
+      };
+      return KeyboardPreviewRow(
+        height: AppKeyboardPreview.rowHeightControl,
+        keys: [
+          const KeyboardPreviewKey(
+            label: 'Ctrl',
+            special: true,
+            weight: .9,
+            action: KeyboardPreviewKeyAction.unsupported,
+            unsupportedReason: 'Modifier keys are native-only in preview',
+          ),
+          const KeyboardPreviewKey(
+            label: 'Alt',
+            special: true,
+            weight: .9,
+            action: KeyboardPreviewKeyAction.unsupported,
+            unsupportedReason: 'Modifier keys are native-only in preview',
+          ),
+          const KeyboardPreviewKey(
+            label: 'Fn',
+            special: true,
+            weight: .9,
+            action: KeyboardPreviewKeyAction.unsupported,
+            unsupportedReason: 'Modifier keys are native-only in preview',
+          ),
+          KeyboardPreviewKey(label: leftSymbol, special: true),
+          const KeyboardPreviewKey(
+            label: 'Space',
+            special: true,
+            weight: 3,
+            action: KeyboardPreviewKeyAction.space,
+            output: ' ',
+          ),
+          KeyboardPreviewKey(label: rightSymbol, special: true),
+          KeyboardPreviewKey(
+            label: fieldContext.enterLabel,
+            special: true,
+            weight: 1.3,
+            action: KeyboardPreviewKeyAction.enter,
+          ),
+        ],
+      );
+    }
     return KeyboardPreviewRow(
       height: AppKeyboardPreview.rowHeightControl,
       keys: [
@@ -1265,6 +1400,7 @@ enum KeyboardPreviewKeyAction {
   backspace,
   enter,
   shift,
+  mediaNowPlaying,
   modeSwitch,
   panelSwitch,
   closePanel,
