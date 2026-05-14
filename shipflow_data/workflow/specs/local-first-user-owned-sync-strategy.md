@@ -100,6 +100,8 @@ WinFlowz accepte les actions produit normales sans backend distant, persiste les
 
 Pour la dictee clavier, le comportement minimal est aussi local-first: WinFlowz doit utiliser les ressources de l'appareil quand un pack de langue local est installe, puis seulement retomber sur Android SpeechRecognizer ou un worker WinFlowz explicite quand le pack local manque, echoue, ou n'est pas disponible pour la langue choisie. Un lancement LTD global ne doit pas promettre une dictee offline universelle; il doit promettre des packs locaux gratuits pour les langues supportees, avec fallback clair pour les autres langues.
 
+La recommandation de packaging est de ne pas embarquer de modele ASR lourd dans l'APK initial. Les packs doivent etre installes apres l'installation de l'app: suggestion au premier lancement, demande au premier appui micro, ou action explicite depuis Settings. Un eventuel micro-modele embarque ne doit etre envisage que si son benefice UX depasse clairement le cout de taille APK.
+
 # Success Behavior
 
 - Given l'app est installee sans `SUPABASE_URL`, sans `SUPABASE_PUBLISHABLE_KEY` et sans Firebase configure, when l'utilisateur ouvre Voice, Voice Flows, Dictionary ou Clipboard Snippet, then chaque page affiche son contenu local ou un etat vide utilisable, pas un coeur de page blanc.
@@ -112,6 +114,7 @@ Pour la dictee clavier, le comportement minimal est aussi local-first: WinFlowz 
 - Given l'utilisateur est en LTD, when il utilise le produit sans sync cloud WinFlowz, then le cout variable serveur reste proche de zero hors licence, telemetry minimale et distribution.
 - Given l'utilisateur est en LTD et dicte dans une langue supportee par un pack local installe, when il utilise le clavier WinFlowz, then la transcription ne consomme pas de worker WinFlowz.
 - Given l'utilisateur dicte dans une langue sans pack local installe, when il lance la dictee clavier, then WinFlowz propose l'installation du pack si disponible ou bascule vers une politique fallback explicite.
+- Given aucun pack ASR n'est installe, when l'utilisateur appuie sur le micro clavier, then l'UI propose d'installer le pack local recommande au lieu de paraitre cassee.
 - Given la langue systeme ou la langue clavier change, when WinFlowz detecte une langue compatible, then il peut suggerer le pack local correspondant sans le telecharger silencieusement.
 - Given un utilisateur retire un appareil, when l'appareil retire essaie de synchroniser, then il ne peut plus dechiffrer les nouvelles enveloppes et son statut est visible comme appareil revoque.
 
@@ -181,6 +184,7 @@ La doctrine par defaut est:
 - Synchroniser les cles OpenAI/Anthropic BYO dans la premiere version.
 - Synchroniser l'audio brut par defaut.
 - Bundler tous les modeles ASR dans l'APK initial.
+- Bundler un modele ASR lourd par defaut dans l'APK initial sans preuve forte que le gain UX justifie la taille.
 - Promettre une dictee offline haute qualite dans toutes les langues au lancement LTD.
 - Ajouter de la collaboration temps reel multi-utilisateur type Google Docs.
 - Ajouter billing/checkout complet, sauf si necessaire pour verifier entitlement LTD.

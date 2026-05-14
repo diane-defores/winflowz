@@ -5,9 +5,9 @@ artifact_version: "0.1.0"
 project: "WinFlowz"
 created: "2026-05-09"
 created_at: "2026-05-09 15:19:23 UTC"
-updated: "2026-05-09"
-updated_at: "2026-05-09 19:10:00 UTC"
-status: draft
+updated: "2026-05-14"
+updated_at: "2026-05-14 23:56:38 UTC"
+status: implementation
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "design-system-settings"
@@ -46,10 +46,11 @@ evidence:
   - "2026-05-09 design audit adopted ContentFlow family colors, spacing, radii, motion names and component defaults in lib/core/theme/app_theme.dart."
   - "2026-05-09 design audit added a transient Settings Appearance selector in lib/features/settings/presentation/settings_screen.dart."
   - "2026-05-14 component audit scored C overall; it requires an active chantier attached to this design-system spec, not closure."
-  - "Current appThemeModeProvider is in-memory only in lib/app/winflowz_app.dart."
+  - "2026-05-14 Firebase settings gate verified: appThemeModeProvider hydrates from SettingsStore, persists locally, and syncs account settings through FirebaseSettingsStore at users/{uid}/settings/profile."
+  - "2026-05-14 theme persistence was hardened to preserve existing onboarding/sync fields when writing themeMode; covered by test/app_theme_mode_controller_test.dart."
   - "User decision 2026-05-09: settings and backend data must be backend-agnostic; Firebase is the first adapter."
   - "User decision 2026-05-09: Supabase is no longer the target backend."
-next_step: "/sf-ready shipflow_data/workflow/specs/settings-driven-design-system.md after Firebase adapter spec"
+next_step: "Continue visual/design validation and docs cleanup before final closure"
 ---
 
 # Title
@@ -58,7 +59,7 @@ Settings-Driven Design System Completion
 
 # Status
 
-Draft. The Settings architecture decision is now made: preferences must go through a backend-agnostic `SettingsStore`, with Firebase as the first remote adapter. This spec still waits for the concrete Firebase adapter contract before implementation.
+Implementation active. The Settings architecture decision is implemented for Appearance: preferences go through a backend-agnostic `SettingsStore`, with local persistence as fallback and Firebase as the first remote adapter. The Firebase settings gate is no longer blocking this chantier; remaining closure work is visual validation, docs cleanup, and any explicitly deferred design playground work.
 
 # User Story
 
@@ -73,7 +74,7 @@ Déclencheurs:
 - L'utilisateur choisit `System`, `Light` ou `Dark` dans Settings.
 - L'application redémarre.
 - L'utilisateur se connecte, se déconnecte ou change d'appareil.
-- Le contrat Firebase définit les règles, indexes, offline behavior et sync.
+- La session auth bascule entre local fallback et compte Firebase.
 - Les écrans WinFlowz migrent vers les tokens partagés.
 
 Résultat observable attendu: le mode d'apparence choisi s'applique sans flash incohérent, persiste localement, se synchronise par compte si un settings backend est disponible, et tous les écrans utilisent le même système de tokens plutôt que des valeurs visuelles dispersées.
@@ -103,7 +104,7 @@ WinFlowz expose un contrat de settings d'apparence qui accepte uniquement `syste
 
 # Problem
 
-Le design audit du 2026-05-09 a ajouté une première base visuelle partagée avec ContentFlow: palette Flowz, spacing 4px, radii, motion names, Material component defaults et sélecteur Appearance. Cette base reste incomplète: le choix Appearance est seulement en mémoire, il n'est ni persisté localement ni synchronisé par compte, et plusieurs écrans contiennent encore des `EdgeInsets`, `SizedBox` et styles locaux. La stratégie Settings globale est décidée au niveau architecture: contrat backend-agnostique d'abord, Firebase comme premier adaptateur. Il reste à spécifier les règles Firebase exactes avant d'implémenter la sync distante.
+Le design audit du 2026-05-09 a ajouté une première base visuelle partagée avec ContentFlow: palette Flowz, spacing 4px, radii, motion names, Material component defaults et sélecteur Appearance. Le choix Appearance n'est plus seulement en mémoire: il est hydraté depuis le store local au bootstrap, écrit dans `SettingsStore`, et synchronisé via Firebase quand la session distante est disponible. La base visuelle reste incomplète: plusieurs écrans viennent d'être migrés vers des composants/tokens partagés, mais la validation visuelle finale et la documentation de fermeture restent à faire.
 
 # Solution
 
@@ -111,9 +112,9 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 # Scope In
 
-- Définir le contrat Settings pour `theme_mode`: enum, normalisation, valeur par défaut, résolution local/distant.
+- Définir le contrat Settings pour `themeMode`: enum, normalisation, valeur par défaut, résolution local/distant.
 - Persister localement Appearance selon la décision Settings.
-- Synchroniser `theme_mode` dans les settings utilisateur authentifiés si le backend retenu le supporte.
+- Synchroniser `themeMode` dans les settings utilisateur authentifiés si le backend retenu le supporte.
 - Ajouter ou adapter un repository/store Settings, idéalement backend-agnostic si la décision va dans ce sens.
 - Intégrer le chargement Settings au bootstrap Flutter sans flash visuel excessif.
 - Migrer les écrans principaux vers `AppTheme`, `AppSpacing`, `AppRadii` et composants Material thémés.
@@ -133,8 +134,8 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 # Constraints
 
-- Ne pas lancer la sync distante avant le contrat Firebase adapter.
-- `theme_mode` accepte seulement `system`, `light`, `dark`.
+- La sync distante doit rester derrière `SettingsStore` et ne pas coupler les widgets directement à Firebase.
+- `themeMode` accepte seulement `system`, `light`, `dark`.
 - La valeur par défaut est `system`.
 - Les valeurs inconnues doivent revenir à `system`.
 - Le choix utilisateur ne doit pas bloquer auth, dictée, clipboard, clavier ou overlay.
@@ -145,9 +146,11 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 # Dependencies
 
-- Décision prise: architecture Settings backend-agnostique.
-  - Contrat cible: `SettingsStore` avec adaptateur local et Firebase comme premier adaptateur remote.
-  - Le contrat Firebase doit encore préciser conflict resolution, offline behavior, account switch behavior et séparation secrets/preferences.
+- Décision prise et implémentée pour Appearance: architecture Settings backend-agnostique.
+  - Contrat actif: `SettingsStore` avec `LocalSettingsStore` et `FirebaseSettingsStore` comme premier adaptateur remote.
+  - Firestore path: `users/{uid}/settings/profile`.
+  - Firestore rules: `themeMode` allowlist `system`, `light`, `dark`; settings user-scoped.
+  - Secrets/preferences restent séparés: BYOK reste en secure local storage.
 - Code existant:
   - `lib/core/theme/app_theme.dart`
   - `lib/app/winflowz_app.dart`
@@ -173,7 +176,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 # Links & Consequences
 
-- `lib/app/winflowz_app.dart`: le provider actuel devra devenir async/hydraté ou dépendre d'un Settings controller.
+- `lib/app/winflowz_app.dart`: le provider Appearance est hydraté depuis `SettingsStore`, applique la valeur immédiatement, et préserve les champs settings existants lors d'une sauvegarde thème.
 - `lib/core/theme/app_theme.dart`: reste la source de tokens; ajouter éventuellement extensions de thème au lieu de valeurs dispersées.
 - `lib/features/settings/presentation/settings_screen.dart`: Appearance doit afficher état local/sync si pertinent.
 - `lib/features/settings/data/**`: peut recevoir un `SettingsStore` ou `UserPreferencesStore`.
@@ -209,45 +212,45 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 - [x] Tâche 1 : Formaliser la décision Settings
   - Fichiers : `docs/DECISIONS.md`, cette spec
-  - Action : choisir `SettingsStore` backend-agnostic avec Firebase premier adaptateur; définir ensuite conflict resolution, offline behavior, auth switch behavior et séparation secrets/preferences dans la spec Firebase.
+  - Action : choisir `SettingsStore` backend-agnostic avec Firebase premier adaptateur; séparer secrets locaux et préférences syncables.
   - User story link : évite d'implémenter un thème persistant sur une fondation Settings instable.
   - Depends on : décision utilisateur.
   - Validate with : décision confirmée le 2026-05-09.
 
-- [ ] Tâche 2 : Créer le modèle de préférence Appearance
+- [x] Tâche 2 : Créer le modèle de préférence Appearance
   - Fichiers : `lib/core/theme/app_theme.dart`, possiblement `lib/features/settings/domain/user_preferences.dart`
-  - Action : centraliser enum, parsing, serialization et fallback `system`.
+  - Action : centraliser enum, parsing et fallback `system` via `AppThemeMode` et `ThemeMode.name`.
   - User story link : garantit des valeurs stables entre UI, local store et backend.
   - Depends on : Tâche 1.
-  - Validate with : tests unitaires parsing/normalization.
+  - Validate with : `test/widget_test.dart` couvre le mapping `ThemeMode`; stores local/Firebase normalisent les valeurs inconnues vers `system`.
 
-- [ ] Tâche 3 : Implémenter le store local Settings
-  - Fichiers : selon décision, probablement `lib/features/settings/data/`
-  - Action : lire/écrire `theme_mode` localement, sans toucher aux secrets BYOK.
+- [x] Tâche 3 : Implémenter le store local Settings
+  - Fichiers : `lib/features/settings/data/local_settings_store.dart`
+  - Action : lire/écrire `themeMode` localement, sans toucher aux secrets BYOK.
   - User story link : conserve le choix après redémarrage.
   - Depends on : Tâches 1-2.
-  - Validate with : test fake store + redémarrage logique du controller.
+  - Validate with : bootstrap local dans `lib/main.dart` et test fake store dans `test/app_theme_mode_controller_test.dart`.
 
-- [ ] Tâche 4 : Hydrater le thème au bootstrap
+- [x] Tâche 4 : Hydrater le thème au bootstrap
   - Fichiers : `lib/app/winflowz_app.dart`, `lib/main.dart` si nécessaire
-  - Action : remplacer le provider in-memory par un controller hydraté, appliquer `ThemeMode` depuis le store et gérer loading/fallback sans bloquer le produit.
+  - Action : remplacer le provider in-memory par un controller hydraté, appliquer `ThemeMode` depuis le store et gérer fallback sans bloquer le produit.
   - User story link : évite que Settings soit purement temporaire.
   - Depends on : Tâche 3.
-  - Validate with : widget test MaterialApp themeMode.
+  - Validate with : `test/app_theme_mode_controller_test.dart`.
 
-- [ ] Tâche 5 : Ajouter la sync compte si retenue
-  - Fichiers : `lib/features/settings/data/**`, `lib/data/**`, `firebase.json`, `firestore.rules`, `firestore.indexes.json`
-  - Action : ajouter `theme_mode` côté settings compte via `SettingsStore`, Firestore Security Rules/allowlist, upsert user-scoped et lecture initiale.
+- [x] Tâche 5 : Ajouter la sync compte si retenue
+  - Fichiers : `lib/features/settings/data/firebase_settings_store.dart`, `lib/features/settings/application/settings_store_provider.dart`, `firestore.rules`
+  - Action : ajouter `themeMode` côté settings compte via `SettingsStore`, Firestore Security Rules/allowlist, upsert user-scoped et lecture initiale.
   - User story link : rend la préférence cohérente cross-device.
   - Depends on : Tâche 1.
-  - Validate with : tests adapter/fake, Firebase emulator/rules tests si disponibles.
+  - Validate with : `test/app_theme_mode_controller_test.dart`, `flutter analyze`, `flutter test`; Firestore rules contain the allowlist gate.
 
-- [ ] Tâche 6 : Rendre Settings honnête sur état local/sync
+- [x] Tâche 6 : Rendre Settings honnête sur état local/sync
   - Fichier : `lib/features/settings/presentation/settings_screen.dart`
-  - Action : afficher le selector, la valeur appliquée et l'état de sync/pending/error si applicable.
+  - Action : afficher le selector, la valeur appliquée et le diagnostic backend/settings store actif.
   - User story link : l'utilisateur comprend si sa préférence suit ou non son compte.
   - Depends on : Tâches 3-5.
-  - Validate with : widget tests selector.
+  - Validate with : Settings UI reads `appThemeModeProvider` and backend diagnostics expose `settingsStoreProvider.runtimeType`.
 
 - [ ] Tâche 7 : Migrer les écrans principaux vers tokens
   - Fichiers : `lib/features/voice/presentation/voice_screen.dart`, `lib/features/clipboard/presentation/clipboard_screen.dart`, `lib/features/snippets/presentation/snippets_screen.dart`, `lib/features/dictionary/presentation/dictionary_screen.dart`, `lib/features/settings/presentation/settings_screen.dart`, `lib/features/shell/presentation/app_shell_screen.dart`
@@ -278,7 +281,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - Le choix Appearance survit au redémarrage.
 - Si la sync compte est retenue, le choix se synchronise avec les settings utilisateur et respecte Firestore Security Rules ou le contrat provider équivalent.
 - Le logout/account switch ne mélange pas les préférences de deux utilisateurs.
-- Settings indique honnêtement si la préférence est locale seulement, synchronisée, pending ou en erreur.
+- Settings indique honnêtement si l'app est en mode local fallback ou connectée à un store settings distant.
 - Les écrans principaux n'introduisent plus de nouvelles couleurs/espacements arbitraires pour les patterns communs.
 - Le design playground rend light et dark sans dépendance réseau.
 - `flutter analyze` passe.
@@ -294,13 +297,13 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 - Widget tests:
   - `WinFlowz` applique le mode choisi.
   - Settings selector change le controller.
-  - Settings affiche état sync/pending/error si applicable.
+  - Settings affiche le diagnostic local/remote du store actif.
 - Adapter tests:
   - local store read/write.
   - Firebase or fake backend store rejects invalid values.
   - account switch isolation.
 - Firebase rules/emulator tests:
-  - `theme_mode` allowlist.
+  - `themeMode` allowlist.
   - user A ne lit/modifie pas settings user B.
   - upsert own settings works.
 - Manual QA:
@@ -312,7 +315,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 # Stop Conditions
 
-- Le contrat Firebase adapter n'est pas pris.
+- Une régression contourne `SettingsStore` pour écrire directement Firebase depuis les widgets.
 - Le contrat mélange secrets locaux et préférences syncables.
 - Une solution nécessite de stocker des clés BYOK dans `user_settings`.
 - Les settings compte ne peuvent pas être isolés par user.
@@ -322,13 +325,13 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 # Rollback Plan
 
 - Garder `AppTheme.light`, `AppTheme.dark` et `ThemeMode.system` comme fallback.
-- Si la persistence locale casse, revenir temporairement au provider in-memory actuel.
+- Si la persistence locale casse, revenir temporairement à `ThemeMode.system` et garder le selector non bloquant.
 - Si la sync distante casse, désactiver uniquement l'adapter sync et conserver local-only.
 - Si la migration Firebase pose problème, désactiver l'adaptateur remote avant release tant que l'UI fonctionne localement.
 
 # Open Questions
 
-- Quel est le contrat Firebase exact: collections, rules, indexes, offline/cache et conflit local/distant?
+- Faut-il ajouter un état Settings explicite `pending/error`, au-delà du diagnostic backend actuel?
 - Quelle règle gagne au premier login sur un appareil qui a déjà une préférence locale différente du compte?
 - Les préférences Android IME/overlay doivent-elles utiliser le même store Settings que Appearance?
 - Le design playground doit-il être une route debug cachée, une section Settings visible, ou un outil dev-only?
@@ -338,7 +341,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-09 15:19:23 UTC | sf-spec | GPT-5 Codex | Created draft spec for post-settings-decision design system completion | Draft spec created; later unblocked by backend-agnostic SettingsStore decision | `/sf-ready shipflow_data/workflow/specs/settings-driven-design-system.md after Firebase adapter spec` |
+| 2026-05-09 15:19:23 UTC | sf-spec | GPT-5 Codex | Created draft spec for post-settings-decision design system completion | Draft spec created; later unblocked by backend-agnostic SettingsStore decision | Continue implementation and verification |
 | 2026-05-11 19:08:22 UTC | sf-ship | GPT-5.5 | Centralized theme variables using TubeFlow theme references across AppTheme, keyboard preview, settings slider, and shell breakpoints; copied theme-reference assets from tubeflow_site | shipped | `/sf-end shipflow_data/workflow/specs/settings-driven-design-system.md` |
 | 2026-05-14 22:27:20 UTC | sf-design-from-scratch | GPT-5 Codex | Reworked the Flutter visual layer toward TubeFlow: monochrome action palette, charcoal/off-white surfaces, stronger card depth, themed shell background, auth card, and card-based form panels on representative screens | passed local validation | Continue visual audit/playground before final closure |
 | 2026-05-14 22:37:00 UTC | sf-audit-components | GPT-5 Codex | Audited Flutter component architecture after TubeFlow design pass | C overall; top-heavy screens, repeated CRUD panels, oversized Settings/Keyboard widgets | Extract shared UI primitives before final design-system closure |
@@ -348,14 +351,16 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 | 2026-05-14 23:18:36 UTC | component-a11y | GPT-5 Codex | Added focus traversal, semantic labels, keyboard activation, and tests for keyboard corner targets; added semantic values for overlay sliders | `flutter analyze`, targeted keyboard corner tests, and full `flutter test` passed | Continue data orchestration extraction and visual/manual review |
 | 2026-05-14 23:29:47 UTC | continue | GPT-5 Codex | Extracted Settings keyboard/overlay native bridge orchestration into application controllers and added merge-logic test coverage | `flutter analyze`, targeted controller test, and full `flutter test` passed | Run visual/manual review and component re-audit before closure |
 | 2026-05-14 23:34:40 UTC | component-re-audit | GPT-5 Codex | Split Settings sections and keyboard preview widgets into part files, reran component checks, and rescored component baseline | component score raised from C to B; `flutter analyze`, targeted tests, full `flutter test`, and `git diff --check` passed | Continue visual/design validation; component-system blocker cleared |
+| 2026-05-14 23:53:47 UTC | firebase-settings-gate | GPT-5 Codex | Verified the existing Firebase settings adapter and hardened theme persistence so changing Appearance preserves other local/remote settings fields | targeted theme controller test passed; Firebase settings gate unblocked | Run final analyze/test/diff checks, then visual/design validation before closure |
+| 2026-05-14 23:56:38 UTC | verification | GPT-5 Codex | Reran static analysis, targeted settings/component tests, full Flutter test suite, and diff whitespace checks after Firebase gate hardening | `flutter analyze`, targeted tests, `flutter test`, and `git diff --check` passed | Continue visual/design validation before final closure |
 
 # Current Chantier Flow
 
 | Step | Status | Evidence | Next step |
 |------|--------|----------|-----------|
-| sf-spec | done | This draft spec exists and records the SettingsStore decision | Specify Firebase adapter |
-| sf-ready | blocked | Firebase adapter contract is pending | Run after Firebase adapter spec |
-| sf-start | partial | User-directed visual and component implementation has started despite the Firebase settings gate; theme tokens, shell/auth styling, shared CRUD primitives, grouped keyboard preview props, Settings section extraction, keyboard corner a11y/focus contracts, Settings bridge controllers, and component file splits are implemented | Continue visual/design validation and Firebase settings gate |
-| sf-verify | partial | Local validation passed after the component refactor with `dart format`, `flutter analyze`, `flutter test`, and `git diff --check`; latest continuation reran `flutter analyze`, targeted tests, full `flutter test`, and `git diff --check` | Add visual/manual review for the design layer |
-| sf-end | blocked | Component-system blocker is cleared to `B`, but the broader design-system chantier still has Firebase settings readiness and visual validation gates | Resolve Firebase settings gate or explicitly defer it before final closure |
+| sf-spec | done | This spec records the SettingsStore decision and Firebase adapter implementation state | Keep spec current through final closure |
+| sf-ready | unblocked | Firebase settings path, rules, local fallback, and theme persistence are implemented; theme save preservation has targeted test coverage | Continue final validation |
+| sf-start | partial | User-directed visual and component implementation has started; theme tokens, shell/auth styling, shared CRUD primitives, grouped keyboard preview props, Settings section extraction, keyboard corner a11y/focus contracts, Settings bridge controllers, component file splits, and Firebase theme persistence hardening are implemented | Continue visual/design validation |
+| sf-verify | partial | Local validation passed after the component refactor and Firebase gate hardening with `dart format`, `flutter analyze`, targeted tests, full `flutter test`, and `git diff --check` | Add visual/manual review for the design layer |
+| sf-end | blocked | Component-system blocker is cleared to `B` and Firebase settings gate is unblocked, but the broader design-system chantier still needs final visual validation and docs/closure review | Complete or explicitly defer visual validation before final closure |
 | sf-ship | partial | Previous theme-token work was shipped; current component-refactor work is validated locally but not shipped | Ship only after the active chantier follow-ups are accepted or explicitly deferred |

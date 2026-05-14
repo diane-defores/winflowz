@@ -37,13 +37,17 @@ The target architecture is local-first: run speech recognition on the user's dev
 - Fallback 2: WinFlowz cloud/worker quality mode only when explicitly selected or when local/offline paths fail.
 - Model downloads should be optional, resumable, and cached on-device.
 - Language packs should be presented as a free downloadable catalog, not as a paid marketplace.
+- Default packaging recommendation: ship the APK with no heavyweight ASR model bundled.
 - The app should support multiple local engines behind one internal interface so we can benchmark `sherpa-onnx`, `whisper.cpp`, Vosk, SenseVoice/FunASR exports, and future free models without changing keyboard UX.
 
 ## Language Pack Strategy
 
 - Do not bundle every ASR model in the APK.
+- Prefer bundling no ASR model in the APK unless a future tiny bootstrap model proves clearly worth the install-size cost.
 - Offer a free downloadable language-pack catalog.
+- Install language packs after app install: first-run suggestion, first microphone use, or explicit Settings action.
 - Suggest packs from Android system locale, active keyboard language, and explicit user choice.
+- The microphone button must not look broken when no pack is installed; it should offer "Install local voice pack" and a configured fallback.
 - Each pack record must include language tag, display name, engine, model id, download size, installed size, license, quality tier, offline support status, and fallback behavior.
 - Quality tiers: `recommended`, `standard`, `experimental`, `fallbackOnly`.
 - WinFlowz public copy must say "local voice packs for supported languages", not "offline voice in every language".
@@ -138,7 +142,7 @@ Diagnostic output should make these cases distinguishable:
 - Whether the keyboard action bar shows a compact waveform/meter or only a stateful microphone button.
 - Whether long-press on the keyboard mic should cancel, show options, or remain unused.
 - Whether overlay onboarding should move from mandatory to recommended.
-- Whether model files are bundled in APK, downloaded after install, or distributed as optional language packs.
+- Whether a future tiny bootstrap model is worth bundling; current recommendation is no bundled ASR model.
 
 ## Acceptance Criteria
 

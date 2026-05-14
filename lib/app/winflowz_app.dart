@@ -25,21 +25,31 @@ class AppThemeModeController extends Notifier<AppThemeMode> {
   void setMode(AppThemeMode value) {
     state = value;
     Future<void>.microtask(() async {
-      try {
-        final settings = UserSettingsSnapshot.defaults().copyWith(
-          themeMode: value.materialMode,
-        );
-        final localStore = ref.read(localSettingsStoreProvider);
-        final activeStore = ref.read(settingsStoreProvider);
-        await localStore.save(settings);
-        if (activeStore is! LocalSettingsStore) {
-          await activeStore.save(settings);
+      final localStore = ref.read(localSettingsStoreProvider);
+      final activeStore = ref.read(settingsStoreProvider);
+      final stores = <SettingsStore>[localStore];
+      if (activeStore is! LocalSettingsStore) {
+        stores.add(activeStore);
+      }
+      for (final store in stores) {
+        try {
+          await _saveThemeMode(store, value);
+        } catch (_) {
+          // Appearance changes apply immediately; persistence failures are
+          // surfaced by the Settings sync/status work rather than blocking UI.
         }
-      } catch (_) {
-        // Appearance changes apply immediately; persistence failures are
-        // surfaced by the Settings sync/status work rather than blocking UI.
       }
     });
+  }
+
+  Future<void> _saveThemeMode(SettingsStore store, AppThemeMode value) async {
+    var settings = const UserSettingsSnapshot.defaults();
+    try {
+      settings = await store.load();
+    } catch (_) {
+      // Keep theme persistence best-effort if a store cannot hydrate first.
+    }
+    await store.save(settings.copyWith(themeMode: value.materialMode));
   }
 
   Future<void> _load() async {
