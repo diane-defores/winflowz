@@ -40,9 +40,12 @@ class OverlayForegroundService : Service() {
 
         private const val maxXOffset = 16
         private const val defaultCollapsedWidth = 44
+        private const val initialRightInset = 72
         private const val preferencesName = "winflowz_app_overlay_prefs"
         private const val keyOverlaySizeScale = "overlay_size_scale"
         private const val keyOverlayOpacity = "overlay_opacity"
+        private const val keyOverlayX = "overlay_x"
+        private const val keyOverlayY = "overlay_y"
 
         @Volatile
         private var running = false
@@ -73,7 +76,7 @@ class OverlayForegroundService : Service() {
     private var longPressRunnable: Runnable? = null
     private var pendingState = "collapsed"
     private var sizeScale = 1f
-    private var overlayOpacity = 0.8f
+    private var overlayOpacity = 0.9f
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -264,10 +267,14 @@ class OverlayForegroundService : Service() {
             PixelFormat.TRANSLUCENT,
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = resources.displayMetrics.widthPixels - (maxXOffset + defaultCollapsedWidth)
-            y = (resources.displayMetrics.heightPixels * 0.6).toInt()
-            alpha = 0.8f
+            val savedPosition = loadPositionPreference()
+            x = savedPosition?.first
+                ?: resources.displayMetrics.widthPixels - (initialRightInset + defaultCollapsedWidth)
+            y = savedPosition?.second
+                ?: (resources.displayMetrics.heightPixels * 0.6).toInt()
+            alpha = overlayOpacity
         }
+        clampToScreen()
 
         overlayView?.setState(pendingState)
         overlayView?.setSizeScale(sizeScale)
@@ -380,7 +387,8 @@ class OverlayForegroundService : Service() {
                     longPressRunnable?.let { overlayView?.removeCallbacks(it) }
 
                     if (isDragging) {
-                        snapToEdge()
+                        clampToScreen()
+                        savePositionPreference()
                     } else if (isHoldRecording) {
                         overlayView?.onRecordStop?.let { onRecordStop ->
                             onRecordStop()
@@ -439,7 +447,30 @@ class OverlayForegroundService : Service() {
     private fun loadAppearancePreferences() {
         val preferences = getSharedPreferences(preferencesName, MODE_PRIVATE)
         sizeScale = preferences.getFloat(keyOverlaySizeScale, 1f).coerceIn(0.8f, 1.4f)
-        overlayOpacity = preferences.getFloat(keyOverlayOpacity, 0.8f).coerceIn(0.5f, 1f)
+        overlayOpacity = preferences.getFloat(keyOverlayOpacity, 0.9f).coerceIn(0.5f, 1f)
+    }
+
+    private fun loadPositionPreference(): Pair<Int, Int>? {
+        val preferences = getSharedPreferences(preferencesName, MODE_PRIVATE)
+        if (!preferences.contains(keyOverlayX) || !preferences.contains(keyOverlayY)) {
+            return null
+        }
+        val x = preferences.getInt(keyOverlayX, maxXOffset)
+        val y = preferences.getInt(keyOverlayY, 0)
+        return Pair(x, y)
+    }
+
+    private fun savePositionPreference() {
+        val params = layoutParams ?: return
+        getSharedPreferences(preferencesName, MODE_PRIVATE)
+            .edit()
+            .putInt(keyOverlayX, params.x)
+            .putInt(keyOverlayY, params.y)
+            .apply()
+        OverlayEventQueue.enqueue(
+            "overlayPosition",
+            mapOf("x" to params.x, "y" to params.y),
+        )
     }
 
     private fun normalizeState(state: String): String {
@@ -449,15 +480,14 @@ class OverlayForegroundService : Service() {
         }
     }
 
-    private fun snapToEdge() {
+    private fun clampToScreen() {
         val params = layoutParams ?: return
         val viewWidth = overlayView?.width ?: defaultCollapsedWidth
+        val viewHeight = overlayView?.height ?: defaultCollapsedWidth
         val screenWidth = resources.displayMetrics.widthPixels
-        params.x = if (params.x + viewWidth / 2 < screenWidth / 2) {
-            maxXOffset
-        } else {
-            screenWidth - viewWidth - maxXOffset
-        }
+        val screenHeight = resources.displayMetrics.heightPixels
+        params.x = params.x.coerceIn(0, (screenWidth - viewWidth).coerceAtLeast(0))
+        params.y = params.y.coerceIn(0, (screenHeight - viewHeight).coerceAtLeast(0))
         try {
             windowManager?.updateViewLayout(overlayView, params)
         } catch (_: Exception) {

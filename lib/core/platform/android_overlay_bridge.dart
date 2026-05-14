@@ -60,7 +60,7 @@ class AndroidOverlayStatus {
           ? OverlayDeliveryMode.injectionAndClipboard
           : OverlayDeliveryMode.clipboardOnly,
       sizeScale: (map['sizeScale'] as num?)?.toDouble() ?? 1,
-      opacity: (map['opacity'] as num?)?.toDouble() ?? 0.8,
+      opacity: (map['opacity'] as num?)?.toDouble() ?? 0.9,
       eventQueueSize: (map['eventQueueSize'] as num?)?.toInt() ?? 0,
       serviceState: map['serviceState'] as String? ?? 'unknown',
       lastNativeEvent: map['lastNativeEvent'] as String?,
@@ -214,7 +214,7 @@ class AndroidOverlayBridge {
         recordAudioGranted: false,
         deliveryMode: OverlayDeliveryMode.clipboardOnly,
         sizeScale: 1,
-        opacity: 0.8,
+        opacity: 0.9,
         eventQueueSize: 0,
         serviceState: 'unsupported',
       );

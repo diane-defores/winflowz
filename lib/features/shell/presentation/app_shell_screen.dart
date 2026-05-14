@@ -37,7 +37,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     recordAudioGranted: false,
     deliveryMode: OverlayDeliveryMode.clipboardOnly,
     sizeScale: 1,
-    opacity: 0.8,
+    opacity: 0.9,
     eventQueueSize: 0,
     serviceState: 'unsupported',
   );
@@ -203,9 +203,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         }
       });
 
+      final activeStep = readiness.activeStep?.definition.id.name ?? 'none';
       AppDiagnostics.record(
         'onboarding_refresh',
-        'current=$readiness.currentStep/${readiness.steps.length};mandatory=$readiness.hasPendingMandatory;recommended=$readiness.hasPendingRecommended;visible=$_onboardingVisible',
+        'current=${readiness.currentStep}/${readiness.steps.length};active=$activeStep;mandatory=${readiness.hasPendingMandatory};recommended=${readiness.hasPendingRecommended};visible=$_onboardingVisible',
       );
     } catch (error) {
       if (!mounted) {
@@ -230,7 +231,12 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     try {
       AppDiagnostics.record('onboarding_primary_action', step.id.name);
       if (step.id == OnboardingStepId.overlay) {
-        await AndroidOverlayBridge.openPermissionSettings();
+        final status = await _loadOverlayStatusForOnboarding();
+        if (!status.overlayPermissionGranted) {
+          await AndroidOverlayBridge.openPermissionSettings();
+        } else {
+          await AndroidOverlayBridge.startRecording();
+        }
       } else if (step.id == OnboardingStepId.keyboardIme) {
         await AndroidKeyboardBridge.openInputMethodSettings();
       } else if (step.id == OnboardingStepId.accessibility) {
@@ -277,6 +283,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       _onboardingMessage = null;
     });
     try {
+      AppDiagnostics.record('onboarding_secondary_action', step.id.name);
       await AndroidKeyboardBridge.showInputMethodPicker();
     } on AndroidKeyboardBridgeException catch (error) {
       if (!mounted) {
@@ -409,14 +416,21 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       builder: (context, constraints) {
         final useRail = constraints.maxWidth >= AppBreakpoints.navigationRail;
         return PopScope(
-          canPop: _tabHistory.length <= 1,
+          canPop: !_onboardingVisible && _tabHistory.length <= 1,
           onPopInvokedWithResult: (didPop, result) {
-            if (!didPop) {
+            if (didPop) {
+              return;
+            }
+            if (_onboardingVisible) {
+              _pauseOnboarding();
+            } else {
               _goBackInTabs();
             }
           },
           child: Scaffold(
-            appBar: AppBar(title: Text('WinFlowz • ${titles[_index]}')),
+            appBar: _onboardingVisible
+                ? null
+                : AppBar(title: Text('WinFlowz • ${titles[_index]}')),
             body: Row(
               children: [
                 if (useRail)
@@ -502,7 +516,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                 ),
               ],
             ),
-            bottomNavigationBar: useRail
+            bottomNavigationBar: useRail || _onboardingVisible
                 ? null
                 : NavigationBar(
                     labelBehavior:
@@ -613,59 +627,78 @@ class _OnboardingOverlay extends StatelessWidget {
             color: AppColors.overlayScrim,
             child: Center(
               child: SafeArea(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: AppLayoutMetrics.onboardingOverlayMaxWidth,
-                    maxHeight: AppLayoutMetrics.onboardingOverlayMaxHeight,
-                  ),
-                  child: Material(
-                    elevation: AppElevation.overlay,
-                    shadowColor: AppColors.borderLight,
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(AppRadii.md),
-                    clipBehavior: Clip.antiAlias,
-                    child: SingleChildScrollView(
-                      padding: AppInsets.onboarding,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: AppLayoutMetrics.onboardingOverlayMaxWidth,
+                        maxHeight: constraints.maxHeight - AppSpacing.x6,
+                      ),
+                      child: Material(
+                        elevation: AppElevation.overlay,
+                        shadowColor: AppColors.borderLight,
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(AppRadii.md),
+                        clipBehavior: Clip.antiAlias,
+                        child: SingleChildScrollView(
+                          padding: AppInsets.onboarding,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.flag_outlined,
-                                color: Theme.of(context).colorScheme.primary,
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.flag_outlined,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                  AppGaps.horizontalX2,
+                                  Expanded(
+                                    child: Text(
+                                      'Configuration WinFlowz',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'Fermer (reprendre plus tard)',
+                                    onPressed: () => onClose(),
+                                    icon: const Icon(Icons.close_outlined),
+                                  ),
+                                ],
                               ),
-                              AppGaps.horizontalX2,
-                              Expanded(
-                                child: Text(
-                                  'Configuration WinFlowz',
-                                  style: Theme.of(context).textTheme.titleSmall,
+                              AppGaps.x2,
+                              onboardingContent,
+                              if (message != null) ...[
+                                AppGaps.x2,
+                                Text(
+                                  message!,
+                                  style: Theme.of(context).textTheme.labelMedium
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.error,
+                                  ),
                                 ),
-                              ),
-                              IconButton(
-                                tooltip: 'Fermer (reprendre plus tard)',
-                                onPressed: () => onClose(),
-                                icon: const Icon(Icons.close_outlined),
+                              ],
+                              AppGaps.x3,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton.icon(
+                                  onPressed: () => onClose(),
+                                  icon: const Icon(Icons.close_outlined),
+                                  label: const Text('Plus tard'),
+                                ),
                               ),
                             ],
                           ),
-                          AppGaps.x2,
-                          onboardingContent,
-                          if (message != null) ...[
-                            AppGaps.x2,
-                            Text(
-                              message!,
-                              style: Theme.of(context).textTheme.labelMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                            ),
-                          ],
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ),

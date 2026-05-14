@@ -454,7 +454,7 @@ class MainActivity : FlutterActivity() {
         overlayPreferences().getFloat(keyOverlaySizeScale, 1f)
 
     private fun overlayOpacity(): Float =
-        overlayPreferences().getFloat(keyOverlayOpacity, 0.8f)
+        overlayPreferences().getFloat(keyOverlayOpacity, 0.9f)
 
     private fun setOverlayEnabled(enabled: Boolean) {
         overlayPreferences().edit().putBoolean(keyOverlayEnabled, enabled).apply()

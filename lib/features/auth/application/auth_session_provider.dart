@@ -16,6 +16,10 @@ class LocalAuthModeController extends Notifier<bool> {
   void enable() {
     state = true;
   }
+
+  void disable() {
+    state = false;
+  }
 }
 
 final localAuthModeProvider = NotifierProvider<LocalAuthModeController, bool>(

@@ -57,7 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     recordAudioGranted: false,
     deliveryMode: OverlayDeliveryMode.clipboardOnly,
     sizeScale: 1,
-    opacity: 0.8,
+    opacity: 0.9,
     eventQueueSize: 0,
     serviceState: 'unknown',
   );
@@ -543,6 +543,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _signOut() async {
     await ref.read(authSessionStoreProvider).signOut();
+    ref.read(localAuthModeProvider.notifier).disable();
   }
 
   Future<void> _copyBackendDiagnostic() async {
@@ -556,9 +557,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _backendDiagnosticText() {
     final authAsync = ref.read(authSessionProvider);
     final storageStatus = ref.read(_storageStatusProvider);
-    final status = FirebaseBootstrap.isConfigured
-        ? 'firebase_remote'
-        : 'local_mode';
+    final status = _backendStatus(authAsync);
     final lines = <String>[
       'WinFlowz backend diagnostic',
       'diagnostic_version: 5',
@@ -593,6 +592,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       'settings_message: ${_sanitizeDiagnostic(_message ?? 'none')}',
     ];
     return lines.join('\n');
+  }
+
+  String _backendStatus(AsyncValue<AuthSessionSnapshot> authAsync) {
+    if (!FirebaseBootstrap.isConfigured) {
+      return 'local_mode';
+    }
+    final session = authAsync.maybeWhen(
+      data: (value) => value,
+      orElse: () => null,
+    );
+    if (session == null) {
+      return 'firebase_configured_session_pending';
+    }
+    if (session.isSignedIn && !session.isLocalFallback) {
+      return 'firebase_remote';
+    }
+    if (session.isLocalFallback) {
+      return 'firebase_configured_local_session';
+    }
+    return 'firebase_configured_signed_out';
   }
 
   String _authDiagnostic(AsyncValue<AuthSessionSnapshot> authAsync) {

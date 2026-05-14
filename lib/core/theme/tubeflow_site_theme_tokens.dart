@@ -111,7 +111,7 @@ class TubeflowSiteThemeTokens {
   static const double overlayBubbleOpacityMin = 0.5;
   static const double overlayBubbleOpacityMax = 1.0;
   static const double overlayBubbleDefaultSize = 1.0;
-  static const double overlayBubbleDefaultOpacity = 0.8;
+  static const double overlayBubbleDefaultOpacity = 0.9;
 
   // Surfaces and state token values used in Flutter theme composition.
   static const double surfaceSubtleAlpha = 0.72;

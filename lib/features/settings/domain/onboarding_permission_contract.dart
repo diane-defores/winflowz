@@ -116,11 +116,11 @@ const _stepDefinitions = <OnboardingStepDefinition>[
   OnboardingStepDefinition(
     id: OnboardingStepId.overlay,
     title: 'Autorisation Overlay',
-    description: 'Active l’autorisation "Afficher les fenêtres superposées".',
+    description: 'Active la bulle flottante WinFlowz.',
     why:
         'La bulle flottante permet de démarrer et arrêter la dictée sans repasser par les menus.',
     category: OnboardingStepCategory.mandatory,
-    openActionLabel: 'Ouvrir les permissions Overlay',
+    openActionLabel: 'Activer l’overlay',
     whereToFind:
         'Réglages Android → Applications → WinFlowz → Autorisations → Afficher les fenêtres',
   ),
@@ -265,7 +265,9 @@ bool _isStepSatisfied({
 }) {
   switch (definition.id) {
     case OnboardingStepId.overlay:
-      return overlayStatus.overlayPermissionGranted;
+      return overlayStatus.overlayPermissionGranted &&
+          overlayStatus.enabled &&
+          overlayStatus.running;
     case OnboardingStepId.accessibility:
       return overlayStatus.accessibilityPermissionGranted;
     case OnboardingStepId.keyboardIme:
@@ -281,9 +283,16 @@ String? _stepBlockerReason({
   required AndroidKeyboardStatus keyboardStatus,
 }) {
   if (definition.id == OnboardingStepId.overlay) {
-    return overlayStatus.overlayPermissionGranted
-        ? null
-        : 'Permission Overlay refusée: la bulle est bloquée.';
+    if (!overlayStatus.overlayPermissionGranted) {
+      return 'Permission Overlay refusée: la bulle est bloquée.';
+    }
+    if (!overlayStatus.enabled) {
+      return 'Overlay autorisé mais désactivé: active la bulle WinFlowz.';
+    }
+    if (!overlayStatus.running) {
+      return 'Overlay activé mais service arrêté: démarre la bulle WinFlowz.';
+    }
+    return null;
   }
   if (definition.id == OnboardingStepId.accessibility) {
     return overlayStatus.accessibilityPermissionGranted
