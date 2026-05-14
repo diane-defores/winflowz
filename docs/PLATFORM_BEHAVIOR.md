@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-04-27"
 updated: "2026-05-14"
 status: "reviewed"
@@ -19,11 +19,11 @@ supersedes: []
 evidence:
   - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
   - "lib/core/platform/platform_capabilities.dart"
-  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt"
 next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
-# Platform Behavior — WinFlowzApp
+# Platform Behavior — WinFlowz
 
 ## Shared Rules
 
@@ -35,7 +35,7 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 
 ## Capability Matrix
 
-| Platform | Local speech | Advanced recording + Whisper | Secure key storage | Clipboard sync | Overlay | WinFlowzApp Keyboard IME |
+| Platform | Local speech | Advanced recording + Whisper | Secure key storage | Clipboard sync | Overlay | WinFlowz keyboard IME |
 |---|---|---|---|---|---|---|
 | Android | supported when `speech_to_text` or Android speech recognition supports locale/device | supported | Android keystore via `flutter_secure_storage` | opt-in; respect background limits | supported | supported as native Kotlin IME |
 | iOS | supported when permission and locale allow | supported | Keychain via `flutter_secure_storage` | opt-in; no Android-style overlay | unavailable | unavailable |
@@ -46,7 +46,7 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 
 ## Android Keyboard IME
 
-- WinFlowzApp Keyboard is declared as an Android `InputMethodService` and is configurable from Settings through the `winflowz_app/keyboard` MethodChannel.
+- WinFlowz keyboard is declared as an Android `InputMethodService` and is configurable from Settings through the `winflowz_app/keyboard` MethodChannel.
 - The keyboard provides a native Canvas layout engine with QWERTY/AZERTY profiles, explicit clipboard copy/paste actions, Android speech recognition, and media keys (previous/play-pause/next).
 - Tap and swipe-corner classification is local and deterministic: tap emits the primary glyph, configurable corner swipes dispatch typed `KeyboardKeyValue` actions when corner mode is enabled, and return-to-center cancels the gesture.
 - Corner shortcuts are configured per stable key id and corner slot through local Android preferences. The default preset preserves the French accent corners; additional presets cover punctuation, combined French punctuation, developer symbols, and no-corner mode.

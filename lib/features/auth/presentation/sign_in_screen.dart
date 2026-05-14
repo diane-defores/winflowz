@@ -1,14 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../../core/bootstrap/sentry_bootstrap.dart';
 import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../application/auth_session_provider.dart';
+import '../domain/auth_failure.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -65,23 +64,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       } else {
         await store.signInWithEmailPassword(email: email, password: password);
       }
-    } on firebase_auth.FirebaseAuthException catch (error, stackTrace) {
-      await _presentAuthError(error, stackTrace, signup: signup);
+    } on AuthFailure catch (error, stackTrace) {
+      await _presentAuthFailure(error, stackTrace);
     } on UnsupportedError catch (error, stackTrace) {
-      await _presentError(
-        userMessage: _unsupportedErrorMessage(error),
-        category: 'auth_unsupported_error',
-        error: error,
-        stackTrace: stackTrace,
-      );
+      await _presentAuthFailure(AuthFailure.unsupported(error), stackTrace);
     } catch (error, stackTrace) {
-      await _presentError(
-        userMessage:
-            'Connexion impossible pour le moment. Réessaie dans quelques instants.',
-        category: 'auth_unexpected_error',
-        error: error,
-        stackTrace: stackTrace,
-      );
+      await _presentAuthFailure(AuthFailure.unexpected(error), stackTrace);
     } finally {
       if (mounted) {
         setState(() => _busy = false);
@@ -99,21 +87,19 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       ref.read(localAuthModeProvider.notifier).enable();
       final store = ref.read(localAuthSessionStoreProvider);
       await store.signInAnonymously();
-    } on firebase_auth.FirebaseAuthException catch (error, stackTrace) {
-      await _presentAuthError(error, stackTrace, signup: false);
+    } on AuthFailure catch (error, stackTrace) {
+      await _presentAuthFailure(error, stackTrace);
     } on UnsupportedError catch (error, stackTrace) {
-      await _presentError(
-        userMessage: _unsupportedErrorMessage(error),
-        category: 'auth_local_unsupported_error',
-        error: error,
-        stackTrace: stackTrace,
-      );
+      await _presentAuthFailure(AuthFailure.unsupported(error), stackTrace);
     } catch (error, stackTrace) {
-      await _presentError(
-        userMessage: 'Mode local indisponible pour le moment.',
-        category: 'auth_local_unexpected_error',
-        error: error,
-        stackTrace: stackTrace,
+      await _presentAuthFailure(
+        const AuthFailure(
+          kind: AuthFailureKind.unexpected,
+          userMessage: 'Mode local indisponible pour le moment.',
+          category: 'auth_local_unexpected',
+          code: 'local-unexpected',
+        ),
+        stackTrace,
       );
     } finally {
       if (mounted) {
@@ -131,27 +117,22 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
     try {
       await store.signInWithGoogle();
-    } on firebase_auth.FirebaseAuthException catch (error, stackTrace) {
-      await _presentAuthError(error, stackTrace, signup: false);
+    } on AuthFailure catch (error, stackTrace) {
+      await _presentAuthFailure(error, stackTrace);
+    } on UnsupportedError catch (error, stackTrace) {
+      await _presentAuthFailure(AuthFailure.unsupported(error), stackTrace);
     } catch (error, stackTrace) {
-      if (_isGoogleCancellation(error)) {
-        _setError('Connexion Google annulée.');
-      } else if (error is UnsupportedError) {
-        await _presentError(
-          userMessage: _unsupportedErrorMessage(error),
-          category: 'auth_google_unsupported_error',
-          error: error,
-          stackTrace: stackTrace,
-        );
-      } else {
-        await _presentError(
+      await _presentAuthFailure(
+        AuthFailure(
+          kind: AuthFailureKind.unexpected,
           userMessage:
               'Connexion Google impossible pour le moment. Réessaie plus tard.',
-          category: 'auth_google_unexpected_error',
-          error: error,
-          stackTrace: stackTrace,
-        );
-      }
+          category: 'auth_google_unexpected',
+          code: 'google-unexpected',
+          supportDetail: error,
+        ),
+        stackTrace,
+      );
     } finally {
       if (mounted) {
         setState(() => _busy = false);
@@ -169,34 +150,19 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
   }
 
-  Future<void> _presentAuthError(
-    firebase_auth.FirebaseAuthException error,
-    StackTrace stackTrace, {
-    required bool signup,
-  }) async {
-    await _presentError(
-      userMessage: _authErrorMessage(error, signup: signup),
-      category: 'auth_firebase_error',
-      error: error,
-      stackTrace: stackTrace,
-      detail:
-          'Firebase Auth error (${error.code}): ${_sanitizeErrorDetail(error.message ?? error.toString())}',
-    );
-  }
-
-  Future<void> _presentError({
-    required String userMessage,
-    required String category,
-    required Object error,
-    required StackTrace stackTrace,
-    String? detail,
-  }) async {
-    final safeDetail = detail ?? _sanitizeErrorDetail(error);
-    AppDiagnostics.record(category, safeDetail);
-    if (SentryBootstrap.isInitialized) {
-      await Sentry.captureException(error, stackTrace: stackTrace);
+  Future<void> _presentAuthFailure(
+    AuthFailure failure,
+    StackTrace stackTrace,
+  ) async {
+    final detail = failure.safeSupportDetail;
+    AppDiagnostics.record(failure.category, detail);
+    if (SentryBootstrap.isInitialized && failure.reportToSentry) {
+      await Sentry.captureException(failure, stackTrace: stackTrace);
     }
-    _setError(userMessage, detail: safeDetail);
+    _setError(
+      failure.userMessage,
+      detail: failure.reportToSentry ? detail : null,
+    );
   }
 
   Future<void> _copyErrorDetail() async {
@@ -236,84 +202,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       return 'Le mot de passe doit contenir au moins 6 caractères.';
     }
     return null;
-  }
-
-  String _unsupportedErrorMessage(UnsupportedError error) {
-    final message = error.message;
-    if (message == null || message.isEmpty) {
-      return 'Cette méthode de connexion n’est pas disponible.';
-    }
-    if (message.contains('Remote auth')) {
-      return 'La connexion email n’est pas configurée sur cet environnement.';
-    }
-    if (message.contains('Google Sign-In')) {
-      return 'La connexion Google n’est pas configurée sur cet environnement.';
-    }
-    return message;
-  }
-
-  String _authErrorMessage(
-    firebase_auth.FirebaseAuthException error, {
-    required bool signup,
-  }) {
-    switch (error.code) {
-      case 'invalid-email':
-        return 'L’email saisi n’est pas valide.';
-      case 'user-disabled':
-        return 'Ce compte a été désactivé.';
-      case 'user-not-found':
-      case 'wrong-password':
-      case 'invalid-credential':
-        return 'Email ou mot de passe incorrect.';
-      case 'email-already-in-use':
-        return 'Un compte existe déjà avec cet email.';
-      case 'weak-password':
-        return 'Choisis un mot de passe plus robuste.';
-      case 'operation-not-allowed':
-        return signup
-            ? 'La création de compte email n’est pas activée.'
-            : 'La connexion email n’est pas activée.';
-      case 'invalid-api-key':
-      case 'app-not-authorized':
-        return 'La configuration Firebase de cette version est invalide. Le détail technique peut être copié pour correction.';
-      case 'network-request-failed':
-        return 'Connexion réseau indisponible. Vérifie ta connexion internet.';
-      case 'too-many-requests':
-        return 'Trop de tentatives. Réessaie dans quelques minutes.';
-      case 'account-exists-with-different-credential':
-        return 'Un compte existe déjà avec cet email via une autre méthode.';
-      case 'popup-closed-by-user':
-      case 'canceled':
-        return 'Connexion annulée.';
-      default:
-        return signup
-            ? 'Création de compte impossible pour le moment.'
-            : 'Connexion impossible pour le moment.';
-    }
-  }
-
-  bool _isGoogleCancellation(Object error) {
-    if (error is GoogleSignInException) {
-      final code = error.code.toString().toLowerCase();
-      return code.contains('cancel') || code.contains('interrupted');
-    }
-    final text = error.toString().toLowerCase();
-    return text.contains('cancel') || text.contains('interrupted');
-  }
-
-  String _sanitizeErrorDetail(Object? value) {
-    var text = value?.toString() ?? 'Erreur inconnue';
-    final redactionPatterns = [
-      RegExp(r'AIza[0-9A-Za-z_-]{20,}'),
-      RegExp(
-        r'(api[_-]?key|token|secret|password)\s*[:=]\s*[^,\s;]+',
-        caseSensitive: false,
-      ),
-    ];
-    for (final pattern in redactionPatterns) {
-      text = text.replaceAll(pattern, '<redacted>');
-    }
-    return text.replaceAll('\n', ' | ').replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
   @override

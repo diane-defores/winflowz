@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-04-27"
 updated: "2026-05-10"
 status: "reviewed"
@@ -21,18 +21,18 @@ evidence:
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayView.kt"
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayEventQueue.kt"
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayTextInjectionHelper.kt"
-  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt"
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt"
   - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
 next_step: "/sf-verify shipflow_data/workflow/specs/android-overlay-flutter-parity-repair.md"
 ---
 
-# Android Overlay — WinFlowzApp
+# Android Overlay — WinFlowz
 
 ## Contract
 
 Android overlay is an Android-only native capability exposed to Flutter through a narrow Dart bridge. It must not be represented as available on iOS, macOS, Windows, Linux, or web.
 
-WinFlowzApp Keyboard is now the preferred Android text-entry surface for in-field typing, dictation, clipboard actions, snippets entry points, and generic media play/pause. Overlay remains complementary for floating capture flows and fallback delivery, not the primary keyboard path.
+WinFlowz keyboard is now the preferred Android text-entry surface for in-field typing, dictation, clipboard actions, snippets entry points, and generic media play/pause. Overlay remains complementary for floating capture flows and fallback delivery, not the primary keyboard path.
 
 The Flutter port now owns an actual native overlay bubble through `OverlayForegroundService`, `OverlayView`, `WaveformView`, `OverlayEventQueue`, and `OverlayTextInjectionHelper`. The old Expo module remains a legacy reference only and must not be used at runtime.
 
@@ -92,4 +92,4 @@ Keep `modules/floating-overlay/` and `winflowz_app_snapshots/winflowz_app-pre-fl
 - Rapid start/stop/cancel race.
 - App logout while overlay is active.
 - Android build with service and accessibility declarations.
-- WinFlowzApp Keyboard appears in Android input method settings and can type in a standard text field.
+- WinFlowz keyboard appears in Android input method settings and can type in a standard text field.

@@ -2,7 +2,7 @@
 artifact: verification_plan
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-04-27"
 updated: "2026-05-14"
 status: "reviewed"
@@ -23,11 +23,12 @@ evidence:
 next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
-# Verification — WinFlowzApp Android Firebase Backend-Agnostic Migration
+# Verification — WinFlowz Android Firebase Backend-Agnostic Migration
 
 ## Required Automated Checks
 
 - `dart format --set-exit-if-changed .`
+- `git diff --check`
 - `flutter analyze`
 - `flutter test`
 - `flutter test test/widget_test.dart`
@@ -40,7 +41,7 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 
 ## Required Manual Checks
 
-- Android: local speech, advanced recording, WinFlowzApp Keyboard enable/switch/type/private-field behavior, keyboard dictation permission denied/allowed, keyboard clipboard actions, keyboard media play/pause, overlay permission, accessibility fallback, clipboard fallback.
+- Android: local speech, advanced recording, WinFlowz keyboard enable/switch/type/private-field behavior, keyboard dictation permission denied/allowed, keyboard clipboard actions, keyboard media play/pause, overlay permission, accessibility fallback, clipboard fallback.
 - iOS/macOS/Windows/Linux/web: out of current runtime scope. Keep platform limits documented and do not treat desktop/web build or launch as required proof for the Android MVP.
 
 ## Manual Platform Pass — 2026-05-10
@@ -67,14 +68,37 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 - IME cannot silently capture, sync, log, or enrich text in password/OTP/private fields.
 - AI and sync retries are bounded and time out visibly.
 
+## Android Auth Smoke Matrix
+
+Run before closing any auth-hardening chantier as sellable/production-ready:
+
+| Case | Expected result |
+|---|---|
+| Launch with Firebase defines missing | App stays recoverable; user can explicitly continue in local mode; no remote auth call is required. |
+| Invalid email/password form | Form errors display in French; auth store is not called. |
+| Email/password sign-up or sign-in success | Session becomes Firebase-backed; app shell opens; remote stores use Firebase `uid`, not a client-provided user id. |
+| Email/password wrong credential | User sees a generic credential error that does not reveal whether the account exists. |
+| Provider disabled / invalid Firebase config | User sees a setup/configuration message; support detail is redacted and copyable. |
+| Google Sign-In success | Android account selection returns an ID token; Firebase credential sign-in succeeds; session provider reports Google auth. |
+| Google user cancellation before selection | User sees a cancellation message; no high-severity Sentry event is required. |
+| Controlled Google config failure or documented equivalent | Missing SHA/package/server client ID/client config is reported as configuration trouble, even if the SDK labels it canceled after account selection. |
+| Google missing/null ID token | No Firebase credential is built; typed auth failure is shown and logged redacted. |
+| Signed-out deep link to `/voice`, `/clipboard`, `/settings`, `/keyboard`, `/snippets`, or `/dictionary` | Router redirects to auth gate/login without building the protected product surface. |
+| Local mode deep link to product route | Route opens through the app shell and remains local-only. |
+| Signed-in deep link to product route | Route opens through the app shell with the matching initial tab. |
+| Sentry/AppDiagnostics review | Category/code/support detail are present where useful; secrets, tokens, passwords, OAuth payloads, clipboard text, transcripts, and raw provider payloads are absent. |
+
+Record device/emulator, build source, Firebase project, provider/SHA setup
+status, and redaction evidence in this doc or `shipflow_data/workflow/TEST_LOG.md`.
+
 ## Android IME Manual Matrix
 
 Run on at least one emulator or real Android device before closing the IME chantier:
 
 | Case | Expected result |
 |---|---|
-| Enable WinFlowzApp in Android input method settings | WinFlowzApp Keyboard appears as an available keyboard. |
-| Switch to WinFlowzApp from a normal text field | Native keyboard opens without launching a Flutter view inside the IME. |
+| Enable WinFlowz in Android input method settings | WinFlowz keyboard appears as an available keyboard. |
+| Switch to WinFlowz from a normal text field | Native keyboard opens without launching a Flutter view inside the IME. |
 | Type letters, space, backspace, enter | Focused field receives expected `InputConnection` updates; backspace deletes one code point including emoji/surrogate pairs. |
 | Tap Ctrl/Alt/Fn then a text key | Modifier is visible as active, applies to the next key-value dispatch, then clears. |
 | Tap Fn then `h/j/k/l` | Built-in modmap sends left/down/up/right key events instead of inserting letters. |

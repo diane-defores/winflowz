@@ -1,4 +1,5 @@
 import '../domain/auth_session_store.dart';
+import '../domain/auth_failure.dart';
 
 class LocalAuthSessionStore implements AuthSessionStore {
   const LocalAuthSessionStore();
@@ -19,7 +20,9 @@ class LocalAuthSessionStore implements AuthSessionStore {
     required String email,
     required String password,
   }) async {
-    throw UnsupportedError('Remote auth is not configured.');
+    throw AuthFailure.unsupported(
+      UnsupportedError('Remote auth is not configured.'),
+    );
   }
 
   @override
@@ -27,12 +30,16 @@ class LocalAuthSessionStore implements AuthSessionStore {
     required String email,
     required String password,
   }) async {
-    throw UnsupportedError('Remote auth is not configured.');
+    throw AuthFailure.unsupported(
+      UnsupportedError('Remote auth is not configured.'),
+    );
   }
 
   @override
   Future<void> signInWithGoogle() async {
-    throw UnsupportedError('Google Sign-In is not configured.');
+    throw AuthFailure.unsupported(
+      UnsupportedError('Google Sign-In is not configured.'),
+    );
   }
 
   @override

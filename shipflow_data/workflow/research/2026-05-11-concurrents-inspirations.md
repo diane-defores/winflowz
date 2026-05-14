@@ -2,7 +2,7 @@
 artifact: research_report
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-11"
 updated: "2026-05-11"
 status: reviewed

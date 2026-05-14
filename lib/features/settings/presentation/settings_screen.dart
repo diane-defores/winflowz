@@ -7,6 +7,7 @@ import '../../../core/bootstrap/app_build_info.dart';
 import '../../../core/bootstrap/firebase_bootstrap.dart';
 import '../../../core/bootstrap/sentry_bootstrap.dart';
 import '../../../core/diagnostics/app_diagnostics.dart';
+import '../../../core/diagnostics/sensitive_redactor.dart';
 import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
@@ -559,7 +560,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ? 'firebase_remote'
         : 'local_mode';
     final lines = <String>[
-      'WinFlowzApp backend diagnostic',
+      'WinFlowz backend diagnostic',
       'diagnostic_version: 5',
       'generated_at_utc: ${DateTime.now().toUtc().toIso8601String()}',
       'secret_values_redacted: true',
@@ -699,21 +700,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   String _sanitizeDiagnostic(Object? value) {
-    var text = value?.toString() ?? 'none';
-    final redactionPatterns = [
-      RegExp(r'AIza[0-9A-Za-z_-]{20,}'),
-      RegExp(r'sb_[0-9A-Za-z_-]{12,}'),
-      RegExp(r'eyJ[0-9A-Za-z_.-]{20,}'),
-      RegExp(r'sk-[0-9A-Za-z_-]{12,}'),
-      RegExp(
-        r'(api[_-]?key|anon[_-]?key|publishable[_-]?key|token|secret|password)\s*[:=]\s*[^,\s;]+',
-        caseSensitive: false,
-      ),
-    ];
-    for (final pattern in redactionPatterns) {
-      text = text.replaceAll(pattern, '<redacted>');
-    }
-    return text.replaceAll('\n', ' | ');
+    return SensitiveRedactor.redact(value);
   }
 
   String _recentEventsDiagnostic() {
@@ -778,7 +765,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 AppGaps.x2,
                 Text(
-                  'Uses the WinFlowzApp palette and shared Flowz interface tokens.',
+                  'Uses the WinFlowz palette and shared Flowz interface tokens.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -827,7 +814,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   subtitle: Text(
                     FirebaseBootstrap.isConfigured
                         ? 'Firebase is the active backend adapter. Legacy Supabase may remain unconfigured.'
-                        : 'Remote sync is not configured. WinFlowzApp stays in local mode.',
+                        : 'Remote sync is not configured. WinFlowz stays in local mode.',
                   ),
                 ),
                 SelectableText(_backendDiagnosticText()),
@@ -927,7 +914,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 : 'Android keyboard IME unavailable on this platform',
           ),
           subtitle: const Text(
-            'WinFlowzApp Keyboard is Android-only and runs as a native input method.',
+            'WinFlowz keyboard is Android-only and runs as a native input method.',
           ),
         ),
         if (PlatformCapabilities.keyboardImeSupported)
@@ -935,7 +922,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
               children: [
                 ListTile(
-                  title: const Text('WinFlowzApp Keyboard status'),
+                  title: const Text('WinFlowz keyboard status'),
                   subtitle: Text(
                     'enabled=${keyboardStatus?.enabled ?? false} | '
                     'active=${keyboardStatus?.active ?? false} | '
@@ -962,7 +949,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     leading: Icon(Icons.info_outline),
                     title: Text('Keyboard not enabled'),
                     subtitle: Text(
-                      'Enable WinFlowzApp in Android input method settings, then switch to it from any text field.',
+                      'Enable WinFlowz keyboard in Android input method settings, then switch to it from any text field.',
                     ),
                   ),
                 Padding(

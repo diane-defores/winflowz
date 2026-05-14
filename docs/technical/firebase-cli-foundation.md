@@ -2,9 +2,9 @@
 artifact: firebase_foundation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-10"
-updated: "2026-05-10"
+updated: "2026-05-14"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "firebase-cli-foundation"
@@ -90,9 +90,24 @@ com.winflowz_app.winflowz_app
 Google Sign-In on Android also needs the app signing SHA fingerprints in the
 Firebase Android app settings before a real-device auth smoke can pass.
 
+Google provider verification checklist:
+
+- Enable Email/password and Google in Firebase Authentication providers.
+- Confirm Android package name is exactly `com.winflowz_app.winflowz_app`.
+- Register the SHA-1 and SHA-256 fingerprints for every debug, CI, and release
+  signing key used to install an APK.
+- Download/regenerate `google-services.json` after provider, OAuth client, or
+  fingerprint changes.
+- Confirm the generated config includes the web OAuth client used by
+  `google_sign_in` for ID-token authentication, or document any explicit
+  `serverClientId` override.
+- Run one Android smoke after each provider/SHA/client change; a Google flow
+  reported as `canceled` after account selection may still be configuration
+  failure, not user intent.
+
 ## Flutter runtime defines
 
-WinFlowzApp initializes Firebase conditionally. Missing values keep the app in
+WinFlowz initializes Firebase conditionally. Missing values keep the app in
 local mode instead of crashing.
 
 ```bash
@@ -113,6 +128,11 @@ Runtime adapters currently use:
   feature store interfaces
 - Local fallback when Firebase config or user session is missing
 - Supabase only as legacy compatibility fallback when Firebase is not configured
+
+Auth diagnostics must stay redacted. Support copy, local diagnostics, and Sentry
+events may include category/code context, but not API keys, OAuth/JWT tokens,
+password-like fields, raw provider payloads, clipboard text, transcripts, or
+other user content.
 
 ## GitHub Secrets / Blacksmith list
 

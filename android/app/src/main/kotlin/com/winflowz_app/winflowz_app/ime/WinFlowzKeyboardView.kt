@@ -15,7 +15,7 @@ import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
 
-class WinFlowzAppKeyboardView(
+class WinFlowzKeyboardView(
     context: Context,
     private val callbacks: Callbacks,
 ) : View(context) {
@@ -94,7 +94,7 @@ class WinFlowzAppKeyboardView(
     private var fieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var fieldContext = KeyboardFieldContextMode.Text
     private var enterLabel = "Enter"
-    private var statusText = "WinFlowzApp"
+    private var statusText = "WinFlowz"
     private var suggestions = emptyList<String>()
     private var clipboardEntries = emptyList<KeyboardClipboardEntry>()
     private var snippets = emptyList<KeyboardTextRule>()
@@ -237,9 +237,9 @@ class WinFlowzAppKeyboardView(
         }
         statusText =
             if (policy.privateMode) {
-                "WinFlowzApp - private input (${policy.reason})"
+                "WinFlowz - private input (${policy.reason})"
             } else {
-                "WinFlowzApp"
+                "WinFlowz"
             }
         refreshLayout()
     }
@@ -863,7 +863,7 @@ class WinFlowzAppKeyboardView(
                 }
             }
             KeyboardKeyAction.ShowClipboardPins -> {
-                setStatus("Pinned clipboard list is in WinFlowzApp app")
+                setStatus("Pinned clipboard list is in WinFlowz app")
             }
             KeyboardKeyAction.MediaPrevious -> callbacks.onMediaPrevious()
             KeyboardKeyAction.MediaPlayPause -> callbacks.onMediaPlayPause()
@@ -888,7 +888,7 @@ class WinFlowzAppKeyboardView(
                     setStatus("Snippet rejected by field")
                 }
             }
-            KeyboardKeyAction.OpenWinFlowzAppSettings -> callbacks.onSettings()
+            KeyboardKeyAction.OpenWinFlowzSettings -> callbacks.onSettings()
             KeyboardKeyAction.OpenThemeSettings -> callbacks.onThemeSettings()
             KeyboardKeyAction.ShowKeyboardPicker -> callbacks.onKeyboardPicker()
             KeyboardKeyAction.ToggleCornerMode -> {

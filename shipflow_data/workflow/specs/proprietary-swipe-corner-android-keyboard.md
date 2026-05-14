@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-09"
 created_at: "2026-05-09 15:32:50 UTC"
 updated: "2026-05-11"
@@ -13,13 +13,13 @@ source_model: "GPT-5 Codex"
 scope: "feature"
 owner: "Diane"
 confidence: high
-user_story: "En tant qu'utilisateur Android de WinFlowzApp, je veux un clavier proprietaire rapide et utilisable, avec caracteres secondaires accessibles par gestes vers les coins, afin de remplacer le prototype actuel inutilisable par une implementation entierement codee par nous."
+user_story: "En tant qu'utilisateur Android de WinFlowz, je veux un clavier proprietaire rapide et utilisable, avec caracteres secondaires accessibles par gestes vers les coins, afin de remplacer le prototype actuel inutilisable par une implementation entierement codee par nous."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
   - "Android InputMethodService"
-  - "WinFlowzApp native Kotlin IME"
+  - "WinFlowz native Kotlin IME"
   - "Flutter Settings"
   - "Android keyboard MethodChannel"
   - "ClipboardHistoryApi"
@@ -50,14 +50,14 @@ depends_on:
 supersedes: []
 evidence:
   - "User decision: product must remain proprietary and the keyboard implementation will be coded in-house."
-  - "User requirement: the current WinFlowzApp keyboard prototype was tested and is not usable enough for daily typing."
+  - "User requirement: the current WinFlowz keyboard prototype was tested and is not usable enough for daily typing."
   - "Product direction: use tap plus swipe-to-corner gestures so one compact key can expose primary and secondary characters."
-  - "Local Android IME exists at android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime but WinFlowzAppKeyboardView is a Button-based minimal QWERTY prototype with no real swipe-corner layout engine."
-  - "Local manifest already declares WinFlowzAppInputMethodService with BIND_INPUT_METHOD and @xml/winflowz_app_input_method."
+  - "Local Android IME exists at android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime but WinFlowzKeyboardView is a Button-based minimal QWERTY prototype with no real swipe-corner layout engine."
+  - "Local manifest already declares WinFlowzInputMethodService with BIND_INPUT_METHOD and @xml/winflowz_app_input_method."
   - "Android official docs checked 2026-05-10: IMEs are services extending InputMethodService declared with BIND_INPUT_METHOD, android.view.InputMethod intent, and metadata."
   - "Android official docs checked 2026-05-10: InputConnection commitText/deleteSurroundingText/performEditorAction are the correct path for field insertion and editing; deleteSurroundingTextInCodePoints is available for code point deletion."
   - "FlorisBoard repository reviewed 2026-05-09: Apache-2.0 Android keyboard with smartbar quick actions, configurable preferences, input feedback, incognito behavior, editor/input abstractions and IME window concepts."
-  - "User decision 2026-05-09: keep WinFlowzApp adaptive smartbar because pinned actions give users a fixed option while unpinned actions can adapt."
+  - "User decision 2026-05-09: keep WinFlowz adaptive smartbar because pinned actions give users a fixed option while unpinned actions can adapt."
   - "User decision 2026-05-09: do not rely on swipe arrows for cursor navigation; add a dedicated Navigation mode with a large joystick/D-pad and visible edit buttons."
   - "User decision 2026-05-09: strengthen private/incognito mode with visible indicator and no dictation, clipboard capture, enriched snippets, usage stats or sync."
   - "User decision 2026-05-09: long press on an action-bar button must be configurable between pinning the action and attaching a persistent contextual quick-action row for that action."
@@ -89,35 +89,35 @@ Proprietary Swipe-Corner Android Keyboard
 
 # Status
 
-Ready for implementation. This spec defines a WinFlowzApp-owned Android keyboard implementation coded in-house. Current code state as of 2026-05-10: `WinFlowzAppKeyboardView.kt` and `WinFlowzAppInputMethodService.kt` now include a modular Canvas/touch keyboard with tap + swipe-corner classifier, QWERTY/AZERTY profile switching, field-context behavior (email/url/phone/search), minimal navigation panel, lightweight emoji panel with local recents, basic double-space and punctuation auto-spacing corrections with exclusions, and optional touch-debug overlay. Double-tap and long-press action policies are still pending. The full spec remains open because advanced modules (full navigation matrix, adaptive/smartbar behavior, richer emoji/clipboard workflows) and Android real-device QA are not complete. Fast next slice as of 2026-05-12: make the FlutterWeb/Vercel keyboard preview interactive with a simulated input field so product review can see what typed output each key/suggestion/action produces before native Android device QA.
+Ready for implementation. This spec defines a WinFlowz-owned Android keyboard implementation coded in-house. Current code state as of 2026-05-10: `WinFlowzKeyboardView.kt` and `WinFlowzInputMethodService.kt` now include a modular Canvas/touch keyboard with tap + swipe-corner classifier, QWERTY/AZERTY profile switching, field-context behavior (email/url/phone/search), minimal navigation panel, lightweight emoji panel with local recents, basic double-space and punctuation auto-spacing corrections with exclusions, and optional touch-debug overlay. Double-tap and long-press action policies are still pending. The full spec remains open because advanced modules (full navigation matrix, adaptive/smartbar behavior, richer emoji/clipboard workflows) and Android real-device QA are not complete. Fast next slice as of 2026-05-12: make the FlutterWeb/Vercel keyboard preview interactive with a simulated input field so product review can see what typed output each key/suggestion/action produces before native Android device QA.
 
 # User Story
 
-En tant qu'utilisateur Android de WinFlowzApp, je veux un clavier proprietaire rapide et utilisable, avec caracteres secondaires accessibles par gestes vers les coins, afin de remplacer le prototype actuel inutilisable par une implementation entierement codee par nous.
+En tant qu'utilisateur Android de WinFlowz, je veux un clavier proprietaire rapide et utilisable, avec caracteres secondaires accessibles par gestes vers les coins, afin de remplacer le prototype actuel inutilisable par une implementation entierement codee par nous.
 
-Acteur principal: utilisateur Android de WinFlowzApp qui active WinFlowzApp Keyboard comme methode de saisie systeme.
+Acteur principal: utilisateur Android de WinFlowz qui active WinFlowz keyboard comme methode de saisie systeme.
 
-Declencheur: l'utilisateur focalise un champ texte, selectionne WinFlowzApp Keyboard, puis tape ou glisse sur une touche pour produire un caractere primaire ou secondaire.
+Declencheur: l'utilisateur focalise un champ texte, selectionne WinFlowz keyboard, puis tape ou glisse sur une touche pour produire un caractere primaire ou secondaire.
 
 Resultat observable: le clavier est assez fiable pour ecrire un message normal, corriger, changer de layout, entrer des chiffres/symboles courants, utiliser dictation/clipboard/snippets/media sans bloquer la saisie, et rester en mode prive dans les champs sensibles.
 
 # Minimal Behavior Contract
 
-Quand WinFlowzApp Keyboard est actif dans un champ Android compatible, le clavier affiche une surface native stable construite avec des briques modulaires: modules de rangées de touches, modules de panneaux, modules d'actions, modules de modes, modules de langues, modules de themes et modules de feedback. Les profils QWERTY et AZERTY sont des assemblages de ces briques, avec un mode normal sans caracteres de coins et un mode avance optionnel ou chaque touche compatible peut produire jusqu'a quatre caracteres secondaires par glissement vers les coins. Le clavier insere le texte via le champ courant, gere effacement, espace, entree, shift, une barre haute d'icones compactes composee de briques d'actions modulaires, chiffres/signes mathematiques, accents, symboles, emoji, mode Navigation, actions WinFlowzApp, clipboard, langues actives, themes, parametres, configuration de barre, et retour au layout texte sans latence perceptible. L'utilisateur peut ajouter, retirer et reordonner des modules autorises du clavier, y compris la barre haute et certaines rangees/panneaux, sans pouvoir supprimer le set minimal necessaire pour taper et revenir aux parametres. Le bouton emoji ouvre un panneau leger, pas un clavier emoji complet: il affiche les emojis recents, quelques categories simples, insere l'emoji choisi via `InputConnection`, et n'enregistre aucun recent en mode prive ou champ sensible. Le panneau clipboard permet de coller un element admissible puis se ferme automatiquement apres collage reussi pour revenir au layout de saisie normal; il garde l'historique normal lisible et propose un petit bouton/filtre `Epingles` pour basculer vers les elements epingles sans les afficher tous au-dessus de l'historique. L'utilisateur peut epingler des elements clipboard pour les exclure de la purge automatique, et choisir une duree de retention pour les elements non epingles parmi `24h`, `7 jours`, `30 jours` et `illimite`, avec `7 jours` par defaut. Un panneau langues, accessible depuis la barre d'actions et le panneau parametres, remplace temporairement le clavier pour choisir quelles langues sont actives pour les layouts clavier et la dictee vocale. Un panneau themes, accessible depuis la barre d'actions et le panneau parametres, remplace temporairement le clavier pour choisir le theme du clavier, de la barre d'action et du panneau parametres; chaque theme a obligatoirement une variante light et une variante dark, et l'utilisateur choisit un mode d'apparence `light`, `dark` ou `system`. La barre haute est swipable pour afficher des rangees/pages supplementaires d'icones; elle classe progressivement les actions non epinglees par frequence et recence d'utilisation locale, tandis que les actions epinglees restent fixes et donnent a l'utilisateur un clavier stable quand il le veut. Le comportement long press des actions de la barre haute est configurable dans les parametres: soit le long press epingle/desepingle l'action, soit il attache sous la barre principale une rangee contextuelle persistante contenant les quick actions de cette action, par exemple une rangee chiffres `1` a `0` pour l'action Chiffres ou une rangee media avec play/pause, precedent, suivant et controles disponibles pour l'action Media. Les rangees contextuelles attachees restent visibles pendant le travail courant jusqu'a fermeture manuelle, peuvent etre ajoutees a la volee, et ne remplacent pas le layout principal sauf si l'action le demande explicitement. Le bouton parametres remplace temporairement le clavier par un panneau de boutons de reglage rapides; le bouton media affiche un symbole compact type `>| ||`, lance play/pause au tap, et peut ouvrir ou attacher une barre media selon le comportement long press choisi. Le mode Navigation remplace temporairement le clavier par un grand joystick/D-pad central, des fleches tres visibles, des boutons adjacents gauche/droite pour mouvement caractere par caractere et mot par mot, des boutons adjacents haut/bas pour mouvement ligne/paragraphe, des boutons lateraux de suppression caractere/mot a gauche et a droite, et des actions de repetition au long press pour les suppressions mot a mot. Un appui sur mot gauche va au debut du mot precedent; un appui sur mot droite va au debut du mot suivant ou au prochain separateur pertinent selon le champ; un appui sur paragraphe haut/bas va au debut du paragraphe precedent/suivant quand l'app hote expose assez de texte autour du curseur. Les reglages natifs du clavier et ceux de la page Settings Flutter representent le meme contrat de preferences; un changement d'un cote doit etre visible de l'autre cote des que la synchronisation locale est disponible. Si le geste est ambigu, hors seuil, revient au centre, annule, ou si le champ refuse l'action, le clavier ne produit pas de caractere inattendu et affiche un feedback discret haptique/audio selon preferences. L'edge case facile a rater est le champ sensible: le clavier doit rester utilisable pour taper, mais afficher un indicateur prive et desactiver dictation, clipboard capture, snippets enrichis, apprentissage, stats d'usage adaptatives, historique emoji et toute sync.
+Quand WinFlowz keyboard est actif dans un champ Android compatible, le clavier affiche une surface native stable construite avec des briques modulaires: modules de rangées de touches, modules de panneaux, modules d'actions, modules de modes, modules de langues, modules de themes et modules de feedback. Les profils QWERTY et AZERTY sont des assemblages de ces briques, avec un mode normal sans caracteres de coins et un mode avance optionnel ou chaque touche compatible peut produire jusqu'a quatre caracteres secondaires par glissement vers les coins. Le clavier insere le texte via le champ courant, gere effacement, espace, entree, shift, une barre haute d'icones compactes composee de briques d'actions modulaires, chiffres/signes mathematiques, accents, symboles, emoji, mode Navigation, actions WinFlowz, clipboard, langues actives, themes, parametres, configuration de barre, et retour au layout texte sans latence perceptible. L'utilisateur peut ajouter, retirer et reordonner des modules autorises du clavier, y compris la barre haute et certaines rangees/panneaux, sans pouvoir supprimer le set minimal necessaire pour taper et revenir aux parametres. Le bouton emoji ouvre un panneau leger, pas un clavier emoji complet: il affiche les emojis recents, quelques categories simples, insere l'emoji choisi via `InputConnection`, et n'enregistre aucun recent en mode prive ou champ sensible. Le panneau clipboard permet de coller un element admissible puis se ferme automatiquement apres collage reussi pour revenir au layout de saisie normal; il garde l'historique normal lisible et propose un petit bouton/filtre `Epingles` pour basculer vers les elements epingles sans les afficher tous au-dessus de l'historique. L'utilisateur peut epingler des elements clipboard pour les exclure de la purge automatique, et choisir une duree de retention pour les elements non epingles parmi `24h`, `7 jours`, `30 jours` et `illimite`, avec `7 jours` par defaut. Un panneau langues, accessible depuis la barre d'actions et le panneau parametres, remplace temporairement le clavier pour choisir quelles langues sont actives pour les layouts clavier et la dictee vocale. Un panneau themes, accessible depuis la barre d'actions et le panneau parametres, remplace temporairement le clavier pour choisir le theme du clavier, de la barre d'action et du panneau parametres; chaque theme a obligatoirement une variante light et une variante dark, et l'utilisateur choisit un mode d'apparence `light`, `dark` ou `system`. La barre haute est swipable pour afficher des rangees/pages supplementaires d'icones; elle classe progressivement les actions non epinglees par frequence et recence d'utilisation locale, tandis que les actions epinglees restent fixes et donnent a l'utilisateur un clavier stable quand il le veut. Le comportement long press des actions de la barre haute est configurable dans les parametres: soit le long press epingle/desepingle l'action, soit il attache sous la barre principale une rangee contextuelle persistante contenant les quick actions de cette action, par exemple une rangee chiffres `1` a `0` pour l'action Chiffres ou une rangee media avec play/pause, precedent, suivant et controles disponibles pour l'action Media. Les rangees contextuelles attachees restent visibles pendant le travail courant jusqu'a fermeture manuelle, peuvent etre ajoutees a la volee, et ne remplacent pas le layout principal sauf si l'action le demande explicitement. Le bouton parametres remplace temporairement le clavier par un panneau de boutons de reglage rapides; le bouton media affiche un symbole compact type `>| ||`, lance play/pause au tap, et peut ouvrir ou attacher une barre media selon le comportement long press choisi. Le mode Navigation remplace temporairement le clavier par un grand joystick/D-pad central, des fleches tres visibles, des boutons adjacents gauche/droite pour mouvement caractere par caractere et mot par mot, des boutons adjacents haut/bas pour mouvement ligne/paragraphe, des boutons lateraux de suppression caractere/mot a gauche et a droite, et des actions de repetition au long press pour les suppressions mot a mot. Un appui sur mot gauche va au debut du mot precedent; un appui sur mot droite va au debut du mot suivant ou au prochain separateur pertinent selon le champ; un appui sur paragraphe haut/bas va au debut du paragraphe precedent/suivant quand l'app hote expose assez de texte autour du curseur. Les reglages natifs du clavier et ceux de la page Settings Flutter representent le meme contrat de preferences; un changement d'un cote doit etre visible de l'autre cote des que la synchronisation locale est disponible. Si le geste est ambigu, hors seuil, revient au centre, annule, ou si le champ refuse l'action, le clavier ne produit pas de caractere inattendu et affiche un feedback discret haptique/audio selon preferences. L'edge case facile a rater est le champ sensible: le clavier doit rester utilisable pour taper, mais afficher un indicateur prive et desactiver dictation, clipboard capture, snippets enrichis, apprentissage, stats d'usage adaptatives, historique emoji et toute sync.
 
 Precision Navigation: le mouvement paragraphe haut/bas cible un vrai paragraphe, pas simplement la ligne visuelle precedente/suivante. Un paragraphe est detecte depuis les separateurs de paragraphe disponibles dans le texte autour du curseur; si Android ou l'app hote ne fournit pas assez de contexte, le bouton utilise un fallback non destructeur clairement indique.
 
 Politique touches speciales: les touches speciales comme Shift/Maj, Controle, espace, entree, backspace, Navigation ou Parametres peuvent declarer des actions distinctes pour simple appui, double appui et appui long. Le double appui est reserve aux actions utiles mais non critiques, doit avoir un delai court configurable, un feedback visible/haptique specifique, et doit etre desactivable globalement ou par touche si l'utilisateur declenche trop d'actions par accident. Priorite de detection: si un appui long est atteint, il gagne sur double appui; sinon deux taps de la meme touche dans la fenetre configurée declenchent l'action double appui; un tap seul garde l'action normale.
 
-Gestes dessines depuis espace: l'utilisateur demarre sur la barre espace; si le doigt se leve sans depasser le seuil de mouvement, l'action reste un espace normal, et si le mouvement depasse le seuil configurable, par defaut autour de 20 px/dp apres calibration densite, le clavier bascule en mode trace et l'utilisateur dessine un motif simple sur la surface clavier, par exemple ligne, angle, zigzag, carre ou cercle. Pendant le trace, le clavier affiche le motif reconnu et l'action associee a cote; au relachement, si la confiance de reconnaissance depasse le seuil et que l'action est autorisee dans le contexte courant, l'action est lancee. Une page de parametres permet d'enregistrer des gestes, tester la reconnaissance, regler le seuil de demarrage, voir les collisions entre motifs, choisir l'action associee et desactiver la fonctionnalite. Les actions disponibles passent par un catalogue Android conservateur: actions WinFlowzApp internes, ouverture d'une app installee via launch intent, intents Android communs quand disponibles, ecrans Settings Android connus, raccourcis d'app exposes quand Android les rend disponibles, media controls deja supportes, et insertion de texte/snippet. Les actions qui exigent permissions, accessibilite, automatisation systeme profonde ou controle d'une autre app non expose par Android sont marquees indisponibles au lieu d'etre promises.
+Gestes dessines depuis espace: l'utilisateur demarre sur la barre espace; si le doigt se leve sans depasser le seuil de mouvement, l'action reste un espace normal, et si le mouvement depasse le seuil configurable, par defaut autour de 20 px/dp apres calibration densite, le clavier bascule en mode trace et l'utilisateur dessine un motif simple sur la surface clavier, par exemple ligne, angle, zigzag, carre ou cercle. Pendant le trace, le clavier affiche le motif reconnu et l'action associee a cote; au relachement, si la confiance de reconnaissance depasse le seuil et que l'action est autorisee dans le contexte courant, l'action est lancee. Une page de parametres permet d'enregistrer des gestes, tester la reconnaissance, regler le seuil de demarrage, voir les collisions entre motifs, choisir l'action associee et desactiver la fonctionnalite. Les actions disponibles passent par un catalogue Android conservateur: actions WinFlowz internes, ouverture d'une app installee via launch intent, intents Android communs quand disponibles, ecrans Settings Android connus, raccourcis d'app exposes quand Android les rend disponibles, media controls deja supportes, et insertion de texte/snippet. Les actions qui exigent permissions, accessibilite, automatisation systeme profonde ou controle d'une autre app non expose par Android sont marquees indisponibles au lieu d'etre promises.
 
 # Success Behavior
 
-- Given WinFlowzApp Keyboard est active comme IME, when l'utilisateur ouvre un champ texte standard, then la vue clavier native apparait sans lancer Flutter et propose une rangee d'actions compacte plus un layout de saisie utilisable.
+- Given WinFlowz keyboard est active comme IME, when l'utilisateur ouvre un champ texte standard, then la vue clavier native apparait sans lancer Flutter et propose une rangee d'actions compacte plus un layout de saisie utilisable.
 - Given la preview clavier FlutterWeb est ouverte sur Vercel, when l'utilisateur appuie sur les touches visibles, then un champ de saisie simule au-dessus du clavier affiche immediatement le texte produit.
 - Given l'utilisateur teste Shift, Space, Back, Enter, une suggestion, un mode ou un panneau dans la preview FlutterWeb, when l'action est simulee localement, then le champ simule et un statut court montrent le resultat sans presenter cela comme une preuve de comportement IME Android natif.
 - Given l'utilisateur change le contexte de preview email, URL, telephone, recherche ou prive, when la simulation est relancee, then les touches, les suggestions, les actions desactivees et le champ simule restent coherents avec ce contexte.
-- Given l'utilisateur ouvre Settings sans clavier configure, when il consulte la section clavier, then un assistant d'activation affiche l'etape exacte: activer WinFlowzApp Keyboard dans Android, le choisir comme clavier actif, puis tester la saisie dans un champ integre.
+- Given l'utilisateur ouvre Settings sans clavier configure, when il consulte la section clavier, then un assistant d'activation affiche l'etape exacte: activer WinFlowz keyboard dans Android, le choisir comme clavier actif, puis tester la saisie dans un champ integre.
 - Given l'assistant d'activation est visible, when l'etat Android change, then il affiche un statut clair `pas active`, `active mais pas actif`, ou `actif`, et propose uniquement l'action suivante utile.
 - Given le mode debug tactile est active dans les options developpeur, when l'utilisateur interagit avec le clavier, then les limites des touches, la direction de swipe detectee, les seuils et l'action declenchee sont visibles sans journaliser le texte utilisateur.
 - Given l'option double espace point est activee, when l'utilisateur tape deux espaces apres un mot dans un champ texte standard, then le clavier remplace le premier espace par `. `; when le champ ressemble a email, URL, password, OTP ou autre champ sensible, then le clavier tente de ne pas appliquer cette correction.
@@ -127,7 +127,7 @@ Gestes dessines depuis espace: l'utilisateur demarre sur la barre espace; si le 
 - Given un profil clavier QWERTY ou AZERTY est charge, when le clavier construit sa surface, then il assemble les modules requis: barre haute, rangees lettres, rangee controle, gestion shift/backspace/space/enter, et panneaux de modes disponibles.
 - Given une touche speciale declare une action double appui, when l'utilisateur tape deux fois cette touche dans la fenetre configuree, then l'action double appui est declenchee une seule fois avec feedback distinct, sans emettre deux actions simples.
 - Given les gestes dessines depuis espace sont actives, when l'utilisateur demarre sur espace puis depasse le seuil de mouvement configurable, then le clavier bascule en mode trace, affiche l'action associee pendant le geste et l'execute au relachement si elle est autorisee.
-- Given l'utilisateur ouvre les parametres de gestes dessines, when il enregistre un nouveau motif, then WinFlowzApp teste la reconnaissance, signale les collisions avec les motifs existants, et demande de choisir une action disponible dans le catalogue.
+- Given l'utilisateur ouvre les parametres de gestes dessines, when il enregistre un nouveau motif, then WinFlowz teste la reconnaissance, signale les collisions avec les motifs existants, et demande de choisir une action disponible dans le catalogue.
 - Given l'utilisateur tape au centre d'une touche lettre, when le doigt se leve sans sortir du seuil de tap, then le caractere primaire est insere une seule fois via `InputConnection.commitText`.
 - Given une touche contient un caractere secondaire dans un coin, when l'utilisateur glisse au-dela du seuil vers ce coin et relache, then le caractere du coin est insere et aucun caractere primaire n'est emis.
 - Given le geste sort puis revient au centre avant relache, when le deplacement final est classe comme retour centre, then le geste est annule et aucun caractere primaire ou secondaire n'est insere.
@@ -159,10 +159,10 @@ Gestes dessines depuis espace: l'utilisateur demarre sur la barre espace; si le 
 - Given le mode Navigation est ouvert, when l'utilisateur appuie sur paragraphe haut ou paragraphe bas, then le curseur se deplace vers le debut du vrai paragraphe precedent ou suivant quand le champ permet de calculer cette position; sinon le clavier applique un fallback non destructeur.
 - Given le mode Navigation est ouvert, when l'utilisateur reste appuye sur supprimer mot a gauche ou supprimer mot a droite, then l'action se repete mot par mot dans la direction correspondante jusqu'au relachement ou a l'annulation.
 - Given la barre haute d'actions est visible, when l'utilisateur appuie sur parametres, then le layout de touches est remplace temporairement par un panneau de reglages rapides avec retour au clavier, ouverture des parametres Android, changement de clavier par defaut, toggle coins sur les touches, et toggle raccourcis haptiques.
-- Given le bouton media affiche `>| ||`, when l'utilisateur appuie dessus, then WinFlowzApp envoie play/pause; when il reste appuye dessus, then le comportement depend de la preference long press: epinglage de l'action ou ajout d'une rangee media contextuelle.
+- Given le bouton media affiche `>| ||`, when l'utilisateur appuie dessus, then WinFlowz envoie play/pause; when il reste appuye dessus, then le comportement depend de la preference long press: epinglage de l'action ou ajout d'une rangee media contextuelle.
 - Given un champ indique une action IME comme send/search/done, when l'utilisateur appuie sur entree, then `performEditorAction` est appele avant fallback key event.
-- Given les preferences de feedback sont actives, when l'utilisateur tape, swipe, long press ou repete une suppression, then WinFlowzApp emet le feedback haptique/audio configure en respectant les reglages systeme.
-- Given le champ est password/OTP/noPersonalizedLearning/private, when le clavier s'ouvre, then les gestes de saisie restent actifs mais WinFlowzApp affiche un etat prive et coupe dictation/clipboard/snippets/sync/stats adaptatives.
+- Given les preferences de feedback sont actives, when l'utilisateur tape, swipe, long press ou repete une suppression, then WinFlowz emet le feedback haptique/audio configure en respectant les reglages systeme.
+- Given le champ est password/OTP/noPersonalizedLearning/private, when le clavier s'ouvre, then les gestes de saisie restent actifs mais WinFlowz affiche un etat prive et coupe dictation/clipboard/snippets/sync/stats adaptatives.
 - Given l'utilisateur active clipboard sync clavier, when une capture explicite admissible arrive, then l'evenement passe par la queue native puis `ClipboardHistoryApi`, pas par Supabase direct.
 
 # Error Behavior
@@ -182,7 +182,7 @@ Gestes dessines depuis espace: l'utilisateur demarre sur la barre espace; si le 
 - Si un collage depuis le panneau clipboard echoue ou est refuse par le champ, le panneau reste ouvert avec feedback bref pour permettre de reessayer ou choisir un autre element; fermeture automatique uniquement apres collage confirme.
 - Si un element clipboard est epingle, la purge automatique par retention ne peut pas le supprimer; seule une suppression manuelle explicite ou une action de reset total confirmee peut le retirer.
 - Si la duree de retention clipboard est modifiee vers une duree plus courte, la purge s'applique seulement aux elements non epingles et doit pouvoir afficher combien d'elements seront concernes avant une purge manuelle depuis Settings.
-- Si la configuration de retention clipboard est absente, invalide ou corrompue, WinFlowzApp utilise `7 jours` par defaut et ne supprime aucun element epingle.
+- Si la configuration de retention clipboard est absente, invalide ou corrompue, WinFlowz utilise `7 jours` par defaut et ne supprime aucun element epingle.
 - Si la retention clipboard est `illimite`, les elements non epingles ne sont pas purges par age, mais restent supprimables manuellement et peuvent disparaitre lors d'un reset app ou effacement des donnees Android.
 - Si Android speech recognition, media key dispatch, ou clipboard systeme echoue, la saisie clavier reste disponible.
 - Si un long press action est declenche dans un contexte prive ou sans permission, l'action secondaire est masquee ou affiche un etat indisponible; elle ne force pas une permission et ne contourne pas le mode prive.
@@ -219,20 +219,20 @@ Gestes dessines depuis espace: l'utilisateur demarre sur la barre espace; si le 
 - Si le mode Navigation ne peut pas lire assez de texte autour du curseur pour calculer un saut de mot ou de vrai paragraphe, le bouton concerne affiche un feedback d'indisponibilite ou applique le meilleur fallback non destructeur; le fallback ne doit pas etre presente comme un vrai saut paragraphe.
 - Si un saut mot/paragraphe atteint le debut ou la fin du texte disponible, il s'arrete proprement et ne continue pas a envoyer des mouvements inutiles.
 - Si une suppression mot par mot en long press atteint le debut ou la fin du champ, la repetition s'arrete proprement et ne continue pas a emettre des actions inutiles.
-- Ce qui ne doit jamais arriver: texte utilisateur en logs, double emission tap+swipe, effacement de deux caracteres par backspace simple, ou blocage total de l'IME apres erreur de panneau WinFlowzApp.
+- Ce qui ne doit jamais arriver: texte utilisateur en logs, double emission tap+swipe, effacement de deux caracteres par backspace simple, ou blocage total de l'IME apres erreur de panneau WinFlowz.
 
 # Problem
 
-Le repo WinFlowzApp contient deja un IME Android natif, mais la vue actuelle est une pile de boutons Android standards: labels longs, layout rigide, pas de moteur de gestures, pas de vraie carte de touches, pas de comportement clavier attendu par un utilisateur. L'utilisateur a teste le clavier et le juge inutilisable. WinFlowzApp a besoin d'un clavier proprietaire compact, fiable et agreable a utiliser au quotidien.
+Le repo WinFlowz contient deja un IME Android natif, mais la vue actuelle est une pile de boutons Android standards: labels longs, layout rigide, pas de moteur de gestures, pas de vraie carte de touches, pas de comportement clavier attendu par un utilisateur. L'utilisateur a teste le clavier et le juge inutilisable. WinFlowz a besoin d'un clavier proprietaire compact, fiable et agreable a utiliser au quotidien.
 
 # Solution
 
-Construire une implementation proprietaire et independante du clavier Android WinFlowzApp autour d'un moteur de layout interne, d'une vue custom Kotlin dessinee/tactile, et d'un modele de gestes simple tap/swipe-corner. La premiere version doit privilegier la qualite de saisie de base et la compatibilite Android IME; dictation, clipboard, snippets et media restent dans une barre compacte, mais ne doivent pas rendre le clavier principal instable.
+Construire une implementation proprietaire et independante du clavier Android WinFlowz autour d'un moteur de layout interne, d'une vue custom Kotlin dessinee/tactile, et d'un modele de gestes simple tap/swipe-corner. La premiere version doit privilegier la qualite de saisie de base et la compatibilite Android IME; dictation, clipboard, snippets et media restent dans une barre compacte, mais ne doivent pas rendre le clavier principal instable.
 
 # Scope In
 
 - Android uniquement.
-- Remplacement de `WinFlowzAppKeyboardView` Button-based par une vue custom proprietaire dessinee en Kotlin.
+- Remplacement de `WinFlowzKeyboardView` Button-based par une vue custom proprietaire dessinee en Kotlin.
 - Modele de donnees interne modulaire pour profils clavier, modules de rangées, modules de touches, modules de panneaux, modules d'actions, labels primaires, labels secondaires de coins, largeur relative, roles, disponibilite par contexte et layouts.
 - Layouts proprietaires QWERTY et AZERTY avec lettres, ponctuation courante, espace, entree, shift, backspace, settings et switch de modes.
 - Profils clavier modulaires: QWERTY et AZERTY sont des assemblages de modules configurables avec un set minimal obligatoire.
@@ -253,8 +253,8 @@ Construire une implementation proprietaire et independante du clavier Android Wi
 - Classement adaptatif local des icones: les actions non critiques et non epinglees se reclassent par frequence/recence d'utilisation; les actions epinglees restent fixes pour permettre une barre stable.
 - Preference de long press sur la barre haute: choisir entre `pin_action` et `attach_context_row`; `pin_action` epingle/desepingle l'action, `attach_context_row` ajoute sous la barre principale une rangee contextuelle persistante liee a l'action.
 - Politique double appui pour touches speciales: catalogue d'actions speciales par touche, fenetre de double appui configurable, activation/desactivation globale et par touche, feedback dedie, et precedence claire avec l'appui long.
-- Gestes dessines depuis la barre espace: demarrage par seuil de mouvement configurable depuis espace, tap sous seuil = espace normal, moteur de reconnaissance proprietaire pour motifs simples, overlay de trace, preview de l'action reconnue, seuil de confiance, annulation, page de parametres pour enregistrer/tester/supprimer les gestes, detection de collisions entre motifs, et catalogue d'actions Android/WinFlowzApp autorisees.
-- Catalogue d'actions pour gestes: actions internes WinFlowzApp, insertion texte/snippet, ouvrir une app installee, ouvrir un ecran Settings Android connu, lancer un intent commun supporte, lancer un raccourci d'app expose par Android quand disponible, media controls supportes, et etats indisponibles explicites quand Android ne fournit pas l'action.
+- Gestes dessines depuis la barre espace: demarrage par seuil de mouvement configurable depuis espace, tap sous seuil = espace normal, moteur de reconnaissance proprietaire pour motifs simples, overlay de trace, preview de l'action reconnue, seuil de confiance, annulation, page de parametres pour enregistrer/tester/supprimer les gestes, detection de collisions entre motifs, et catalogue d'actions Android/WinFlowz autorisees.
+- Catalogue d'actions pour gestes: actions internes WinFlowz, insertion texte/snippet, ouvrir une app installee, ouvrir un ecran Settings Android connu, lancer un intent commun supporte, lancer un raccourci d'app expose par Android quand disponible, media controls supportes, et etats indisponibles explicites quand Android ne fournit pas l'action.
 - Rangees contextuelles attachables: chaque action compatible peut declarer une rangee de quick actions attachee a la volee, persistante jusqu'a fermeture manuelle, avec bouton de fermeture, ordre controle, limite de hauteur, et fallback si l'action n'est plus disponible.
 - Exemples de rangees contextuelles MVP: Chiffres ajoute une rangee `1 2 3 4 5 6 7 8 9 0`; Media ajoute une rangee media avec play/pause, precedent, suivant et controles disponibles; Navigation peut ajouter une rangee courte de fleches ou ouvrir le panneau complet selon configuration future.
 - Bouton media visuel: symbole compact type `>| ||`, tap = play/pause, long press = epinglage ou rangee media contextuelle selon preference.
@@ -266,7 +266,7 @@ Construire une implementation proprietaire et independante du clavier Android Wi
 - AZERTY avance: privilegier accents francais dans les coins et/ou layout accents dedie.
 - Detection de champ sensible via `KeyboardSecurityPolicy` existant, et maintien du mode prive.
 - Insertion et edition via `InputConnection`: commitText, deleteSurroundingTextInCodePoints quand disponible, performEditorAction, sendKeyEvent fallback.
-- Barre WinFlowzApp compacte: dictation, clipboard panel, snippets, settings, media play/pause, sans bloquer les touches principales.
+- Barre WinFlowz compacte: dictation, clipboard panel, snippets, settings, media play/pause, sans bloquer les touches principales.
 - Panneau clipboard: apres collage reussi, fermeture automatique du panneau et retour au layout texte courant.
 - Panneau clipboard: afficher l'historique normal par defaut, avec un petit bouton/filtre `Epingles` pour afficher les elements epingles a la demande; epingler/desepingler un element, supprimer manuellement un element epingle, et afficher clairement que les elements epingles ne sont pas touches par la retention automatique.
 - Reglages clipboard: choix de duree de retention pour les elements non epingles avec options `24h`, `7 jours`, `30 jours`, `illimite`; defaut `7 jours`; preference appliquee localement et coherente avec le contrat backend-agnostic clipboard.
@@ -278,13 +278,13 @@ Construire une implementation proprietaire et independante du clavier Android Wi
 # Scope Out
 
 - Import d'une base clavier externe comme fondation du produit.
-- Copie de layouts externes au lieu de definir les layouts WinFlowzApp.
+- Copie de layouts externes au lieu de definir les layouts WinFlowz.
 - Copie d'assets, icones, textes ou noms internes depuis une autre application clavier.
 - Navigation principale par swipes fins sur espace/delete/fleches. Les swipes peuvent rester des raccourcis futurs, mais le MVP de navigation repose sur un mode dedie avec grosses cibles.
-- Automatisation systeme illimitee depuis les gestes. WinFlowzApp ne promet pas de cliquer dans d'autres apps, modifier des reglages proteges, contourner les permissions Android, ou executer des actions non exposees par intents/raccourcis/API autorisees.
+- Automatisation systeme illimitee depuis les gestes. WinFlowz ne promet pas de cliquer dans d'autres apps, modifier des reglages proteges, contourner les permissions Android, ou executer des actions non exposees par intents/raccourcis/API autorisees.
 - Autocorrect, dictionnaires, suggestions avancees, glide typing, emoji complet, recherche emoji, stickers/GIFs, themes marketplace.
 - Editeur avance de themes personnalisés dans le MVP; seuls des themes predefinis et extensibles sont requis.
-- Gestes circle/roundtrip comme actions productives dans le MVP WinFlowzApp; le retour centre est uniquement une annulation.
+- Gestes circle/roundtrip comme actions productives dans le MVP WinFlowz; le retour centre est uniquement une annulation.
 - Multi-langues exhaustif au-dela de QWERTY et AZERTY.
 - iOS custom keyboard, desktop/web keyboard, billing, entitlement premium.
 - Fidelite IME native complete dans FlutterWeb: pas de vrai `InputConnection`, pas de gestes multi-touch natifs, pas de long press/repeat Android, pas de clipboard systeme, pas de voice/media systeme; la preview web est un outil de review rapide, pas la validation finale.
@@ -293,14 +293,14 @@ Construire une implementation proprietaire et independante du clavier Android Wi
 
 # Constraints
 
-- WinFlowzApp reste proprietaire et l'implementation clavier est codee en interne.
-- Toute implementation doit etre ecrite depuis zero dans le repo WinFlowzApp, avec noms/types/structures propres.
+- WinFlowz reste proprietaire et l'implementation clavier est codee en interne.
+- Toute implementation doit etre ecrite depuis zero dans le repo WinFlowz, avec noms/types/structures propres.
 - L'IME doit rester natif Kotlin; ne pas demarrer une vue Flutter dans le clavier pour le rendu temps reel.
 - Le clavier doit fonctionner hors ligne, avant ouverture de l'app Flutter, et sans session Supabase.
 - Ne pas journaliser le texte tape, dicte, colle, selectionne ou genere par gestures.
-- Les champs sensibles gardent la saisie basique mais coupent toute fonctionnalite WinFlowzApp enrichie.
+- Les champs sensibles gardent la saisie basique mais coupent toute fonctionnalite WinFlowz enrichie.
 - Les champs sensibles coupent aussi les statistiques locales d'usage de la smartbar afin que l'adaptation ne revele pas des comportements en contexte prive.
-- La latence de tap doit rester prioritaire sur les panneaux WinFlowzApp; aucun appel reseau ou Flutter MethodChannel ne doit etre dans le chemin critique d'une touche.
+- La latence de tap doit rester prioritaire sur les panneaux WinFlowz; aucun appel reseau ou Flutter MethodChannel ne doit etre dans le chemin critique d'une touche.
 - Le layout doit eviter les labels texte longs dans les touches compactes; utiliser symboles ou labels courts.
 - Les caracteres de coins doivent etre optionnels et desactivables; le clavier normal doit rester disponible.
 - Le MVP exclut le mode une main, clavier compact gauche/droite et clavier flottant; ne pas ajouter de logique de deplacement/redimensionnement libre.
@@ -359,8 +359,8 @@ Construire une implementation proprietaire et independante du clavier Android Wi
 
 # Links & Consequences
 
-- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`: likely replaced or reduced to a thin container for the custom rendering/touch view.
-- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`: routes new key actions, lifecycle, field policy, shift/symbol state.
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`: likely replaced or reduced to a thin container for the custom rendering/touch view.
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`: routes new key actions, lifecycle, field policy, shift/symbol state.
 - New `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/*`: drawable gesture recorder, recognizer, action binding model, collision detector and runtime dispatcher.
 - New `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/layout/*`: proprietary layout models and built-in layouts.
 - New `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/modules/*`: keyboard module catalog, profile configuration, module availability and safe fallback assembly.
@@ -387,7 +387,7 @@ Update after implementation:
 - `docs/PLATFORM_BEHAVIOR.md`: describe tap/swipe-corner behavior, Android-only status, private-field behavior.
 - `docs/VERIFICATION.md`: add manual QA matrix for activation assistant, debug tactile overlay, gesture directions, backspace, sensitive fields, rotation, device sizes.
 - `docs/OVERLAY_ANDROID.md`: confirm overlay remains complementary.
-- `README.md`: mention Android keyboard as proprietary WinFlowzApp implementation after QA proof.
+- `README.md`: mention Android keyboard as proprietary WinFlowz implementation after QA proof.
 - `shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md`: cross-link this spec as the ergonomic rebuild of the IME surface.
 - `CHANGELOG.md`: after code ships, note keyboard usability rewrite.
 
@@ -412,7 +412,7 @@ Priority 2 - Editing and navigation parity:
 
 Priority 3 - Layout extensibility:
 
-- Move built-in layouts toward a parseable internal format or structured catalog inspired by `KeyboardData`, while keeping all WinFlowzApp layouts proprietary.
+- Move built-in layouts toward a parseable internal format or structured catalog inspired by `KeyboardData`, while keeping all WinFlowz layouts proprietary.
 - Add unit tests for layout parsing/catalog validation, key values, modifiers, unknown modules and fallback QWERTY.
 - Add a compact subtype/language resolver before expanding beyond French and English.
 
@@ -462,8 +462,8 @@ Priority 4 - Advanced typing:
 - Settings panel is opened accidentally while the user intended to keep typing.
 - Android input method settings or picker returns without changing state.
 - User activates the keyboard in Android settings but does not switch to it as active input method.
-- User switches to WinFlowzApp Keyboard but Settings still shows stale status until refresh.
-- Embedded test field opens another keyboard because WinFlowzApp is enabled but not active.
+- User switches to WinFlowz keyboard but Settings still shows stale status until refresh.
+- Embedded test field opens another keyboard because WinFlowz is enabled but not active.
 - Debug overlay makes the keyboard too visually noisy during normal use if exposed outside developer settings.
 - Debug overlay accidentally reveals text or clipboard data in screenshots.
 - Double-space-to-period fires in a host app that exposes a generic text field for URL/email-like content.
@@ -482,16 +482,16 @@ Priority 4 - Advanced typing:
 # Implementation Tasks
 
 - [x] Tache 0 : Aligner les fondations IME sur le clavier de reference
-  - Fichiers : `android/app/src/main/res/xml/winflowz_app_input_method.xml`, `android/app/src/main/res/values/strings.xml`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardInputContextResolver.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutModels.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`, `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutBuilderTest.kt`
+  - Fichiers : `android/app/src/main/res/xml/winflowz_app_input_method.xml`, `android/app/src/main/res/values/strings.xml`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardInputContextResolver.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutModels.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`, `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutBuilderTest.kt`
   - Action : Ajouter subtypes FR/EN, support switch-next, hooks lifecycle defensifs, contexte numerique/date, action id resolu, mode selection supporte, bouton snippets visible, et suppression du snippet hardcode.
-  - User story link : rapproche l'IME WinFlowzApp d'un clavier Android mature sans copier le clavier de reference.
+  - User story link : rapproche l'IME WinFlowz keyboard d'un clavier Android mature sans copier le clavier de reference.
   - Depends on : audit local `/home/claude/keyboard`.
   - Validate with : revue du diff; `./gradlew testDebugUnitTest` bloque encore sans SDK Android local.
   - Status 2026-05-11 : implemente partiellement; compile Android a prouver sur environnement avec SDK.
   - Notes : Premiere tranche volontairement bas niveau; ne couvre pas encore candidats, dictionnaires, layout parser ou suggestions.
 
 - [x] Tache 0b : Ajouter l'etat de selection et l'abstraction editeur InputConnection
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/InputConnectionEditor.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`, `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardTextNavigationTest.kt`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/InputConnectionEditor.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`, `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardTextNavigationTest.kt`
   - Action : Ajouter `onUpdateSelection`, conserver un `KeyboardSelectionState`, centraliser commit/delete/action/soft-key/navigation dans `InputConnectionEditor`, confirmer les `setSelection` quand l'app hote expose `ExtractedText`, et faire passer le collage clipboard par la meme couche.
   - User story link : rapproche la navigation et l'edition du clavier de reference avant les suggestions, dictionnaires et panneaux avances.
   - Depends on : Tache 0 et roadmap priorite 2.
@@ -526,7 +526,7 @@ Priority 4 - Advanced typing:
 
 - [ ] Tache 1 : Ajouter un garde-fou provenance dans la doc technique
   - Fichier : `docs/technical/android-native.md`
-  - Action : Documenter que le clavier WinFlowzApp est une implementation interne; interdire l'import d'une base clavier externe ou de layouts externes sans decision explicite.
+  - Action : Documenter que le clavier WinFlowz est une implementation interne; interdire l'import d'une base clavier externe ou de layouts externes sans decision explicite.
   - User story link : preserve le caractere proprietaire du clavier.
   - Depends on : cette spec.
   - Validate with : revue du diff; aucune reference a un fork/copie comme base.
@@ -549,24 +549,24 @@ Priority 4 - Advanced typing:
   - Notes : Pas de gesture productive hors tap, double tap de touche speciale, appui long declare et quatre coins dans le MVP.
 
 - [ ] Tache 4 : Remplacer la vue Button-based par une vue custom dessinee
-  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`
   - Action : Dessiner les touches, labels primaires, labels de coins optionnels, barre haute d'icones swipable avec boutons emoji/navigation/clipboard/parametres/media `>| ||`, panneau de reglages rapides, feedback pressed/swipe/long-press/repeat; gerer `onTouchEvent`.
   - User story link : rend le clavier utilisable et lisible.
   - Depends on : Taches 2-3.
   - Validate with : build Android debug + QA visuelle sur appareil/emulateur.
-  - Status 2026-05-10 : partiel hors flux formel `sf-start`; `WinFlowzAppKeyboardView.kt` est desormais une vue custom Canvas/touch avec touches dessinees, hit-test, modes `ABC`/`123`/`Acc`/`Sym`, panneau clipboard, haptique tap, et conservation des callbacks IME existants. Restent a faire pour terminer la tache : brancher le vrai modele de layout, le classificateur swipe-corner, la barre haute swipable, les appuis longs/double taps, le panneau reglages rapides complet, et valider sur Android SDK/appareil.
+  - Status 2026-05-10 : partiel hors flux formel `sf-start`; `WinFlowzKeyboardView.kt` est desormais une vue custom Canvas/touch avec touches dessinees, hit-test, modes `ABC`/`123`/`Acc`/`Sym`, panneau clipboard, haptique tap, et conservation des callbacks IME existants. Restent a faire pour terminer la tache : brancher le vrai modele de layout, le classificateur swipe-corner, la barre haute swipable, les appuis longs/double taps, le panneau reglages rapides complet, et valider sur Android SDK/appareil.
   - Notes : Garder dimensions stables et labels courts; aucune vue Flutter.
 
 - [ ] Tache 5 : Integrer l'etat clavier dans le service IME
-  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`
-  - Action : Gerer layout QWERTY/AZERTY, variantes contextuelles email/URL/telephone/recherche, mode coins on/off, shift, modes lettres/chiffres-math/accents/symboles/emoji/navigation, panneau parametres, enter action, backspace codepoint, espace, clipboard, media play/pause, long-press actions, double appui des touches speciales, swipe de barre haute, et dispatch des actions WinFlowzApp.
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`
+  - Action : Gerer layout QWERTY/AZERTY, variantes contextuelles email/URL/telephone/recherche, mode coins on/off, shift, modes lettres/chiffres-math/accents/symboles/emoji/navigation, panneau parametres, enter action, backspace codepoint, espace, clipboard, media play/pause, long-press actions, double appui des touches speciales, swipe de barre haute, et dispatch des actions WinFlowz.
   - User story link : permet la saisie complete au quotidien.
   - Depends on : Tache 4.
   - Validate with : tests manuels dans champs texte, email, recherche, textarea, chat.
   - Notes : Le chemin tap/swipe doit rester sans appel reseau.
 
 - [ ] Tache 6 : Renforcer edition InputConnection et mode Navigation
-  - Fichiers : `WinFlowzAppInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/InputConnectionEditor.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/navigation/KeyboardNavigationPanel.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/navigation/KeyboardNavigationAction.kt`
+  - Fichiers : `WinFlowzInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/InputConnectionEditor.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/navigation/KeyboardNavigationPanel.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/navigation/KeyboardNavigationAction.kt`
   - Action : Centraliser commit/delete/action, utiliser `deleteSurroundingTextInCodePoints` quand disponible, traiter retours false/null, exposer un resultat confirme/echec pour le collage clipboard, ajouter un mode Navigation avec joystick/D-pad central, grosses fleches, mouvement caractere gauche/droite, mouvement mot gauche/droite, mouvement vrai paragraphe haut/bas avec fallback si contexte insuffisant, suppression caractere gauche/droite, suppression mot gauche/droite, repetition long press et retour clavier.
   - User story link : evite les suppressions/insertion incoherentes et donne une navigation precise sans swipes fins.
   - Depends on : Tache 5.
@@ -646,7 +646,7 @@ Priority 4 - Advanced typing:
   - Notes : C'est l'onboarding clavier. Ne pas en faire une page marketing; chaque etape doit montrer l'action systeme suivante.
 
 - [ ] Tache 16 : Implementer le sizing paysage/tablette leger
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/window/KeyboardSizingResolver.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/window/KeyboardSizingProfile.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/window/KeyboardSizingResolver.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/window/KeyboardSizingProfile.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
   - Action : Ajouter des profils portrait/paysage/grand ecran/split-screen pour hauteur, espacement vertical/horizontal, taille de police et nombre maximal de rangees contextuelles visibles; exclure tout mode une main ou flottant.
   - User story link : garde le clavier utilisable quand l'ecran est large ou bas.
   - Depends on : Taches 2-4.
@@ -654,7 +654,7 @@ Priority 4 - Advanced typing:
   - Notes : Compacter ou masquer les rangees secondaires avant de rendre les touches principales trop petites.
 
 - [ ] Tache 17 : Implementer le mode debug tactile cache
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/debug/KeyboardTouchDebugState.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/debug/KeyboardTouchDebugOverlay.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/debug/KeyboardTouchDebugState.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/debug/KeyboardTouchDebugOverlay.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`
   - Action : Ajouter un toggle developpeur cache qui affiche bounds de touches, pointeur actif, distance/seuil, direction de swipe, coin detecte, action dispatch et raison d'annulation; interdire affichage/log du texte utilisateur.
   - User story link : aide a rendre les gestures vers les coins fiables sans deviner.
   - Depends on : Taches 3-4.
@@ -670,8 +670,8 @@ Priority 4 - Advanced typing:
   - Notes : Les toggles ne doivent pas passer par Flutter dans le chemin critique; synchronisation Settings Flutter peut venir ensuite via MethodChannel.
 
 - [ ] Tache 18c : Implementer les gestes dessines depuis espace
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureRecognizer.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureRecorder.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureActionCatalog.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureDispatcher.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`, `lib/features/settings/presentation/settings_screen.dart`
-  - Action : Ajouter un mode optionnel de gestes dessines demarrant depuis la barre espace par seuil de mouvement configurable, tap sous seuil = espace normal, overlay de trace, reconnaissance de motifs simples, seuil de confiance, preview de l'action associee pendant le trace, execution au relachement, annulation claire, page de parametres pour regler le seuil, enregistrer/tester/supprimer les motifs, detection de collisions, et catalogue d'actions autorisees via WinFlowzApp/internal, snippets, app launch intents, common intents, settings intents, media controls et raccourcis d'app disponibles.
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureRecognizer.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureRecorder.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureActionCatalog.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/drawgesture/SpaceGestureDispatcher.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`, `lib/features/settings/presentation/settings_screen.dart`
+  - Action : Ajouter un mode optionnel de gestes dessines demarrant depuis la barre espace par seuil de mouvement configurable, tap sous seuil = espace normal, overlay de trace, reconnaissance de motifs simples, seuil de confiance, preview de l'action associee pendant le trace, execution au relachement, annulation claire, page de parametres pour regler le seuil, enregistrer/tester/supprimer les motifs, detection de collisions, et catalogue d'actions autorisees via WinFlowz/internal, snippets, app launch intents, common intents, settings intents, media controls et raccourcis d'app disponibles.
   - User story link : permet des raccourcis puissants sans encombrer la barre d'actions.
   - Depends on : Taches 3, 4, 5, 14 et 18.
   - Validate with : tests unitaires recognizer/collision/seuils, tap espace sous seuil, demarrage au-dela du seuil, tests action indisponible, QA manuelle trace carre/cercle/angle, preview action, relachement execute, annulation, app absente, permission manquante, mode prive.
@@ -686,7 +686,7 @@ Priority 4 - Advanced typing:
   - Notes : Les elements epingles ne sont pas "sauvegarde cloud garantie"; ils resistent a la retention automatique, pas a une suppression manuelle, reset app, ou effacement des donnees Android.
 
 - [ ] Tache 19 : Implementer le panneau emoji leger
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/emoji/KeyboardEmojiPanel.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/emoji/EmojiRecentStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/emoji/KeyboardEmojiPanel.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/emoji/EmojiRecentStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
   - Action : Ajouter un panneau emoji natif leger avec recents, categories simples, insertion via `InputConnection`, retour au clavier lettres, limite de stockage local, et desactivation lecture/ecriture des recents en mode prive/sensible.
   - User story link : donne l'acces emoji attendu sans transformer le MVP en clavier emoji complet.
   - Depends on : Taches 2, 4, 5 et 6.
@@ -703,7 +703,7 @@ Priority 4 - Advanced typing:
 
 # Acceptance Criteria
 
-- [ ] CA 1 : Given WinFlowzApp Keyboard est selectionne, when un champ texte standard est focalise, then le clavier s'affiche avec une grille custom et non une pile de boutons Android generiques.
+- [ ] CA 1 : Given WinFlowz keyboard est selectionne, when un champ texte standard est focalise, then le clavier s'affiche avec une grille custom et non une pile de boutons Android generiques.
 - [ ] CA 2 : Given une touche lettre, when l'utilisateur tap au centre, then seul le caractere primaire est insere.
 - [ ] CA 3 : Given une touche avec symbole haut-droite, when l'utilisateur swipe vers haut-droite et relache, then seul ce symbole est insere.
 - [ ] CA 4 : Given un geste sort puis revient au centre, when l'utilisateur relache, then le geste est annule et aucun caractere n'est insere.
@@ -715,7 +715,7 @@ Priority 4 - Advanced typing:
 - [ ] CA 5e2 : Given l'utilisateur appuie sur espace sans depasser le seuil de mouvement, when il relache, then le clavier insere un espace normal et ne lance aucune reconnaissance de geste.
 - [ ] CA 5f : Given le motif trace depuis espace est ambigu, trop proche d'un autre motif ou sous le seuil, when l'utilisateur relache, then aucune action n'est executee et l'annulation est visible.
 - [ ] CA 5g : Given une action associee a un geste n'est plus disponible sur Android, when l'utilisateur trace ce geste, then le clavier affiche l'indisponibilite et ne tente pas de contourner les permissions ou restrictions Android.
-- [ ] CA 5h : Given l'utilisateur enregistre un nouveau geste depuis Settings, when le motif entre en collision avec un motif existant, then WinFlowzApp demande de refaire le geste ou de remplacer l'ancien mapping avant sauvegarde.
+- [ ] CA 5h : Given l'utilisateur enregistre un nouveau geste depuis Settings, when le motif entre en collision avec un motif existant, then WinFlowz demande de refaire le geste ou de remplacer l'ancien mapping avant sauvegarde.
 - [ ] CA 6 : Given une selection existe, when backspace est presse, then la selection est supprimee ou remplacee selon le comportement standard du champ.
 - [ ] CA 7 : Given un emoji ou surrogate pair avant curseur, when backspace est presse, then le clavier ne laisse pas un surrogate casse.
 - [ ] CA 8 : Given un champ password/OTP/noPersonalizedLearning, when le clavier s'ouvre, then tap/swipe restent utilisables mais voice/clipboard/snippets/sync/stats adaptatives sont desactives et un indicateur prive est visible.
@@ -734,7 +734,7 @@ Priority 4 - Advanced typing:
 - [ ] CA 15e : Given un element clipboard non epingle est plus ancien que la duree de retention choisie, when la purge s'execute, then cet element est supprime sans toucher aux elements epingles.
 - [ ] CA 15f : Given l'utilisateur desepingle un ancien element clipboard, when la purge suivante s'execute, then cet element redevient eligible a la suppression selon la retention courante.
 - [ ] CA 15g : Given l'utilisateur change la duree de retention clipboard dans Settings ou le panneau clavier, when le clavier et l'app relisent les preferences, then ils affichent la meme valeur et appliquent la meme politique aux elements non epingles.
-- [ ] CA 15h : Given aucune preference clipboard retention n'est sauvegardee, when WinFlowzApp initialise les reglages, then la retention non epinglee est `7 jours`.
+- [ ] CA 15h : Given aucune preference clipboard retention n'est sauvegardee, when WinFlowz initialise les reglages, then la retention non epinglee est `7 jours`.
 - [ ] CA 15i : Given la retention clipboard est `illimite`, when la purge automatique s'execute, then aucun element non epingle n'est supprime par age, mais les suppressions manuelles restent possibles.
 - [ ] CA 16 : Given le bouton media `>| ||` est visible, when l'utilisateur appuie dessus, then play/pause est envoye; when il reste appuye dessus, then une barre media etendue apparait avec des controles supplementaires.
 - [ ] CA 17 : Given le champ est prive, when l'utilisateur fait un long press sur clipboard, dictation ou snippets, then les actions secondaires sensibles restent indisponibles et aucun contenu n'est capture.
@@ -776,9 +776,9 @@ Priority 4 - Advanced typing:
 - [ ] CA 50 : Given une rangee contextuelle est deja attachee, when l'utilisateur long press la meme action compatible, then le clavier ne cree pas de doublon et conserve un etat previsible.
 - [ ] CA 51 : Given plusieurs rangees contextuelles sont attachees, when la hauteur disponible devient insuffisante, then le clavier applique sa limite visible et conserve une surface de frappe utilisable.
 - [ ] CA 52 : Given l'utilisateur change la preference long press dans Settings Flutter ou dans le panneau parametres IME, when il revient au clavier, then le long press suivant respecte la nouvelle preference.
-- [ ] CA 53 : Given WinFlowzApp Keyboard n'est pas active dans Android, when l'utilisateur ouvre Settings clavier, then l'assistant affiche `pas active` et propose d'ouvrir les reglages Android de methode de saisie.
-- [ ] CA 54 : Given WinFlowzApp Keyboard est active mais pas clavier actif, when l'utilisateur revient dans Settings, then l'assistant affiche `active mais pas actif` et propose d'ouvrir le picker clavier.
-- [ ] CA 55 : Given WinFlowzApp Keyboard est actif, when l'utilisateur ouvre l'assistant, then il affiche `actif` et propose un champ de test utilisable.
+- [ ] CA 53 : Given WinFlowz keyboard n'est pas active dans Android, when l'utilisateur ouvre Settings clavier, then l'assistant affiche `pas active` et propose d'ouvrir les reglages Android de methode de saisie.
+- [ ] CA 54 : Given WinFlowz keyboard est active mais pas clavier actif, when l'utilisateur revient dans Settings, then l'assistant affiche `active mais pas actif` et propose d'ouvrir le picker clavier.
+- [ ] CA 55 : Given WinFlowz keyboard est actif, when l'utilisateur ouvre l'assistant, then il affiche `actif` et propose un champ de test utilisable.
 - [ ] CA 56 : Given le mode debug tactile est active, when l'utilisateur tape ou swipe, then l'overlay affiche bounds, direction, seuil et action declenchee sans afficher le texte du champ.
 - [ ] CA 57 : Given le mode debug tactile est desactive, when l'utilisateur utilise le clavier, then aucun overlay de debug n'est visible.
 - [ ] CA 58 : Given le champ est prive, when le mode debug tactile est active, then l'overlay reste limite aux metadonnees de geste/layout et ne revele aucun contenu sensible.
@@ -797,8 +797,8 @@ Priority 4 - Advanced typing:
 - [ ] CA 71 : Given le panneau emoji leger est ouvert, when l'utilisateur choisit un emoji dans les recents ou une categorie simple, then l'emoji est insere une seule fois via `InputConnection`.
 - [ ] CA 72 : Given un emoji est insere dans un champ texte standard non sensible, when le panneau emoji est rouvert, then cet emoji apparait dans les recents selon la limite locale definie.
 - [ ] CA 73 : Given le champ est prive ou sensible, when l'utilisateur insere un emoji depuis le panneau, then l'insertion peut fonctionner mais les recents emoji ne sont ni lus ni mis a jour.
-- [ ] CA 74 : Given un geste dessine depuis espace est configure pour ouvrir une app installee ou un ecran Settings Android supporte, when l'action est resolue par Android, then WinFlowzApp lance l'intent correspondant apres relachement.
-- [ ] CA 75 : Given un geste dessine est configure pour une action WinFlowzApp interne ou un snippet, when l'action est autorisee dans le contexte courant, then elle s'execute sans quitter le clavier.
+- [ ] CA 74 : Given un geste dessine depuis espace est configure pour ouvrir une app installee ou un ecran Settings Android supporte, when l'action est resolue par Android, then WinFlowz lance l'intent correspondant apres relachement.
+- [ ] CA 75 : Given un geste dessine est configure pour une action WinFlowz interne ou un snippet, when l'action est autorisee dans le contexte courant, then elle s'execute sans quitter le clavier.
 - [ ] CA 76 : Given `/keyboard` est ouvert dans la build FlutterWeb/Vercel, when l'utilisateur tape `j`, `Space`, `a`, `Back`, then le champ simule affiche la sequence attendue et le statut de derniere action se met a jour.
 - [ ] CA 77 : Given `/keyboard` est en mode texte non prive, when l'utilisateur appuie sur une suggestion comme `j'arrive`, then le champ simule insere la suggestion de facon visible et conserve une separation lisible avec le texte existant.
 - [ ] CA 78 : Given `/keyboard` passe en contexte email, URL, phone, number, search ou private, when l'utilisateur interagit avec les touches contextuelles, then les labels visibles, les touches desactivees et les mutations du champ simule refletent ce contexte.
@@ -846,7 +846,7 @@ Priority 4 - Advanced typing:
 - UX/design risk: themes reduce readability on compact keys. Mitigation: predefined themes use shared tokens, fallback theme, and contrast checks before release.
 - State risk: IME and Flutter Settings drift. Mitigation: one shared preference contract, MethodChannel status roundtrip tests, and native local store as offline source when Flutter is closed.
 - Compatibility risk: OEM IME windows and host apps vary. Mitigation: broad manual QA matrix and conservative fallback behavior.
-- Scope risk: WinFlowzApp action bar distracts from base typing. Mitigation: base typing MVP is the readiness gate; advanced panels can remain minimal.
+- Scope risk: WinFlowz action bar distracts from base typing. Mitigation: base typing MVP is the readiness gate; advanced panels can remain minimal.
 - Review risk: FlutterWeb preview can drift from native Android behavior and give false confidence. Mitigation: label it as a simulated sandbox, keep unsupported actions explicit, add widget tests, and continue to require Kotlin compile proof plus Android device QA for native readiness.
 
 # Execution Notes
@@ -855,8 +855,8 @@ Read first:
 
 - `lib/features/keyboard/presentation/keyboard_preview_screen.dart`
 - `test/widget_test.dart`
-- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`
-- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`
+- `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`
 - `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardSecurityPolicy.kt`
 - `lib/core/platform/android_keyboard_bridge.dart`
 - `shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md`

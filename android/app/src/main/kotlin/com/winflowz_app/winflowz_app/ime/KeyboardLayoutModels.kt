@@ -76,7 +76,7 @@ enum class KeyboardKeyAction {
     MediaNext,
     MediaNowPlaying,
     InsertSnippetOne,
-    OpenWinFlowzAppSettings,
+    OpenWinFlowzSettings,
     OpenThemeSettings,
     ShowKeyboardPicker,
     ToggleCornerMode,
@@ -532,7 +532,7 @@ object KeyboardLayoutBuilder {
                         KeyboardKeySpec(
                             id = "snippet-open",
                             label = "App",
-                            action = KeyboardKeyAction.OpenWinFlowzAppSettings,
+                            action = KeyboardKeyAction.OpenWinFlowzSettings,
                             weight = 1.2f,
                         ),
                         KeyboardKeySpec("snippet-close", "Close", KeyboardKeyAction.ClosePanel),
@@ -553,7 +553,7 @@ object KeyboardLayoutBuilder {
                 keys =
                     listOf(
                         KeyboardKeySpec("setting-keyboard-picker", "Keyboard", KeyboardKeyAction.ShowKeyboardPicker, weight = 1.3f),
-                        KeyboardKeySpec("setting-app", "App", KeyboardKeyAction.OpenWinFlowzAppSettings),
+                        KeyboardKeySpec("setting-app", "App", KeyboardKeyAction.OpenWinFlowzSettings),
                         KeyboardKeySpec("setting-theme", "Theme", KeyboardKeyAction.OpenThemeSettings),
                         KeyboardKeySpec("setting-layout", request.layoutProfile.name, KeyboardKeyAction.ToggleLayoutProfile, weight = 1.1f),
                         KeyboardKeySpec("setting-close", "Close", KeyboardKeyAction.ClosePanel),

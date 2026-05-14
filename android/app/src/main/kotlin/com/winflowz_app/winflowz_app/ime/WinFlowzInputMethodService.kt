@@ -11,12 +11,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.winflowz_app.winflowz_app.MainActivity
 
-class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardView.Callbacks {
+class WinFlowzInputMethodService : InputMethodService(), WinFlowzKeyboardView.Callbacks {
     private lateinit var stateStore: KeyboardStateStore
     private lateinit var mediaController: KeyboardMediaController
     private lateinit var clipboardController: KeyboardClipboardController
     private lateinit var voiceController: KeyboardVoiceController
-    private var keyboardView: WinFlowzAppKeyboardView? = null
+    private var keyboardView: WinFlowzKeyboardView? = null
     private var fieldPolicy =
         KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var inputContext = KeyboardInputContextResolver.resolve(null)
@@ -54,7 +54,7 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
     }
 
     override fun onCreateInputView(): View {
-        val view = WinFlowzAppKeyboardView(this, this)
+        val view = WinFlowzKeyboardView(this, this)
         keyboardView = view
         view.applyPolicy(fieldPolicy)
         applyRuntimePreferencesToView()
@@ -289,7 +289,7 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
 
     override fun onVoice() {
         if (!stateStore.voiceEnabled) {
-            showStatus("Dictation disabled in WinFlowzApp settings")
+            showStatus("Dictation disabled in WinFlowz settings")
             return
         }
         if (!fieldPolicy.voiceAllowed) {
@@ -415,7 +415,7 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
             return
         }
         onSettings()
-        showStatus("Open WinFlowzApp snippets from the app")
+        showStatus("Open WinFlowz snippets from the app")
     }
 
     override fun onSettings() {
@@ -428,7 +428,7 @@ class WinFlowzAppInputMethodService : InputMethodService(), WinFlowzAppKeyboardV
 
     override fun onThemeSettings() {
         onSettings()
-        showStatus("Open WinFlowzApp Appearance settings")
+        showStatus("Open WinFlowz Appearance settings")
     }
 
     override fun onKeyboardPicker() {

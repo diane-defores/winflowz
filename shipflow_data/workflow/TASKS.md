@@ -1,4 +1,4 @@
-# Tasks — WinFlowzApp
+# Tasks — WinFlowz
 
 > **Priority:** 🔴 P0 blocker · 🟠 P1 high · 🟡 P2 normal · 🟢 P3 low · ⚪ deferred
 > **Status:** 📋 todo · 🔄 in progress · ✅ done · ⛔ blocked · 💤 deferred
@@ -11,13 +11,13 @@
 |-----|------|--------|
 | ✅ | Replace Supabase target coupling with backend-agnostic contracts and Firebase first-adapter spec | ✅ done — `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md` created |
 | ✅ | Reorganize legacy product docs to `shipflow_data` canonical locations and replace root path references | ✅ done — root doctrine docs (`BRANDING.md`, `BUSINESS.md`, `ARCHITECTURE.md`, etc.) replaced by canonical files |
-| ✅ | Rename the product/runtime identity from VoiceFlowz to WinFlowzApp across app packages, docs, specs, and trackers | ✅ done — commit `bd81825` |
+| ✅ | Finalize identity migration to WinFlowz across app packages, docs, specs, and trackers | ✅ done — commit `bd81825` |
 | ✅ | Create Firebase CLI workflow for project config, Auth/Firestore setup, rules, indexes, emulator/dev validation and GitHub Secrets/Blacksmith integration | ✅ done — GitHub OIDC/WIF wired; Firestore rules/indexes deploy proven in hosted CI (`run 25636532417`, Firestore job `75249317806`) and re-validated after IAM hardening (`run 25636936089`, Firestore job `75250395805`) |
 | ✅ | Run the verification gate end-to-end: `dart format --set-exit-if-changed .`, `flutter analyze`, `flutter test`, `flutter build web` | ✅ done |
 | 🟠 | Detach Supabase runtime target path (`task 7`) while preserving legacy compile compatibility until the final parity decision | ✅ done — Supabase removed from active bootstrap/providers/diagnostics; legacy adapters/tests remain in-place for compile compatibility |
 | ⚪ | Retire or archive Supabase schema/tests after Firebase adapter parity is specified | 💤 deferred |
 | ⚪ | Validate auth, transcriptions, snippets, dictionary, clipboard sync, and settings against a real Firebase environment | 💤 deferred — after Firebase adapter setup |
-| 🟠 | Build Android IME WinFlowzApp Keyboard progressively: base native keyboard, Settings bridge, privacy gate, clipboard, media, docs, Android device QA | 🔄 in progress — custom swipe-corner keyboard, Settings bridge, privacy gate, native panels, reference-keyboard foundation/editing parity roadmap, IME subtype/lifecycle/context slice, selection/InputConnection editor slice, advanced editing actions, auto-capitalization, current-word suggestions, Snippets/Dictionary text-expander sync, key-value/parser/modifier/modmap foundations now wired into live text/keyevent/action/macro dispatch with Ctrl/Alt/Fn keys and Fn navigation modmap, touch pointer/long-press/repeat/spacebar-slider foundations, FlutterWeb/Vercel keyboard preview, and local `:app:compileDebugKotlin` proof implemented; full Gradle packaging is blocked on this aarch64 runner by x86_64 AAPT2, and Android device QA/backend-agnostic sync adapter remain required |
+| 🟠 | Build Android IME WinFlowz keyboard progressively: base native keyboard, Settings bridge, privacy gate, clipboard, media, docs, Android device QA | 🔄 in progress — custom swipe-corner keyboard, Settings bridge, privacy gate, native panels, reference-keyboard foundation/editing parity roadmap, IME subtype/lifecycle/context slice, selection/InputConnection editor slice, advanced editing actions, auto-capitalization, current-word suggestions, Snippets/Dictionary text-expander sync, key-value/parser/modifier/modmap foundations now wired into live text/keyevent/action/macro dispatch with Ctrl/Alt/Fn keys and Fn navigation modmap, touch pointer/long-press/repeat/spacebar-slider foundations, FlutterWeb/Vercel keyboard preview, and local `:app:compileDebugKotlin` proof implemented; full Gradle packaging is blocked on this aarch64 runner by x86_64 AAPT2, and Android device QA/backend-agnostic sync adapter remain required |
 | 🟠 | Repair Flutter Android overlay parity with native floating bubble, event bridge, accessibility delivery, and appearance settings | 🔄 in progress — native bridge and Settings controls implemented; overlay foreground-service type fix attempted for BUG-2026-05-11-001; CI APK and Android device retest still required |
 | ✅ | Run the required Android-current manual platform pass and document non-Android limits | ✅ done — Android remains the only current runtime target; capability/permission limits documented; web local speech disabled; Android real-device QA remains tracked under overlay/IME tasks |
 
@@ -64,7 +64,7 @@
 
 | Pri | Task | Status |
 |-----|------|--------|
-| ✅ | Align Flutter brand tokens, surface tokens, primary shadow, and Settings copy with the WinFlowzApp branding contract | ✅ done |
+| ✅ | Align Flutter brand tokens, surface tokens, primary shadow, and Settings copy with the WinFlowz branding contract | ✅ done |
 | ✅ | Add a user-facing Appearance control for System / Light / Dark theme mode | ✅ done |
 | ✅ | Bootstrap Appearance from local settings before `runApp`, keep local cache writes, and route authenticated saves through the backend-agnostic settings store | ✅ done |
 | ✅ | Constrain Firestore settings writes so `themeMode` accepts only `system`, `light`, or `dark` | ✅ done |

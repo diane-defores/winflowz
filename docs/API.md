@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-04-26"
 updated: "2026-05-09"
 status: "stale"
@@ -30,7 +30,7 @@ evidence:
 next_step: "$sf-docs api"
 ---
 
-# API — WinFlowzApp
+# API — WinFlowz
 
 > Legacy reference: this document still contains the previous Supabase contract.
 > The active backend target is now backend-agnostic stores with Firebase as the

@@ -53,15 +53,15 @@ final appThemeModeProvider =
       AppThemeModeController.new,
     );
 
-class WinFlowzApp extends ConsumerWidget {
-  const WinFlowzApp({super.key});
+class WinFlowz extends ConsumerWidget {
+  const WinFlowz({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(appThemeModeProvider);
     return MaterialApp.router(
-      title: 'WinFlowzApp',
+      title: 'WinFlowz',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode.materialMode,

@@ -2,7 +2,7 @@
 artifact: product_context
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-04-26"
 updated: "2026-05-09"
 status: "reviewed"
@@ -39,7 +39,7 @@ next_review: "2026-05-26"
 next_step: "$sf-docs update"
 ---
 
-# Product — WinFlowzApp
+# Product — WinFlowz
 
 ## Cadre de référence
 
@@ -47,14 +47,14 @@ Ce document décrit la cible `target-reviewed` actuelle: Flutter, Android-first,
 
 ## Problème utilisateur
 
-Les utilisateurs produisent souvent du texte dans des contextes où taper est lent, peu pratique ou interrompt le flux de travail. WinFlowzApp vise à transformer rapidement la parole en texte copiable, modifiable, synchronisé et réutilisable.
+Les utilisateurs produisent souvent du texte dans des contextes où taper est lent, peu pratique ou interrompt le flux de travail. WinFlowz vise à transformer rapidement la parole en texte copiable, modifiable, synchronisé et réutilisable.
 
 ## Utilisateurs cibles
 
 - Professionnels qui rédigent notes, emails ou comptes-rendus sur mobile et desktop.
 - Power users qui acceptent de configurer leurs propres clés API pour obtenir une meilleure transcription.
 - Utilisateurs Android qui veulent déclencher la dictée hors application via overlay.
-- Utilisateurs Android qui veulent écrire et dicter depuis un clavier WinFlowzApp dans n'importe quel champ compatible.
+- Utilisateurs Android qui veulent écrire et dicter depuis un clavier WinFlowz dans n'importe quel champ compatible.
 
 ## Workflows cœur
 
@@ -63,7 +63,7 @@ Les utilisateurs produisent souvent du texte dans des contextes où taper est le
 1. L'utilisateur se connecte via l'adaptateur auth actif, Firebase Auth pour le premier MVP Android.
 2. Il ouvre l'écran Voice et choisit mode local ou avancé.
 3. Il enregistre sa voix.
-4. WinFlowzApp affiche le texte brut puis le texte nettoyé si applicable.
+4. WinFlowz affiche le texte brut puis le texte nettoyé si applicable.
 5. L'utilisateur copie, modifie, sauvegarde, ou envoie le texte vers le clipboard.
 
 ### Mode avancé
@@ -88,9 +88,9 @@ Les utilisateurs produisent souvent du texte dans des contextes où taper est le
 3. Le résultat est injecté si possible, sinon fallback clipboard.
 4. Les plateformes non Android n'affichent pas de contrôle overlay trompeur.
 
-### Clavier Android WinFlowzApp
+### Clavier Android WinFlowz
 
-1. L'utilisateur active WinFlowzApp Keyboard dans les réglages de méthode de saisie Android.
+1. L'utilisateur active WinFlowz keyboard dans les réglages de méthode de saisie Android.
 2. Il bascule sur ce clavier depuis un champ texte compatible.
 3. Il peut taper, dicter localement, coller/copier explicitement, ouvrir les snippets, et envoyer play/pause au média courant.
 4. Les champs password, OTP ou privés désactivent dictée, capture clipboard, snippets enrichis et sync.
@@ -134,6 +134,6 @@ Mitigations obligatoires:
 
 - Pas de billing/entitlements dans la migration.
 - Pas d'overlay système hors Android.
-- Pas de clavier système WinFlowzApp hors Android dans cette phase.
+- Pas de clavier système WinFlowz hors Android dans cette phase.
 - Pas de promesse de chiffrement bout-en-bout.
 - Pas de code applicatif JS/TS dans le repo final.

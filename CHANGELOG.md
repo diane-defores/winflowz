@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-03-18"
 updated: "2026-05-10"
 status: "draft"
@@ -36,13 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added Android IME touch foundations for pointer-id tracking, secondary pointer suppression, long-press repeat on destructive/navigation keys, and horizontal spacebar sliding for cursor movement.
 - Added Android IME typing assistance foundations: automatic capitalization, current-word suggestions, shortcut expansion, and app-to-native sync for Snippets/Dictionary text-expander rules.
 - Added Android IME reference editing actions inspired by the functional keyboard: forward delete, delete-word-forward, cut, select all, paste as plain text, undo, redo and selection cancel, mirrored in the FlutterWeb keyboard preview.
-- Added a FlutterWeb `Keyboard preview` screen for Vercel/browser review of the WinFlowzApp Keyboard layouts, field contexts, panels and private/corner/debug states.
+- Added a FlutterWeb `Keyboard preview` screen for Vercel/browser review of the WinFlowz keyboard layouts, field contexts, panels and private/corner/debug states.
 - Added Android IME reference-parity foundations: FR/EN subtypes, next-keyboard switching metadata, defensive lifecycle hooks, numeric/date field context handling and centralized `InputConnectionEditor` editing/navigation results.
 - Added Android overlay appearance controls in Settings for floating bubble size and opacity.
 - Added native Android overlay bridge support for persisted bubble appearance preferences.
 - Added first-run onboarding that explains the startup path, Android keyboard setup, microphone, overlay, accessibility and cloud sync permissions.
 - Added a Settings backend-provider diagnostic card with a copyable Supabase/local-mode error.
-- Added the Android WinFlowzApp Keyboard IME foundation with a custom swipe-corner keyboard surface, native input service declaration, Settings bridge, Android speech recognition trigger, explicit clipboard actions, emoji/navigation panels, touch-debug overlay and generic media play/pause.
+- Added the Android WinFlowz keyboard IME foundation with a custom swipe-corner keyboard surface, native input service declaration, Settings bridge, Android speech recognition trigger, explicit clipboard actions, emoji/navigation panels, touch-debug overlay and generic media play/pause.
 - Added keyboard-origin Supabase schema fields, source allowlists, clipboard hash dedupe metadata, RLS smoke coverage and Dart model/bridge tests.
 - Added project technical governance docs and a content map for future ShipFlow code/doc update gates.
 - Added `docs/technical/firebase-oidc-ci-playbook.md` with a reusable GitHub OIDC/WIF Firestore deploy runbook and troubleshooting matrix.
@@ -63,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated Firebase CI documentation to require `GCP_WIF_PROVIDER` and `GCP_WIF_SERVICE_ACCOUNT` instead of long-lived service account JSON secrets.
 - Archived Supabase migration target docs as legacy-only references and pointed execution to `shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md`.
 - Removed unnecessary Firestore indexes that caused hosted deploy errors on `settings` and `transcriptions` collection groups.
-- Moved active task tracking to `shipflow_data/workflow/TASKS.md` and synced tracker naming to WinFlowzApp.
+- Moved active task tracking to `shipflow_data/workflow/TASKS.md` and synced tracker naming to WinFlowz.
 
 ### Security
 - Removed the hardcoded sample snippet insertion path from the Android IME; snippet actions now open the app instead of inserting placeholder text.

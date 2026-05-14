@@ -2,17 +2,17 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-14"
 created_at: "2026-05-14 17:27:52 UTC"
 updated: "2026-05-14"
-updated_at: "2026-05-14 17:45:00 UTC"
+updated_at: "2026-05-14 21:05:16 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "auth-hardening-professional-error-handling"
 owner: "Diane"
-user_story: "En tant que builder de WinFlowzApp, je veux une authentification Firebase/Google robuste, observable et sûre, afin de pouvoir vendre un produit Android professionnel sans fuite de secrets, sans accès non autorisé et sans erreurs auth silencieuses."
+user_story: "En tant que builder de WinFlowz, je veux une authentification Firebase/Google robuste, observable et sûre, afin de pouvoir vendre un produit Android professionnel sans fuite de secrets, sans accès non autorisé et sans erreurs auth silencieuses."
 risk_level: high
 security_impact: "yes"
 docs_impact: "yes"
@@ -72,9 +72,9 @@ Ready for implementation. This spec intentionally expands beyond a one-screen er
 
 # User Story
 
-En tant que builder de WinFlowzApp, je veux une authentification Firebase/Google robuste, observable et sûre, afin de pouvoir vendre un produit Android professionnel sans fuite de secrets, sans accès non autorisé et sans erreurs auth silencieuses.
+En tant que builder de WinFlowz, je veux une authentification Firebase/Google robuste, observable et sûre, afin de pouvoir vendre un produit Android professionnel sans fuite de secrets, sans accès non autorisé et sans erreurs auth silencieuses.
 
-Acteur principal: builder WinFlowzApp.
+Acteur principal: builder WinFlowz.
 
 Acteurs secondaires:
 
@@ -97,7 +97,7 @@ Résultat observable attendu: l'app laisse accéder aux surfaces autorisées seu
 
 # Minimal Behavior Contract
 
-WinFlowzApp accepte trois chemins d'entrée: mode local explicite, session Firebase email/password, et session Firebase Google. Une tentative réussie met l'utilisateur dans l'état d'accès correspondant et rend l'app utilisable; une tentative échouée affiche une erreur claire, récupérable et sans secret, tout en enregistrant un diagnostic redigé pour support/Sentry. Les routes produit ne doivent pas être accessibles par deep link ou navigation directe quand aucune session valide ou aucun mode local explicite n'est actif. L'edge case facile à rater est Google Sign-In Android: certaines erreurs de configuration peuvent remonter comme `canceled`, donc l'app ne doit pas traiter toutes les annulations apparentes comme un simple abandon utilisateur sans signal diagnostic exploitable.
+WinFlowz accepte trois chemins d'entrée: mode local explicite, session Firebase email/password, et session Firebase Google. Une tentative réussie met l'utilisateur dans l'état d'accès correspondant et rend l'app utilisable; une tentative échouée affiche une erreur claire, récupérable et sans secret, tout en enregistrant un diagnostic redigé pour support/Sentry. Les routes produit ne doivent pas être accessibles par deep link ou navigation directe quand aucune session valide ou aucun mode local explicite n'est actif. L'edge case facile à rater est Google Sign-In Android: certaines erreurs de configuration peuvent remonter comme `canceled`, donc l'app ne doit pas traiter toutes les annulations apparentes comme un simple abandon utilisateur sans signal diagnostic exploitable.
 
 # Success Behavior
 
@@ -259,7 +259,7 @@ Docs to align during implementation:
 
 # Implementation Tasks
 
-- [ ] Tâche 1 : Introduce typed auth failure model
+- [x] Tâche 1 : Introduce typed auth failure model
   - Fichier : `lib/features/auth/domain/auth_failure.dart`
   - Action : Create `AuthFailureKind`, `AuthFailure`, sanitized support-detail fields, user-message mapping hooks, and redaction helpers or reuse a shared redactor.
   - User story link : gives every auth failure a stable, safe product contract.
@@ -267,7 +267,7 @@ Docs to align during implementation:
   - Validate with : new `test/auth_failure_test.dart` covering user messages, support detail, and redaction of API keys/tokens/password-like strings.
   - Notes : keep SDK-specific imports out of this domain file if possible.
 
-- [ ] Tâche 2 : Harden FirebaseAuthSessionStore around Google and Firebase errors
+- [x] Tâche 2 : Harden FirebaseAuthSessionStore around Google and Firebase errors
   - Fichier : `lib/features/auth/data/firebase_auth_session_store.dart`
   - Action : Wrap Firebase/Google SDK calls, check `supportsAuthenticate`, handle `GoogleSignInException` codes, guard nullable/missing `idToken`, map SDK errors to typed auth failures, and never build a credential with a null token.
   - User story link : prevents unsafe or misleading Google/Firebase auth states.
@@ -275,7 +275,7 @@ Docs to align during implementation:
   - Validate with : new unit tests using fakes/mocks or adapter seams for Google/Firebase success, canceled, config error, null token, FirebaseAuthException, and unexpected error.
   - Notes : if `GoogleSignIn` is hard to fake directly, introduce a narrow `GoogleAuthClient` wrapper owned by auth data layer.
 
-- [ ] Tâche 3 : Keep auth provider composition explicit and local-mode safe
+- [x] Tâche 3 : Keep auth provider composition explicit and local-mode safe
   - Fichier : `lib/features/auth/application/auth_session_provider.dart`
   - Action : Ensure local mode is an explicit state, provider selection cannot silently switch remote/local mid-flow, and auth/session errors surface as typed states where needed.
   - User story link : protects local mode as a real product path without cloud-auth ambiguity.
@@ -283,7 +283,7 @@ Docs to align during implementation:
   - Validate with : provider tests for Firebase configured, Firebase missing, local mode enabled, sign-out/reset expectations.
   - Notes : avoid broad state-management rewrites; keep Riverpod patterns already present.
 
-- [ ] Tâche 4 : Refactor SignInScreen to consume typed auth failures
+- [x] Tâche 4 : Refactor SignInScreen to consume typed auth failures
   - Fichier : `lib/features/auth/presentation/sign_in_screen.dart`
   - Action : Remove direct SDK-specific mapping from widget where practical, render typed user messages, support detail copy, busy state, and retry actions consistently.
   - User story link : gives users professional, recoverable auth feedback.
@@ -291,7 +291,7 @@ Docs to align during implementation:
   - Validate with : extend `test/sign_in_screen_test.dart` for invalid form, Firebase config error, Google canceled, Google config error, null token support detail, local mode, no secret visible.
   - Notes : keep French copy natural and concise.
 
-- [ ] Tâche 5 : Add route-level auth/local-mode guards
+- [x] Tâche 5 : Add route-level auth/local-mode guards
   - Fichier : `lib/core/router/app_router.dart`
   - Action : Add redirect logic or route guard using auth/local mode state so protected routes cannot build without signed-in or local fallback state.
   - User story link : blocks direct access to product routes before an auth decision.
@@ -299,7 +299,7 @@ Docs to align during implementation:
   - Validate with : router/widget tests for `/voice`, `/clipboard`, `/settings`, `/keyboard`, `/snippets`, `/dictionary` from signed-out, local, and signed-in states.
   - Notes : handle loading state without redirect loops. If `go_router` refresh integration needs a Listenable/stream bridge, implement the smallest local helper.
 
-- [ ] Tâche 6 : Harden diagnostics and Sentry capture for auth
+- [x] Tâche 6 : Harden diagnostics and Sentry capture for auth
   - Fichier : `lib/core/diagnostics/app_diagnostics.dart`, `lib/core/bootstrap/sentry_bootstrap.dart`, `lib/features/auth/presentation/sign_in_screen.dart`
   - Action : Ensure auth errors use one redaction path before AppDiagnostics, copied support detail, and Sentry capture; add category/code tags without sensitive payloads.
   - User story link : keeps failures observable without privacy/security leaks.
@@ -307,7 +307,7 @@ Docs to align during implementation:
   - Validate with : unit tests for redaction and widget tests asserting raw API-key/token/password-like strings are absent from UI.
   - Notes : do not enable screenshots, session replay, or default PII.
 
-- [ ] Tâche 7 : Add auth setup and verification documentation
+- [x] Tâche 7 : Add auth setup and verification documentation
   - Fichier : `README.md`, `docs/technical/firebase-cli-foundation.md`, `docs/VERIFICATION.md`, `docs/technical/flutter-app.md`
   - Action : Document Firebase/Google Android setup, SHA fingerprint requirement, provider enablement, local mode limits, route guard expectation, and auth smoke matrix.
   - User story link : makes professional auth validation repeatable before selling.
@@ -315,7 +315,7 @@ Docs to align during implementation:
   - Validate with : `rg` checks for stale/auth setup wording and manual doc review.
   - Notes : do not rewrite all legacy Supabase docs in this chantier unless touched lines directly mislead current auth setup.
 
-- [ ] Tâche 8 : Run local technical checks
+- [x] Tâche 8 : Run local technical checks
   - Fichier : project root
   - Action : Run `dart format --set-exit-if-changed .`, `git diff --check`, `flutter analyze`, and `flutter test`.
   - User story link : proves local regression safety.
@@ -329,7 +329,7 @@ Docs to align during implementation:
   - User story link : proves the sellable Android auth flow, not just unit tests.
   - Depends on : Tâches 1-8 and valid Firebase Android config.
   - Validate with : real device/emulator evidence, CI/Blacksmith artifact or operator-confirmed run, no secrets in logs.
-  - Notes : if Google provider/SHA config is missing, stop before ship and mark verification blocked, not ready.
+  - Notes : blocked in this local run because no configured Android device/emulator Firebase/Google smoke evidence was available. If Google provider/SHA config is missing, stop before ship and mark verification blocked, not ready.
 
 # Acceptance Criteria
 
@@ -442,6 +442,21 @@ None blocking for this chantier. Conservative decisions are fixed:
 - Local mode remains explicitly local-only and does not imply cloud sync.
 - Google configuration ambiguity is treated as a recoverable setup failure with diagnostics, not as a pure user cancellation.
 
+# Implementation Closure
+
+Local implementation is complete through code, docs, redaction, route guards, and automated checks. Ship readiness remains partial because the Android/Firebase auth smoke is not recorded yet.
+
+Local verification passed on 2026-05-14 21:05 UTC:
+
+- `dart format --set-exit-if-changed .`
+- `git diff --check`
+- `flutter analyze`
+- `flutter test`
+
+Pending before ship:
+
+- Android/Firebase smoke for email/password success/failure, Google success, controlled Google configuration failure or equivalent evidence, local mode, sign-out, protected deep links, and diagnostics/Sentry redaction.
+
 # Skill Run History
 
 | Date UTC | Skill | Model | Action | Result | Next step |
@@ -449,6 +464,7 @@ None blocking for this chantier. Conservative decisions are fixed:
 | 2026-05-14 17:27:52 UTC | sf-spec | GPT-5 Codex | Created full auth hardening spec from auth verification gaps and user requirement for sellable max-security product | draft saved | `/sf-ready shipflow_data/workflow/specs/auth-hardening-professional-error-handling.md` |
 | 2026-05-14 17:45:00 UTC | sf-ready | GPT-5 Codex | Reviewed structure, metadata, user story alignment, behavior contracts, task ordering, docs/freshness evidence, adversarial cases, and security posture | ready | `/sf-start shipflow_data/workflow/specs/auth-hardening-professional-error-handling.md` |
 | 2026-05-14 18:09:53 UTC | sf-verify | GPT-5 Codex | Verified current login error-handling patch against local checks, widget tests, Firebase/Google docs, and auth-hardening draft scope | partial | `/sf-ready shipflow_data/workflow/specs/auth-hardening-professional-error-handling.md` |
+| 2026-05-14 21:05:16 UTC | sf-build | GPT-5 Codex | Implemented typed auth failures, Google/Firebase auth hardening, shared redaction, auth-safe UI, route guards through app shell, auth docs, and tests | partial: local checks pass; Android/Firebase smoke pending | Run Android/Firebase smoke before `/sf-end` or `/sf-ship` |
 
 # Current Chantier Flow
 
@@ -456,7 +472,8 @@ None blocking for this chantier. Conservative decisions are fixed:
 |------|--------|----------|-----------|
 | sf-spec | done | This spec defines the auth hardening contract, external-doc evidence, implementation tasks, acceptance criteria, tests, risks, and stop conditions. | sf-ready |
 | sf-ready | done | Structure, metadata, behavior contract, docs freshness, auth/security posture, tasks, acceptance criteria, and stop conditions are sufficient for implementation. | sf-start |
-| sf-start | partial-before-ready | A narrow login error-handling patch exists before this draft has passed readiness; it covers invalid fields, Firebase config errors, copyable support detail, local mode bypass, and local checks. | Reconcile under sf-ready before broader auth hardening |
-| sf-verify | partial | Local checks pass for the patch, but the full auth-hardening contract remains incomplete: typed auth failures, Google store hardening, route guards, docs, and Android/Firebase smoke are not done. | `/sf-ready shipflow_data/workflow/specs/auth-hardening-professional-error-handling.md` |
-| sf-end | not launched | Not closable until verified. | Wait for sf-verify |
+| sf-start | done | Auth hardening was implemented across typed domain failures, Firebase/Google adapter seams, UI handling, diagnostics redaction, and route guard. | sf-build |
+| sf-build | partial | Local code/docs/checks are complete and green; Android/Firebase auth smoke evidence is still missing. | Run Android/Firebase smoke |
+| sf-verify | blocked | Cannot fully verify sellable auth without Android/Firebase email/password + Google + redaction smoke evidence. | Record smoke evidence, then rerun verify |
+| sf-end | not launched | Not closable until Android/Firebase smoke is verified. | Wait for sf-verify |
 | sf-ship | not launched | Not shippable until end/verify and Android auth evidence. | Wait for sf-end |

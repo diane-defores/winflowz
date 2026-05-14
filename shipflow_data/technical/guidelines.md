@@ -2,7 +2,7 @@
 artifact: technical_guidelines
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-03-18"
 updated: "2026-05-09"
 status: "reviewed"
@@ -30,7 +30,7 @@ next_review: "2026-05-27"
 next_step: "$sf-docs update"
 ---
 
-# Guidelines — WinFlowzApp
+# Guidelines — WinFlowz
 
 ## Rule zero: target architecture precedence
 

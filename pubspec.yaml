@@ -1,5 +1,5 @@
 name: winflowz_app
-description: "WinFlowzApp Flutter Android-first app with backend-agnostic data contracts."
+description: "WinFlowz Flutter Android-first app with backend-agnostic data contracts."
 publish_to: "none"
 version: 1.0.0+1
 

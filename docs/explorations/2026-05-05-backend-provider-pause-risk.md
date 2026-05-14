@@ -2,7 +2,7 @@
 artifact: exploration_report
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-05"
 updated: "2026-05-05"
 status: draft
@@ -38,12 +38,12 @@ next_step: "/sf-spec backend-provider-decision"
 
 ## Starting Question
 
-Should WinFlowzApp continue on Supabase if Free projects can be paused for inactivity, or should the backend provider stay undecided until the server/secrets strategy is clear?
+Should WinFlowz continue on Supabase if Free projects can be paused for inactivity, or should the backend provider stay undecided until the server/secrets strategy is clear?
 
 ## Context Read
 
 - Conversation context - user does not want zero-traffic projects to be paused or lost.
-- Current implementation context - WinFlowzApp has Supabase-specific runtime defines, schema, RLS smoke tests, and CI APK secret injection.
+- Current implementation context - WinFlowz has Supabase-specific runtime defines, schema, RLS smoke tests, and CI APK secret injection.
 - Task context - Supabase real-environment validation is already deferred until the server change and secrets-provider decision.
 
 ## Internet Research
@@ -59,7 +59,7 @@ Should WinFlowzApp continue on Supabase if Free projects can be paused for inact
 
 ## Problem Framing
 
-The real requirement is not "how to keep Supabase awake." It is: WinFlowzApp needs a backend strategy where low traffic does not silently interrupt the installed app, and where projects are not operationally fragile during the pre-traction phase.
+The real requirement is not "how to keep Supabase awake." It is: WinFlowz needs a backend strategy where low traffic does not silently interrupt the installed app, and where projects are not operationally fragile during the pre-traction phase.
 
 An automated keepalive cron is not a durable product invariant. It may stop working, may not count as the right activity, and does not change the provider's stated guarantee. If continuous availability matters, the provider or plan must explicitly support it.
 
@@ -136,7 +136,7 @@ Confidence is medium because the final choice depends on cost tolerance, whether
 
 ## Decision Inputs For Spec
 
-- User story seed: As the builder, I want WinFlowzApp's backend provider to remain available even with low or zero traffic so installed builds do not break during pre-traction phases.
+- User story seed: As the builder, I want WinFlowz's backend provider to remain available even with low or zero traffic so installed builds do not break during pre-traction phases.
 - Scope in seed: provider comparison, availability/pause policy, Flutter support, auth/sync fit, cost floor, backup story, migration effort.
 - Scope out seed: full migration implementation, production deployment, billing setup.
 - Invariants/constraints seed: no service-role keys in clients; no architecture that depends on unofficial keepalive behavior; CI must fail clearly when required secrets/config are absent.

@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.2.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-03-18"
 updated: "2026-05-04"
 status: "reviewed"
@@ -30,11 +30,11 @@ next_review: "2026-05-26"
 next_step: "$sf-docs update"
 ---
 
-# CLAUDE.md — WinFlowzApp
+# CLAUDE.md — WinFlowz
 
 ## Project Overview
 
-WinFlowzApp is now a Flutter application using Supabase for authentication and data persistence.
+WinFlowz is now a Flutter application using Supabase for authentication and data persistence.
 The app targets multi-platform delivery with Android-specific overlay capabilities exposed through a Flutter method channel.
 
 Current migration baseline includes:

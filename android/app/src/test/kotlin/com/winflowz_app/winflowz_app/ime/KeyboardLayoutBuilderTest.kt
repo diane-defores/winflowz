@@ -432,7 +432,7 @@ class KeyboardLayoutBuilderTest {
 
         assertEquals(4, snapshot.panelRowCount)
         assertTrue(actions.contains(KeyboardKeyAction.ShowKeyboardPicker))
-        assertTrue(actions.contains(KeyboardKeyAction.OpenWinFlowzAppSettings))
+        assertTrue(actions.contains(KeyboardKeyAction.OpenWinFlowzSettings))
         assertTrue(actions.contains(KeyboardKeyAction.OpenThemeSettings))
         assertTrue(actions.contains(KeyboardKeyAction.ToggleLayoutProfile))
         assertTrue(actions.contains(KeyboardKeyAction.ToggleKeyVibration))

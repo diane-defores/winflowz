@@ -16,7 +16,7 @@ class KeyboardClipboardController(private val context: Context) {
         if (selectedText.isNullOrEmpty()) {
             return false
         }
-        val clip = ClipData.newPlainText("WinFlowzApp selection", selectedText)
+        val clip = ClipData.newPlainText("WinFlowz selection", selectedText)
         clipboard.setPrimaryClip(clip)
         if (syncDesired) {
             KeyboardClipboardEventQueue.enqueue(

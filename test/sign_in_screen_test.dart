@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:winflowz_app/core/theme/app_theme.dart';
 import 'package:winflowz_app/core/sync/sync_status.dart';
 import 'package:winflowz_app/features/auth/application/auth_session_provider.dart';
+import 'package:winflowz_app/features/auth/domain/auth_failure.dart';
 import 'package:winflowz_app/features/auth/domain/auth_session_store.dart';
 import 'package:winflowz_app/features/auth/presentation/sign_in_screen.dart';
 
@@ -12,6 +12,7 @@ class _ThrowingAuthSessionStore implements AuthSessionStore {
   var emailPasswordCalls = 0;
   var createAccountCalls = 0;
   var anonymousCalls = 0;
+  AuthFailure? googleFailure;
 
   @override
   Future<AuthSessionSnapshot> currentSession() async => _signedOut;
@@ -22,9 +23,10 @@ class _ThrowingAuthSessionStore implements AuthSessionStore {
   @override
   Future<void> signInAnonymously() async {
     anonymousCalls += 1;
-    throw firebase_auth.FirebaseAuthException(
+    throw AuthFailure.firebase(
       code: 'invalid-api-key',
       message: 'API key not valid. Please pass a valid API key.',
+      signup: false,
     );
   }
 
@@ -34,9 +36,10 @@ class _ThrowingAuthSessionStore implements AuthSessionStore {
     required String password,
   }) async {
     emailPasswordCalls += 1;
-    throw firebase_auth.FirebaseAuthException(
+    throw AuthFailure.firebase(
       code: 'invalid-api-key',
       message: 'API key not valid. Please pass a valid API key.',
+      signup: false,
     );
   }
 
@@ -46,14 +49,20 @@ class _ThrowingAuthSessionStore implements AuthSessionStore {
     required String password,
   }) async {
     createAccountCalls += 1;
-    throw firebase_auth.FirebaseAuthException(
+    throw AuthFailure.firebase(
       code: 'invalid-api-key',
       message: 'API key not valid. Please pass a valid API key.',
+      signup: true,
     );
   }
 
   @override
-  Future<void> signInWithGoogle() async {}
+  Future<void> signInWithGoogle() async {
+    final failure = googleFailure;
+    if (failure != null) {
+      throw failure;
+    }
+  }
 
   @override
   Future<void> signOut() async {}
@@ -129,5 +138,41 @@ void main() {
       findsNothing,
     );
     expect(store.anonymousCalls, 0);
+  });
+
+  testWidgets('google cancellation stays non-technical', (tester) async {
+    final store = _ThrowingAuthSessionStore()
+      ..googleFailure = AuthFailure.googleCanceled(detail: 'user canceled');
+    await tester.pumpWidget(_testWidget(store));
+
+    await tester.tap(find.text('Continuer avec Google'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Connexion Google annulée.'), findsOneWidget);
+    expect(find.text('Copier le détail'), findsNothing);
+  });
+
+  testWidgets('google config errors show redacted copyable detail', (
+    tester,
+  ) async {
+    final store = _ThrowingAuthSessionStore()
+      ..googleFailure = AuthFailure.googleConfiguration(
+        code: 'clientConfigurationError',
+        detail:
+            'serverClientId must be provided apiKey=AIza12345678901234567890',
+      );
+    await tester.pumpWidget(_testWidget(store));
+
+    await tester.tap(find.text('Continuer avec Google'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        'Connexion Google indisponible sur cette version. Le détail technique peut être copié pour correction.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Copier le détail'), findsOneWidget);
+    expect(find.textContaining('AIza123'), findsNothing);
   });
 }

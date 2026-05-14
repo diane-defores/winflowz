@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-14"
 created_at: "2026-05-14 09:54:42 UTC"
 updated: "2026-05-14"
@@ -12,7 +12,7 @@ source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "feature"
 owner: "Diane"
-user_story: "En tant qu'utilisateur Android de WinFlowzApp qui personnalise son clavier, je veux configurer touche par touche les actions declenchees par les swipes vers les quatre coins, afin d'adapter accents, ponctuation, snippets, raccourcis systeme et macros a ma facon d'ecrire sans changer de mode."
+user_story: "En tant qu'utilisateur Android de WinFlowz qui personnalise son clavier, je veux configurer touche par touche les actions declenchees par les swipes vers les quatre coins, afin d'adapter accents, ponctuation, snippets, raccourcis systeme et macros a ma facon d'ecrire sans changer de mode."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
@@ -39,7 +39,7 @@ evidence:
   - "User request 2026-05-14: ideal behavior is to configure swipe shortcuts per key corner on the keyboard."
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutModels.kt defines KeyboardKeyGlyph with string-only topLeft/topRight/bottomLeft/bottomRight outputs."
   - "KeyboardLayoutModels.kt glyphFor() hardcodes French accent corner labels for a/e/i/o/u/c/n/s."
-  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt keyValueForSelection() converts non-primary corner output into KeyboardKeyValue.text(raw), so corners cannot yet dispatch snippets, actions, key events, modifiers, or macros."
+  - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt keyValueForSelection() converts non-primary corner output into KeyboardKeyValue.text(raw), so corners cannot yet dispatch snippets, actions, key events, modifiers, or macros."
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardKeyValueEngine.kt already supports Text, KeyEvent, Action, Modifier and Macro values with a parser and modifier/modmap layer."
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt persists keyboard preferences and JSON lists for snippets/clipboard, but has no persisted corner shortcut configuration."
   - "lib/features/keyboard/presentation/keyboard_preview_screen.dart hardcodes preview corners through _cornerFor() and currently exposes only two accent slots."
@@ -57,9 +57,9 @@ Ready for implementation. This is a focused follow-up to the proprietary swipe-c
 
 # User Story
 
-En tant qu'utilisateur Android de WinFlowzApp qui personnalise son clavier, je veux configurer touche par touche les actions declenchees par les swipes vers les quatre coins, afin d'adapter accents, ponctuation, snippets, raccourcis systeme et macros a ma facon d'ecrire sans changer de mode.
+En tant qu'utilisateur Android de WinFlowz qui personnalise son clavier, je veux configurer touche par touche les actions declenchees par les swipes vers les quatre coins, afin d'adapter accents, ponctuation, snippets, raccourcis systeme et macros a ma facon d'ecrire sans changer de mode.
 
-Acteur principal: utilisateur Android de WinFlowzApp qui utilise le clavier natif WinFlowzApp comme IME.
+Acteur principal: utilisateur Android de WinFlowz qui utilise le clavier natif WinFlowz comme IME.
 
 Declencheur: l'utilisateur active le mode coins, ouvre l'editeur de raccourcis des coins depuis Settings ou le panneau Preferences du clavier, choisit une touche et un coin, puis assigne une action autorisee.
 
@@ -67,7 +67,7 @@ Resultat observable: le clavier natif et la preview Flutter affichent les labels
 
 # Minimal Behavior Contract
 
-Quand le mode coins est active, WinFlowzApp accepte une configuration persistante qui associe une touche stable, un coin parmi `topLeft`, `topRight`, `bottomLeft` et `bottomRight`, et une action valide du catalogue clavier. L'action peut etre du texte, un accent, une ponctuation, un snippet, une action clavier/navigation, un key event, un modifier ou une macro exprimee par le moteur `KeyboardKeyValue`. Le clavier affiche le label resolu dans le coin concerne et declenche cette action sur swipe; si aucun raccourci utilisateur n'existe, il conserve le preset ou le comportement par defaut actuel. En cas de configuration invalide, corrompue, interdite dans le contexte courant ou impossible a parser, le clavier ignore uniquement ce raccourci, affiche un etat recuperable dans les settings ou le debug, et retombe sur le default sans crash ni emission inattendue. L'edge case facile a rater est la collision avec les gestes proteges: la barre espace garde son slider de curseur, les lignes scrollables gardent leur scroll horizontal, les snippets/clipboard restent bloques dans les champs prives, et les touches speciales ne recoivent des coins que si `specialKeyCornersEnabled` l'autorise.
+Quand le mode coins est active, WinFlowz accepte une configuration persistante qui associe une touche stable, un coin parmi `topLeft`, `topRight`, `bottomLeft` et `bottomRight`, et une action valide du catalogue clavier. L'action peut etre du texte, un accent, une ponctuation, un snippet, une action clavier/navigation, un key event, un modifier ou une macro exprimee par le moteur `KeyboardKeyValue`. Le clavier affiche le label resolu dans le coin concerne et declenche cette action sur swipe; si aucun raccourci utilisateur n'existe, il conserve le preset ou le comportement par defaut actuel. En cas de configuration invalide, corrompue, interdite dans le contexte courant ou impossible a parser, le clavier ignore uniquement ce raccourci, affiche un etat recuperable dans les settings ou le debug, et retombe sur le default sans crash ni emission inattendue. L'edge case facile a rater est la collision avec les gestes proteges: la barre espace garde son slider de curseur, les lignes scrollables gardent leur scroll horizontal, les snippets/clipboard restent bloques dans les champs prives, et les touches speciales ne recoivent des coins que si `specialKeyCornersEnabled` l'autorise.
 
 # Success Behavior
 
@@ -99,7 +99,7 @@ Quand le mode coins est active, WinFlowzApp accepte une configuration persistant
 
 # Problem
 
-Le clavier WinFlowzApp a maintenant une base native mature: layout modulaire, panneaux, scroll horizontal de snippets/clipboard, gestures, navigation, modifiers, snippets, suggestions et settings. Mais les swipes de coin restent un mecanisme semi-statique: les coins sont des strings dans `KeyboardKeyGlyph`, les accents sont hardcodes dans `glyphFor()`, la preview Flutter duplique une petite table `_cornerFor()`, et le dispatch transforme les coins en texte brut. Cela bloque exactement le comportement souhaite par l'utilisateur: choisir touche par touche si les coins servent aux accents, a la ponctuation, aux snippets, aux raccourcis de navigation, aux modifiers ou aux macros.
+Le clavier WinFlowz a maintenant une base native mature: layout modulaire, panneaux, scroll horizontal de snippets/clipboard, gestures, navigation, modifiers, snippets, suggestions et settings. Mais les swipes de coin restent un mecanisme semi-statique: les coins sont des strings dans `KeyboardKeyGlyph`, les accents sont hardcodes dans `glyphFor()`, la preview Flutter duplique une petite table `_cornerFor()`, et le dispatch transforme les coins en texte brut. Cela bloque exactement le comportement souhaite par l'utilisateur: choisir touche par touche si les coins servent aux accents, a la ponctuation, aux snippets, aux raccourcis de navigation, aux modifiers ou aux macros.
 
 # Solution
 
@@ -169,10 +169,10 @@ Ajouter un modele de raccourci de coin type, persiste et resolu au moment de con
 # Links & Consequences
 
 - `KeyboardLayoutModels.kt`: model shape changes from string-only glyph corners to typed corner assignments.
-- `WinFlowzAppKeyboardView.kt`: rendering and dispatch must resolve corners through the new model and preserve gesture priority.
+- `WinFlowzKeyboardView.kt`: rendering and dispatch must resolve corners through the new model and preserve gesture priority.
 - `KeyboardKeyValueEngine.kt`: may need serializer helpers or parser validation wrappers for saved expressions.
 - `KeyboardStateStore.kt`: stores versioned corner config and exposes read/write/reset.
-- `WinFlowzAppInputMethodService.kt`: applies resolved config to the view and refreshes after preference changes.
+- `WinFlowzInputMethodService.kt`: applies resolved config to the view and refreshes after preference changes.
 - `MainActivity.kt`: MethodChannel adds corner config calls.
 - `android_keyboard_bridge.dart` and `keyboard_models.dart`: expose Dart models and native bridge methods.
 - `settings_screen.dart` and likely a new keyboard corner editor widget/screen: user-facing configuration.
@@ -253,7 +253,7 @@ Update or create:
   - Notes : garder `KeyboardKeyGlyph.primary` ou remplacer prudemment, mais supprimer la dependance aux sorties secondaires string-only pour le dispatch.
 
 - [ ] Tache 6 : Dispatcher les swipes de coin via `KeyboardKeyValue`
-  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppKeyboardView.kt`
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`
   - Action : Modifier `shouldRenderCorners()`, `renderCornerGlyphs()`, `effectiveGestureSelection()` et `keyValueForSelection()` pour utiliser les assignments resolus; preserver space slider, scroll horizontal, long press et annulation.
   - User story link : un swipe sur le coin declenche l'action choisie, pas seulement du texte brut.
   - Depends on : Tache 5.
@@ -269,8 +269,8 @@ Update or create:
   - Notes : suivre le pattern JSON existant des snippets/clipboard, mais ne pas stocker d'historique d'usage.
 
 - [ ] Tache 8 : Brancher le service IME sur la config resolue
-  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`
-  - Action : Charger la config depuis `KeyboardStateStore`, la passer a `WinFlowzAppKeyboardView.applyRuntimePreferences()`, et rafraichir apres changements de preferences.
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`
+  - Action : Charger la config depuis `KeyboardStateStore`, la passer a `WinFlowzKeyboardView.applyRuntimePreferences()`, et rafraichir apres changements de preferences.
   - User story link : le clavier natif utilise immediatement la config sauvegardee.
   - Depends on : Taches 4, 5 et 7.
   - Validate with : compile Kotlin et sanity manuel en IME.
@@ -375,7 +375,7 @@ Update or create:
 
 # Execution Notes
 
-- Lire d'abord `KeyboardLayoutModels.kt`, `WinFlowzAppKeyboardView.kt`, `KeyboardKeyValueEngine.kt`, `KeyboardStateStore.kt` et `keyboard_preview_screen.dart`.
+- Lire d'abord `KeyboardLayoutModels.kt`, `WinFlowzKeyboardView.kt`, `KeyboardKeyValueEngine.kt`, `KeyboardStateStore.kt` et `keyboard_preview_screen.dart`.
 - Commencer par les fondations Kotlin: IDs stables, modeles de coins, preset d'accents, resolver. Ne pas commencer par l'UI Settings.
 - Garder le preset par defaut strictement equivalent au comportement actuel avant d'ajouter des presets nouveaux.
 - Toute action executable doit passer par `KeyboardKeyValue` ou une action existante; eviter un deuxieme dispatcher parallele.

@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-10"
 created_at: "2026-05-10 21:41:03 UTC"
 updated: "2026-05-10"
@@ -13,7 +13,7 @@ source_model: "GPT-5 Codex"
 scope: "local-first-user-owned-sync-strategy"
 owner: "Diane"
 confidence: medium
-user_story: "En tant que fondatrice de WinFlowzApp, je veux que l'app fonctionne d'abord localement et puisse synchroniser via les appareils et comptes cloud des utilisateurs avec un minimum de serveurs WinFlowzApp, afin de rendre le LTD rentable sans ajouter de friction multi-appareils."
+user_story: "En tant que fondatrice de WinFlowz, je veux que l'app fonctionne d'abord localement et puisse synchroniser via les appareils et comptes cloud des utilisateurs avec un minimum de serveurs WinFlowz, afin de rendre le LTD rentable sans ajouter de friction multi-appareils."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
@@ -49,7 +49,7 @@ depends_on:
     required_status: "ready"
 supersedes: []
 evidence:
-  - "User report 2026-05-10: WinFlowzApp installed without Supabase configuration shows local_mode diagnostic and blank non-settings pages, proving local mode must be real product behavior, not only a backend fallback notice."
+  - "User report 2026-05-10: WinFlowz installed without Supabase configuration shows local_mode diagnostic and blank non-settings pages, proving local mode must be real product behavior, not only a backend fallback notice."
   - "User decision 2026-05-10: maximize local behavior and avoid paid infrastructure where possible for LTD economics."
   - "User decision 2026-05-10: prefer user devices and user-owned cloud accounts such as Dropbox or Google Drive as sync relays."
   - "User decision 2026-05-10: do not force devices onto the same Wi-Fi; sync must work across independent 3G/Wi-Fi networks when possible."
@@ -69,76 +69,76 @@ Local-First User-Owned Sync Strategy
 
 # Status
 
-Draft. This spec is the first architecture and product draft for making WinFlowzApp genuinely local-first, lowering infrastructure cost for a lifetime deal, and using user-owned sync surfaces before WinFlowzApp-owned servers.
+Draft. This spec is the first architecture and product draft for making WinFlowz genuinely local-first, lowering infrastructure cost for a lifetime deal, and using user-owned sync surfaces before WinFlowz-owned servers.
 
 This spec does not implement the current blank-page bug directly. It does treat that bug as evidence that the current `local_mode` fallback is not enough: every core page must have durable local data behavior even when Firebase, Supabase, or any future backend is missing.
 
 # User Story
 
-En tant que fondatrice de WinFlowzApp, je veux que l'app fonctionne d'abord localement et puisse synchroniser via les appareils et comptes cloud des utilisateurs avec un minimum de serveurs WinFlowzApp, afin de rendre le LTD rentable sans ajouter de friction multi-appareils.
+En tant que fondatrice de WinFlowz, je veux que l'app fonctionne d'abord localement et puisse synchroniser via les appareils et comptes cloud des utilisateurs avec un minimum de serveurs WinFlowz, afin de rendre le LTD rentable sans ajouter de friction multi-appareils.
 
-Acteur principal: fondatrice/builder WinFlowzApp.
+Acteur principal: fondatrice/builder WinFlowz.
 
-Acteurs secondaires: utilisateur Android, futur utilisateur desktop/mobile, utilisateur non connecte, utilisateur LTD, fournisseur de stockage cloud choisi par l'utilisateur, eventuel serveur WinFlowzApp de licence/rendezvous/relay.
+Acteurs secondaires: utilisateur Android, futur utilisateur desktop/mobile, utilisateur non connecte, utilisateur LTD, fournisseur de stockage cloud choisi par l'utilisateur, eventuel serveur WinFlowz de licence/rendezvous/relay.
 
 Declencheurs principaux:
 
-- L'utilisateur installe WinFlowzApp sans backend distant configure.
+- L'utilisateur installe WinFlowz sans backend distant configure.
 - L'utilisateur cree ou modifie une transcription, un snippet, un terme de dictionnaire, un item clipboard ou une preference.
 - L'utilisateur veut retrouver ses donnees entre mobile et desktop sans etre sur le meme Wi-Fi.
 - Les deux appareils ne sont pas en ligne au meme moment.
 - Un provider distant, un relais P2P, ou un compte cloud utilisateur devient indisponible.
-- WinFlowzApp doit vendre un LTD sans absorber une charge serveur illimitee.
+- WinFlowz doit vendre un LTD sans absorber une charge serveur illimitee.
 
-Resultat observable attendu: WinFlowzApp reste utilisable et durable en local, puis propose une synchronisation optionnelle chiffree via stockage utilisateur ou P2P opportuniste. Les serveurs WinFlowzApp ne deviennent jamais la source de verite des donnees produit et ne stockent pas de contenu lisible.
+Resultat observable attendu: WinFlowz reste utilisable et durable en local, puis propose une synchronisation optionnelle chiffree via stockage utilisateur ou P2P opportuniste. Les serveurs WinFlowz ne deviennent jamais la source de verite des donnees produit et ne stockent pas de contenu lisible.
 
 # Minimal Behavior Contract
 
-WinFlowzApp accepte les actions produit normales sans backend distant, persiste les donnees localement de facon durable, puis synchronise les changements seulement si l'utilisateur active une methode de sync. La sync produit des changements observables sur un autre appareil via un transport choisi, prioritairement un espace cloud appartenant a l'utilisateur ou une connexion P2P quand elle est possible; en cas d'echec, les changements restent locaux, visibles en etat pending ou error, et peuvent etre renvoyes plus tard sans perte. L'edge case facile a rater est le cas mobile/desktop non simultanement en ligne: le P2P direct ne suffit pas, donc la strategie doit inclure une boite aux lettres asynchrone chiffree, idealement dans le cloud de l'utilisateur, avec un relais WinFlowzApp minimal seulement comme fallback explicite.
+WinFlowz accepte les actions produit normales sans backend distant, persiste les donnees localement de facon durable, puis synchronise les changements seulement si l'utilisateur active une methode de sync. La sync produit des changements observables sur un autre appareil via un transport choisi, prioritairement un espace cloud appartenant a l'utilisateur ou une connexion P2P quand elle est possible; en cas d'echec, les changements restent locaux, visibles en etat pending ou error, et peuvent etre renvoyes plus tard sans perte. L'edge case facile a rater est le cas mobile/desktop non simultanement en ligne: le P2P direct ne suffit pas, donc la strategie doit inclure une boite aux lettres asynchrone chiffree, idealement dans le cloud de l'utilisateur, avec un relais WinFlowz minimal seulement comme fallback explicite.
 
 # Success Behavior
 
 - Given l'app est installee sans `SUPABASE_URL`, sans `SUPABASE_PUBLISHABLE_KEY` et sans Firebase configure, when l'utilisateur ouvre Voice, Voice Flows, Dictionary ou Clipboard Snippet, then chaque page affiche son contenu local ou un etat vide utilisable, pas un coeur de page blanc.
 - Given l'utilisateur cree une transcription, un snippet, un terme dictionnaire, un item clipboard ou une preference, when l'app est fermee puis relancee, then la donnee locale reapparait sans compte distant.
-- Given l'utilisateur active la sync Google Drive, Dropbox, OneDrive ou WebDAV, when l'app a obtenu l'autorisation utilisateur, then elle cree une zone d'echange app-specific et y ecrit uniquement des enveloppes chiffrees, jamais du texte lisible par WinFlowzApp ou par le provider au niveau applicatif.
+- Given l'utilisateur active la sync Google Drive, Dropbox, OneDrive ou WebDAV, when l'app a obtenu l'autorisation utilisateur, then elle cree une zone d'echange app-specific et y ecrit uniquement des enveloppes chiffrees, jamais du texte lisible par WinFlowz ou par le provider au niveau applicatif.
 - Given l'appareil A cree un changement puis passe offline, when l'appareil B se connecte plus tard au meme compte de stockage utilisateur, then B telecharge les enveloppes manquantes, decrypte localement et applique les changements dans un ordre deterministe.
-- Given les deux appareils sont en ligne en meme temps sur des reseaux differents, when la connexion P2P reussit, then les changements peuvent etre echanges directement sans passer par un stockage central WinFlowzApp.
-- Given le P2P direct echoue a cause de NAT, pare-feu ou reseau mobile, when un transport asynchrone est configure, then WinFlowzApp retombe sur la boite aux lettres cloud utilisateur ou sur un relais minimal, et l'utilisateur voit seulement un statut de sync plus lent, pas une panne bloquante.
+- Given les deux appareils sont en ligne en meme temps sur des reseaux differents, when la connexion P2P reussit, then les changements peuvent etre echanges directement sans passer par un stockage central WinFlowz.
+- Given le P2P direct echoue a cause de NAT, pare-feu ou reseau mobile, when un transport asynchrone est configure, then WinFlowz retombe sur la boite aux lettres cloud utilisateur ou sur un relais minimal, et l'utilisateur voit seulement un statut de sync plus lent, pas une panne bloquante.
 - Given le compte cloud utilisateur a un quota depasse, une autorisation expiree ou une API rate limited, when une sync est lancee, then les changements restent locaux et l'UI expose une action reconnect/retry.
-- Given l'utilisateur est en LTD, when il utilise le produit sans sync cloud WinFlowzApp, then le cout variable serveur reste proche de zero hors licence, telemetry minimale et distribution.
+- Given l'utilisateur est en LTD, when il utilise le produit sans sync cloud WinFlowz, then le cout variable serveur reste proche de zero hors licence, telemetry minimale et distribution.
 - Given un utilisateur retire un appareil, when l'appareil retire essaie de synchroniser, then il ne peut plus dechiffrer les nouvelles enveloppes et son statut est visible comme appareil revoque.
 
 # Error Behavior
 
 - Si la base locale durable n'est pas initialisee, l'app doit afficher une erreur recuperable et bloquer les ecritures concernees plutot que pretendre sauvegarder.
 - Si un provider de stockage utilisateur refuse l'autorisation OAuth, la sync n'est pas activee et les donnees restent locales.
-- Si le token provider expire, WinFlowzApp marque le transport `needs_reauth`, garde les enveloppes locales en queue et n'efface aucune donnee acceptee.
+- Si le token provider expire, WinFlowz marque le transport `needs_reauth`, garde les enveloppes locales en queue et n'efface aucune donnee acceptee.
 - Si deux appareils modifient la meme donnee hors ligne, le moteur applique une regle de merge connue par domaine et conserve assez de metadata pour expliquer le resultat ou exposer un conflit manuel quand la merge automatique serait risquee.
 - Si une enveloppe distante est corrompue, trop ancienne, inconnue ou signee par un appareil revoque, elle est ignoree ou mise en quarantaine sans casser la queue.
-- Si un relais WinFlowzApp est indisponible, la sync P2P live echoue proprement et la sync asynchrone reste disponible quand un provider utilisateur est configure.
-- Si l'utilisateur perd sa cle de recovery, WinFlowzApp doit etre honnete: les donnees chiffretees hors appareil ne sont pas recuperables par WinFlowzApp.
+- Si un relais WinFlowz est indisponible, la sync P2P live echoue proprement et la sync asynchrone reste disponible quand un provider utilisateur est configure.
+- Si l'utilisateur perd sa cle de recovery, WinFlowz doit etre honnete: les donnees chiffretees hors appareil ne sont pas recuperables par WinFlowz.
 - Si un contenu sensible clipboard provient d'un champ prive ou d'une capture automatique, les regles de `ClipboardHistoryApi` continuent de s'appliquer; la sync ne doit pas contourner private mode ou confirmation.
 - Ce qui ne doit jamais arriver: stockage de cles OpenAI/Anthropic en cloud, logs de contenu utilisateur en clair, service-role secret dans le client, ecriture cloud silencieuse alors que l'utilisateur pense etre en local-only, ou suppression distante sans tombstone/retry.
 
 # Problem
 
-WinFlowzApp vise un usage multi-appareils, mais un LTD rend dangereux tout modele ou nos serveurs deviennent le lieu principal de stockage et de synchronisation de textes, clipboard, snippets, dictionnaires et transcriptions. Le cout serveur peut devenir structurel alors que le revenu est encaisse une seule fois.
+WinFlowz vise un usage multi-appareils, mais un LTD rend dangereux tout modele ou nos serveurs deviennent le lieu principal de stockage et de synchronisation de textes, clipboard, snippets, dictionnaires et transcriptions. Le cout serveur peut devenir structurel alors que le revenu est encaisse une seule fois.
 
 Le probleme actuel est double. D'abord, l'app a deja un mode `local_mode`, mais le retour utilisateur indique que plusieurs pages restent vides hors Settings quand la configuration Supabase manque. Cela signifie que le local mode n'est pas encore une promesse produit robuste. Ensuite, la sync multi-appareils ne peut pas etre resolue uniquement par P2P direct: les appareils ne sont pas toujours en ligne ensemble, pas toujours sur le meme reseau, et les reseaux mobiles ou pare-feu peuvent bloquer les connexions directes.
 
-La strategie doit donc separer trois choses: source de verite locale durable, transport de sync interchangeable, et serveur WinFlowzApp minimal pour licence/rendezvous/relay quand il y a une vraie necessite produit.
+La strategie doit donc separer trois choses: source de verite locale durable, transport de sync interchangeable, et serveur WinFlowz minimal pour licence/rendezvous/relay quand il y a une vraie necessite produit.
 
 # Solution
 
-Faire de WinFlowzApp une app local-first: les stores produit ecrivent d'abord dans une base locale durable, puis produisent un journal de changements chiffrable et rejouable. La synchronisation devient un pipeline optionnel et backend-agnostic qui peut utiliser des transports differents: fichier/export manuel, dossier applicatif Google Drive/Dropbox/OneDrive/WebDAV, P2P opportuniste, puis relais WinFlowzApp minimal et borne quand les autres chemins ne suffisent pas.
+Faire de WinFlowz une app local-first: les stores produit ecrivent d'abord dans une base locale durable, puis produisent un journal de changements chiffrable et rejouable. La synchronisation devient un pipeline optionnel et backend-agnostic qui peut utiliser des transports differents: fichier/export manuel, dossier applicatif Google Drive/Dropbox/OneDrive/WebDAV, P2P opportuniste, puis relais WinFlowz minimal et borne quand les autres chemins ne suffisent pas.
 
 La doctrine par defaut est:
 
 - Local durable comme source de verite.
 - Cloud utilisateur comme boite aux lettres asynchrone chiffree.
 - P2P comme optimisation live, pas comme unique garantie.
-- Serveurs WinFlowzApp limites a licence, device registry minimal, rendezvous/signaling et eventuel relay rate-limited.
-- Aucun contenu utilisateur lisible cote WinFlowzApp.
+- Serveurs WinFlowz limites a licence, device registry minimal, rendezvous/signaling et eventuel relay rate-limited.
+- Aucun contenu utilisateur lisible cote WinFlowz.
 
 # Scope In
 
@@ -148,16 +148,16 @@ La doctrine par defaut est:
 - Definir un format `SyncEnvelope` chiffrable, signe, versionne, idempotent et transport-agnostic.
 - Definir un `SyncTransport` ou `UserOwnedSyncProvider` commun pour export fichier, Google Drive appDataFolder, Dropbox App Folder, OneDrive app folder, WebDAV et eventuels autres providers.
 - Ajouter une sync asynchrone par boite aux lettres: upload/download d'enveloppes chiffrees, pagination, checkpoints, retries, backoff, dedupe.
-- Ajouter une strategie de pairing entre appareils: QR code, phrase de recovery ou lien court qui ne transmet jamais la cle maitre en clair a WinFlowzApp.
+- Ajouter une strategie de pairing entre appareils: QR code, phrase de recovery ou lien court qui ne transmet jamais la cle maitre en clair a WinFlowz.
 - Ajouter des etats UI: local-only, sync pending, synced, needs reauth, conflict, provider quota/rate limited, relay unavailable.
 - Definir une politique de sync par domaine: settings syncables, transcriptions syncables, snippets/dictionary syncables, clipboard syncable avec garde-fous et opt-out par categorie.
-- Definir le role minimal possible des serveurs WinFlowzApp: licence/entitlement, device registry metadata, rendezvous/signaling, relay rate-limited et telemetry redacted.
+- Definir le role minimal possible des serveurs WinFlowz: licence/entitlement, device registry metadata, rendezvous/signaling, relay rate-limited et telemetry redacted.
 - Documenter les limites commerciales: pas de promesse "sync illimitee via nos serveurs" pour les LTD.
 - Mettre a jour README, docs techniques, FAQ/support, onboarding et pricing copy quand la feature est implementee.
 
 # Scope Out
 
-- Construire un serveur WinFlowzApp qui stocke les donnees produit en clair.
+- Construire un serveur WinFlowz qui stocke les donnees produit en clair.
 - Promettre une sync instantanee et illimitee sans cout serveur dans tous les reseaux.
 - Implementer tous les providers au premier sprint.
 - Forcer les appareils a etre sur le meme Wi-Fi.
@@ -172,8 +172,8 @@ La doctrine par defaut est:
 
 - Local-first signifie que chaque operation utilisateur acceptee doit survivre a un redemarrage sans backend distant.
 - Les stores UI ne doivent pas importer directement Firebase, Supabase, Dropbox, Drive, OneDrive ou WebRTC.
-- Toutes les donnees envoyees vers un provider utilisateur ou un serveur WinFlowzApp doivent etre chiffrees cote client avant transport.
-- Les serveurs WinFlowzApp ne doivent pas avoir la cle permettant de lire transcriptions, clipboard, snippets, dictionnaire ou preferences sensibles.
+- Toutes les donnees envoyees vers un provider utilisateur ou un serveur WinFlowz doivent etre chiffrees cote client avant transport.
+- Les serveurs WinFlowz ne doivent pas avoir la cle permettant de lire transcriptions, clipboard, snippets, dictionnaire ou preferences sensibles.
 - Les cles BYO OpenAI/Anthropic restent dans `flutter_secure_storage` ou equivalent local securise et ne sont pas syncables en V1.
 - Le clipboard a des risques particuliers: private fields, contenus secrets, retention et confirmation continuent de primer sur la sync.
 - Les suppressions doivent produire des tombstones synchronisables; supprimer localement sans tombstone peut ressusciter une donnee sur un autre appareil.
@@ -231,7 +231,7 @@ Dependances probables a evaluer pendant `/sf-ready`, sans engagement dans ce dra
 - Les providers distants ne sont que des transports ou adaptateurs.
 - Le domaine produit ne depend pas d'un provider concret.
 - Les payloads syncables sont versionnes, signes, chiffrables et idempotents.
-- Le serveur WinFlowzApp ne peut pas lire le contenu utilisateur.
+- Le serveur WinFlowz ne peut pas lire le contenu utilisateur.
 - Un appareil revoque ne recoit pas les nouvelles cles de sync.
 - Les tombstones gagnent contre les updates plus anciennes.
 - Les conflits ont une resolution deterministe ou une surface utilisateur claire.
@@ -277,7 +277,7 @@ Dependances probables a evaluer pendant `/sf-ready`, sans engagement dans ce dra
 - Provider API change de comportement ou impose revue production.
 - Deux appareils ne sont jamais en ligne simultanement.
 - Deux appareils sont en ligne mais P2P echoue pour NAT/pare-feu.
-- TURN/relay WinFlowzApp sature ou coute trop cher.
+- TURN/relay WinFlowz sature ou coute trop cher.
 - Appareil perdu mais encore en possession d'anciennes enveloppes.
 - Cle de recovery perdue.
 - Enveloppe distante corrompue, inconnue ou issue d'une version future.
@@ -393,7 +393,7 @@ Dependances probables a evaluer pendant `/sf-ready`, sans engagement dans ce dra
 - [ ] Tache 15 : Ajouter WebDAV transport avance
   - Fichiers : `lib/core/sync/transports/webdav_transport.dart`, Settings advanced UI, docs.
   - Action : Permettre aux utilisateurs avances d'utiliser Nextcloud, NAS ou autre WebDAV comme boite aux lettres chiffree.
-  - User story link : reduire dependance aux grands providers et aux serveurs WinFlowzApp.
+  - User story link : reduire dependance aux grands providers et aux serveurs WinFlowz.
   - Depends on : Tache 9.
   - Validate with : local WebDAV test container or known provider, auth failure and retry tests.
 
@@ -458,11 +458,11 @@ Dependances probables a evaluer pendant `/sf-ready`, sans engagement dans ce dra
 - [ ] CA 14 : Given Dropbox App Folder active, when une sync est lancee, then l'app n'a pas besoin d'acces Full Dropbox.
 - [ ] CA 15 : Given OneDrive App Folder active, when une sync est lancee, then l'app utilise le scope app-folder minimal et gere la suppression utilisateur du dossier.
 - [ ] CA 16 : Given deux appareils non connectes simultanement, when chacun accede plus tard au meme transport asynchrone, then ils convergent.
-- [ ] CA 17 : Given deux appareils en ligne sur reseaux differents, when P2P reussit, then les enveloppes sont echangees sans stockage WinFlowzApp de contenu.
+- [ ] CA 17 : Given deux appareils en ligne sur reseaux differents, when P2P reussit, then les enveloppes sont echangees sans stockage WinFlowz de contenu.
 - [ ] CA 18 : Given P2P echoue, when un transport asynchrone est configure, then l'app fallback sans perte et expose un statut comprehensible.
 - [ ] CA 19 : Given un appareil est revoque, when il tente d'appliquer de nouvelles enveloppes, then il ne peut pas les dechiffrer ou les faire accepter.
 - [ ] CA 20 : Given un contenu clipboard sensible ou private-field, when sync est activee, then les regles de privacy/retention clipboard sont appliquees avant toute enveloppe syncable.
-- [ ] CA 21 : Given un utilisateur perd sa recovery key, when il demande restauration depuis cloud chiffre, then WinFlowzApp explique qu'il ne peut pas dechiffrer les donnees.
+- [ ] CA 21 : Given un utilisateur perd sa recovery key, when il demande restauration depuis cloud chiffre, then WinFlowz explique qu'il ne peut pas dechiffrer les donnees.
 - [ ] CA 22 : Given les docs publiques, when on cherche les claims de sync, then aucun texte ne promet une sync serveur illimitee non implementee.
 
 # Test Strategy
@@ -500,7 +500,7 @@ Dependances probables a evaluer pendant `/sf-ready`, sans engagement dans ce dra
   - revoke device and verify new payloads inaccessible.
   - verify BYO OpenAI/Anthropic keys never enter sync journal.
 
-- Cost/ops tests before any WinFlowzApp relay:
+- Cost/ops tests before any WinFlowz relay:
   - measure signaling requests per pairing/session.
   - measure TURN/relay bandwidth under failure cases.
   - enforce rate limits and kill switch.
@@ -513,7 +513,7 @@ Dependances probables a evaluer pendant `/sf-ready`, sans engagement dans ce dra
 - Provider risk: Google/Dropbox/Microsoft API review, OAuth requirements, quota, rate limits and policy changes can affect sync.
 - Dropbox scale risk: public app use requires production approval planning, not just dev tokens.
 - P2P risk: WebRTC direct connection can fail; TURN relay fallback creates bandwidth cost.
-- Cost risk: any WinFlowzApp relay can become expensive under LTD; must be bounded before launch.
+- Cost risk: any WinFlowz relay can become expensive under LTD; must be bounded before launch.
 - Conflict risk: CRDT-like behavior may be overkill; simple operation log may fail for rich collaborative edits later.
 - Product risk: too many sync options can confuse users; progressive disclosure is required.
 - Privacy risk: clipboard and transcriptions may contain highly sensitive text; default sync policies must be conservative.
@@ -530,7 +530,7 @@ Recommended staged execution:
 4. Ship export/import encrypted bundle as the first zero-infra sync/recovery path.
 5. Add one user-owned cloud mailbox provider, recommended Google Drive appDataFolder first for Android affinity, then Dropbox and OneDrive.
 6. Add P2P/rendezvous only after async sync works; treat P2P as speed/cost optimization, not base reliability.
-7. Add any WinFlowzApp relay only with rate limits, cost model and kill switch.
+7. Add any WinFlowz relay only with rate limits, cost model and kill switch.
 
 Files to read first before implementation:
 
@@ -554,7 +554,7 @@ Packages and APIs:
 
 Stop conditions:
 
-- A proposed implementation stores plaintext sync payloads in WinFlowzApp infrastructure.
+- A proposed implementation stores plaintext sync payloads in WinFlowz infrastructure.
 - A provider requires broad drive access when an app-folder/minimal-scope option is available.
 - Local writes can be acknowledged without durable persistence.
 - Conflict tests show data resurrection or silent loss.
@@ -565,16 +565,16 @@ Stop conditions:
 
 - Provider order: default proposal is export/import encrypted bundle first, Google Drive appDataFolder second, Dropbox third, OneDrive fourth, WebDAV advanced. Decision can change if user demand shows Dropbox first is more valuable for LTD buyers.
 - Local DB choice: default proposal is a SQLite/Drift-like solution because migrations and queryability matter, but this must be verified against current Flutter/Dart docs before `/sf-start`.
-- Merge model: default proposal is operation log + deterministic domain-specific merge, not full CRDT dependency, because WinFlowzApp data is mostly records and settings. Revisit CRDT if real-time collaborative editing becomes a product goal.
+- Merge model: default proposal is operation log + deterministic domain-specific merge, not full CRDT dependency, because WinFlowz data is mostly records and settings. Revisit CRDT if real-time collaborative editing becomes a product goal.
 - BYO API keys: default proposal is no sync in V1. A later opt-in could encrypt them with a separate recovery model, but the security bar is higher.
 - Server role: default proposal is license/device metadata plus optional rendezvous/signaling. Content relay is beta-only, rate-limited, and never required for core sync when user-owned cloud is configured.
-- LTD positioning: default proposal is to include local-first and user-owned sync in the LTD, while reserving any heavy WinFlowzApp relay usage for bounded fair-use or future paid plans.
+- LTD positioning: default proposal is to include local-first and user-owned sync in the LTD, while reserving any heavy WinFlowz relay usage for bounded fair-use or future paid plans.
 
 # Skill Run History
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-05-10 21:41:03 UTC | sf-spec | GPT-5 Codex | Created first local-first user-owned sync strategy spec from user direction to minimize WinFlowzApp server costs and maximize local/user-cloud sync. | draft saved | `/sf-ready shipflow_data/workflow/specs/local-first-user-owned-sync-strategy.md` |
+| 2026-05-10 21:41:03 UTC | sf-spec | GPT-5 Codex | Created first local-first user-owned sync strategy spec from user direction to minimize WinFlowz server costs and maximize local/user-cloud sync. | draft saved | `/sf-ready shipflow_data/workflow/specs/local-first-user-owned-sync-strategy.md` |
 
 # Current Chantier Flow
 

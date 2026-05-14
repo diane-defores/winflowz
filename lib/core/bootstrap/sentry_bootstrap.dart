@@ -3,6 +3,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'app_build_info.dart';
 import '../diagnostics/app_diagnostics.dart';
+import '../diagnostics/sensitive_redactor.dart';
 
 class SentryBootstrap {
   SentryBootstrap._();
@@ -130,20 +131,6 @@ class SentryBootstrap {
   }
 
   static String _sanitize(Object? value) {
-    var text = value?.toString() ?? 'none';
-    final redactionPatterns = [
-      RegExp(r'AIza[0-9A-Za-z_-]{20,}'),
-      RegExp(r'sb_[0-9A-Za-z_-]{12,}'),
-      RegExp(r'eyJ[0-9A-Za-z_.-]{20,}'),
-      RegExp(r'sk-[0-9A-Za-z_-]{12,}'),
-      RegExp(
-        r'(api[_-]?key|anon[_-]?key|publishable[_-]?key|token|secret|password)\s*[:=]\s*[^,\s;]+',
-        caseSensitive: false,
-      ),
-    ];
-    for (final pattern in redactionPatterns) {
-      text = text.replaceAll(pattern, '<redacted>');
-    }
-    return text.replaceAll('\n', ' | ');
+    return SensitiveRedactor.redact(value);
   }
 }

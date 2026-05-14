@@ -2,7 +2,7 @@
 artifact: decision_log
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-04-26"
 updated: "2026-05-09"
 status: "reviewed"
@@ -24,13 +24,13 @@ supersedes:
 next_step: "execute Android-first backend-agnostic migration with Firebase as first adapter"
 ---
 
-# Decisions — WinFlowzApp
+# Decisions — WinFlowz
 
 ## 2026-05-09 — Backend abstraction and Android-first execution (reviewed)
 
 ### Decision
 
-WinFlowzApp no longer treats Supabase as the active backend target. The app must move to backend-agnostic data/settings contracts with Firebase as the first hosted adapter for the Android MVP.
+WinFlowz no longer treats Supabase as the active backend target. The app must move to backend-agnostic data/settings contracts with Firebase as the first hosted adapter for the Android MVP.
 
 1. Backend-facing Flutter code must use provider-neutral contracts such as settings, clipboard, transcription, snippets, dictionary and auth stores.
 2. Firebase Auth + Firestore is the first remote adapter candidate for the Android MVP because it has a free Spark plan, does not use Supabase-style project pausing, supports Flutter/Android well, and is deployable through CLI-managed rules/indexes.
@@ -52,7 +52,7 @@ Superseded in part by the 2026-05-09 backend decision above. Flutter remains val
 
 ### Decision
 
-WinFlowzApp implementation target is now explicit and binding:
+WinFlowz implementation target is now explicit and binding:
 
 1. Client application target: **Flutter** (single Dart codebase).
 2. Backend target: **Supabase** (Auth + Postgres + RLS + Realtime).

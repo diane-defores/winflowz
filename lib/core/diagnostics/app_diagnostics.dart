@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'sensitive_redactor.dart';
+
 class AppDiagnosticEvent {
   const AppDiagnosticEvent({
     required this.timestampUtc,
@@ -83,8 +85,7 @@ class AppDiagnostics {
   }
 
   static String _singleLine(Object? value) {
-    final text = value?.toString() ?? 'none';
-    return text.replaceAll('\n', ' | ').replaceAll(RegExp(r'\s+'), ' ').trim();
+    return SensitiveRedactor.redact(value);
   }
 
   static bool _isFirstFrameAssertion(FlutterErrorDetails details) {

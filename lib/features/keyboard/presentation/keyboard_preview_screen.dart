@@ -245,10 +245,10 @@ class _KeyboardPreviewScreenState extends State<KeyboardPreviewScreen> {
         _setStatus('Keyboard picker is Android-only.');
         break;
       case KeyboardPreviewKeyAction.openAppSettings:
-        _setStatus('Would open WinFlowzApp settings on Android.');
+        _setStatus('Would open WinFlowz settings on Android.');
         break;
       case KeyboardPreviewKeyAction.openThemeSettings:
-        _setStatus('Would open WinFlowzApp Appearance settings on Android.');
+        _setStatus('Would open WinFlowz appearance settings on Android.');
         break;
       case KeyboardPreviewKeyAction.toggleVibration:
         setState(() {
@@ -390,7 +390,7 @@ class _KeyboardPreviewScreenState extends State<KeyboardPreviewScreen> {
         Text('Keyboard preview', style: Theme.of(context).textTheme.titleLarge),
         AppGaps.x2,
         Text(
-          'Browser review surface for WinFlowzApp Keyboard layouts. Native IME behavior still needs Android device validation.',
+          'Browser review surface for WinFlowz keyboard layouts. Native IME behavior still needs Android device validation.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -699,8 +699,8 @@ class _KeyboardStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = snapshot.privateMode
-        ? 'WinFlowzApp - private input'
-        : 'WinFlowzApp - ${snapshot.fieldContext.label}';
+        ? 'WinFlowz keyboard - private input'
+        : 'WinFlowz keyboard - ${snapshot.fieldContext.label}';
     return SizedBox(
       height: AppKeyboardPreview.statusHeight,
       child: Center(

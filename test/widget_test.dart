@@ -384,7 +384,7 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowzApp • Snippets'), findsOneWidget);
+    expect(find.text('WinFlowz • Snippets'), findsOneWidget);
     expect(find.text('Trigger'), findsOneWidget);
     expect(find.text('Snippets'), findsWidgets);
 
@@ -392,7 +392,7 @@ void main() {
     await _pumpNavigationFrame(tester);
 
     expect(handled, isTrue);
-    expect(find.text('WinFlowzApp • Voice'), findsOneWidget);
+    expect(find.text('WinFlowz • Voice'), findsOneWidget);
   });
 
   testWidgets('settings can resume onboarding overlay', (tester) async {
@@ -418,13 +418,13 @@ void main() {
       await tester.tap(resumeButton, warnIfMissed: false);
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
-      expect(find.text('Configuration WinFlowzApp'), findsOneWidget);
+      expect(find.text('Configuration WinFlowz'), findsOneWidget);
       expect(find.text('Autorisation Overlay — Étape 1/4'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Fermer (reprendre plus tard)'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
-      expect(find.text('Configuration WinFlowzApp'), findsNothing);
-      expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
+      expect(find.text('Configuration WinFlowz'), findsNothing);
+      expect(find.text('WinFlowz • Settings'), findsOneWidget);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
@@ -443,37 +443,37 @@ void main() {
     await tester.pumpWidget(_appShellTestWidget());
     await _pumpNavigationFrame(tester);
 
-    expect(find.text('WinFlowzApp • Voice'), findsOneWidget);
+    expect(find.text('WinFlowz • Voice'), findsOneWidget);
     expect(find.text('Raw text'), findsOneWidget);
     expect(find.text('Duration (ms)'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.content_paste_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowzApp • Clipboard'), findsOneWidget);
+    expect(find.text('WinFlowz • Clipboard'), findsOneWidget);
     expect(find.text('Clipboard content'), findsOneWidget);
     expect(find.text('Add clipboard item'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.keyboard_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowzApp • Keyboard'), findsOneWidget);
+    expect(find.text('WinFlowz • Keyboard'), findsOneWidget);
     expect(find.text('Keyboard preview'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowzApp • Snippets'), findsOneWidget);
+    expect(find.text('WinFlowz • Snippets'), findsOneWidget);
     expect(find.text('Trigger'), findsOneWidget);
     expect(find.text('Add snippet'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.auto_fix_high_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowzApp • Dictionary'), findsOneWidget);
+    expect(find.text('WinFlowz • Dictionary'), findsOneWidget);
     expect(find.text('Term'), findsOneWidget);
     expect(find.text('Add term'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.settings_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowzApp • Settings'), findsOneWidget);
+    expect(find.text('WinFlowz • Settings'), findsOneWidget);
     expect(find.text('Appearance'), findsOneWidget);
 
     debugDefaultTargetPlatformOverride = previousPlatform;

@@ -58,7 +58,7 @@ object TextInjectionHelper {
 
     private fun copyToClipboard(context: Context, text: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("WinFlowzApp", text)
+        val clip = ClipData.newPlainText("WinFlowz", text)
         clipboard.setPrimaryClip(clip)
     }
 }

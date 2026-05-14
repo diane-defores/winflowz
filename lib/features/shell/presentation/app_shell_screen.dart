@@ -18,7 +18,9 @@ import '../../snippets/presentation/snippets_screen.dart';
 import '../../voice/presentation/voice_screen.dart';
 
 class AppShellScreen extends ConsumerStatefulWidget {
-  const AppShellScreen({super.key});
+  const AppShellScreen({super.key, this.initialIndex = 0});
+
+  final int initialIndex;
 
   @override
   ConsumerState<AppShellScreen> createState() => _AppShellScreenState();
@@ -85,6 +87,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   @override
   void initState() {
     super.initState();
+    _index = widget.initialIndex.clamp(0, 5);
+    _tabHistory
+      ..clear()
+      ..add(_index);
     WidgetsBinding.instance.addObserver(this);
     Future.microtask(_refreshOnboardingState);
   }
@@ -410,7 +416,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
             }
           },
           child: Scaffold(
-            appBar: AppBar(title: Text('WinFlowzApp • ${titles[_index]}')),
+            appBar: AppBar(title: Text('WinFlowz • ${titles[_index]}')),
             body: Row(
               children: [
                 if (useRail)
@@ -633,7 +639,7 @@ class _OnboardingOverlay extends StatelessWidget {
                               AppGaps.horizontalX2,
                               Expanded(
                                 child: Text(
-                                  'Configuration WinFlowzApp',
+                                  'Configuration WinFlowz',
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
                               ),

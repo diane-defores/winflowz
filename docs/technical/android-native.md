@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-04"
 updated: "2026-05-14"
 status: draft
@@ -35,7 +35,7 @@ next_step: "/sf-docs technical audit"
 ## Purpose
 
 Android native code owns system-level capabilities that Flutter cannot provide
-directly: overlay foreground service, accessibility fallback, and the WinFlowzApp
+directly: overlay foreground service, accessibility fallback, and the WinFlowz
 IME. The IME must stay lightweight, native, and privacy-aware because it runs
 inside other apps' input fields.
 
@@ -51,17 +51,17 @@ inside other apps' input fields.
 
 ## Entrypoints
 
-- `WinFlowzAppInputMethodService.onCreateInputView`: creates the native keyboard.
-- `WinFlowzAppInputMethodService.onStartInput`: evaluates the focused field policy and field context (`text`, `email`, `url`, `phone`, `search`).
+- `WinFlowzInputMethodService.onCreateInputView`: creates the native keyboard.
+- `WinFlowzInputMethodService.onStartInput`: evaluates the focused field policy and field context (`text`, `email`, `url`, `phone`, `search`).
 - `MainActivity.configureFlutterEngine`: registers platform channels used by Settings.
 
 ## Control Flow
 
 ```text
 Android input field
-  -> WinFlowzAppInputMethodService
+  -> WinFlowzInputMethodService
   -> KeyboardInputContextResolver + KeyboardSecurityPolicy
-  -> WinFlowzAppKeyboardView (Canvas)
+  -> WinFlowzKeyboardView (Canvas)
   -> KeyboardLayoutBuilder + KeyboardKeyValueEngine + KeyboardGestureClassifier
   -> InputConnection / ClipboardManager / AudioManager
 
@@ -125,12 +125,12 @@ clipboard, dictation, media keys, and OEM behavior.
 
 ## Reader Checklist
 
-- Manifest or `res/xml` changed -> verify WinFlowzApp appears in Android keyboard settings.
+- Manifest or `res/xml` changed -> verify WinFlowz appears in Android keyboard settings.
 - `KeyboardSecurityPolicy` changed -> recheck password/OTP/no-personalized-learning behavior.
 - Clipboard controller changed -> recheck sensitive clipboard flags and no background clipboard capture.
 - Clipboard event queue changed -> recheck no provider credentials/imports in native code and that sensitive clips are not enqueued.
 - Media controller changed -> recheck no metadata permission is introduced silently.
-- `KeyboardCornerShortcuts.kt`, `KeyboardLayoutModels.kt`, `WinFlowzAppKeyboardView.kt`, or `KeyboardStateStore.kt` changed -> recheck default accents, override precedence, private-field suppression, special-key toggle, space slider priority, scroll row priority, and corrupt JSON fallback.
+- `KeyboardCornerShortcuts.kt`, `KeyboardLayoutModels.kt`, `WinFlowzKeyboardView.kt`, or `KeyboardStateStore.kt` changed -> recheck default accents, override precedence, private-field suppression, special-key toggle, space slider priority, scroll row priority, and corrupt JSON fallback.
 
 ## Maintenance Rule
 

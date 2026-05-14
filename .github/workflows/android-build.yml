@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Analyze, Test, Build APK
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
@@ -78,9 +78,9 @@ jobs:
             --dart-define=FIREBASE_DEV_STORAGE_BUCKET="$FIREBASE_DEV_STORAGE_BUCKET" \
             --dart-define=SENTRY_DSN="$SENTRY_DSN" \
             --dart-define=SENTRY_ENVIRONMENT="$SENTRY_ENVIRONMENT" \
-            --dart-define=VOICEFLOWZ_BUILD_SHA="${GITHUB_SHA}" \
-            --dart-define=VOICEFLOWZ_BUILD_RUN_ID="${GITHUB_RUN_ID}" \
-            --dart-define=VOICEFLOWZ_BUILD_REF="${GITHUB_REF_NAME}"
+            --dart-define=WINFLOWZ_APP_BUILD_SHA="${GITHUB_SHA}" \
+            --dart-define=WINFLOWZ_APP_BUILD_RUN_ID="${GITHUB_RUN_ID}" \
+            --dart-define=WINFLOWZ_APP_BUILD_REF="${GITHUB_REF_NAME}"
 
       - name: Verify debug APK exists
         run: test -f build/app/outputs/flutter-apk/app-debug.apk
@@ -88,14 +88,14 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
-          name: voiceflowz-debug-apk
+          name: winflowz_app-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: ignore
           retention-days: 14
 
   firebase:
     name: Deploy Firestore Rules and Indexes
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     permissions:

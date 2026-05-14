@@ -160,7 +160,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
       context: context,
       title: 'Delete clipboard item?',
       message:
-          'This removes the item from WinFlowzApp clipboard history. This action cannot be undone from this screen.',
+          'This removes the item from WinFlowz clipboard history. This action cannot be undone from this screen.',
       confirmLabel: 'Delete',
       destructive: true,
     );

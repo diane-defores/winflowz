@@ -2,7 +2,7 @@
 artifact: competitive_intelligence
 metadata_schema_version: "1.0"
 artifact_version: "0.3.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-03-18"
 updated: "2026-05-11"
 status: "draft"
@@ -15,7 +15,7 @@ security_impact: "none"
 docs_impact: "yes"
 linked_systems: []
 target_projects:
-  - "WinFlowzApp"
+  - "WinFlowz"
 reference_categories:
   - "transcription_ai"
   - "native_dictation"
@@ -35,7 +35,7 @@ next_review: "2026-06-11"
 next_step: "$sf-docs update"
 ---
 
-# Inspiration — WinFlowzApp
+# Inspiration — WinFlowz
 
 ## Transcription IA
 
@@ -43,7 +43,7 @@ next_step: "$sf-docs update"
 Référence produit pour les fonctionnalités de transcription en temps réel, la gestion de l'historique et l'intégration avec les outils de visioconférence.
 
 ### OpenAI Whisper
-Moteur de transcription utilisé dans WinFlowzApp pour le pipeline de transcription avancée.
+Moteur de transcription utilisé dans WinFlowz pour le pipeline de transcription avancée.
 
 ### Notta
 Inspiration potentielle pour le post-traitement du texte transcrit et la présentation des résultats.

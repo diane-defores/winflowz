@@ -163,7 +163,7 @@ class _KeyboardCornerShortcutsScreenState
     if (!PlatformCapabilities.keyboardImeSupported) {
       setState(() {
         _message =
-            'Save disabled here: only Android can persist WinFlowzApp Keyboard IME settings.';
+            'Save disabled here: only Android can persist WinFlowz keyboard IME settings.';
       });
       return;
     }

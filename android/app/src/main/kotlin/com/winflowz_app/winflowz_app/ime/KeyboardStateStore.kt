@@ -198,7 +198,7 @@ class KeyboardStateStore(private val context: Context) {
     private fun isInputMethodEnabled(): Boolean {
         val manager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        return manager.enabledInputMethodList.any(::isWinFlowzAppIme)
+        return manager.enabledInputMethodList.any(::isWinFlowzIme)
     }
 
     private fun isInputMethodActive(): Boolean {
@@ -209,13 +209,13 @@ class KeyboardStateStore(private val context: Context) {
             )
                 ?: return false
         return current.contains(context.packageName) &&
-            current.contains(WinFlowzAppInputMethodService::class.java.simpleName)
+            current.contains(WinFlowzInputMethodService::class.java.simpleName)
     }
 
-    private fun isWinFlowzAppIme(info: InputMethodInfo): Boolean {
+    private fun isWinFlowzIme(info: InputMethodInfo): Boolean {
         val serviceName = info.serviceName ?: return false
         return info.packageName == context.packageName &&
-            serviceName.endsWith(WinFlowzAppInputMethodService::class.java.simpleName)
+            serviceName.endsWith(WinFlowzInputMethodService::class.java.simpleName)
     }
 
     private fun defaultPunctuationAutoSpacingForLocale(): Boolean {

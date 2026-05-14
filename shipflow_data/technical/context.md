@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-10"
 updated: "2026-05-10"
 status: reviewed
@@ -30,7 +30,7 @@ next_review: "2026-06-10"
 next_step: "/sf-docs technical audit"
 ---
 
-# Technical Context — WinFlowzApp
+# Technical Context — WinFlowz
 
 ## Purpose
 

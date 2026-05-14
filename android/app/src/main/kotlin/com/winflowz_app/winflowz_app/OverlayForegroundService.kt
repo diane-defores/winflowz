@@ -34,9 +34,9 @@ class OverlayForegroundService : Service() {
 
         private const val NOTIFICATION_ID = 71011
         private const val notificationChannelId = "winflowz_app_overlay_recording"
-        private const val notificationChannelName = "WinFlowzApp Overlay Recording"
+        private const val notificationChannelName = "WinFlowz Overlay Recording"
         private const val HOLD_TO_RECORD_DELAY_MS = 220L
-        private const val TAG = "WinFlowzAppOverlay"
+        private const val TAG = "WinFlowzOverlay"
 
         private const val maxXOffset = 16
         private const val defaultCollapsedWidth = 44
@@ -514,7 +514,7 @@ class OverlayForegroundService : Service() {
                 Notification.Builder(this)
             }
         return builder
-            .setContentTitle("WinFlowzApp overlay")
+            .setContentTitle("WinFlowz overlay")
             .setContentText(contentText)
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setContentIntent(pendingIntent)

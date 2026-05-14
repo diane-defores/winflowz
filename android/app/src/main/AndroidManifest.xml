@@ -62,7 +62,7 @@
         </service>
 
         <service
-            android:name=".ime.WinFlowzAppInputMethodService"
+            android:name=".ime.WinFlowzInputMethodService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/keyboard_name"

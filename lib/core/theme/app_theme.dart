@@ -93,7 +93,7 @@ class AppTypography {
   static const fontFamily = TubeflowSiteThemeTokens.fontSans;
   static const fontFallback = TubeflowSiteThemeTokens.fontFallback;
 
-  // WinFlowzApp scale (cohérente avec le thème site, bornée à un set court).
+  // WinFlowz scale (cohérente avec le thème site, bornée à un set court).
   static const xs = TubeflowSiteThemeTokens.typographyXs;
   static const sm = TubeflowSiteThemeTokens.typographySm;
   static const base = TubeflowSiteThemeTokens.typographyBase;

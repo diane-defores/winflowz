@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-04"
 updated: "2026-05-08"
 status: draft
@@ -26,7 +26,7 @@ next_review: "2026-06-04"
 next_step: "/sf-docs technical audit"
 ---
 
-# Code Docs Map — WinFlowzApp
+# Code Docs Map — WinFlowz
 
 | Code path / pattern | Subsystem | Primary technical doc | Validation | Docs update trigger |
 | --- | --- | --- | --- | --- |

@@ -2,7 +2,7 @@
 artifact: documentation
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-04-27"
 updated: "2026-05-04"
 status: "reviewed"
@@ -23,7 +23,7 @@ evidence:
 next_step: "$sf-docs update"
 ---
 
-# Architecture Flutter — WinFlowzApp
+# Architecture Flutter — WinFlowz
 
 ## Runtime Layout
 

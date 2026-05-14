@@ -2,7 +2,7 @@
 artifact: technical_runbook
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-10"
 updated: "2026-05-10"
 status: reviewed

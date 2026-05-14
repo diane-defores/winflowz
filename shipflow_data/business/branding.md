@@ -2,7 +2,7 @@
 artifact: brand_context
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-03-18"
 updated: "2026-05-04"
 status: "reviewed"
@@ -26,7 +26,7 @@ next_review: "2026-05-26"
 next_step: "$sf-docs update"
 ---
 
-# Branding — WinFlowzApp
+# Branding — WinFlowz
 
 ## Cadre
 
@@ -34,7 +34,7 @@ Ce document cadre la marque pour la cible `target-reviewed` Flutter + Supabase. 
 
 ## Nom et identité
 
-- **Nom** : WinFlowzApp — contraction de Voice + Flow + z, cohérente avec l'écosystème WinFlowz.
+- **Nom** : WinFlowz — contraction de Voice + Flow + z, cohérente avec l'écosystème WinFlowz.
 - **Promesse courte** : parler, nettoyer, copier.
 - **Tagline actuelle dans l'app** : "Speak. Transcribe. Ship."
 - **Tagline française utilisable** : "Parle. C'est écrit."
@@ -43,7 +43,7 @@ Ce document cadre la marque pour la cible `target-reviewed` Flutter + Supabase. 
 
 ### Cohérence écosystème
 
-WinFlowzApp peut rester visuellement relié à WinFlowz, avec une identité orientée produit utilitaire: rapide, lisible, orientée action. La documentation ne doit pas promettre un design system partagé complet tant que les tokens communs ne sont pas versionnés.
+WinFlowz peut rester visuellement relié à WinFlowz, avec une identité orientée produit utilitaire: rapide, lisible, orientée action. La documentation ne doit pas promettre un design system partagé complet tant que les tokens communs ne sont pas versionnés.
 
 ### Couleurs
 
@@ -70,7 +70,7 @@ WinFlowzApp peut rester visuellement relié à WinFlowz, avec une identité orie
 - Direct, productif, sans jargon.
 - Orienté action : enregistrer, transcrire, copier, synchroniser.
 - Les messages de configuration doivent rester honnêtes sur les prérequis : compte Supabase, clé OpenAI BYO locale, clé Anthropic locale optionnelle, activation clavier Android, permissions Android overlay/accessibilité.
-- Les plateformes non Android ne doivent pas recevoir de promesse d'overlay système ou de clavier système WinFlowzApp.
+- Les plateformes non Android ne doivent pas recevoir de promesse d'overlay système ou de clavier système WinFlowz.
 
 ## Valeurs de marque
 
@@ -89,7 +89,7 @@ WinFlowzApp peut rester visuellement relié à WinFlowz, avec une identité orie
 - "Connexion et synchronisation de données via Supabase."
 - "Clés OpenAI/Anthropic BYO conservées localement."
 - "Overlay disponible uniquement sur Android."
-- "Clavier WinFlowzApp disponible uniquement sur Android."
+- "Clavier WinFlowz disponible uniquement sur Android."
 - "Snippets et dictionnaire personnel synchronisés par compte."
 
 ### Claims interdits tant que non implémentés

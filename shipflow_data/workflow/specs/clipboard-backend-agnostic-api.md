@@ -2,7 +2,7 @@
 artifact: spec
 metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-08"
 created_at: "2026-05-08 17:48:07 UTC"
 updated: "2026-05-08"
@@ -13,7 +13,7 @@ source_model: "GPT-5 Codex"
 scope: "clipboard-backend-agnostic-api"
 owner: "Diane"
 confidence: high
-user_story: "En tant que builder de WinFlowzApp, je veux que l'historique clipboard et les captures Android/IME passent par une API produit indépendante du backend, afin de pouvoir garder l'app local-first et remplacer Supabase sans réécrire l'UI, le natif Android ou la logique de sécurité."
+user_story: "En tant que builder de WinFlowz, je veux que l'historique clipboard et les captures Android/IME passent par une API produit indépendante du backend, afin de pouvoir garder l'app local-first et remplacer Supabase sans réécrire l'UI, le natif Android ou la logique de sécurité."
 risk_level: "high"
 security_impact: "yes"
 docs_impact: "yes"
@@ -59,9 +59,9 @@ Ready as of 2026-05-08. The spec captures the current architectural decision: cl
 
 # User Story
 
-En tant que builder de WinFlowzApp, je veux que l'historique clipboard et les captures Android/IME passent par une API produit indépendante du backend, afin de pouvoir garder l'app local-first et remplacer Supabase sans réécrire l'UI, le natif Android ou la logique de sécurité.
+En tant que builder de WinFlowz, je veux que l'historique clipboard et les captures Android/IME passent par une API produit indépendante du backend, afin de pouvoir garder l'app local-first et remplacer Supabase sans réécrire l'UI, le natif Android ou la logique de sécurité.
 
-Acteur principal: builder de WinFlowzApp.
+Acteur principal: builder de WinFlowz.
 
 Acteurs secondaires: utilisateur Android, utilisateur non connecté, futur backend provider, adaptateur local/offline.
 
@@ -76,7 +76,7 @@ Résultat observable attendu: l'UI et Android/IME appellent une API produit stab
 
 # Minimal Behavior Contract
 
-WinFlowzApp expose une API clipboard produit qui accepte des actions métier explicites: lister, ajouter manuellement, capturer automatiquement, mettre à jour, pin/unpin, supprimer, marquer un état de sync et demander une confirmation quand un contenu semble risqué. L'API produit délègue la persistance à un `ClipboardHistoryStore` interchangeable et ne connaît ni table Supabase, ni schéma SQL, ni provider concret. Si aucun store n'est disponible, l'utilisateur voit un état récupérable et aucune donnée sensible n'est envoyée. L'edge case facile à rater est Android/IME: le natif ne doit jamais appeler directement Supabase ni contourner la confirmation/sensibilité; il doit produire des événements ou appels qui passent par l'API produit ou par un store local compatible avec le même contrat.
+WinFlowz expose une API clipboard produit qui accepte des actions métier explicites: lister, ajouter manuellement, capturer automatiquement, mettre à jour, pin/unpin, supprimer, marquer un état de sync et demander une confirmation quand un contenu semble risqué. L'API produit délègue la persistance à un `ClipboardHistoryStore` interchangeable et ne connaît ni table Supabase, ni schéma SQL, ni provider concret. Si aucun store n'est disponible, l'utilisateur voit un état récupérable et aucune donnée sensible n'est envoyée. L'edge case facile à rater est Android/IME: le natif ne doit jamais appeler directement Supabase ni contourner la confirmation/sensibilité; il doit produire des événements ou appels qui passent par l'API produit ou par un store local compatible avec le même contrat.
 
 # Success Behavior
 
@@ -234,7 +234,7 @@ Faire du clipboard une API produit local-first et backend-agnostic. Le cœur est
   - Notes : in-memory volontaire pour preuve courte; persistance locale durable reste une décision séparée.
 
 - [x] Tâche 6 : Raccorder Android/IME au contrat backend-agnostic
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardEventQueue.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzAppInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt`, `lib/core/platform/android_keyboard_bridge.dart`, `lib/features/clipboard/application/keyboard_clipboard_event_importer.dart`, `lib/features/clipboard/presentation/clipboard_screen.dart`
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardEventQueue.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardClipboardController.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/MainActivity.kt`, `lib/core/platform/android_keyboard_bridge.dart`, `lib/features/clipboard/application/keyboard_clipboard_event_importer.dart`, `lib/features/clipboard/presentation/clipboard_screen.dart`
   - Action : Faire transiter les événements IME clipboard par une queue native en mémoire drainée par `winflowz_app/keyboard`, puis importée via `ClipboardHistoryApi`; interdire l'appel direct Supabase depuis Android.
   - User story link : le clavier devient une source d'événements produit, pas un client backend.
   - Depends on : Tâche 5 ou décision explicite de rester in-memory pour la première preuve.

@@ -122,12 +122,12 @@ const _stepDefinitions = <OnboardingStepDefinition>[
     category: OnboardingStepCategory.mandatory,
     openActionLabel: 'Ouvrir les permissions Overlay',
     whereToFind:
-        'Réglages Android → Applications → WinFlowzApp → Autorisations → Afficher les fenêtres',
+        'Réglages Android → Applications → WinFlowz → Autorisations → Afficher les fenêtres',
   ),
   OnboardingStepDefinition(
     id: OnboardingStepId.keyboardIme,
-    title: 'Clavier WinFlowzApp',
-    description: 'Active et sélectionne WinFlowzApp comme clavier Android.',
+    title: 'Clavier WinFlowz keyboard',
+    description: 'Active et sélectionne WinFlowz keyboard comme clavier Android.',
     why:
         'Sans clavier natif actif, la dictée ne peut pas écrire directement dans les champs.',
     category: OnboardingStepCategory.mandatory,
@@ -139,12 +139,12 @@ const _stepDefinitions = <OnboardingStepDefinition>[
   OnboardingStepDefinition(
     id: OnboardingStepId.accessibility,
     title: 'Service Accessibilité',
-    description: 'Active le service d’accessibilité WinFlowzApp.',
+    description: 'Active le service d’accessibilité WinFlowz.',
     why:
         'Ce service améliore la précision de l’injection directe et évite certains blocages.',
     category: OnboardingStepCategory.recommended,
     openActionLabel: 'Ouvrir Accessibilité',
-    whereToFind: 'Réglages Android → Accessibilité → Service WinFlowzApp',
+    whereToFind: 'Réglages Android → Accessibilité → Service WinFlowz',
   ),
   OnboardingStepDefinition(
     id: OnboardingStepId.microphoneForDictation,
@@ -155,7 +155,7 @@ const _stepDefinitions = <OnboardingStepDefinition>[
     category: OnboardingStepCategory.recommended,
     openActionLabel: 'Ouvrir les permissions App',
     whereToFind:
-        'Réglages Android → Applications → WinFlowzApp → Autorisations → Microphone',
+        'Réglages Android → Applications → WinFlowz → Autorisations → Microphone',
   ),
 ];
 
@@ -290,15 +290,15 @@ String? _stepBlockerReason({
         ? null
         : 'Service Accessibilité désactivé: dictée en mode compatibilité.';
   }
-  if (definition.id == OnboardingStepId.keyboardIme) {
-    if (!keyboardStatus.supported) {
-      return 'IME WinFlowzApp non disponible sur cet appareil.';
+    if (definition.id == OnboardingStepId.keyboardIme) {
+      if (!keyboardStatus.supported) {
+      return 'IME WinFlowz keyboard non disponible sur cet appareil.';
     }
     if (!keyboardStatus.enabled) {
-      return 'Clavier WinFlowzApp non activé.';
+      return 'Clavier WinFlowz keyboard non activé.';
     }
     if (!keyboardStatus.active) {
-      return 'Le clavier WinFlowzApp n’est pas sélectionné actuellement.';
+      return 'Le clavier WinFlowz keyboard n’est pas sélectionné actuellement.';
     }
     return null;
   }

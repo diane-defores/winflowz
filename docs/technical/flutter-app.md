@@ -2,7 +2,7 @@
 artifact: technical_module_context
 metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
-project: "WinFlowzApp"
+project: "WinFlowz"
 created: "2026-05-04"
 updated: "2026-05-14"
 status: draft
@@ -46,6 +46,9 @@ unavailable on non-Android platforms.
 | Path | Role | Edit notes |
 | --- | --- | --- |
 | `lib/core/platform/**` | Platform capability and native bridge wrappers | Keep native channel names stable and return typed models instead of raw maps. |
+| `lib/core/router/app_router.dart` | App route table and auth/local-mode guard | Protected product routes must pass through the app shell and must not build without signed-in or explicit local fallback state. |
+| `lib/core/diagnostics/**` | Local diagnostics and redaction helpers | Redact secrets/tokens/password-like fields before support copy, breadcrumbs, or event details. |
+| `lib/features/auth/**` | Auth contracts, Firebase/Google adapters, auth gate, and sign-in UI | Keep SDK errors behind typed domain failures; UI should not parse raw Firebase/Google exceptions directly. |
 | `lib/features/settings/**` | Runtime Settings UI | Surface permission/setup recovery paths honestly; do not show Android-only controls elsewhere. |
 | `lib/features/**/domain/**` | Feature models | Keep validation allowlists aligned with SQL constraints. |
 | `lib/features/clipboard/application/**` | Clipboard product API and provider composition | Keep UI and future Android bridges pointed at `ClipboardHistoryApi`, not provider repositories. |
@@ -87,6 +90,11 @@ Clipboard UI
 
 - Remote auth owns user identity; Flutter client code must not send trusted `user_id` fields.
 - Firebase Auth + Firestore Security Rules are the first target adapter for the Android MVP.
+- Product routes are protected by `app_router.dart`; signed-out direct links
+  redirect to auth, while explicit local mode and signed-in sessions open
+  through `AppShellScreen`.
+- Firebase/Google SDK exceptions cross into presentation as typed
+  `AuthFailure` values with redacted support details.
 - Android-only controls render only when `PlatformCapabilities.isAndroid` is true.
 - Domain model source allowlists must match database constraints.
 - Clipboard UI, application APIs and domain models must not import Supabase adapters.
@@ -100,12 +108,22 @@ Clipboard UI
 
 - Native channel unavailable: show a recoverable Settings message instead of crashing.
 - Remote backend not configured: keep local UI usable with the local clipboard store where available and display configuration state for cloud sync.
+- Auth provider unavailable or misconfigured: show a recoverable French auth
+  message, keep support detail redacted/copyable only when useful, and do not
+  publish a partial signed-in state.
+- Google Sign-In canceled after account selection can indicate Android
+  configuration trouble; treat configuration hints as setup failures instead of
+  pure user cancellation.
 - Native corner config validation failure: keep the current editor state visible, show the bridge error, and do not pretend the shortcut was saved.
 
 ## Security Notes
 
 Secrets stay in local secure storage. Text, clipboard content, audio, provider
 payloads, and tokens must not be logged into `client_events`.
+
+Auth support detail, AppDiagnostics, and Sentry events must not contain raw API
+keys, OAuth/JWT tokens, password-like values, raw provider payloads, clipboard
+content, transcripts, or private user text.
 
 ## Validation
 
@@ -122,6 +140,8 @@ flutter test
 - Domain model source allowlist changed -> verify SQL constraints and tests.
 - Repository metadata changed -> verify backend adapter docs and security rules/tests.
 - Clipboard API/store changed -> verify no feature UI imports `lib/data/supabase`, run clipboard tests and update provider docs.
+- Auth adapter/router/sign-in changed -> run auth failure, sign-in, router guard,
+  full Flutter tests, and the Android auth smoke before claiming ship readiness.
 
 ## Maintenance Rule
 

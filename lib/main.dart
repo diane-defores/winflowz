@@ -16,10 +16,10 @@ Future<void> main() async {
   } else {
     WidgetsFlutterBinding.ensureInitialized();
   }
-  await SentryBootstrap.init(appRunner: _runWinFlowzApp);
+  await SentryBootstrap.init(appRunner: _runWinFlowz);
 }
 
-Future<void> _runWinFlowzApp() async {
+Future<void> _runWinFlowz() async {
   _installLocalErrorHandlers();
   await AppBootstrap.init();
   final initialSettings = await LocalSettingsStore().load();
@@ -31,7 +31,7 @@ Future<void> _runWinFlowzApp() async {
       overrides: [
         initialAppThemeModeProvider.overrideWithValue(initialThemeMode),
       ],
-      child: const WinFlowzApp(),
+      child: const WinFlowz(),
     ),
   );
 }
