@@ -9,7 +9,23 @@ final localAuthSessionStoreProvider = Provider<LocalAuthSessionStore>(
   (ref) => const LocalAuthSessionStore(),
 );
 
+class LocalAuthModeController extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void enable() {
+    state = true;
+  }
+}
+
+final localAuthModeProvider = NotifierProvider<LocalAuthModeController, bool>(
+  LocalAuthModeController.new,
+);
+
 final authSessionStoreProvider = Provider<AuthSessionStore>((ref) {
+  if (ref.watch(localAuthModeProvider)) {
+    return ref.watch(localAuthSessionStoreProvider);
+  }
   if (FirebaseBootstrap.isConfigured) {
     return FirebaseAuthSessionStore();
   }

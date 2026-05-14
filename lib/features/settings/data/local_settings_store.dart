@@ -47,7 +47,9 @@ class LocalSettingsStore implements SettingsStore {
       await _read(_onboardingCurrentStepKey),
       fallback: 0,
     );
-    final onboardingLastSeenAt = _dateFromValue(await _read(_onboardingLastSeenAtKey));
+    final onboardingLastSeenAt = _dateFromValue(
+      await _read(_onboardingLastSeenAtKey),
+    );
     final onboardingAccessibilitySkipped = _boolFromValue(
       await _read(_onboardingAccessibilitySkippedKey),
       fallback: false,
@@ -76,8 +78,14 @@ class LocalSettingsStore implements SettingsStore {
     await _write(_retentionPolicyKey, settings.retentionPolicy.value);
     await _write(_clipboardAutoSyncKey, settings.clipboardAutoSync.toString());
     await _write(_transcriptionSyncKey, settings.transcriptionSync.toString());
-    await _write(_onboardingCompletedKey, settings.onboardingCompleted.toString());
-    await _write(_onboardingCurrentStepKey, settings.onboardingCurrentStep.toString());
+    await _write(
+      _onboardingCompletedKey,
+      settings.onboardingCompleted.toString(),
+    );
+    await _write(
+      _onboardingCurrentStepKey,
+      settings.onboardingCurrentStep.toString(),
+    );
     await _write(
       _onboardingLastSeenAtKey,
       settings.onboardingLastSeenAt?.toUtc().toIso8601String(),

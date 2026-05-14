@@ -63,7 +63,8 @@ class UserSettingsSnapshot {
       transcriptionSync: transcriptionSync ?? this.transcriptionSync,
       syncStatus: syncStatus ?? this.syncStatus,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
-      onboardingCurrentStep: onboardingCurrentStep ?? this.onboardingCurrentStep,
+      onboardingCurrentStep:
+          onboardingCurrentStep ?? this.onboardingCurrentStep,
       onboardingLastSeenAt: onboardingLastSeenAt ?? this.onboardingLastSeenAt,
       onboardingAccessibilitySkipped:
           onboardingAccessibilitySkipped ?? this.onboardingAccessibilitySkipped,

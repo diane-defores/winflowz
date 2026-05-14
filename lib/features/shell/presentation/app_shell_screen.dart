@@ -237,18 +237,16 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         return;
       }
       setState(
-        () =>
-            _onboardingMessage =
-                'Action impossible (${error.code}): ${error.message}',
+        () => _onboardingMessage =
+            'Action impossible (${error.code}): ${error.message}',
       );
     } on AndroidKeyboardBridgeException catch (error) {
       if (!mounted) {
         return;
       }
       setState(
-        () =>
-            _onboardingMessage =
-                'Action clavier impossible (${error.code}): ${error.message}',
+        () => _onboardingMessage =
+            'Action clavier impossible (${error.code}): ${error.message}',
       );
     } catch (error) {
       if (!mounted) {
@@ -279,9 +277,8 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         return;
       }
       setState(
-        () =>
-            _onboardingMessage =
-                'Impossible d’ouvrir le sélecteur (${error.code}): ${error.message}',
+        () => _onboardingMessage =
+            'Impossible d’ouvrir le sélecteur (${error.code}): ${error.message}',
       );
     } catch (error) {
       if (!mounted) {
@@ -329,7 +326,9 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   Future<void> _completeOnboarding() async {
     final readiness = _onboardingReadiness;
     final settings = _onboardingSettings;
-    if (readiness == null || settings == null || !readiness.shouldShowCompletion) {
+    if (readiness == null ||
+        settings == null ||
+        !readiness.shouldShowCompletion) {
       return;
     }
     setState(() {
@@ -417,7 +416,8 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                 if (useRail)
                   NavigationRail(
                     extended:
-                        constraints.maxWidth >= AppBreakpoints.navigationRailExtended,
+                        constraints.maxWidth >=
+                        AppBreakpoints.navigationRailExtended,
                     selectedIndex: _index,
                     onDestinationSelected: _selectTab,
                     destinations: const [
@@ -477,11 +477,13 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                                 onOpenSettings: () => _selectTab(5),
                                 onPrimaryAction: _openCurrentStepPrimaryAction,
                                 onSecondaryAction:
-                                    _onboardingReadiness?.activeStep?.definition
-                                                .id ==
-                                            OnboardingStepId.keyboardIme
-                                        ? _openCurrentStepSecondaryAction
-                                        : null,
+                                    _onboardingReadiness
+                                            ?.activeStep
+                                            ?.definition
+                                            .id ==
+                                        OnboardingStepId.keyboardIme
+                                    ? _openCurrentStepSecondaryAction
+                                    : null,
                                 onSkip: _skipCurrentStep,
                                 onRefresh: _refreshOnboardingState,
                                 onComplete: _completeOnboarding,
@@ -566,9 +568,13 @@ class _OnboardingOverlay extends StatelessWidget {
     final activeStep = activeReadiness?.activeStep;
     final Widget onboardingContent;
     if (activeReadiness == null) {
-      onboardingContent = const Text('Onboarding indisponible sur ce terminal.');
+      onboardingContent = const Text(
+        'Onboarding indisponible sur ce terminal.',
+      );
     } else if (!activeReadiness.platformSupported) {
-      onboardingContent = const Text('Onboarding indisponible sur ce terminal.');
+      onboardingContent = const Text(
+        'Onboarding indisponible sur ce terminal.',
+      );
     } else if (activeReadiness.shouldShowCompletion) {
       onboardingContent = _OnboardingCompletionContent(
         readiness: activeReadiness,
@@ -644,7 +650,8 @@ class _OnboardingOverlay extends StatelessWidget {
                             AppGaps.x2,
                             Text(
                               message!,
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                             ),
@@ -711,11 +718,10 @@ class _OnboardingStepContent extends StatelessWidget {
                 border: Border.all(color: AppColors.borderSubtle),
                 borderRadius: BorderRadius.circular(AppRadii.sm),
               ),
-              padding:
-                  const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: AppSpacing.x1,
-                  ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: AppSpacing.x1,
+              ),
               child: Text(
                 definition.category == OnboardingStepCategory.mandatory
                     ? 'Obligatoire'
@@ -743,8 +749,8 @@ class _OnboardingStepContent extends StatelessWidget {
           Text(
             step.blockerReason!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         ],
         AppGaps.x2,

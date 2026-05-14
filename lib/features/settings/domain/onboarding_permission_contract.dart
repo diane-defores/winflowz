@@ -1,10 +1,7 @@
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../keyboard/domain/keyboard_models.dart';
 
-enum OnboardingStepCategory {
-  mandatory,
-  recommended,
-}
+enum OnboardingStepCategory { mandatory, recommended }
 
 enum OnboardingStepId {
   overlay,
@@ -52,9 +49,11 @@ class OnboardingStepProgress {
 
   bool get completed => satisfied || skipped || !supported;
 
-  bool get isMandatory => definition.category == OnboardingStepCategory.mandatory;
+  bool get isMandatory =>
+      definition.category == OnboardingStepCategory.mandatory;
 
-  bool get isRecommended => definition.category == OnboardingStepCategory.recommended;
+  bool get isRecommended =>
+      definition.category == OnboardingStepCategory.recommended;
 
   bool get requiresAction => supported && !completed && isMandatory;
 }
@@ -73,7 +72,9 @@ class OnboardingReadiness {
   final bool onboardingCompleted;
 
   bool get hasPendingMandatory {
-    return steps.where((step) => step.isMandatory).any((step) => !step.completed);
+    return steps
+        .where((step) => step.isMandatory)
+        .any((step) => !step.completed);
   }
 
   bool get hasPendingRecommended {
@@ -83,7 +84,9 @@ class OnboardingReadiness {
   }
 
   bool get allMandatoryCompleted {
-    return steps.where((step) => step.isMandatory).every((step) => step.completed);
+    return steps
+        .where((step) => step.isMandatory)
+        .every((step) => step.completed);
   }
 
   bool get allStepsCompleted {
@@ -91,7 +94,10 @@ class OnboardingReadiness {
   }
 
   bool get shouldShowCompletion {
-    return platformSupported && allMandatoryCompleted && allStepsCompleted && !onboardingCompleted;
+    return platformSupported &&
+        allMandatoryCompleted &&
+        allStepsCompleted &&
+        !onboardingCompleted;
   }
 
   bool get shouldShowOnboarding {

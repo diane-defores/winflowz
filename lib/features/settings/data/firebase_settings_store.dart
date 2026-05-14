@@ -75,7 +75,8 @@ class FirebaseSettingsStore implements SettingsStore {
         orElse: () => ThemeMode.system,
       ),
       retentionPolicy: UserRetentionPolicy.fromValue(
-        data['retentionPolicy'] as String? ?? UserRetentionPolicy.sevenDays.value,
+        data['retentionPolicy'] as String? ??
+            UserRetentionPolicy.sevenDays.value,
       ),
       clipboardAutoSync: data['clipboardAutoSync'] as bool? ?? true,
       transcriptionSync: data['transcriptionSync'] as bool? ?? true,
@@ -84,7 +85,8 @@ class FirebaseSettingsStore implements SettingsStore {
       onboardingLastSeenAt: _timestampToDate(data['onboardingLastSeenAt']),
       onboardingAccessibilitySkipped:
           data['onboardingAccessibilitySkipped'] as bool? ?? false,
-      onboardingMicrophoneSkipped: data['onboardingMicrophoneSkipped'] as bool? ?? false,
+      onboardingMicrophoneSkipped:
+          data['onboardingMicrophoneSkipped'] as bool? ?? false,
       syncStatus: const SyncStatus(health: SyncHealth.synced),
       updatedAt: _timestampToDate(data['updatedAt']),
     );
