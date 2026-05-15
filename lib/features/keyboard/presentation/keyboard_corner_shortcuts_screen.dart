@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_components.dart';
 import '../../snippets/application/snippet_store_provider.dart';
 import '../../snippets/domain/snippet_store.dart';
 import '../domain/keyboard_models.dart';
@@ -797,19 +798,7 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: AppInsets.card,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
-            AppGaps.x3,
-            child,
-          ],
-        ),
-      ),
-    );
+    return AppSectionCard(title: title, stretch: false, child: child);
   }
 }
 
@@ -834,33 +823,13 @@ class _StatusStrip extends StatelessWidget {
         : dirty
         ? 'Draft has unsaved changes'
         : 'Saved';
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: unsupported
-            ? colorScheme.errorContainer
-            : colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(AppRadii.sm),
-      ),
-      child: Padding(
-        padding: AppInsets.card,
-        child: Row(
-          children: [
-            Icon(
-              unsupported ? Icons.info_outline : Icons.edit_note_outlined,
-              color: unsupported
-                  ? colorScheme.onErrorContainer
-                  : colorScheme.onSurfaceVariant,
-            ),
-            AppGaps.horizontalX2,
-            Expanded(
-              child: Text(
-                message == null ? status : '$status. $message',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return AppBannerCard(
+      icon: unsupported ? Icons.info_outline : Icons.edit_note_outlined,
+      title: status,
+      message: message ?? 'Native keyboard draft is in sync with this screen.',
+      accentColor: unsupported
+          ? colorScheme.error
+          : colorScheme.onSurfaceVariant,
     );
   }
 }
@@ -989,11 +958,15 @@ class _WarningLine extends StatelessWidget {
         warnings.add('Special-key corners require the Android setting.');
       }
     }
-    return Text(
-      warnings.join(' '),
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
+    return AppBannerCard(
+      icon: warnings.isEmpty ? Icons.check_circle_outline : Icons.info_outline,
+      title: warnings.isEmpty ? 'Corner status' : 'Corner warnings',
+      message: warnings.isEmpty
+          ? 'This corner inherits the active preset without extra warnings.'
+          : warnings.join(' '),
+      accentColor: warnings.isEmpty
+          ? AppColors.success
+          : Theme.of(context).colorScheme.onSurfaceVariant,
     );
   }
 }

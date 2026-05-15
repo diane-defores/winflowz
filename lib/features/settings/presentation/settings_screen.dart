@@ -736,15 +736,47 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return events.map((event) => _sanitizeDiagnostic(event)).join(' || ');
   }
 
-  Widget _settingsList({required List<Widget> children}) {
-    return Scrollbar(
-      controller: _scrollController,
-      thumbVisibility: true,
-      child: ListView(
-        controller: _scrollController,
-        padding: AppInsets.screen,
-        children: children,
-      ),
+  Widget _settingsList({required List<Widget> sections}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final useTwoColumns =
+            constraints.maxWidth >=
+            AppLayoutMetrics.settingsTwoColumnBreakpoint;
+        if (!useTwoColumns) {
+          return Scrollbar(
+            controller: _scrollController,
+            thumbVisibility: true,
+            child: ListView.separated(
+              controller: _scrollController,
+              padding: AppInsets.screen,
+              itemCount: sections.length,
+              separatorBuilder: (_, _) => AppGaps.x4,
+              itemBuilder: (context, index) => sections[index],
+            ),
+          );
+        }
+
+        final totalHorizontalPadding = AppSpacing.x4 * 2;
+        final columnSpacing = AppSpacing.x4;
+        final itemWidth =
+            (constraints.maxWidth - totalHorizontalPadding - columnSpacing) / 2;
+        return Scrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            padding: AppInsets.screen,
+            child: Wrap(
+              spacing: columnSpacing,
+              runSpacing: AppSpacing.x4,
+              children: [
+                for (final section in sections)
+                  SizedBox(width: itemWidth, child: section),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -755,13 +787,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final onboardingReadiness = _onboardingReadiness();
     if (_loading || _onboardingLoading) {
       return _settingsList(
-        children: [
+        sections: [
           if (widget.onResumeOnboarding != null)
             _OnboardingSettingsTile(
               onResume: widget.onResumeOnboarding!,
               readiness: onboardingReadiness,
             ),
-          if (widget.onResumeOnboarding != null) AppGaps.x2,
           const Center(child: CircularProgressIndicator()),
         ],
       );
@@ -771,26 +802,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final keyboardStatus = _keyboardStatus;
     final themeMode = ref.watch(appThemeModeProvider);
     return _settingsList(
-      children: [
+      sections: [
         if (widget.onResumeOnboarding != null)
           _OnboardingSettingsTile(
             onResume: widget.onResumeOnboarding!,
             readiness: onboardingReadiness,
           ),
-        if (widget.onResumeOnboarding != null) AppGaps.x2,
         _AppearanceSection(
           themeMode: themeMode,
           onChanged: (mode) {
             ref.read(appThemeModeProvider.notifier).setMode(mode);
           },
         ),
-        AppGaps.x4,
         _BackendProviderSection(
           configured: FirebaseBootstrap.isConfigured,
           diagnosticText: _backendDiagnosticText(),
           onCopyDiagnostic: _copyBackendDiagnostic,
         ),
-        AppGaps.x4,
         _SecretsSection(
           storageStatusAsync: storageStatusAsync,
           openAiController: _openAiController,
@@ -800,9 +828,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           onSave: _saveSecrets,
           onSignOut: _signOut,
         ),
-        AppGaps.x4,
         const _PlatformCapabilitiesSection(),
-        AppGaps.x4,
         if (PlatformCapabilities.keyboardImeSupported)
           _KeyboardSettingsSection(
             status: keyboardStatus,
@@ -861,30 +887,17 @@ class _OnboardingSettingsTile extends StatelessWidget {
         ? 'Voir le récapitulatif'
         : 'Reprendre';
 
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.flag_outlined),
-        title: const Text('Onboarding permissions'),
-        subtitle: readiness.platformSupported
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    readiness.shouldShowOnboarding
-                        ? 'Étapes complétées: $mandatoryDone/${mandatory.length} obligatoires, $recommendedDone/${recommended.length} recommandées'
-                        : 'Onboarding terminé',
-                  ),
-                  if (recommended.isNotEmpty)
-                    Text(
-                      'Conseils restants: '
-                      '${recommended.where((step) => !step.completed).length}',
-                    ),
-                ],
-              )
-            : const Text('Non requis sur cette plateforme'),
-        trailing: TextButton(onPressed: onResume, child: Text(actionLabel)),
-      ),
+    final subtitle = !readiness.platformSupported
+        ? 'Non requis sur cette plateforme'
+        : readiness.shouldShowOnboarding
+        ? 'Étapes complétées: $mandatoryDone/${mandatory.length} obligatoires, $recommendedDone/${recommended.length} recommandées${recommended.isNotEmpty ? ' • conseils restants: ${recommended.where((step) => !step.completed).length}' : ''}'
+        : 'Onboarding terminé';
+
+    return AppStatusCard(
+      icon: Icons.flag_outlined,
+      title: 'Onboarding permissions',
+      subtitle: subtitle,
+      trailing: TextButton(onPressed: onResume, child: Text(actionLabel)),
     );
   }
 }

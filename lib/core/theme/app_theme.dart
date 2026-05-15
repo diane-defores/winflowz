@@ -96,11 +96,11 @@ class AppTypography {
   // WinFlowz scale (cohérente avec le thème site, bornée à un set court).
   static const xs = TubeflowSiteThemeTokens.typographyXs;
   static const sm = TubeflowSiteThemeTokens.typographySm;
-  static const base = TubeflowSiteThemeTokens.typographyBase;
-  static const lg = TubeflowSiteThemeTokens.typographyMd;
-  static const h3 = TubeflowSiteThemeTokens.typographyLg;
-  static const h2 = TubeflowSiteThemeTokens.typographyXl;
-  static const h1 = TubeflowSiteThemeTokens.typographyXxl;
+  static const base = 15.0;
+  static const lg = 18.0;
+  static const h3 = 22.0;
+  static const h2 = 28.0;
+  static const h1 = 34.0;
 
   static const leadingTight = TubeflowSiteThemeTokens.lineHeightTight;
   static const leadingSnug = TubeflowSiteThemeTokens.lineHeightSnug;
@@ -137,32 +137,32 @@ class AppSpacing {
 
 class AppInsets {
   static const none = EdgeInsets.zero;
-  static const screen = EdgeInsets.all(AppSpacing.x5);
-  static const card = EdgeInsets.all(AppSpacing.x4);
-  static const compactCard = EdgeInsets.all(AppSpacing.x3);
+  static const screen = EdgeInsets.all(AppSpacing.x4);
+  static const card = EdgeInsets.all(AppSpacing.x3);
+  static const compactCard = EdgeInsets.all(AppSpacing.x2);
   static const onboarding = EdgeInsets.fromLTRB(
-    AppSpacing.x5,
-    AppSpacing.x4 - AppSpacing.x1 / 2,
-    AppSpacing.x5,
     AppSpacing.x4,
+    AppSpacing.x3,
+    AppSpacing.x4,
+    AppSpacing.x3,
   );
   static const progress = EdgeInsets.only(top: AppSpacing.x3);
   static const message = EdgeInsets.only(top: AppSpacing.x2);
   static const stack = EdgeInsets.only(top: AppSpacing.x2);
   static const keyboardControls = EdgeInsets.symmetric(
-    horizontal: AppSpacing.x4,
+    horizontal: AppSpacing.x3,
   );
   static const keyboardPrivacy = EdgeInsets.fromLTRB(
-    AppSpacing.x4,
-    0,
-    AppSpacing.x4,
     AppSpacing.x3,
+    0,
+    AppSpacing.x3,
+    AppSpacing.x2,
   );
   static const overlayControls = EdgeInsets.fromLTRB(
-    AppSpacing.x4,
-    0,
-    AppSpacing.x4,
     AppSpacing.x3,
+    0,
+    AppSpacing.x3,
+    AppSpacing.x2,
   );
 }
 
@@ -179,15 +179,16 @@ class AppGaps {
 }
 
 class AppIconMetrics {
-  static const sm = AppSpacing.x5;
+  static const sm = AppSpacing.x4;
   static const progressStroke = AppSpacing.x1 / 2;
   static const stepAvatarRadius = AppSpacing.x3;
-  static const minTarget = AppSpacing.x10 + AppSpacing.x1;
+  static const minTarget = 40.0;
   static const listActionSpacing = AppSpacing.x1;
 }
 
 class AppLayoutMetrics {
   static const onboardingOverlayMaxWidth = 520.0;
+  static const settingsTwoColumnBreakpoint = 1180.0;
 }
 
 class AppBreakpoints {
@@ -200,8 +201,7 @@ class AppBreakpoints {
 class AppKeyboardPreview {
   static const double maxWidth =
       TubeflowSiteThemeTokens.keyboardPreviewFrameMaxWidth;
-  static const double dropdownWidth =
-      TubeflowSiteThemeTokens.keyboardPreviewDropdownWidth;
+  static const double dropdownWidth = 188.0;
   static const double statusHeight =
       TubeflowSiteThemeTokens.keyboardPreviewStatusHeight;
   static const double rowHeightTiny =
@@ -399,7 +399,7 @@ class AppTheme {
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
-      visualDensity: VisualDensity.standard,
+      visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
       scaffoldBackgroundColor: colorScheme.surface,
       fontFamily: AppTypography.fontFamily,
       fontFamilyFallback: AppTypography.fontFallback,
@@ -455,16 +455,13 @@ class AppTheme {
               )
             : TubeflowSiteThemeTokens.appLightInput,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.x4,
-          vertical: AppSpacing.x3,
+          horizontal: AppSpacing.x3,
+          vertical: AppSpacing.x1 + 2,
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(
-            AppIconMetrics.minTarget,
-            AppIconMetrics.minTarget,
-          ),
+          minimumSize: const Size(0, 36),
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           elevation: isDark ? 0 : 2,
@@ -477,10 +474,7 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(
-            AppIconMetrics.minTarget,
-            AppIconMetrics.minTarget,
-          ),
+          minimumSize: const Size(0, 36),
           foregroundColor: colorScheme.primary,
           side: BorderSide(color: colorScheme.outline),
           backgroundColor: colorScheme.surfaceContainer.withValues(alpha: 0.2),
@@ -492,10 +486,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          minimumSize: const Size(
-            AppIconMetrics.minTarget,
-            AppIconMetrics.minTarget,
-          ),
+          minimumSize: const Size(0, 34),
           foregroundColor: colorScheme.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.sm),
@@ -503,12 +494,7 @@ class AppTheme {
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          minimumSize: const Size(
-            AppIconMetrics.minTarget,
-            AppIconMetrics.minTarget,
-          ),
-        ),
+        style: IconButton.styleFrom(minimumSize: const Size(34, 34)),
       ),
       navigationBarTheme: NavigationBarThemeData(
         indicatorColor: colorScheme.primary.withValues(
@@ -569,9 +555,10 @@ class AppTheme {
         iconColor: colorScheme.onSurface.withValues(alpha: 0.72),
         textColor: colorScheme.onSurface,
         subtitleTextStyle: textTheme.bodySmall,
+        minVerticalPadding: 2,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.x4,
-          vertical: AppSpacing.x1,
+          horizontal: AppSpacing.x3,
+          vertical: 0,
         ),
       ),
       dialogTheme: DialogThemeData(

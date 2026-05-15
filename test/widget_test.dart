@@ -419,7 +419,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
       expect(find.text('Configuration WinFlowz'), findsOneWidget);
-      expect(find.text('Autorisation Overlay — Étape 1/4'), findsOneWidget);
+      expect(find.text('Autorisation Overlay • Étape 1/4'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Fermer (reprendre plus tard)'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
@@ -428,6 +428,38 @@ void main() {
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
+    }
+  });
+
+  testWidgets('tapping outside onboarding overlay closes it', (tester) async {
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _useLargeViewport(tester);
+    _installAndroidBridgeMocks();
+
+    try {
+      await tester.pumpWidget(_appShellTestWidget());
+      await _pumpNavigationFrame(tester);
+
+      expect(find.text('Configuration WinFlowz'), findsOneWidget);
+      final overlayCardTopLeft = tester.getTopLeft(
+        find.byKey(const Key('onboarding-overlay-card-frame')),
+      );
+      final overlayCardCenter = tester.getCenter(
+        find.byKey(const Key('onboarding-overlay-card-frame')),
+      );
+      await tester.tapAt(
+        Offset(overlayCardTopLeft.dx - 8, overlayCardCenter.dy),
+      );
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(find.text('Configuration WinFlowz'), findsNothing);
+      expect(find.text('WinFlowz • Voice'), findsOneWidget);
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
     }
   });
 

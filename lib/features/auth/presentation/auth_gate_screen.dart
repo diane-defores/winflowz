@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/diagnostics/app_diagnostics.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_components.dart';
 import '../domain/auth_failure.dart';
 import '../application/auth_session_provider.dart';
 import '../../shell/presentation/app_shell_screen.dart';
@@ -20,14 +22,38 @@ class AuthGateScreen extends ConsumerWidget {
         }
         return const AppShellScreen();
       },
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () => const Scaffold(
+        body: Center(
+          child: Padding(
+            padding: AppInsets.screen,
+            child: SizedBox(
+              width: 420,
+              child: AppSectionCard(
+                title: 'Session',
+                subtitle: 'Vérification de la session en cours.',
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
+          ),
+        ),
+      ),
       error: (error, stack) {
         final detail = AuthFailure.redact(error);
         AppDiagnostics.record('auth_state_error', detail);
         return Scaffold(
           body: Center(
-            child: Text('Session indisponible pour le moment. $detail'),
+            child: Padding(
+              padding: AppInsets.screen,
+              child: SizedBox(
+                width: 480,
+                child: AppBannerCard(
+                  icon: Icons.error_outline,
+                  title: 'Session indisponible',
+                  message: 'Session indisponible pour le moment. $detail',
+                  accentColor: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ),
           ),
         );
       },

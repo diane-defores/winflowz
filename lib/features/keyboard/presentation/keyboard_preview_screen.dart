@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_components.dart';
 import '../domain/keyboard_models.dart';
 
 part 'keyboard_preview_widgets.dart';
@@ -390,13 +391,11 @@ class _KeyboardPreviewScreenState extends State<KeyboardPreviewScreen> {
     return ListView(
       padding: AppInsets.screen,
       children: [
-        Text('Keyboard preview', style: Theme.of(context).textTheme.titleLarge),
-        AppGaps.x2,
-        Text(
-          'Browser review surface for WinFlowz keyboard layouts. Native IME behavior still needs Android device validation.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+        const AppSectionCard(
+          title: 'Keyboard preview',
+          subtitle:
+              'Browser review surface for WinFlowz keyboard layouts. Native IME behavior still needs Android device validation.',
+          child: SizedBox.shrink(),
         ),
         AppGaps.x4,
         _PreviewControls(

@@ -6,6 +6,7 @@ import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_components.dart';
 import '../../clipboard/presentation/clipboard_screen.dart';
 import '../../dictionary/presentation/dictionary_screen.dart';
 import '../../keyboard/domain/keyboard_models.dart';
@@ -481,18 +482,25 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                     child: Column(
                       children: [
                         if (!PlatformCapabilities.localSpeechSupported)
-                          const MaterialBanner(
-                            content: Text(
-                              'Local speech is unavailable on Linux. Use advanced Whisper mode.',
+                          const Padding(
+                            padding: AppInsets.screen,
+                            child: AppBannerCard(
+                              icon: Icons.mic_off_outlined,
+                              title: 'Local speech unavailable',
+                              message:
+                                  'This platform cannot run local speech. Use advanced Whisper mode instead.',
+                              accentColor: AppColors.warning,
                             ),
-                            actions: [SizedBox.shrink()],
                           ),
                         if (!PlatformCapabilities.overlaySupported)
-                          const MaterialBanner(
-                            content: Text(
-                              'Android overlay is unavailable on this platform.',
+                          const Padding(
+                            padding: AppInsets.screen,
+                            child: AppBannerCard(
+                              icon: Icons.layers_clear_outlined,
+                              title: 'Overlay unavailable',
+                              message:
+                                  'Android overlay controls are not available on this platform.',
                             ),
-                            actions: [SizedBox.shrink()],
                           ),
                         Expanded(
                           child: Stack(
@@ -635,82 +643,96 @@ class _OnboardingOverlay extends StatelessWidget {
           namesRoute: true,
           explicitChildNodes: true,
           label: 'Onboarding setup guide',
-          child: ColoredBox(
-            color: AppColors.overlayScrim,
-            child: Center(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => onClose(),
+            child: ColoredBox(
+              color: AppColors.overlayScrim,
               child: SafeArea(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: AppLayoutMetrics.onboardingOverlayMaxWidth,
-                        maxHeight: constraints.maxHeight - AppSpacing.x6,
-                      ),
-                      child: Material(
-                        elevation: AppElevation.overlay,
-                        shadowColor: AppColors.borderLight,
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(AppRadii.md),
-                        clipBehavior: Clip.antiAlias,
-                        child: SingleChildScrollView(
-                          padding: AppInsets.onboarding,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.flag_outlined,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                  AppGaps.horizontalX2,
-                                  Expanded(
-                                    child: Text(
-                                      'Configuration WinFlowz',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleSmall,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.x3,
+                    vertical: AppSpacing.x2,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final overlayWidth =
+                          (constraints.maxWidth - (AppSpacing.x6 * 2)).clamp(
+                            0.0,
+                            constraints.maxWidth,
+                          );
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          key: const Key('onboarding-overlay-card-frame'),
+                          width: overlayWidth,
+                          height: constraints.maxHeight,
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: AppModalCard(
+                              padding: AppInsets.onboarding,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.flag_outlined,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
+                                        ),
+                                        AppGaps.horizontalX2,
+                                        Expanded(
+                                          child: Text(
+                                            'Configuration WinFlowz',
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.titleSmall,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          tooltip:
+                                              'Fermer (reprendre plus tard)',
+                                          onPressed: () => onClose(),
+                                          icon: const Icon(
+                                            Icons.close_outlined,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Fermer (reprendre plus tard)',
-                                    onPressed: () => onClose(),
-                                    icon: const Icon(Icons.close_outlined),
-                                  ),
-                                ],
-                              ),
-                              AppGaps.x2,
-                              onboardingContent,
-                              if (message != null) ...[
-                                AppGaps.x2,
-                                Text(
-                                  message!,
-                                  style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(
-                                        color: Theme.of(
+                                    AppGaps.x2,
+                                    onboardingContent,
+                                    if (message != null) ...[
+                                      AppGaps.x2,
+                                      AppBannerCard(
+                                        icon: Icons.error_outline,
+                                        title: 'Action impossible',
+                                        message: message!,
+                                        accentColor: Theme.of(
                                           context,
                                         ).colorScheme.error,
                                       ),
-                                ),
-                              ],
-                              AppGaps.x3,
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton.icon(
-                                  onPressed: () => onClose(),
-                                  icon: const Icon(Icons.close_outlined),
-                                  label: const Text('Plus tard'),
+                                    ],
+                                    AppGaps.x3,
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: TextButton.icon(
+                                        onPressed: () => onClose(),
+                                        icon: const Icon(Icons.close_outlined),
+                                        label: const Text('Plus tard'),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -760,25 +782,14 @@ class _OnboardingStepContent extends StatelessWidget {
             AppGaps.horizontalX2,
             Expanded(
               child: Text(
-                '${definition.title} — Étape ${readiness.currentStep + 1}/${readiness.steps.length}',
+                '${definition.title} • Étape ${readiness.currentStep + 1}/${readiness.steps.length}',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.borderSubtle),
-                borderRadius: BorderRadius.circular(AppRadii.sm),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: AppSpacing.x1,
-              ),
-              child: Text(
-                definition.category == OnboardingStepCategory.mandatory
-                    ? 'Obligatoire'
-                    : 'Recommandé',
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
+            AppTag(
+              label: definition.category == OnboardingStepCategory.mandatory
+                  ? 'Obligatoire'
+                  : 'Recommandé',
             ),
           ],
         ),
@@ -797,11 +808,11 @@ class _OnboardingStepContent extends StatelessWidget {
         ),
         if (step.blockerReason != null) ...[
           AppGaps.x2,
-          Text(
-            step.blockerReason!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
+          AppBannerCard(
+            icon: Icons.report_gmailerrorred_outlined,
+            title: 'Blocage détecté',
+            message: step.blockerReason!,
+            accentColor: Theme.of(context).colorScheme.error,
           ),
         ],
         AppGaps.x2,
@@ -874,13 +885,22 @@ class _OnboardingCompletionContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Les prérequis sont prêts',
-          style: Theme.of(context).textTheme.titleSmall,
+        const AppBannerCard(
+          icon: Icons.check_circle_outline,
+          title: 'Les prérequis sont prêts',
+          message:
+              'WinFlowz a validé les accès principaux. Tu peux terminer maintenant ou revoir les réglages.',
+          accentColor: AppColors.success,
         ),
         AppGaps.x2,
-        Text('Obligatoire: $mandatoryDone/${mandatory.length}'),
-        Text('Recommandé: $recommendedDone/${recommended.length}'),
+        Wrap(
+          spacing: AppSpacing.x2,
+          runSpacing: AppSpacing.x2,
+          children: [
+            AppTag(label: 'Obligatoire $mandatoryDone/${mandatory.length}'),
+            AppTag(label: 'Recommandé $recommendedDone/${recommended.length}'),
+          ],
+        ),
         AppGaps.x2,
         for (final step in readiness.steps)
           _OnboardingPathHint(
@@ -935,30 +955,7 @@ class _OnboardingPathHint extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: AppInsets.stack,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            size: AppIconMetrics.sm,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          AppGaps.horizontalX3,
-          Expanded(
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: '$title: ',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  TextSpan(text: text),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: AppBannerCard(icon: icon, title: title, message: text),
     );
   }
 }

@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-05-09"
 created_at: "2026-05-09 15:19:23 UTC"
 updated: "2026-05-14"
-updated_at: "2026-05-14 23:56:38 UTC"
+updated_at: "2026-05-15 00:11:49 UTC"
 status: implementation
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -50,7 +50,7 @@ evidence:
   - "2026-05-14 theme persistence was hardened to preserve existing onboarding/sync fields when writing themeMode; covered by test/app_theme_mode_controller_test.dart."
   - "User decision 2026-05-09: settings and backend data must be backend-agnostic; Firebase is the first adapter."
   - "User decision 2026-05-09: Supabase is no longer the target backend."
-next_step: "Continue visual/design validation and docs cleanup before final closure"
+next_step: "Manual visual review and docs cleanup before final closure"
 ---
 
 # Title
@@ -252,12 +252,12 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
   - Depends on : Tâches 3-5.
   - Validate with : Settings UI reads `appThemeModeProvider` and backend diagnostics expose `settingsStoreProvider.runtimeType`.
 
-- [ ] Tâche 7 : Migrer les écrans principaux vers tokens
+- [x] Tâche 7 : Migrer les écrans principaux vers tokens
   - Fichiers : `lib/features/voice/presentation/voice_screen.dart`, `lib/features/clipboard/presentation/clipboard_screen.dart`, `lib/features/snippets/presentation/snippets_screen.dart`, `lib/features/dictionary/presentation/dictionary_screen.dart`, `lib/features/settings/presentation/settings_screen.dart`, `lib/features/shell/presentation/app_shell_screen.dart`
   - Action : remplacer espacements/styles locaux récurrents par tokens ou composants thémés, sans refonte fonctionnelle.
   - User story link : stabilise la cohérence visuelle Flowz.
   - Depends on : thème source existant.
-  - Validate with : `flutter analyze`, widget smoke tests.
+  - Validate with : `flutter analyze`, targeted widget/auth tests, `flutter test`, and screen-level migration across Voice, Clipboard, Keyboard, Snippets, Dictionary, Settings, Shell, and Auth surfaces.
 
 - [ ] Tâche 8 : Ajouter un playground design Flutter
   - Fichiers : à créer sous `lib/features/settings/` ou route debug dédiée selon décision produit
@@ -353,6 +353,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 | 2026-05-14 23:34:40 UTC | component-re-audit | GPT-5 Codex | Split Settings sections and keyboard preview widgets into part files, reran component checks, and rescored component baseline | component score raised from C to B; `flutter analyze`, targeted tests, full `flutter test`, and `git diff --check` passed | Continue visual/design validation; component-system blocker cleared |
 | 2026-05-14 23:53:47 UTC | firebase-settings-gate | GPT-5 Codex | Verified the existing Firebase settings adapter and hardened theme persistence so changing Appearance preserves other local/remote settings fields | targeted theme controller test passed; Firebase settings gate unblocked | Run final analyze/test/diff checks, then visual/design validation before closure |
 | 2026-05-14 23:56:38 UTC | verification | GPT-5 Codex | Reran static analysis, targeted settings/component tests, full Flutter test suite, and diff whitespace checks after Firebase gate hardening | `flutter analyze`, targeted tests, `flutter test`, and `git diff --check` passed | Continue visual/design validation before final closure |
+| 2026-05-15 00:11:49 UTC | final-screen-migration | GPT-5 Codex | Migrated shell, keyboard corner editor, auth screens, onboarding status tile, and keyboard preview header onto shared app components and tokens | `flutter analyze`, targeted tests, full `flutter test`, and `git diff --check` passed | Manual visual review and docs cleanup before final closure |
 
 # Current Chantier Flow
 
@@ -360,7 +361,7 @@ Transformer l'Appearance selector en préférence produit complète: module Sett
 |------|--------|----------|-----------|
 | sf-spec | done | This spec records the SettingsStore decision and Firebase adapter implementation state | Keep spec current through final closure |
 | sf-ready | unblocked | Firebase settings path, rules, local fallback, and theme persistence are implemented; theme save preservation has targeted test coverage | Continue final validation |
-| sf-start | partial | User-directed visual and component implementation has started; theme tokens, shell/auth styling, shared CRUD primitives, grouped keyboard preview props, Settings section extraction, keyboard corner a11y/focus contracts, Settings bridge controllers, component file splits, and Firebase theme persistence hardening are implemented | Continue visual/design validation |
-| sf-verify | partial | Local validation passed after the component refactor and Firebase gate hardening with `dart format`, `flutter analyze`, targeted tests, full `flutter test`, and `git diff --check` | Add visual/manual review for the design layer |
-| sf-end | blocked | Component-system blocker is cleared to `B` and Firebase settings gate is unblocked, but the broader design-system chantier still needs final visual validation and docs/closure review | Complete or explicitly defer visual validation before final closure |
+| sf-start | done | Theme tokens, shared CRUD primitives, Settings sections, keyboard preview extraction, shell/auth migration, keyboard corner editor migration, and Firebase theme persistence hardening are implemented across the primary screens | Keep only manual proof/doc cleanup open |
+| sf-verify | partial | Local validation passed after the full screen migration with `dart format`, `flutter analyze`, targeted tests, full `flutter test`, and `git diff --check` | Add visual/manual review for the design layer |
+| sf-end | partial | Code migration is complete and validated locally; remaining closure work is manual visual proof and docs/closure review | Complete or explicitly defer manual visual review before final closure |
 | sf-ship | partial | Previous theme-token work was shipped; current component-refactor work is validated locally but not shipped | Ship only after the active chantier follow-ups are accepted or explicitly deferred |

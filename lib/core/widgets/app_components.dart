@@ -199,3 +199,109 @@ class AppStatusCard extends StatelessWidget {
     );
   }
 }
+
+class AppBannerCard extends StatelessWidget {
+  const AppBannerCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.action,
+    this.accentColor,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final Widget? action;
+  final Color? accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final effectiveAccent = accentColor ?? colorScheme.primary;
+    return Card(
+      child: Padding(
+        padding: AppInsets.compactCard,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: effectiveAccent),
+            AppGaps.horizontalX3,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: Theme.of(context).textTheme.titleSmall),
+                  AppGaps.x1,
+                  Text(message, style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+            ),
+            if (action != null) ...[AppGaps.horizontalX2, action!],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AppTag extends StatelessWidget {
+  const AppTag({
+    super.key,
+    required this.label,
+    this.color,
+    this.backgroundColor,
+  });
+
+  final String label;
+  final Color? color;
+  final Color? backgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final foreground = color ?? colorScheme.onSurfaceVariant;
+    final background = backgroundColor ?? colorScheme.surfaceContainerHighest;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(AppRadii.pill),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.x2 + AppSpacing.x1 / 2,
+          vertical: AppSpacing.x1,
+        ),
+        child: Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(color: foreground),
+        ),
+      ),
+    );
+  }
+}
+
+class AppModalCard extends StatelessWidget {
+  const AppModalCard({
+    super.key,
+    required this.child,
+    this.padding = AppInsets.card,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: AppElevation.overlay,
+      shadowColor: AppColors.borderLight,
+      clipBehavior: Clip.antiAlias,
+      child: Padding(padding: padding, child: child),
+    );
+  }
+}
