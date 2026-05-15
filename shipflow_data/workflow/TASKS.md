@@ -64,17 +64,13 @@
 
 | Pri | Task | Status |
 |-----|------|--------|
-| ✅ | Align Flutter brand tokens, surface tokens, primary shadow, and Settings copy with the WinFlowz branding contract | ✅ done |
-| ✅ | Add a user-facing Appearance control for System / Light / Dark theme mode | ✅ done |
-| ✅ | Bootstrap Appearance from local settings before `runApp`, keep local cache writes, and route authenticated saves through the backend-agnostic settings store | ✅ done |
-| ✅ | Constrain Firestore settings writes so `themeMode` accepts only `system`, `light`, or `dark` | ✅ done |
-| ✅ | Add explicit delete confirmation dialogs across Voice, Clipboard, Snippets, and Dictionary history actions | ✅ done |
-| ✅ | Block background semantics and expose route semantics for the onboarding overlay | ✅ done |
-| 🟠 | Validate Appearance sync/status against Firebase with account switch and offline failure cases, then expose pending/error state in Settings | 📋 todo |
+| 🟠 | Validate Appearance sync against Firebase under offline/error/account-switch cases and surface pending/error status in Settings instead of swallowing persistence failures | 📋 todo |
+| 🟠 | Unify product language across Auth, Settings, Shell, and CRUD surfaces so a single session does not mix French and English labels, actions, and destructive prompts | 📋 todo |
+| 🟠 | Raise global button/icon minimum targets and review dense Settings controls so key actions do not default to 34-36 px hit areas | 📋 todo |
+| 🟡 | Refactor typography tokens into named text roles or bundled specs (`size + line-height + tracking`) instead of a loose t-shirt scale spread across `AppTypography` and `_textTheme` | 📋 todo |
+| 🟡 | Add reduced-motion handling for non-trivial motion and interaction feedback instead of relying only on raw duration/curve tokens | 📋 todo |
 | 🟡 | Add a Flutter design playground/storybook screen for token inspection across light/dark modes | 📋 todo |
-| 🟡 | Add widget/golden coverage for theme mode selection and key responsive layouts | 📋 todo |
-| 🟡 | Resolve the typography contract mismatch: `branding.md` says platform system fonts, while the Flutter app ships Inter assets | 📋 todo |
-| 🟡 | Review contrast and state styling on Android overlay/keyboard status cards on real devices | 📋 todo |
+| 🟡 | Review wide desktop-biased dialog widths and encoded status strings in keyboard/settings flows for better responsive readability | 📋 todo |
 
 ### Audit: Code
 

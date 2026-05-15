@@ -6,7 +6,7 @@ project: "winflowz_app"
 created: "2026-05-14"
 created_at: "2026-05-14 22:30:00 UTC"
 updated: "2026-05-15"
-updated_at: "2026-05-15 08:35:00 UTC"
+updated_at: "2026-05-15 09:10:00 UTC"
 status: reviewed
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -50,7 +50,7 @@ evidence:
   - "User decision 2026-05-14: do not bundle all models in the APK; downloading after install is preferred."
   - "Current code already includes Android IME voice capture through KeyboardVoiceController using Android SpeechRecognizer, proving a fallback path exists but not a local-model catalog."
   - "Current code already exposes Settings and diagnostics surfaces for keyboard and overlay status, which can host pack-management state."
-next_step: "/sf-spec ASR Language Pack Catalog"
+next_step: "/sf-ready shipflow_data/workflow/specs/asr-language-pack-catalog.md"
 ---
 
 # Title
@@ -99,6 +99,7 @@ Quand l'utilisatrice veut dicter depuis le clavier, WinFlowz doit pouvoir lui pr
 - Si un téléchargement est interrompu, la progression doit rester observable et reprenable; aucun pack partiellement téléchargé ne doit être exposé comme `installed`.
 - Si le checksum ou la signature d'un pack échoue, le fichier doit être rejeté, le statut doit passer à `failed_verification`, et aucun chargement moteur ne doit être tenté.
 - Si l'appareil ne satisfait pas `minAndroidSdk`, `supportedAbis` ou `minRamMb`, l'installation doit être bloquée avec explication visible et fallback proposé.
+- Si le preflight de capacite disque echoue, l'installation doit etre refusee avant download avec un message explicite (`required_mb`, `available_mb`) et un fallback propose.
 - Si le moteur local ne peut pas charger le modèle installé, WinFlowz doit journaliser l'échec, marquer la cause dans l'état natif persistant, puis proposer Android SpeechRecognizer ou le fallback configuré.
 - Si le démarrage runtime local dépasse le timeout de chargement (`10s`), WinFlowz doit basculer vers fallback explicite, persister `fallback_reason=runtime_timeout`, et ne pas boucler en retry infini.
 - Si l'utilisatrice soumet plusieurs actions concurrentes (tap répété micro ou install), les commandes doivent être idempotentes: une seule transaction active par `pack_id`, les autres sont ignorées ou fusionnées avec feedback UI.
@@ -143,6 +144,9 @@ Introduire un catalogue de packs de langue ASR versionne, telechargeable et grat
 - Aucun fallback cloud ne doit etre silencieux; l'utilisatrice doit comprendre quel mode elle utilise.
 - Le fallback cloud est autorise en mode auto apres echec local ou indisponibilite locale, mais toujours avec indication explicite du mode actif.
 - Les retries automatiques doivent etre bornes et observables (pas de boucle infinie), avec un maximum de `3` retries automatiques par operation.
+- Politique capacite disque (deterministe): un install preflight est autorise uniquement si `free_space_mb >= max(2 * download_size_mb, installed_size_mb + 512)`.
+- Si le preflight espace disque echoue, l'etat doit devenir `blocked_insufficient_storage` avec l'espace requis et l'espace disponible visibles; aucun telechargement ne demarre.
+- Si l'espace disque devient insuffisant en cours de telechargement, l'operation passe en `paused_insufficient_storage`, le fichier temporaire reste reprenable, et l'UI propose `Retry` apres liberation d'espace.
 - Chaque transition d'etat doit etre idempotente.
 - Les diagnostics ne doivent jamais contenir audio brut, cle API, token, ni chemin local complet sensible.
 - Les metadonnees de licence doivent faire partie du contrat de catalogue et pas d'une note externe ad hoc.
@@ -288,6 +292,7 @@ Fresh external docs:
 - [ ] CA 11 : Given un diagnostic voix est emis, when il est persiste ou affiche, then il contient uniquement des metadonnees techniques autorisees et jamais d'audio brut ni secret.
 - [ ] CA 12 : Given une operation `download`, `verify`, `install` ou `remove` echoue, when la politique de reprise s'applique, then au plus `3` retries automatiques sont effectues avant un etat d'echec recuperable explicite.
 - [ ] CA 13 : Given le local est indisponible ou echoue, when le fallback cloud auto est active, then l'UI affiche explicitement le mode `cloud_fallback`.
+- [ ] CA 14 : Given `free_space_mb < max(2 * download_size_mb, installed_size_mb + 512)`, when l'utilisatrice lance l'installation d'un pack, then le systeme refuse le demarrage avec `blocked_insufficient_storage`, affiche `required_mb` et `available_mb`, et n'ecrit aucun etat `downloading`.
 
 # Test Strategy
 
@@ -317,6 +322,7 @@ Fresh external docs:
   - `./gradlew :app:testDebugUnitTest`
   - sanity manuelle Android: premier micro sans pack, install, retry, timeout runtime, fallback explicite, suppression pack.
 - Stop condition: si le benchmark montre qu'aucun moteur local gratuit ne tient le niveau qualite/perf minimal pour une langue cible, la langue doit rester `fallbackOnly` et le GTM doit etre corrige au lieu de contourner le probleme par un worker silencieux.
+- Language doctrine note: this artifact keeps stable English machine anchors (`Title`, `Status`, `Acceptance Criteria`, `Skill Run History`, `Current Chantier Flow`) while keeping user-facing explanatory prose in French, consistent with active project language.
 
 # Open Questions
 
@@ -327,17 +333,18 @@ None.
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
 | 2026-05-14 22:30:00 UTC | sf-spec | GPT-5 Codex | Created `shipflow_data/workflow/specs/asr-language-pack-catalog.md` from keyboard-first local-ASR decisions and existing voice/on-device research. | Draft saved. | /sf-ready shipflow_data/workflow/specs/asr-language-pack-catalog.md |
-| 2026-05-15 00:00:00 UTC | sf-ready | GPT-5 Codex | Readiness gate run on spec structure, behavioral contract, adversarial review, and security coverage. | Not ready: open questions format, language doctrine consistency, and a few blocking ambiguities must be corrected before implementation. | /sf-spec ASR Language Pack Catalog |
 | 2026-05-15 06:15:00 UTC | sf-spec | GPT-5 Codex | Applied corrective edits after readiness review: language doctrine fixes, timeout/retry/idempotence contract, validation commands, and `Open Questions` normalization. | Partial remediation done; product/security decisions still required. | /sf-spec ASR Language Pack Catalog |
 | 2026-05-15 08:35:00 UTC | sf-spec | GPT-5 Codex | Applied user decisions: cloud fallback auto mode, local runtime timeout `10s`, retries cap `3`, and matching acceptance criteria updates. | Remaining blocker: disk-capacity policy thresholds still to be fixed in spec. | /sf-spec ASR Language Pack Catalog |
+| 2026-05-15 09:05:00 UTC | sf-ready | GPT-5 Codex | Re-ran readiness gate on structure, metadata, behavior contract traceability, adversarial abuse cases, security posture, language doctrine, and documentation freshness obligations. | Not ready: internal contract language doctrine still inconsistent and disk-capacity/installability policy remains under-specified for deterministic implementation and verification. | /sf-spec ASR Language Pack Catalog |
+| 2026-05-15 09:10:00 UTC | sf-spec | GPT-5 Codex | Resolved readiness blockers by adding deterministic storage policy (preflight threshold, blocked/paused states, explicit observable fields) and clarifying language doctrine handling for localized prose with English anchors. | Spec updated for readiness re-check. | /sf-ready shipflow_data/workflow/specs/asr-language-pack-catalog.md |
 
 # Current Chantier Flow
 
-- `sf-spec`: done - draft saved for the ASR language-pack catalog chantier.
-- `sf-ready`: not ready - gate run completed; corrective spec updates required before implementation.
+- `sf-spec`: done - spec updated with deterministic storage policy and language doctrine clarification.
+- `sf-ready`: not ready - re-run required after latest spec corrections.
 - `sf-start`: not launched - implementation should begin only after readiness gate.
 - `sf-verify`: not launched - runtime, diagnostics, and GTM coherence remain to be verified after coding.
 - `sf-end`: not launched - closeout depends on implementation and verification.
 - `sf-ship`: not launched - shipping is blocked on benchmark-backed language claims and implementation proof.
 
-Next command: `/sf-spec ASR Language Pack Catalog`
+Next command: `/sf-ready shipflow_data/workflow/specs/asr-language-pack-catalog.md`

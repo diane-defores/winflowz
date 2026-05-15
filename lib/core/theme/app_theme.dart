@@ -182,7 +182,7 @@ class AppIconMetrics {
   static const sm = AppSpacing.x4;
   static const progressStroke = AppSpacing.x1 / 2;
   static const stepAvatarRadius = AppSpacing.x3;
-  static const minTarget = 40.0;
+  static const minTarget = 44.0;
   static const listActionSpacing = AppSpacing.x1;
 }
 
@@ -399,7 +399,7 @@ class AppTheme {
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
-      visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
+      visualDensity: VisualDensity.standard,
       scaffoldBackgroundColor: colorScheme.surface,
       fontFamily: AppTypography.fontFamily,
       fontFamilyFallback: AppTypography.fontFallback,
@@ -461,7 +461,7 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, 36),
+          minimumSize: const Size(0, AppIconMetrics.minTarget),
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           elevation: isDark ? 0 : 2,
@@ -474,7 +474,7 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(0, 36),
+          minimumSize: const Size(0, AppIconMetrics.minTarget),
           foregroundColor: colorScheme.primary,
           side: BorderSide(color: colorScheme.outline),
           backgroundColor: colorScheme.surfaceContainer.withValues(alpha: 0.2),
@@ -486,7 +486,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          minimumSize: const Size(0, 34),
+          minimumSize: const Size(0, AppIconMetrics.minTarget),
           foregroundColor: colorScheme.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.sm),
@@ -494,7 +494,12 @@ class AppTheme {
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(minimumSize: const Size(34, 34)),
+        style: IconButton.styleFrom(
+          minimumSize: const Size(
+            AppIconMetrics.minTarget,
+            AppIconMetrics.minTarget,
+          ),
+        ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         indicatorColor: colorScheme.primary.withValues(

@@ -415,6 +415,7 @@ void main() {
         500,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(resumeButton);
       await tester.tap(resumeButton, warnIfMissed: false);
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
 

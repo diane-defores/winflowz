@@ -1,36 +1,52 @@
 part of "settings_screen.dart";
 
 class _AppearanceSection extends StatelessWidget {
-  const _AppearanceSection({required this.themeMode, required this.onChanged});
+  const _AppearanceSection({
+    required this.themeMode,
+    required this.syncStateLabel,
+    required this.syncStateDetail,
+    required this.onChanged,
+  });
 
   final AppThemeMode themeMode;
+  final String syncStateLabel;
+  final String syncStateDetail;
   final ValueChanged<AppThemeMode> onChanged;
 
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
       title: 'Appearance',
-      subtitle: 'Uses the WinFlowz palette and shared Flowz interface tokens.',
-      child: SegmentedButton<AppThemeMode>(
-        segments: const [
-          ButtonSegment(
-            value: AppThemeMode.system,
-            icon: Icon(Icons.brightness_auto_outlined),
-            label: Text('System'),
+      subtitle:
+          'Uses the WinFlowz palette and shared Flowz interface tokens. '
+          '$syncStateLabel',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SegmentedButton<AppThemeMode>(
+            segments: const [
+              ButtonSegment(
+                value: AppThemeMode.system,
+                icon: Icon(Icons.brightness_auto_outlined),
+                label: Text('System'),
+              ),
+              ButtonSegment(
+                value: AppThemeMode.light,
+                icon: Icon(Icons.light_mode_outlined),
+                label: Text('Light'),
+              ),
+              ButtonSegment(
+                value: AppThemeMode.dark,
+                icon: Icon(Icons.dark_mode_outlined),
+                label: Text('Dark'),
+              ),
+            ],
+            selected: {themeMode},
+            onSelectionChanged: (selection) => onChanged(selection.single),
           ),
-          ButtonSegment(
-            value: AppThemeMode.light,
-            icon: Icon(Icons.light_mode_outlined),
-            label: Text('Light'),
-          ),
-          ButtonSegment(
-            value: AppThemeMode.dark,
-            icon: Icon(Icons.dark_mode_outlined),
-            label: Text('Dark'),
-          ),
+          AppGaps.x2,
+          Text(syncStateDetail, style: Theme.of(context).textTheme.bodySmall),
         ],
-        selected: {themeMode},
-        onSelectionChanged: (selection) => onChanged(selection.single),
       ),
     );
   }
@@ -38,12 +54,14 @@ class _AppearanceSection extends StatelessWidget {
 
 class _BackendProviderSection extends StatelessWidget {
   const _BackendProviderSection({
-    required this.configured,
+    required this.summary,
+    required this.detail,
     required this.diagnosticText,
     required this.onCopyDiagnostic,
   });
 
-  final bool configured;
+  final String summary;
+  final String detail;
   final String diagnosticText;
   final VoidCallback onCopyDiagnostic;
 
@@ -51,14 +69,14 @@ class _BackendProviderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSectionCard(
       title: 'Backend provider',
-      subtitle: configured
-          ? 'Firebase is the active backend adapter. Legacy Supabase may remain unconfigured.'
-          : 'Remote sync is not configured. WinFlowz stays in local mode.',
+      subtitle: summary,
       leading: const Icon(Icons.storage_outlined),
       stretch: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(detail, style: Theme.of(context).textTheme.bodySmall),
+          AppGaps.x3,
           SelectableText(diagnosticText),
           AppGaps.x3,
           OutlinedButton.icon(

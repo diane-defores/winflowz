@@ -144,10 +144,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (!mounted) {
         return;
       }
-      setState(
-        () => _message =
-            'Impossible de charger la progression onboarding: $error',
-      );
+      setState(() => _message = 'Unable to load onboarding progress: $error');
     } finally {
       if (mounted) {
         setState(() => _onboardingLoading = false);
@@ -518,7 +515,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(() {
         _overlayStatus = status;
-        _message = 'Overlay recording canceled.';
+        _message = 'Overlay recording cancelled.';
       });
       AppDiagnostics.record(
         'overlay_cancel_result',
@@ -631,6 +628,45 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return 'firebase_configured_local_session';
     }
     return 'firebase_configured_signed_out';
+  }
+
+  String _appearanceSyncLabel(AsyncValue<AuthSessionSnapshot> authAsync) {
+    if (!FirebaseBootstrap.isConfigured) {
+      return 'Theme preference is saved on this device only.';
+    }
+    return authAsync.maybeWhen(
+      data: (session) {
+        if (session.isSignedIn && !session.isLocalFallback) {
+          return 'Theme preference syncs with your signed-in account.';
+        }
+        if (session.isLocalFallback) {
+          return 'Theme preference currently stays local (local fallback session).';
+        }
+        return 'Theme preference is local until you sign in.';
+      },
+      orElse: () => 'Theme sync status is loading.',
+    );
+  }
+
+  String _appearanceSyncDetail(AsyncValue<AuthSessionSnapshot> authAsync) {
+    if (!FirebaseBootstrap.isConfigured) {
+      return 'Remote settings are not configured. This setting applies immediately and persists locally.';
+    }
+    return authAsync.when(
+      data: (session) {
+        if (session.isSignedIn && !session.isLocalFallback) {
+          return 'Signed in with remote settings available. New appearance changes are written locally first, then synced to your account settings.';
+        }
+        if (session.isLocalFallback) {
+          return 'Firebase is configured but this session is local fallback. Appearance changes are kept locally until remote auth recovers.';
+        }
+        return 'Firebase is configured but no signed-in account is active. Appearance changes are local until sign-in.';
+      },
+      loading: () =>
+          'Checking authentication session before confirming remote sync state.',
+      error: (error, stackTrace) =>
+          'Authentication session is unavailable, so appearance sync is currently local only.',
+    );
   }
 
   String _authDiagnostic(AsyncValue<AuthSessionSnapshot> authAsync) {
@@ -801,6 +837,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final overlayStatus = _overlayStatus;
     final keyboardStatus = _keyboardStatus;
     final themeMode = ref.watch(appThemeModeProvider);
+    final authAsync = ref.watch(authSessionProvider);
     return _settingsList(
       sections: [
         if (widget.onResumeOnboarding != null)
@@ -810,12 +847,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         _AppearanceSection(
           themeMode: themeMode,
+          syncStateLabel: _appearanceSyncLabel(authAsync),
+          syncStateDetail: _appearanceSyncDetail(authAsync),
           onChanged: (mode) {
             ref.read(appThemeModeProvider.notifier).setMode(mode);
           },
         ),
         _BackendProviderSection(
-          configured: FirebaseBootstrap.isConfigured,
+          summary: FirebaseBootstrap.isConfigured
+              ? 'Firebase is configured as the first backend adapter.'
+              : 'Remote sync is not configured. WinFlowz runs in local mode.',
+          detail: _appearanceSyncDetail(authAsync),
           diagnosticText: _backendDiagnosticText(),
           onCopyDiagnostic: _copyBackendDiagnostic,
         ),

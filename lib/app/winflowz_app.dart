@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/router/app_router.dart';
@@ -70,11 +71,19 @@ class WinFlowz extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(appThemeModeProvider);
+    final disableAnimations = SchedulerBinding
+        .instance
+        .platformDispatcher
+        .accessibilityFeatures
+        .disableAnimations;
     return MaterialApp.router(
       title: 'WinFlowz',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode.materialMode,
+      themeAnimationDuration: disableAnimations
+          ? Duration.zero
+          : AppMotion.base,
       routerConfig: router,
     );
   }
