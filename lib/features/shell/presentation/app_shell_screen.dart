@@ -53,6 +53,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   bool _onboardingDismissed = false;
   bool _onboardingOpenedManually = false;
   bool _onboardingBusy = false;
+  bool _onboardingDeferPromptVisible = false;
   bool _showOnboardingResumeHint = false;
   final List<int> _tabHistory = [0];
   OnboardingReadiness? _onboardingReadiness;
@@ -162,6 +163,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         _onboardingVisible = false;
         _onboardingDismissed = true;
         _onboardingOpenedManually = false;
+        _onboardingDeferPromptVisible = false;
       });
       return;
     }
@@ -492,6 +494,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       _onboardingVisible = false;
       _onboardingDismissed = true;
       _onboardingOpenedManually = false;
+      _onboardingDeferPromptVisible = false;
     });
   }
 
@@ -503,13 +506,25 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     _selectTab(5);
   }
 
-  Future<void> _deferOnboardingToSettings() async {
+  void _showOnboardingDeferPrompt() {
+    setState(() => _onboardingDeferPromptVisible = true);
+  }
+
+  Future<void> _confirmDeferOnboardingToSettings() async {
     await _pauseOnboarding();
     if (!mounted) {
       return;
     }
-    setState(() => _showOnboardingResumeHint = true);
+    setState(() {
+      _showOnboardingResumeHint = true;
+      _onboardingDeferPromptVisible = false;
+    });
     _selectTab(5);
+    Future<void>.delayed(const Duration(milliseconds: 2200), () {
+      if (mounted) {
+        setState(() => _showOnboardingResumeHint = false);
+      }
+    });
   }
 
   @override
@@ -640,8 +655,12 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                                   readiness: _onboardingReadiness,
                                   isBusy: _onboardingBusy,
                                   message: _onboardingMessage,
+                                  showDeferPrompt:
+                                      _onboardingDeferPromptVisible,
                                   onClose: _pauseOnboarding,
-                                  onDefer: _deferOnboardingToSettings,
+                                  onDefer: _showOnboardingDeferPrompt,
+                                  onConfirmDefer:
+                                      _confirmDeferOnboardingToSettings,
                                   onOpenSettings: _openSettingsFromOnboarding,
                                   onPrimaryAction:
                                       _openCurrentStepPrimaryAction,
@@ -712,8 +731,10 @@ class _OnboardingOverlay extends StatelessWidget {
     required this.readiness,
     required this.isBusy,
     required this.message,
+    required this.showDeferPrompt,
     required this.onClose,
     required this.onDefer,
+    required this.onConfirmDefer,
     required this.onOpenSettings,
     required this.onPrimaryAction,
     required this.onSecondaryAction,
@@ -725,8 +746,10 @@ class _OnboardingOverlay extends StatelessWidget {
   final OnboardingReadiness? readiness;
   final bool isBusy;
   final String? message;
+  final bool showDeferPrompt;
   final Future<void> Function() onClose;
-  final Future<void> Function() onDefer;
+  final VoidCallback onDefer;
+  final Future<void> Function() onConfirmDefer;
   final VoidCallback onOpenSettings;
   final Future<void> Function(OnboardingStepId stepId) onPrimaryAction;
   final Future<void> Function(OnboardingStepId stepId)? onSecondaryAction;
@@ -745,6 +768,11 @@ class _OnboardingOverlay extends StatelessWidget {
     } else if (!activeReadiness.platformSupported) {
       onboardingContent = const Text(
         'Onboarding indisponible sur ce terminal.',
+      );
+    } else if (showDeferPrompt) {
+      onboardingContent = _OnboardingDeferredContent(
+        isBusy: isBusy,
+        onConfirm: onConfirmDefer,
       );
     } else if (activeReadiness.shouldShowCompletion) {
       onboardingContent = _OnboardingCompletionContent(
@@ -847,7 +875,9 @@ class _OnboardingOverlay extends StatelessWidget {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: TextButton.icon(
-                                        onPressed: () => onDefer(),
+                                        onPressed: showDeferPrompt
+                                            ? null
+                                            : onDefer,
                                         icon: const Icon(Icons.close_outlined),
                                         label: const Text('Plus tard'),
                                       ),
@@ -1405,6 +1435,40 @@ class _OnboardingCompletionContent extends StatelessWidget {
                 label: const Text('Paramètres'),
               ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+class _OnboardingDeferredContent extends StatelessWidget {
+  const _OnboardingDeferredContent({
+    required this.isBusy,
+    required this.onConfirm,
+  });
+
+  final bool isBusy;
+  final Future<void> Function() onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppBannerCard(
+          icon: Icons.info_outline,
+          title: 'Onboarding mis en pause',
+          message:
+              "Tu peux reprendre la suite de l'onboarding quand tu veux à partir des paramètres.",
+          accentColor: Theme.of(context).colorScheme.primary,
+        ),
+        AppGaps.x3,
+        Align(
+          alignment: Alignment.centerRight,
+          child: FilledButton(
+            onPressed: isBusy ? null : () => onConfirm(),
+            child: const Text('OK'),
+          ),
         ),
       ],
     );

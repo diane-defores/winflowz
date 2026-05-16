@@ -1024,7 +1024,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-class _OnboardingSettingsTile extends StatelessWidget {
+class _OnboardingSettingsTile extends StatefulWidget {
   const _OnboardingSettingsTile({
     required this.onResume,
     required this.readiness,
@@ -1036,19 +1036,68 @@ class _OnboardingSettingsTile extends StatelessWidget {
   final bool highlightResume;
 
   @override
+  State<_OnboardingSettingsTile> createState() =>
+      _OnboardingSettingsTileState();
+}
+
+class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _glowController;
+
+  @override
+  void initState() {
+    super.initState();
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 550),
+    );
+    if (widget.highlightResume) {
+      _startGlow();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _OnboardingSettingsTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.highlightResume && !oldWidget.highlightResume) {
+      _startGlow();
+    } else if (!widget.highlightResume && oldWidget.highlightResume) {
+      _glowController.stop();
+      _glowController.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
+  }
+
+  void _startGlow() {
+    _glowController
+      ..stop()
+      ..value = 0
+      ..repeat(reverse: true, count: 4);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final active = readiness.steps.where((step) => step.satisfied).length;
-    final skipped = readiness.steps.where((step) => step.skipped).length;
-    final pending = readiness.steps.where((step) => step.requiresAction).length;
-    final actionLabel = readiness.shouldShowOnboarding
+    final active = widget.readiness.steps
+        .where((step) => step.satisfied)
+        .length;
+    final skipped = widget.readiness.steps.where((step) => step.skipped).length;
+    final pending = widget.readiness.steps
+        .where((step) => step.requiresAction)
+        .length;
+    final actionLabel = widget.readiness.shouldShowOnboarding
         ? 'Reprendre'
-        : readiness.onboardingCompleted
+        : widget.readiness.onboardingCompleted
         ? 'Voir le récapitulatif'
         : 'Reprendre';
 
-    final subtitle = !readiness.platformSupported
+    final subtitle = !widget.readiness.platformSupported
         ? 'Non requis sur cette plateforme'
-        : readiness.shouldShowOnboarding
+        : widget.readiness.shouldShowOnboarding
         ? 'Actifs: $active • Ignorés: $skipped • À configurer si utile: $pending'
         : 'Onboarding terminé';
 
@@ -1056,41 +1105,36 @@ class _OnboardingSettingsTile extends StatelessWidget {
       icon: Icons.flag_outlined,
       title: 'Onboarding permissions',
       subtitle: subtitle,
-      trailing: TextButton(onPressed: onResume, child: Text(actionLabel)),
+      trailing: TextButton(
+        onPressed: widget.onResume,
+        child: Text(actionLabel),
+      ),
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (highlightResume) ...[
-          const AppBannerCard(
-            icon: Icons.info_outline,
-            title: 'Onboarding mis en pause',
-            message:
-                "Tu peux reprendre la suite de l'onboarding quand tu veux à partir des paramètres.",
-          ),
-          AppGaps.x2,
-        ],
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
+    return AnimatedBuilder(
+      animation: _glowController,
+      child: tile,
+      builder: (context, child) {
+        final glow = widget.highlightResume ? _glowController.value : 0.0;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadii.lg),
-            boxShadow: highlightResume
+            boxShadow: glow > 0
                 ? [
                     BoxShadow(
                       color: Theme.of(
                         context,
-                      ).colorScheme.primary.withValues(alpha: 0.35),
-                      blurRadius: 24,
-                      spreadRadius: 2,
+                      ).colorScheme.primary.withValues(alpha: 0.38 * glow),
+                      blurRadius: 10 + (18 * glow),
+                      spreadRadius: 1 + (3 * glow),
                     ),
                   ]
                 : null,
           ),
-          child: tile,
-        ),
-      ],
+          child: child,
+        );
+      },
     );
   }
 }
