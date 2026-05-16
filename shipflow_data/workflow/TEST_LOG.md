@@ -105,3 +105,33 @@ Environment: Android APK on real phone.
 - Compact panel mode suppresses typing rows for active panels, and navigation has a compact 2-row scrollable panel.
 - Obsidian DelW→ now avoids the direct delete-after-cursor path and uses Ctrl+ForwardDelete fallback.
 - Termux Début/Fin now use Ctrl+A/Ctrl+E fallback.
+
+## 2026-05-16 - Compact panel height follow-up
+- User confirmed keyboard status diagnostic is fixed.
+- User reported compact Navigation, Media, Accents, Emoji use only 2 rows but should use the full 3-row compact surface.
+- Updated compact Navigation to 3 rows.
+- Updated compact Accents to 3 rows.
+- Updated compact Emoji to category row + 2 emoji rows.
+- Updated compact Media to 3 rows.
+- `git diff --check`: PASS.
+- `cd android && ./gradlew :app:compileDebugKotlin -x :app:processDebugResources`: PASS.
+- Manual Android APK verification: pending.
+
+## 2026-05-16 - Termux navigation retest follow-up
+- User confirmed Obsidian delete left/right works.
+- User confirmed Termux Début/Fin works.
+- User confirmed Termux word-left movement and DelW→ work.
+- User reported Termux DelW← fails again.
+- Copy/Cut in Termux remain known target-app limitation.
+- Fix applied: Termux DelW← now sends Ctrl+W instead of relying on extracted text or Ctrl+Backspace.
+- Manual Android APK verification: pending.
+
+## 2026-05-16 - Media extended controls
+- Added media actions: Vol-, Vol+, Stop, Shuffle, Loop.
+- Vol-/Vol+ use Android music stream volume.
+- Stop uses active media session stop when supported, otherwise media stop key.
+- Shuffle/Loop use active media session custom actions when the app exposes matching actions; otherwise they report unsupported.
+- Added actions to contextual media row and compact media panel.
+- `git diff --check`: PASS.
+- `cd android && ./gradlew :app:compileDebugKotlin -x :app:processDebugResources`: PASS.
+- Manual Android APK verification: pending.

@@ -114,6 +114,11 @@ class WinFlowzKeyboardView(
         fun onMediaNext()
         fun onMediaNowPlaying(): String
         fun onOpenMediaApp()
+        fun onMediaStop()
+        fun onMediaShuffle()
+        fun onMediaLoop()
+        fun onVolumeDown()
+        fun onVolumeUp()
         fun onBrightnessDown()
         fun onBrightnessUp()
         fun onNavigateCharLeft(): Boolean
@@ -1579,6 +1584,11 @@ class WinFlowzKeyboardView(
                 refreshLayout()
             }
             KeyboardKeyAction.OpenMediaApp -> callbacks.onOpenMediaApp()
+            KeyboardKeyAction.MediaStop -> callbacks.onMediaStop()
+            KeyboardKeyAction.MediaShuffle -> callbacks.onMediaShuffle()
+            KeyboardKeyAction.MediaLoop -> callbacks.onMediaLoop()
+            KeyboardKeyAction.VolumeDown -> callbacks.onVolumeDown()
+            KeyboardKeyAction.VolumeUp -> callbacks.onVolumeUp()
             KeyboardKeyAction.BrightnessDown -> callbacks.onBrightnessDown()
             KeyboardKeyAction.BrightnessUp -> callbacks.onBrightnessUp()
             KeyboardKeyAction.InsertSnippetOne -> {

@@ -84,6 +84,11 @@ enum class KeyboardKeyAction {
     MediaNext,
     MediaNowPlaying,
     OpenMediaApp,
+    MediaStop,
+    MediaShuffle,
+    MediaLoop,
+    VolumeDown,
+    VolumeUp,
     BrightnessDown,
     BrightnessUp,
     InsertSnippetOne,
@@ -375,7 +380,7 @@ object KeyboardLayoutBuilder {
         return when (request.panel) {
             KeyboardPanelMode.None -> emptyList()
             KeyboardPanelMode.Navigation -> navigationPanelRows(request.compactModeEnabled).asActionSurfaceRows()
-            KeyboardPanelMode.Accents -> accentPanelRows().asActionSurfaceRows()
+            KeyboardPanelMode.Accents -> accentPanelRows(request.compactModeEnabled).asActionSurfaceRows()
             KeyboardPanelMode.Emoji -> emojiPanelRows(request).asActionSurfaceRows()
             KeyboardPanelMode.Clipboard -> listOf(clipboardPanelRow(request)).asActionSurfaceRows()
             KeyboardPanelMode.ClipboardFull -> clipboardFullPanelRows(request).asActionSurfaceRows()
@@ -391,16 +396,28 @@ object KeyboardLayoutBuilder {
                 KeyboardRowSpec(
                     keys =
                         listOf(
+                            KeyboardKeySpec("nav-line-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                            KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
+                            KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
                             KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
                             KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight),
-                            KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.2f),
-                            KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.2f),
-                            KeyboardKeySpec("nav-line-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                            KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
+                            KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
                             KeyboardKeySpec("nav-line-end", "Fin", KeyboardKeyAction.NavigateLineEnd, weight = 1.15f),
+                        ),
+                ),
+                KeyboardRowSpec(
+                    keys =
+                        listOf(
+                            KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.2f),
                             KeyboardKeySpec("nav-tab", "Tab", KeyboardKeyAction.InsertTab),
+                            KeyboardKeySpec("nav-select-all", "All", KeyboardKeyAction.SelectAll),
+                            KeyboardKeySpec("nav-undo", "Undo", KeyboardKeyAction.Undo),
+                            KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
+                            KeyboardKeySpec("nav-clip", "Clip", KeyboardKeyAction.ToggleClipboardPanel),
+                            KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.2f),
                             KeyboardKeySpec("nav-close", "Back", KeyboardKeyAction.ClosePanel, weight = 1.1f),
                         ),
-                    horizontalScrollable = true,
                 ),
                 KeyboardRowSpec(
                     keys =
@@ -409,16 +426,12 @@ object KeyboardLayoutBuilder {
                             KeyboardKeySpec("nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
                             KeyboardKeySpec("nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.2f),
                             KeyboardKeySpec("nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.2f),
-                            KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
-                            KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
-                            KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
-                            KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
-                            KeyboardKeySpec("nav-select-all", "All", KeyboardKeyAction.SelectAll),
-                            KeyboardKeySpec("nav-undo", "Undo", KeyboardKeyAction.Undo),
-                            KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
-                            KeyboardKeySpec("nav-clip", "Clip", KeyboardKeyAction.ToggleClipboardPanel),
+                            KeyboardKeySpec("nav-cut", "Cut", KeyboardKeyAction.CutSelection),
+                            KeyboardKeySpec("nav-copy", "Copy", KeyboardKeyAction.CopySelection),
+                            KeyboardKeySpec("nav-paste", "Paste", KeyboardKeyAction.PasteClipboard),
                         ),
-                    horizontalScrollable = true,
+                    leadingWeight = 0.2f,
+                    trailingWeight = 0.2f,
                 ),
             )
         }
@@ -472,8 +485,8 @@ object KeyboardLayoutBuilder {
         )
     }
 
-    private fun accentPanelRows(): List<KeyboardRowSpec> {
-        return listOf(
+    private fun accentPanelRows(compactModeEnabled: Boolean): List<KeyboardRowSpec> {
+        val rows = listOf(
             KeyboardRowSpec(
                 listOf("é", "è", "ê", "ë", "à", "â", "ç").map { textKey(it) },
                 leadingWeight = 0.35f,
@@ -485,6 +498,16 @@ object KeyboardLayoutBuilder {
                 trailingWeight = 0.2f,
             ),
         )
+        if (!compactModeEnabled) {
+            return rows
+        }
+        return rows +
+            KeyboardRowSpec(
+                listOf("É", "È", "Ê", "À", "Â", "Ç", "Œ", "Æ").map { textKey(it) } +
+                    KeyboardKeySpec("accent-close", "Back", KeyboardKeyAction.ClosePanel),
+                leadingWeight = 0.1f,
+                trailingWeight = 0.1f,
+            )
     }
 
     private fun emojiPanelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
@@ -512,11 +535,12 @@ object KeyboardLayoutBuilder {
                 KeyboardEmojiCategory.Symbols -> symbols
             }
 
+        val emojiChunkSize = if (request.compactModeEnabled) 8 else 4
         val emojiRows =
-            selected.chunked(4).mapIndexed { index, chunk ->
+            selected.chunked(emojiChunkSize).take(if (request.compactModeEnabled) 2 else Int.MAX_VALUE).mapIndexed { index, chunk ->
                 KeyboardRowSpec(
                     keys = chunk.map { textKey(label = it, output = it, weight = 1f) },
-                    leadingWeight = if (index == 1 && chunk.size < 4) 0.6f else 0f,
+                    leadingWeight = if (index == 1 && chunk.size < emojiChunkSize) 0.6f else 0f,
                 )
             }
 
@@ -588,9 +612,36 @@ object KeyboardLayoutBuilder {
                             KeyboardKeySpec("media-next", "Next", KeyboardKeyAction.MediaNext),
                             KeyboardKeySpec("media-now", "Now", KeyboardKeyAction.MediaNowPlaying),
                             KeyboardKeySpec("media-open-app", "App", KeyboardKeyAction.OpenMediaApp),
+                            KeyboardKeySpec("media-stop", "Stop", KeyboardKeyAction.MediaStop),
+                        ),
+                    horizontalScrollable = !request.compactModeEnabled,
+                ),
+            )
+        if (request.compactModeEnabled) {
+            rows.add(
+                KeyboardRowSpec(
+                    keys =
+                        listOf(
+                            KeyboardKeySpec("media-volume-down", "Vol-", KeyboardKeyAction.VolumeDown),
+                            KeyboardKeySpec("media-volume-up", "Vol+", KeyboardKeyAction.VolumeUp),
+                            KeyboardKeySpec("media-brightness-down", "Bri-", KeyboardKeyAction.BrightnessDown),
+                            KeyboardKeySpec("media-brightness-up", "Bri+", KeyboardKeyAction.BrightnessUp),
+                            KeyboardKeySpec("media-close", "Back", KeyboardKeyAction.ClosePanel),
                         ),
                 ),
             )
+            rows.add(
+                KeyboardRowSpec(
+                    keys =
+                        listOf(
+                            KeyboardKeySpec("media-shuffle", "Shuffle", KeyboardKeyAction.MediaShuffle, weight = 1.2f),
+                            KeyboardKeySpec("media-loop", "Loop", KeyboardKeyAction.MediaLoop),
+                            KeyboardKeySpec("media-open-settings", "App", KeyboardKeyAction.OpenWinFlowzSettings),
+                            KeyboardKeySpec("media-status", "Media controls", KeyboardKeyAction.MediaNowPlaying, weight = 1.6f),
+                        ),
+                ),
+            )
+        }
         request.mediaNowPlayingLabel?.let { label ->
             rows.add(
                 KeyboardRowSpec(

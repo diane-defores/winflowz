@@ -251,6 +251,11 @@ class WinFlowzInputMethodService :
             refreshTypingAssistantState(editor)
             return deleted
         }
+        if (isTermuxInputTarget()) {
+            val sent = sendSoftKey(KeyEvent.KEYCODE_W, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+            refreshTypingAssistantState(editor)
+            return sent
+        }
         val deleted = editor.deleteWordBeforeCursor()
         if (deleted.applied) {
             refreshTypingAssistantState(editor)
@@ -563,6 +568,26 @@ class WinFlowzInputMethodService :
         showStatus(status)
     }
 
+    override fun onMediaStop() {
+        runMediaAction { mediaController.stop() }
+    }
+
+    override fun onMediaShuffle() {
+        runMediaAction { mediaController.shuffle() }
+    }
+
+    override fun onMediaLoop() {
+        runMediaAction { mediaController.loop() }
+    }
+
+    override fun onVolumeDown() {
+        runMediaAction { mediaController.volumeDown() }
+    }
+
+    override fun onVolumeUp() {
+        runMediaAction { mediaController.volumeUp() }
+    }
+
     override fun onBrightnessDown() {
         adjustBrightness(delta = -26)
     }
@@ -579,6 +604,19 @@ class WinFlowzInputMethodService :
         val status = mediaController.adjustBrightness(delta)
         if (status == KeyboardMediaController.BRIGHTNESS_ACCESS_REQUIRED) {
             openBrightnessOnboarding()
+            return
+        }
+        showStatus(status)
+    }
+
+    private fun runMediaAction(action: () -> String) {
+        if (!stateStore.mediaControlsEnabled) {
+            showStatus("Media controls disabled")
+            return
+        }
+        val status = action()
+        if (status == KeyboardMediaController.MEDIA_ACCESS_REQUIRED) {
+            openMediaAccessOnboarding()
             return
         }
         showStatus(status)

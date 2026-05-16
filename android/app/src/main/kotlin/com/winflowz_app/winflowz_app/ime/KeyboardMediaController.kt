@@ -28,6 +28,38 @@ class KeyboardMediaController(context: Context) {
         dispatch(KeyEvent.KEYCODE_MEDIA_NEXT)
     }
 
+    fun stop(): String {
+        val controlled =
+            runCatching {
+                val controller = activeController()
+                if (controller?.playbackState?.supports(PlaybackState.ACTION_STOP) == true) {
+                    controller.transportControls.stop()
+                    true
+                } else {
+                    false
+                }
+            }.getOrDefault(false)
+        if (controlled) {
+            return "Stop sent"
+        }
+        dispatch(KeyEvent.KEYCODE_MEDIA_STOP)
+        return "Stop sent"
+    }
+
+    fun volumeDown(): String = adjustMusicVolume(AudioManager.ADJUST_LOWER)
+
+    fun volumeUp(): String = adjustMusicVolume(AudioManager.ADJUST_RAISE)
+
+    fun shuffle(): String = sendCustomMediaAction(
+        actionName = "Shuffle",
+        keywords = listOf("shuffle", "random", "aléatoire", "aleatoire"),
+    )
+
+    fun loop(): String = sendCustomMediaAction(
+        actionName = "Loop",
+        keywords = listOf("repeat", "loop", "répéter", "repeter"),
+    )
+
     fun nowPlayingLabel(): String {
         if (!KeyboardStateStore(appContext).isMediaSessionAccessGranted()) {
             return MEDIA_ACCESS_REQUIRED
@@ -91,6 +123,51 @@ class KeyboardMediaController(context: Context) {
         } catch (_: IllegalArgumentException) {
             "Brightness unavailable"
         }
+    }
+
+    private fun adjustMusicVolume(direction: Int): String {
+        return try {
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, direction, AudioManager.FLAG_SHOW_UI)
+            val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).coerceAtLeast(1)
+            "Volume ${current * 100 / max}%"
+        } catch (_: RuntimeException) {
+            "Volume unavailable"
+        }
+    }
+
+    private fun sendCustomMediaAction(
+        actionName: String,
+        keywords: List<String>,
+    ): String {
+        if (!KeyboardStateStore(appContext).isMediaSessionAccessGranted()) {
+            return MEDIA_ACCESS_REQUIRED
+        }
+        val controller =
+            try {
+                activeController()
+            } catch (_: SecurityException) {
+                return MEDIA_ACCESS_REQUIRED
+            } ?: return "$actionName unavailable: no active media"
+        val customAction =
+            controller.playbackState
+                ?.customActions
+                .orEmpty()
+                .firstOrNull { action ->
+                    val haystack = "${action.action} ${action.name}".lowercase()
+                    keywords.any { keyword -> haystack.contains(keyword.lowercase()) }
+                }
+                ?: return "$actionName unsupported by ${controller.packageName}"
+        return try {
+            controller.transportControls.sendCustomAction(customAction, null)
+            "$actionName sent"
+        } catch (_: RuntimeException) {
+            "$actionName unavailable"
+        }
+    }
+
+    private fun PlaybackState.supports(action: Long): Boolean {
+        return actions and action == action
     }
 
     private fun activeController(): MediaController? {
