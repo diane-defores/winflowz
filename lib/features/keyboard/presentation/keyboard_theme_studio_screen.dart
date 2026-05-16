@@ -863,7 +863,7 @@ class _SliderField extends StatelessWidget {
   }
 }
 
-class _ColorField extends StatelessWidget {
+class _ColorField extends StatefulWidget {
   const _ColorField({
     required this.label,
     required this.value,
@@ -875,38 +875,228 @@ class _ColorField extends StatelessWidget {
   final ValueChanged<int> onChanged;
 
   @override
+  State<_ColorField> createState() => _ColorFieldState();
+}
+
+class _ColorFieldState extends State<_ColorField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _hex(widget.value));
+  }
+
+  @override
+  void didUpdateWidget(covariant _ColorField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value &&
+        _controller.text != _hex(widget.value)) {
+      _controller.text = _hex(widget.value);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openPicker() async {
+    final picked = await showDialog<int>(
+      context: context,
+      builder: (context) =>
+          _ColorPickerDialog(label: widget.label, initialValue: widget.value),
+    );
+    if (picked != null) {
+      widget.onChanged(picked);
+    }
+  }
+
+  void _applyHex(String raw) {
+    final parsed = int.tryParse(raw.trim(), radix: 16);
+    if (parsed != null) {
+      widget.onChanged(parsed);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: TextFormField(
-        key: ValueKey('keyboard-theme-color-$label'),
-        initialValue: value.toRadixString(16).toUpperCase().padLeft(8, '0'),
-        decoration: InputDecoration(
-          labelText: '$label (AARRGGBB)',
-          suffixIcon: Container(
-            width: 24,
-            height: 24,
-            margin: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Color(value),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Theme.of(context).colorScheme.outline),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              key: ValueKey('keyboard-theme-color-${widget.label}'),
+              controller: _controller,
+              decoration: InputDecoration(
+                labelText: '${widget.label} (AARRGGBB)',
+              ),
+              onChanged: _applyHex,
+              onFieldSubmitted: _applyHex,
             ),
           ),
-        ),
-        onChanged: (raw) {
-          final parsed = int.tryParse(raw.trim(), radix: 16);
-          if (parsed != null) {
-            onChanged(parsed);
-          }
-        },
-        onFieldSubmitted: (raw) {
-          final parsed = int.tryParse(raw.trim(), radix: 16);
-          if (parsed != null) {
-            onChanged(parsed);
-          }
-        },
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 52,
+            height: 52,
+            child: IconButton(
+              key: ValueKey('keyboard-theme-color-picker-${widget.label}'),
+              onPressed: _openPicker,
+              tooltip: 'Pick color',
+              icon: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Color(widget.value),
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                ),
+                child: const SizedBox(width: 24, height: 24),
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  String _hex(int value) =>
+      (value & 0xFFFFFFFF).toRadixString(16).toUpperCase().padLeft(8, '0');
+}
+
+class _ColorPickerDialog extends StatefulWidget {
+  const _ColorPickerDialog({required this.label, required this.initialValue});
+
+  final String label;
+  final int initialValue;
+
+  @override
+  State<_ColorPickerDialog> createState() => _ColorPickerDialogState();
+}
+
+class _ColorPickerDialogState extends State<_ColorPickerDialog> {
+  late int _alpha;
+  late int _red;
+  late int _green;
+  late int _blue;
+
+  int get _value =>
+      ((_alpha & 0xFF) << 24) |
+      ((_red & 0xFF) << 16) |
+      ((_green & 0xFF) << 8) |
+      (_blue & 0xFF);
+
+  @override
+  void initState() {
+    super.initState();
+    final value = widget.initialValue & 0xFFFFFFFF;
+    _alpha = (value >> 24) & 0xFF;
+    _red = (value >> 16) & 0xFF;
+    _green = (value >> 8) & 0xFF;
+    _blue = value & 0xFF;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Color(_value);
+    return AlertDialog(
+      title: Text('Pick ${widget.label}'),
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ),
+              child: const SizedBox(height: 74, width: double.infinity),
+            ),
+            const SizedBox(height: 12),
+            _ColorChannelSlider(
+              label: 'A',
+              value: _alpha,
+              onChanged: (value) => setState(() => _alpha = value),
+            ),
+            _ColorChannelSlider(
+              label: 'R',
+              value: _red,
+              color: Colors.red,
+              onChanged: (value) => setState(() => _red = value),
+            ),
+            _ColorChannelSlider(
+              label: 'G',
+              value: _green,
+              color: Colors.green,
+              onChanged: (value) => setState(() => _green = value),
+            ),
+            _ColorChannelSlider(
+              label: 'B',
+              value: _blue,
+              color: Colors.blue,
+              onChanged: (value) => setState(() => _blue = value),
+            ),
+            const SizedBox(height: 8),
+            SelectableText(
+              (_value & 0xFFFFFFFF)
+                  .toRadixString(16)
+                  .toUpperCase()
+                  .padLeft(8, '0'),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_value),
+          child: const Text('Apply'),
+        ),
+      ],
+    );
+  }
+}
+
+class _ColorChannelSlider extends StatelessWidget {
+  const _ColorChannelSlider({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.color,
+  });
+
+  final String label;
+  final int value;
+  final Color? color;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(width: 24, child: Text(label)),
+        Expanded(
+          child: Slider(
+            value: value.toDouble(),
+            min: 0,
+            max: 255,
+            divisions: 255,
+            activeColor: color,
+            label: value.toString(),
+            onChanged: (next) => onChanged(next.round()),
+          ),
+        ),
+        SizedBox(width: 42, child: Text(value.toString().padLeft(3))),
+      ],
     );
   }
 }
@@ -983,16 +1173,27 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
             SizedBox(height: theme.rowVerticalGap),
             Row(
               children: [
-                _previewKey(theme, ',', special: true),
+                Expanded(
+                  child: FractionallySizedBox(
+                    widthFactor: theme.keyWidthScale,
+                    child: _previewKey(theme, ',', special: true),
+                  ),
+                ),
                 SizedBox(width: theme.keyHorizontalGap),
                 Expanded(
+                  flex: 2,
                   child: FractionallySizedBox(
                     widthFactor: theme.keyWidthScale,
                     child: _previewKey(theme, 'space'),
                   ),
                 ),
                 SizedBox(width: theme.keyHorizontalGap),
-                _previewKey(theme, '↵', special: true, active: true),
+                Expanded(
+                  child: FractionallySizedBox(
+                    widthFactor: theme.keyWidthScale,
+                    child: _previewKey(theme, '↵', special: true, active: true),
+                  ),
+                ),
               ],
             ),
             if (theme.pressEffect != KeyboardThemePressEffect.none) ...[

@@ -55,6 +55,7 @@ enum class KeyboardKeyAction {
     DeleteWordBefore,
     DeleteWordAfter,
     InsertTab,
+    Escape,
     Enter,
     Shift,
     ModeLetters,
@@ -149,6 +150,7 @@ data class KeyboardRowSpec(
     val trailingWeight: Float = leadingWeight,
     val horizontalScrollable: Boolean = false,
     val pagedHorizontalScrollable: Boolean = false,
+    val visiblePageKeyCount: Int? = null,
 )
 
 data class KeyboardLayoutSnapshot(
@@ -373,10 +375,11 @@ object KeyboardLayoutBuilder {
             KeyboardRowSpec(
                 keys =
                     listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "+", "-", "=", "$").map { value ->
-                        textKey(value, weight = if (value.length == 1) 0.9f else 1f).asActionSurface()
+                        textKey(value).asActionSurface()
                     },
                 horizontalScrollable = true,
                 pagedHorizontalScrollable = true,
+                visiblePageKeyCount = 10,
             ),
         )
     }
@@ -868,7 +871,20 @@ object KeyboardLayoutBuilder {
         return listOf(
             KeyboardRowSpec(listOf("[", "]", "{", "}", "#", "%", "^", "*", "+").map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace)),
             KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter)),
-            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("."), textKey(","), textKey("?"), textKey("!"), textKey("Espace", " "))),
+            KeyboardRowSpec(
+                listOf(
+                    modeKey("ABC", KeyboardKeyAction.ModeLetters, false),
+                    KeyboardKeySpec("esc-symbols", "Esc", KeyboardKeyAction.Escape),
+                    modifierKey("Ctrl", KeyboardSystemModifier.Ctrl),
+                    modifierKey("Alt", KeyboardSystemModifier.Alt),
+                    modifierKey("Fn", KeyboardSystemModifier.Fn),
+                    textKey("."),
+                    textKey(","),
+                    textKey("?"),
+                    textKey("!"),
+                    textKey("Espace", " "),
+                ),
+            ),
         )
     }
 

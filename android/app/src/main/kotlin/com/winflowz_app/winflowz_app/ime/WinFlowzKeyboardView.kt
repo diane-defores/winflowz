@@ -952,8 +952,22 @@ class WinFlowzKeyboardView(
         width: Float,
         height: Float,
     ) {
-        val baseKeyWidth = dp(76f) * keyWidthScale()
-        val keyWidths = row.keys.map { key -> max(dp(54f), baseKeyWidth * key.weight) }
+        val visibleCount = row.visiblePageKeyCount
+        val baseKeyWidth =
+            if (visibleCount != null && visibleCount > 0) {
+                val visibleGaps = keyGap() * max(0, visibleCount - 1)
+                ((width - visibleGaps) / visibleCount).coerceAtLeast(dp(1f))
+            } else {
+                dp(76f) * keyWidthScale()
+            }
+        val keyWidths =
+            row.keys.map { key ->
+                if (visibleCount != null && visibleCount > 0) {
+                    baseKeyWidth * key.weight * keyWidthScale()
+                } else {
+                    max(dp(54f), baseKeyWidth * key.weight)
+                }
+            }
         val contentWidth = keyWidths.sum() + keyGap() * max(0, row.keys.size - 1)
         horizontalRowMaxScrollOffset = max(0f, contentWidth - width)
         horizontalRowScrollOffset = horizontalRowScrollOffset.coerceIn(0f, horizontalRowMaxScrollOffset)
@@ -1175,6 +1189,11 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.InsertTab -> {
                 if (!callbacks.onText("\t")) {
                     setStatus("Tab unavailable")
+                }
+            }
+            KeyboardKeyAction.Escape -> {
+                if (!callbacks.onKeyEvent(android.view.KeyEvent.KEYCODE_ESCAPE, metaState = 0)) {
+                    setStatus("Esc unavailable")
                 }
             }
             KeyboardKeyAction.Enter -> {
@@ -1706,7 +1725,14 @@ class WinFlowzKeyboardView(
     }
 
     private fun visiblePanelHeight(): Float {
-        val visibleRows = if (compactModeEnabled) 2 else 3
+        val visibleRows =
+            if (panelMode == KeyboardPanelMode.Settings) {
+                3
+            } else if (compactModeEnabled) {
+                2
+            } else {
+                3
+            }
         return panelRowHeight * visibleRows + rowGap() * (visibleRows - 1)
     }
 
