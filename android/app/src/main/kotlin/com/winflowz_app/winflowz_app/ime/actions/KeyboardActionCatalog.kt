@@ -30,15 +30,19 @@ class KeyboardActionCatalog private constructor(
             "letters" -> environment.layoutMode == KeyboardLayoutMode.Letters
             "numbers" -> environment.layoutMode == KeyboardLayoutMode.Numbers ||
                 state.attachedRows.any { it.providerActionId == descriptor.id }
-            "accents" -> environment.panelMode == KeyboardPanelMode.Accents
-            "symbols" -> environment.layoutMode == KeyboardLayoutMode.Symbols
+            "accents" -> environment.panelMode == KeyboardPanelMode.Accents ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
+            "symbols" -> environment.layoutMode == KeyboardLayoutMode.Symbols ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
             "navigation" -> environment.panelMode == KeyboardPanelMode.Navigation ||
                 state.attachedRows.any { it.providerActionId == descriptor.id }
-            "emoji" -> environment.panelMode == KeyboardPanelMode.Emoji
+            "emoji" -> environment.panelMode == KeyboardPanelMode.Emoji ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
             "clipboard" -> environment.panelMode == KeyboardPanelMode.Clipboard ||
                 environment.panelMode == KeyboardPanelMode.ClipboardFull ||
                 state.attachedRows.any { it.providerActionId == descriptor.id }
-            "snippets" -> environment.panelMode == KeyboardPanelMode.Snippets
+            "snippets" -> environment.panelMode == KeyboardPanelMode.Snippets ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
             "media" -> environment.panelMode == KeyboardPanelMode.Media ||
                 state.attachedRows.any { it.providerActionId == descriptor.id }
             "prefs" -> environment.panelMode == KeyboardPanelMode.Settings
@@ -111,6 +115,51 @@ class KeyboardActionCatalog private constructor(
                     )
                 }
 
+            val symbolsProvider =
+                KeyboardActionRowProvider {
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-symbols",
+                            dedupeKey = "symbols",
+                            visiblePageKeyCount = 10,
+                            pagedHorizontal = true,
+                            items =
+                                listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "=", "_", "\\", "|", "~", "<", ">", "$", "€", "£", "¥")
+                                    .map { textActionKey(it) },
+                        ),
+                    )
+                }
+
+            val accentsProvider =
+                KeyboardActionRowProvider {
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-accents",
+                            dedupeKey = "accents",
+                            visiblePageKeyCount = 8,
+                            pagedHorizontal = true,
+                            items =
+                                listOf("é", "è", "ê", "ë", "à", "â", "ç", "ù", "û", "ü", "î", "ï", "ô", "œ", "æ", "É", "À", "Ç")
+                                    .map { textActionKey(it) },
+                        ),
+                    )
+                }
+
+            val emojiProvider =
+                KeyboardActionRowProvider {
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-emoji",
+                            dedupeKey = "emoji",
+                            visiblePageKeyCount = 8,
+                            pagedHorizontal = true,
+                            items =
+                                listOf("😀", "😂", "😊", "😍", "🔥", "✨", "👏", "❤️", "👍", "🙏", "✅", "💡", "🎯", "🌿", "🍔", "💻")
+                                    .map { textActionKey(it) },
+                        ),
+                    )
+                }
+
             val clipboardProvider =
                 KeyboardActionRowProvider { context ->
                     if (context.fieldPolicy.privateMode || !context.fieldPolicy.clipboardAllowed) {
@@ -161,12 +210,40 @@ class KeyboardActionCatalog private constructor(
                     )
                 }
 
+            val snippetsProvider =
+                KeyboardActionRowProvider { context ->
+                    val snippetItems =
+                        context.snippets.take(8).mapIndexed { index, snippet ->
+                            KeyboardKeySpec(
+                                id = "snippet-row-$index",
+                                label = snippet.trigger.ifBlank { snippet.replacement.take(12) },
+                                action = KeyboardKeyAction.InsertSnippetOne,
+                                suggestion = snippet.replacement,
+                                weight = 1.8f,
+                            )
+                        }
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-snippets",
+                            dedupeKey = "snippets",
+                            visiblePageKeyCount = 4,
+                            pagedHorizontal = true,
+                            items =
+                                if (snippetItems.isEmpty()) {
+                                    listOf(actionRowKey("snippet-open", "All", KeyboardKeyAction.OpenWinFlowzSnippets))
+                                } else {
+                                    snippetItems + actionRowKey("snippet-open", "All", KeyboardKeyAction.OpenWinFlowzSnippets)
+                                },
+                        ),
+                    )
+                }
+
             val descriptors =
                 listOf(
                     KeyboardActionDescriptor("letters", "ABC", "ABC", "Letters keyboard", KeyboardKeyAction.ModeLetters, pinnable = false, adaptiveEligible = false),
                     KeyboardActionDescriptor("numbers", "123", "123", "Numbers keyboard", KeyboardKeyAction.ModeNumbers, rowProvider = numberProvider),
-                    KeyboardActionDescriptor("symbols", "#+=", "#+=", "Symbols keyboard", KeyboardKeyAction.ModeSymbols),
-                    KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel),
+                    KeyboardActionDescriptor("symbols", "#+=", "#+=", "Symbols keyboard", KeyboardKeyAction.ModeSymbols, rowProvider = symbolsProvider),
+                    KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel, rowProvider = accentsProvider),
                     KeyboardActionDescriptor("navigation", "Nav", "Nav", "Navigation panel", KeyboardKeyAction.ToggleNavigationPanel, rowProvider = navigationProvider),
                     KeyboardActionDescriptor(
                         "emoji",
@@ -175,6 +252,7 @@ class KeyboardActionCatalog private constructor(
                         "Emoji panel",
                         KeyboardKeyAction.ToggleEmojiPanel,
                         sensitiveInPrivate = true,
+                        rowProvider = emojiProvider,
                     ),
                     KeyboardActionDescriptor(
                         "clipboard",
@@ -194,6 +272,7 @@ class KeyboardActionCatalog private constructor(
                         KeyboardKeyAction.OpenWinFlowzSnippets,
                         availabilityPolicy = KeyboardActionAvailabilityPolicy.SnippetsAllowed,
                         sensitiveInPrivate = true,
+                        rowProvider = snippetsProvider,
                     ),
                     KeyboardActionDescriptor(
                         "media",
@@ -220,7 +299,7 @@ class KeyboardActionCatalog private constructor(
             return KeyboardActionCatalog(
                 descriptorsById = descriptors.associateBy { it.id },
                 defaultOrder = ids,
-                minimalPinnedActionIds = setOf("letters", "numbers", "prefs"),
+                minimalPinnedActionIds = emptySet(),
             )
         }
 

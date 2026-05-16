@@ -248,6 +248,7 @@ object KeyboardLayoutBuilder {
                 voiceAllowed = request.voiceAllowed,
                 snippetsAllowed = request.snippetsAllowed,
                 mediaControlsEnabled = request.mediaControlsEnabled,
+                snippets = request.snippets,
             )
         val renderedActionRows =
             actionRenderer.renderRows(

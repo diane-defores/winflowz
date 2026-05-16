@@ -135,9 +135,22 @@ class KeyboardActionBarController(
     ): KeyboardActionLongPressResult {
         val provider = descriptor.rowProvider
             ?: return KeyboardActionLongPressResult(state, consumed = true, status = "No context row")
-        val rows = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy))
+        val rows = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy, snippets = environment.snippets))
         if (rows.isEmpty()) {
             return KeyboardActionLongPressResult(state, consumed = true, status = "No context row")
+        }
+        if (descriptor.id in state.pinnedActionIds || state.attachedRows.any { it.providerActionId == descriptor.id }) {
+            val removedDedupeKeys = rows.map { it.dedupeKey }.toSet()
+            return KeyboardActionLongPressResult(
+                nextState =
+                    state.copy(
+                        pinnedActionIds = state.pinnedActionIds - descriptor.id,
+                        attachedRows = state.attachedRows.filterNot { it.providerActionId == descriptor.id || it.dedupeKey in removedDedupeKeys },
+                        rowPageById = state.rowPageById.filterKeys { rowId -> rows.none { it.rowId == rowId } },
+                    ),
+                consumed = true,
+                status = "Action unpinned",
+            )
         }
         val nextAttached = state.attachedRows.toMutableList()
         rows.forEach { row ->
@@ -152,9 +165,9 @@ class KeyboardActionBarController(
         val nextPages =
             state.rowPageById + rows.associate { it.rowId to 0 }
         return KeyboardActionLongPressResult(
-            nextState = state.copy(attachedRows = nextAttached, rowPageById = nextPages),
+            nextState = state.copy(pinnedActionIds = state.pinnedActionIds + descriptor.id, attachedRows = nextAttached, rowPageById = nextPages),
             consumed = true,
-            status = "Context row attached",
+            status = "Action pinned",
         )
     }
 
@@ -217,17 +230,22 @@ class KeyboardActionBarController(
         state: KeyboardActionBarState,
         environment: KeyboardActionEnvironment,
     ): List<BuiltAttachedRow> {
-        if (state.attachedRows.isEmpty()) {
-            return emptyList()
-        }
+        val pinnedRows =
+            state.pinnedActionIds.mapNotNull { actionId ->
+                val descriptor = catalog.descriptor(actionId) ?: return@mapNotNull null
+                val provider = descriptor.rowProvider ?: return@mapNotNull null
+                val row = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy, snippets = environment.snippets)).firstOrNull()
+                    ?: return@mapNotNull null
+                KeyboardAttachedActionRowState(descriptor.id, row.rowId, row.dedupeKey)
+            }
         val rows = mutableListOf<BuiltAttachedRow>()
-        state.attachedRows.forEach { attached ->
+        (pinnedRows + state.attachedRows).forEach { attached ->
             val descriptor = catalog.descriptor(attached.providerActionId) ?: return@forEach
             if (!isVisible(descriptor, environment)) {
                 return@forEach
             }
             val provider = descriptor.rowProvider ?: return@forEach
-            val provided = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy))
+            val provided = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy, snippets = environment.snippets))
             val matched = provided.firstOrNull { it.dedupeKey == attached.dedupeKey } ?: return@forEach
             rows.add(
                 BuiltAttachedRow(

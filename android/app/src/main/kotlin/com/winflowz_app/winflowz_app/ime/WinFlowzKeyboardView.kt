@@ -534,6 +534,7 @@ class WinFlowzKeyboardView(
             voiceAllowed = fieldPolicy.voiceAllowed,
             snippetsAllowed = fieldPolicy.snippetsAllowed,
             mediaControlsEnabled = mediaControlsEnabled,
+            snippets = snippets,
         )
     }
 
