@@ -53,6 +53,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   bool _onboardingDismissed = false;
   bool _onboardingOpenedManually = false;
   bool _onboardingBusy = false;
+  bool _showOnboardingResumeHint = false;
   final List<int> _tabHistory = [0];
   OnboardingReadiness? _onboardingReadiness;
   String? _onboardingMessage;
@@ -502,6 +503,15 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     _selectTab(5);
   }
 
+  Future<void> _deferOnboardingToSettings() async {
+    await _pauseOnboarding();
+    if (!mounted) {
+      return;
+    }
+    setState(() => _showOnboardingResumeHint = true);
+    _selectTab(5);
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = [
@@ -511,11 +521,13 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       SnippetsScreen(),
       DictionaryScreen(),
       SettingsScreen(
+        highlightOnboardingResume: _showOnboardingResumeHint,
         onResumeOnboarding: () {
           setState(() {
             _onboardingDismissed = false;
             _onboardingVisible = true;
             _onboardingOpenedManually = true;
+            _showOnboardingResumeHint = false;
           });
           _refreshOnboardingState();
         },
@@ -629,6 +641,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                                   isBusy: _onboardingBusy,
                                   message: _onboardingMessage,
                                   onClose: _pauseOnboarding,
+                                  onDefer: _deferOnboardingToSettings,
                                   onOpenSettings: _openSettingsFromOnboarding,
                                   onPrimaryAction:
                                       _openCurrentStepPrimaryAction,
@@ -700,6 +713,7 @@ class _OnboardingOverlay extends StatelessWidget {
     required this.isBusy,
     required this.message,
     required this.onClose,
+    required this.onDefer,
     required this.onOpenSettings,
     required this.onPrimaryAction,
     required this.onSecondaryAction,
@@ -712,6 +726,7 @@ class _OnboardingOverlay extends StatelessWidget {
   final bool isBusy;
   final String? message;
   final Future<void> Function() onClose;
+  final Future<void> Function() onDefer;
   final VoidCallback onOpenSettings;
   final Future<void> Function(OnboardingStepId stepId) onPrimaryAction;
   final Future<void> Function(OnboardingStepId stepId)? onSecondaryAction;
@@ -832,7 +847,7 @@ class _OnboardingOverlay extends StatelessWidget {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: TextButton.icon(
-                                        onPressed: () => onClose(),
+                                        onPressed: () => onDefer(),
                                         icon: const Icon(Icons.close_outlined),
                                         label: const Text('Plus tard'),
                                       ),

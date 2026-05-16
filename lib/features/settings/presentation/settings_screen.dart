@@ -62,9 +62,14 @@ typedef _OverlayAppearanceChanged =
     Future<void> Function({required double sizeScale, required double opacity});
 
 class SettingsScreen extends ConsumerStatefulWidget {
-  const SettingsScreen({super.key, this.onResumeOnboarding});
+  const SettingsScreen({
+    super.key,
+    this.onResumeOnboarding,
+    this.highlightOnboardingResume = false,
+  });
 
   final VoidCallback? onResumeOnboarding;
+  final bool highlightOnboardingResume;
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
@@ -920,6 +925,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             _OnboardingSettingsTile(
               onResume: widget.onResumeOnboarding!,
               readiness: onboardingReadiness,
+              highlightResume: widget.highlightOnboardingResume,
             ),
           const Center(child: CircularProgressIndicator()),
         ],
@@ -936,6 +942,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _OnboardingSettingsTile(
             onResume: widget.onResumeOnboarding!,
             readiness: onboardingReadiness,
+            highlightResume: widget.highlightOnboardingResume,
           ),
         _collapsibleSection(
           id: 'appearance',
@@ -1021,10 +1028,12 @@ class _OnboardingSettingsTile extends StatelessWidget {
   const _OnboardingSettingsTile({
     required this.onResume,
     required this.readiness,
+    required this.highlightResume,
   });
 
   final VoidCallback onResume;
   final OnboardingReadiness readiness;
+  final bool highlightResume;
 
   @override
   Widget build(BuildContext context) {
@@ -1043,11 +1052,45 @@ class _OnboardingSettingsTile extends StatelessWidget {
         ? 'Actifs: $active • Ignorés: $skipped • À configurer si utile: $pending'
         : 'Onboarding terminé';
 
-    return AppStatusCard(
+    final tile = AppStatusCard(
       icon: Icons.flag_outlined,
       title: 'Onboarding permissions',
       subtitle: subtitle,
       trailing: TextButton(onPressed: onResume, child: Text(actionLabel)),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (highlightResume) ...[
+          const AppBannerCard(
+            icon: Icons.info_outline,
+            title: 'Onboarding mis en pause',
+            message:
+                "Tu peux reprendre la suite de l'onboarding quand tu veux à partir des paramètres.",
+          ),
+          AppGaps.x2,
+        ],
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadii.lg),
+            boxShadow: highlightResume
+                ? [
+                    BoxShadow(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.35),
+                      blurRadius: 24,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                : null,
+          ),
+          child: tile,
+        ),
+      ],
     );
   }
 }

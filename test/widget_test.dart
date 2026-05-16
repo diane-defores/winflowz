@@ -407,11 +407,16 @@ void main() {
 
       expect(find.text('Raw text'), findsOneWidget);
       expect(find.text('Configuration WinFlowz'), findsOneWidget);
-      await tester.tap(find.byTooltip('Fermer (reprendre plus tard)'));
+      await tester.tap(find.byIcon(Icons.close_outlined).last);
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
-
-      await tester.tap(find.byIcon(Icons.settings_outlined).last);
-      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+      expect(find.text('Configuration WinFlowz'), findsNothing);
+      expect(find.text('WinFlowz • Settings'), findsOneWidget);
+      expect(
+        find.text(
+          "Tu peux reprendre la suite de l'onboarding quand tu veux à partir des paramètres.",
+        ),
+        findsOneWidget,
+      );
 
       final resumeButton = find.widgetWithText(TextButton, 'Reprendre');
       await tester.scrollUntilVisible(
