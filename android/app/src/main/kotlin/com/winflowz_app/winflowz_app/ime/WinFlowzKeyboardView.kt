@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.LinearGradient
@@ -272,6 +273,14 @@ class WinFlowzKeyboardView(
     }
     private val keyShadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.TRANSPARENT
+        style = Paint.Style.FILL
+    }
+    private val pinnedBadgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(255, 255, 255)
+        style = Paint.Style.FILL
+    }
+    private val pinnedBadgeAccentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(23, 121, 93)
         style = Paint.Style.FILL
     }
     private val disabledKeyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -1323,9 +1332,129 @@ class WinFlowzKeyboardView(
         val baseline = rect.centerY() - (textPaint.descent() + textPaint.ascent()) / 2f
         canvas.drawText(displayLabel(key), rect.centerX(), baseline, textPaint)
 
+        if (key.pinned && key.actionDescriptorPrimary) {
+            drawPinnedBadge(canvas, rect)
+        }
+
         if (shouldRenderCorners(key)) {
             renderCornerGlyphs(canvas, rect, key.cornerAssignments)
         }
+    }
+
+    private fun drawPinnedBadge(
+        canvas: Canvas,
+        rect: RectF,
+    ) {
+        val cx = rect.right - dp(8f)
+        val cy = rect.top + dp(8f)
+        when (themeConfig.presetId) {
+            "pixel_candy" -> drawCandyPinnedBadge(canvas, cx, cy)
+            "sunset_gradient" -> drawCloudPinnedBadge(canvas, cx, cy)
+            "neon_terminal" -> drawLedPinnedBadge(canvas, cx, cy, Color.parseColor("#00F5A0"))
+            "glass_mint" -> drawDropPinnedBadge(canvas, cx, cy, Color.parseColor("#7AF0CF"))
+            "paper_ink" -> drawPaperPinnedBadge(canvas, cx, cy)
+            "midnight_aurora" -> drawStarPinnedBadge(canvas, cx, cy, Color.parseColor("#B983FF"))
+            else -> drawLedPinnedBadge(canvas, cx, cy, activeKeyPaint.color)
+        }
+    }
+
+    private fun drawCandyPinnedBadge(
+        canvas: Canvas,
+        cx: Float,
+        cy: Float,
+    ) {
+        pinnedBadgePaint.color = Color.WHITE
+        pinnedBadgeAccentPaint.color = Color.parseColor("#FF5BB8")
+        val body = RectF(cx - dp(4.5f), cy - dp(3f), cx + dp(4.5f), cy + dp(3f))
+        canvas.drawRoundRect(body, dp(3f), dp(3f), pinnedBadgeAccentPaint)
+        canvas.drawCircle(cx, cy, dp(2.1f), pinnedBadgePaint)
+        val left = Path().apply {
+            moveTo(cx - dp(4.5f), cy)
+            lineTo(cx - dp(8f), cy - dp(3f))
+            lineTo(cx - dp(8f), cy + dp(3f))
+            close()
+        }
+        val right = Path().apply {
+            moveTo(cx + dp(4.5f), cy)
+            lineTo(cx + dp(8f), cy - dp(3f))
+            lineTo(cx + dp(8f), cy + dp(3f))
+            close()
+        }
+        canvas.drawPath(left, pinnedBadgePaint)
+        canvas.drawPath(right, pinnedBadgePaint)
+    }
+
+    private fun drawCloudPinnedBadge(
+        canvas: Canvas,
+        cx: Float,
+        cy: Float,
+    ) {
+        pinnedBadgePaint.color = Color.argb(235, 255, 245, 232)
+        canvas.drawCircle(cx - dp(3f), cy + dp(1f), dp(3.3f), pinnedBadgePaint)
+        canvas.drawCircle(cx + dp(1f), cy - dp(1f), dp(4.1f), pinnedBadgePaint)
+        canvas.drawCircle(cx + dp(5f), cy + dp(1.2f), dp(3f), pinnedBadgePaint)
+        canvas.drawRoundRect(RectF(cx - dp(6.5f), cy, cx + dp(7f), cy + dp(4.7f)), dp(2f), dp(2f), pinnedBadgePaint)
+    }
+
+    private fun drawLedPinnedBadge(
+        canvas: Canvas,
+        cx: Float,
+        cy: Float,
+        color: Int,
+    ) {
+        pinnedBadgePaint.color = Color.argb(85, Color.red(color), Color.green(color), Color.blue(color))
+        pinnedBadgeAccentPaint.color = color
+        canvas.drawCircle(cx, cy, dp(5.8f), pinnedBadgePaint)
+        canvas.drawCircle(cx, cy, dp(3.1f), pinnedBadgeAccentPaint)
+    }
+
+    private fun drawDropPinnedBadge(
+        canvas: Canvas,
+        cx: Float,
+        cy: Float,
+        color: Int,
+    ) {
+        pinnedBadgeAccentPaint.color = color
+        val drop = Path().apply {
+            moveTo(cx, cy - dp(6f))
+            cubicTo(cx + dp(5f), cy - dp(1f), cx + dp(4f), cy + dp(5f), cx, cy + dp(5f))
+            cubicTo(cx - dp(4f), cy + dp(5f), cx - dp(5f), cy - dp(1f), cx, cy - dp(6f))
+            close()
+        }
+        canvas.drawPath(drop, pinnedBadgeAccentPaint)
+    }
+
+    private fun drawPaperPinnedBadge(
+        canvas: Canvas,
+        cx: Float,
+        cy: Float,
+    ) {
+        pinnedBadgePaint.color = Color.parseColor("#222222")
+        pinnedBadgePaint.strokeWidth = dp(1.6f)
+        pinnedBadgePaint.style = Paint.Style.STROKE
+        canvas.drawCircle(cx, cy, dp(4f), pinnedBadgePaint)
+        pinnedBadgePaint.style = Paint.Style.FILL
+    }
+
+    private fun drawStarPinnedBadge(
+        canvas: Canvas,
+        cx: Float,
+        cy: Float,
+        color: Int,
+    ) {
+        pinnedBadgeAccentPaint.color = color
+        val star = Path().apply {
+            moveTo(cx, cy - dp(6f))
+            lineTo(cx + dp(1.8f), cy - dp(1.8f))
+            lineTo(cx + dp(6f), cy)
+            lineTo(cx + dp(1.8f), cy + dp(1.8f))
+            lineTo(cx, cy + dp(6f))
+            lineTo(cx - dp(1.8f), cy + dp(1.8f))
+            lineTo(cx - dp(6f), cy)
+            lineTo(cx - dp(1.8f), cy - dp(1.8f))
+            close()
+        }
+        canvas.drawPath(star, pinnedBadgeAccentPaint)
     }
 
     private fun shouldRenderCorners(key: KeyboardKeySpec): Boolean {
@@ -1678,6 +1807,9 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.SelectEmojiSmileys -> emojiCategory = KeyboardEmojiCategory.Smileys
             KeyboardKeyAction.SelectEmojiHands -> emojiCategory = KeyboardEmojiCategory.Hands
             KeyboardKeyAction.SelectEmojiSymbols -> emojiCategory = KeyboardEmojiCategory.Symbols
+            KeyboardKeyAction.SelectEmojiNature -> emojiCategory = KeyboardEmojiCategory.Nature
+            KeyboardKeyAction.SelectEmojiFood -> emojiCategory = KeyboardEmojiCategory.Food
+            KeyboardKeyAction.SelectEmojiObjects -> emojiCategory = KeyboardEmojiCategory.Objects
             KeyboardKeyAction.NavigateCharLeft -> {
                 if (!callbacks.onNavigateCharLeft()) {
                     setStatus("Left unavailable")

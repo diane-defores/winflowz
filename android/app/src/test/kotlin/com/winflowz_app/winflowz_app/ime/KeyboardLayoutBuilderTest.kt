@@ -286,6 +286,38 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
+    fun `emoji panel keeps dense categories and fills sparse recents`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.Emoji,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = listOf("🔥"),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val categoryLabels = snapshot.rows[1].keys.map { it.label }
+        val emojiLabels = snapshot.rows[2].keys.map { it.label }
+        assertTrue(categoryLabels.containsAll(listOf("🕘", ":-)", "👏", "✨", "🌿", "🍔", "💡", "×")))
+        assertEquals(8, emojiLabels.size)
+        assertEquals("🔥", emojiLabels.first())
+        assertTrue(emojiLabels.contains("😀"))
+    }
+
+    @Test
     fun `clipboard panel exposes recent entries in a horizontal row`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
@@ -562,6 +594,36 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
+    fun `pinned action remains visually distinct from active action`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Numbers,
+                    panel = KeyboardPanelMode.None,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                    actionBarState = KeyboardActionBarState(pinnedActionIds = setOf("numbers")),
+                ),
+            )
+
+        val numbersKey = snapshot.rows.first().keys.first { it.actionDescriptorId == "numbers" }
+        assertTrue(numbersKey.active)
+        assertTrue(numbersKey.pinned)
+    }
+
+    @Test
     fun `main action bar keeps all actions distributed without horizontal scrolling`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
@@ -591,6 +653,7 @@ class KeyboardLayoutBuilderTest {
         assertFalse(mainActionRow.horizontalScrollable)
         assertFalse(mainActionRow.pagedHorizontalScrollable)
         assertTrue(mainActionRow.keys.map { it.label }.containsAll(listOf("ABC", "123", "Acc", "#+=", "Nav", "Prefs")))
+        assertEquals(listOf("ABC", "123", "#+="), mainActionRow.keys.take(3).map { it.label })
         assertTrue(mainActionRow.keys.any { it.label == "Snip" && it.action == KeyboardKeyAction.OpenWinFlowzSnippets })
     }
 

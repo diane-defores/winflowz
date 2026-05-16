@@ -1130,12 +1130,15 @@ class KeyboardPreviewSnapshot {
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightCompact,
             keys: [
-              _unsupportedKey('Rec'),
+              _unsupportedKey('🕘'),
               _unsupportedKey(':-)'),
-              _unsupportedKey('Hands'),
-              _unsupportedKey('Sym'),
+              _unsupportedKey('👏'),
+              _unsupportedKey('✨'),
+              _unsupportedKey('🌿'),
+              _unsupportedKey('🍔'),
+              _unsupportedKey('💡'),
               const KeyboardPreviewKey(
-                label: 'Close',
+                label: '×',
                 special: true,
                 action: KeyboardPreviewKeyAction.closePanel,
               ),
@@ -1144,10 +1147,14 @@ class KeyboardPreviewSnapshot {
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightCompact,
             keys: [
-              KeyboardPreviewKey(label: ':)', output: ':)'),
-              KeyboardPreviewKey(label: ':D', output: ':D'),
-              KeyboardPreviewKey(label: '<3', output: '<3'),
-              KeyboardPreviewKey(label: 'OK', output: 'OK'),
+              KeyboardPreviewKey(label: '😀', output: '😀'),
+              KeyboardPreviewKey(label: '😂', output: '😂'),
+              KeyboardPreviewKey(label: '😊', output: '😊'),
+              KeyboardPreviewKey(label: '😍', output: '😍'),
+              KeyboardPreviewKey(label: '🔥', output: '🔥'),
+              KeyboardPreviewKey(label: '✨', output: '✨'),
+              KeyboardPreviewKey(label: '👏', output: '👏'),
+              KeyboardPreviewKey(label: '💡', output: '💡'),
             ],
           ),
         ];

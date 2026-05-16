@@ -42,6 +42,9 @@ enum class KeyboardEmojiCategory {
     Smileys,
     Hands,
     Symbols,
+    Nature,
+    Food,
+    Objects,
 }
 
 enum class KeyboardFieldContextMode {
@@ -114,6 +117,9 @@ enum class KeyboardKeyAction {
     SelectEmojiSmileys,
     SelectEmojiHands,
     SelectEmojiSymbols,
+    SelectEmojiNature,
+    SelectEmojiFood,
+    SelectEmojiObjects,
     NavigateCharLeft,
     NavigateCharRight,
     NavigateWordLeft,
@@ -153,6 +159,7 @@ data class KeyboardKeySpec(
     val weight: Float = 1f,
     val enabled: Boolean = true,
     val active: Boolean = false,
+    val pinned: Boolean = false,
     val actionSurface: Boolean = false,
     val actionDescriptorId: String? = null,
     val actionDescriptorPrimary: Boolean = false,
@@ -496,27 +503,36 @@ object KeyboardLayoutBuilder {
             KeyboardRowSpec(
                 keys =
                     listOf(
-                        KeyboardKeySpec("emoji-recents", "Rec", KeyboardKeyAction.SelectEmojiRecents, active = request.emojiCategory == KeyboardEmojiCategory.Recents),
+                        KeyboardKeySpec("emoji-recents", "🕘", KeyboardKeyAction.SelectEmojiRecents, active = request.emojiCategory == KeyboardEmojiCategory.Recents),
                         KeyboardKeySpec("emoji-smileys", ":-)", KeyboardKeyAction.SelectEmojiSmileys, active = request.emojiCategory == KeyboardEmojiCategory.Smileys),
-                        KeyboardKeySpec("emoji-hands", "Hands", KeyboardKeyAction.SelectEmojiHands, active = request.emojiCategory == KeyboardEmojiCategory.Hands),
-                        KeyboardKeySpec("emoji-symbols", "Sym", KeyboardKeyAction.SelectEmojiSymbols, active = request.emojiCategory == KeyboardEmojiCategory.Symbols),
-                        KeyboardKeySpec("emoji-close", "Close", KeyboardKeyAction.ClosePanel),
+                        KeyboardKeySpec("emoji-hands", "👏", KeyboardKeyAction.SelectEmojiHands, active = request.emojiCategory == KeyboardEmojiCategory.Hands),
+                        KeyboardKeySpec("emoji-symbols", "✨", KeyboardKeyAction.SelectEmojiSymbols, active = request.emojiCategory == KeyboardEmojiCategory.Symbols),
+                        KeyboardKeySpec("emoji-nature", "🌿", KeyboardKeyAction.SelectEmojiNature, active = request.emojiCategory == KeyboardEmojiCategory.Nature),
+                        KeyboardKeySpec("emoji-food", "🍔", KeyboardKeyAction.SelectEmojiFood, active = request.emojiCategory == KeyboardEmojiCategory.Food),
+                        KeyboardKeySpec("emoji-objects", "💡", KeyboardKeyAction.SelectEmojiObjects, active = request.emojiCategory == KeyboardEmojiCategory.Objects),
+                        KeyboardKeySpec("emoji-close", "×", KeyboardKeyAction.ClosePanel),
                     ),
             )
 
-        val recents = request.recentEmojis.filter { it.isNotBlank() }.take(8)
-        val smileys = listOf("😀", "😂", "😊", "😍", "🤔", "😅", "😭", "😎")
-        val hands = listOf("👍", "👎", "👏", "🙏", "👌", "🤝", "✌️", "🤞")
-        val symbols = listOf("❤️", "🔥", "✨", "✅", "❌", "⚠️", "🎯", "💡")
+        val smileys = listOf("😀", "😃", "😄", "😁", "😂", "🤣", "😊", "😍", "🥰", "😘", "😎", "🤔", "😅", "😭", "😤", "😴")
+        val hands = listOf("👍", "👎", "👏", "🙏", "👌", "🤝", "✌️", "🤞", "🤟", "👋", "🙌", "🫶", "💪", "☝️", "👀", "🫡")
+        val symbols = listOf("❤️", "🔥", "✨", "✅", "❌", "⚠️", "🎯", "💡", "⭐", "💥", "💯", "🔔", "📌", "🔒", "🔁", "➕")
+        val nature = listOf("🌿", "🌱", "🌴", "🌵", "🌸", "🌻", "🌙", "☀️", "⭐", "🌈", "⚡", "💧", "🔥", "🌊", "🍀", "🌍")
+        val food = listOf("🍔", "🍕", "🍟", "🌮", "🍣", "🍜", "🍩", "🍪", "🍫", "☕", "🍺", "🍎", "🍌", "🍓", "🥑", "🥐")
+        val objects = listOf("💡", "📌", "📎", "✏️", "📱", "💻", "⌚", "🎧", "📷", "🔑", "🔒", "🧲", "🧰", "⚙️", "🛠️", "🧪")
+        val recents = (request.recentEmojis.filter { it.isNotBlank() } + smileys).distinct().take(16)
         val selected =
             when (request.emojiCategory) {
-                KeyboardEmojiCategory.Recents -> if (recents.isEmpty()) smileys else recents
+                KeyboardEmojiCategory.Recents -> recents
                 KeyboardEmojiCategory.Smileys -> smileys
                 KeyboardEmojiCategory.Hands -> hands
                 KeyboardEmojiCategory.Symbols -> symbols
+                KeyboardEmojiCategory.Nature -> nature
+                KeyboardEmojiCategory.Food -> food
+                KeyboardEmojiCategory.Objects -> objects
             }
 
-        val emojiChunkSize = if (request.compactModeEnabled) 8 else 4
+        val emojiChunkSize = 8
         val emojiRows =
             selected.chunked(emojiChunkSize).take(if (request.compactModeEnabled) 2 else Int.MAX_VALUE).mapIndexed { index, chunk ->
                 KeyboardRowSpec(

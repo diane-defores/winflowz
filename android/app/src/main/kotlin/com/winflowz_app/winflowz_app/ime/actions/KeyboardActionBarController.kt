@@ -169,6 +169,7 @@ class KeyboardActionBarController(
             action = descriptor.tapAction,
             enabled = isEnabled(descriptor, environment),
             active = catalog.isActionActive(descriptor, environment, state),
+            pinned = descriptor.id in state.pinnedActionIds,
             actionSurface = true,
             actionDescriptorId = descriptor.id,
             actionDescriptorPrimary = true,

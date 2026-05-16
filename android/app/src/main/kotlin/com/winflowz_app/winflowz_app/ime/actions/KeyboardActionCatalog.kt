@@ -165,8 +165,8 @@ class KeyboardActionCatalog private constructor(
                 listOf(
                     KeyboardActionDescriptor("letters", "ABC", "ABC", "Letters keyboard", KeyboardKeyAction.ModeLetters, pinnable = false, adaptiveEligible = false),
                     KeyboardActionDescriptor("numbers", "123", "123", "Numbers keyboard", KeyboardKeyAction.ModeNumbers, rowProvider = numberProvider),
-                    KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel),
                     KeyboardActionDescriptor("symbols", "#+=", "#+=", "Symbols keyboard", KeyboardKeyAction.ModeSymbols),
+                    KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel),
                     KeyboardActionDescriptor("navigation", "Nav", "Nav", "Navigation panel", KeyboardKeyAction.ToggleNavigationPanel, rowProvider = navigationProvider),
                     KeyboardActionDescriptor(
                         "emoji",
