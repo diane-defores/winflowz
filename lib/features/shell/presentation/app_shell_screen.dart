@@ -878,28 +878,46 @@ class _OnboardingOverviewContentState
 
   static const _pages = <_OnboardingUseCasePage>[
     _OnboardingUseCasePage(
-      group: OnboardingStepGroup.voice,
+      stepId: OnboardingStepId.microphoneForDictation,
       icon: Icons.keyboard_voice_outlined,
       title: 'Micro et voice',
       subtitle: 'Dictée vocale et injection assistée.',
     ),
     _OnboardingUseCasePage(
-      group: OnboardingStepGroup.keyboard,
+      stepId: OnboardingStepId.accessibility,
+      icon: Icons.accessibility_new_outlined,
+      title: 'Service Accessibilité',
+      subtitle: 'Injection directe et assistance dans les champs texte.',
+    ),
+    _OnboardingUseCasePage(
+      stepId: OnboardingStepId.keyboardIme,
       icon: Icons.keyboard_outlined,
       title: 'Clavier',
       subtitle: 'Clavier Android WinFlowz et options liées.',
     ),
     _OnboardingUseCasePage(
-      group: OnboardingStepGroup.clipboard,
+      stepId: OnboardingStepId.mediaSessionAccess,
+      icon: Icons.notifications_active_outlined,
+      title: 'Accès notifications et média',
+      subtitle: 'Titre en cours, app audio et contrôles depuis le clavier.',
+    ),
+    _OnboardingUseCasePage(
+      stepId: OnboardingStepId.brightnessSystemSettings,
+      icon: Icons.brightness_6_outlined,
+      title: 'Luminosité système',
+      subtitle: 'Contrôle Bri- et Bri+ depuis le clavier.',
+    ),
+    _OnboardingUseCasePage(
+      stepId: OnboardingStepId.keyboardClipboard,
       icon: Icons.content_paste_outlined,
       title: 'Clipboard',
       subtitle: 'Historique et synchronisation du clipboard clavier.',
     ),
     _OnboardingUseCasePage(
-      group: OnboardingStepGroup.extras,
+      stepId: OnboardingStepId.overlay,
       icon: Icons.open_in_new_outlined,
-      title: 'Compléments',
-      subtitle: 'Options hors parcours principal.',
+      title: 'Overlay flottant',
+      subtitle: 'Bulle flottante hors parcours principal.',
     ),
   ];
 
@@ -925,7 +943,7 @@ class _OnboardingOverviewContentState
           icon: page.icon,
           title: page.title,
           subtitle: page.subtitle,
-          steps: _stepsFor(page.group),
+          steps: _stepsFor(page.stepId),
           isBusy: widget.isBusy,
           onPrimaryAction: widget.onPrimaryAction,
           onSecondaryAction: widget.onSecondaryAction,
@@ -975,22 +993,22 @@ class _OnboardingOverviewContentState
     );
   }
 
-  List<OnboardingStepProgress> _stepsFor(OnboardingStepGroup group) {
+  List<OnboardingStepProgress> _stepsFor(OnboardingStepId stepId) {
     return widget.readiness.steps
-        .where((step) => step.definition.group == group)
+        .where((step) => step.definition.id == stepId)
         .toList(growable: false);
   }
 }
 
 class _OnboardingUseCasePage {
   const _OnboardingUseCasePage({
-    required this.group,
+    required this.stepId,
     required this.icon,
     required this.title,
     required this.subtitle,
   });
 
-  final OnboardingStepGroup group;
+  final OnboardingStepId stepId;
   final IconData icon;
   final String title;
   final String subtitle;
@@ -1162,6 +1180,8 @@ class _OnboardingPermissionRow extends StatelessWidget {
           Wrap(
             spacing: AppSpacing.x2,
             runSpacing: AppSpacing.x2,
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               if (!step.satisfied)
                 FilledButton.icon(
@@ -1189,8 +1209,8 @@ class _OnboardingPermissionRow extends StatelessWidget {
                 ),
               TextButton.icon(
                 onPressed: isBusy ? null : () => onSkip(definition.id),
-                icon: const Icon(Icons.skip_next_outlined),
-                label: Text(step.skipped ? 'Garder ignoré' : 'Pas maintenant'),
+                icon: const Icon(Icons.schedule_outlined),
+                label: Text(step.skipped ? 'Ignoré' : 'Plus tard'),
               ),
             ],
           ),

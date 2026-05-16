@@ -435,6 +435,12 @@ void main() {
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
+      expect(find.text('Service Accessibilité'), findsWidgets);
+      expect(find.text('Clavier'), findsNothing);
+
+      await tester.ensureVisible(nextButton);
+      await tester.tap(nextButton);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
       expect(find.text('Clavier'), findsOneWidget);
       expect(
         find.text('Historique et synchronisation du clipboard clavier.'),
