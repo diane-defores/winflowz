@@ -174,10 +174,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       keyboardStatus: _keyboardStatus ?? AndroidKeyboardStatus.unsupported(),
       persistedStep: settings.onboardingCurrentStep,
       onboardingCompleted: settings.onboardingCompleted,
+      clipboardSkipped: settings.onboardingClipboardSkipped,
       accessibilitySkipped: settings.onboardingAccessibilitySkipped,
       microphoneSkipped: settings.onboardingMicrophoneSkipped,
       mediaAccessSkipped: settings.onboardingMediaAccessSkipped,
       brightnessSkipped: settings.onboardingBrightnessSkipped,
+      overlaySkipped: settings.onboardingOverlaySkipped,
     );
   }
 
@@ -1047,7 +1049,7 @@ class _OnboardingSettingsTile extends StatelessWidget {
     final subtitle = !readiness.platformSupported
         ? 'Non requis sur cette plateforme'
         : readiness.shouldShowOnboarding
-        ? 'Étapes complétées: $mandatoryDone/${mandatory.length} obligatoires, $recommendedDone/${recommended.length} recommandées${recommended.isNotEmpty ? ' • conseils restants: ${recommended.where((step) => !step.completed).length}' : ''}'
+        ? 'Étapes complétées: $mandatoryDone/${mandatory.length} obligatoires, $recommendedDone/${recommended.length} optionnelles${recommended.isNotEmpty ? ' • options restantes: ${recommended.where((step) => !step.completed).length}' : ''}'
         : 'Onboarding terminé';
 
     return AppStatusCard(

@@ -62,10 +62,12 @@ class FirebaseSettingsStore implements SettingsStore {
       'onboardingCompleted': settings.onboardingCompleted,
       'onboardingCurrentStep': settings.onboardingCurrentStep,
       'onboardingLastSeenAt': settings.onboardingLastSeenAt,
+      'onboardingClipboardSkipped': settings.onboardingClipboardSkipped,
       'onboardingAccessibilitySkipped': settings.onboardingAccessibilitySkipped,
       'onboardingMicrophoneSkipped': settings.onboardingMicrophoneSkipped,
       'onboardingMediaAccessSkipped': settings.onboardingMediaAccessSkipped,
       'onboardingBrightnessSkipped': settings.onboardingBrightnessSkipped,
+      'onboardingOverlaySkipped': settings.onboardingOverlaySkipped,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -85,6 +87,8 @@ class FirebaseSettingsStore implements SettingsStore {
       onboardingCompleted: data['onboardingCompleted'] as bool? ?? false,
       onboardingCurrentStep: _coerceStep(data['onboardingCurrentStep']),
       onboardingLastSeenAt: _timestampToDate(data['onboardingLastSeenAt']),
+      onboardingClipboardSkipped:
+          data['onboardingClipboardSkipped'] as bool? ?? false,
       onboardingAccessibilitySkipped:
           data['onboardingAccessibilitySkipped'] as bool? ?? false,
       onboardingMicrophoneSkipped:
@@ -93,6 +97,8 @@ class FirebaseSettingsStore implements SettingsStore {
           data['onboardingMediaAccessSkipped'] as bool? ?? false,
       onboardingBrightnessSkipped:
           data['onboardingBrightnessSkipped'] as bool? ?? false,
+      onboardingOverlaySkipped:
+          data['onboardingOverlaySkipped'] as bool? ?? false,
       syncStatus: const SyncStatus(health: SyncHealth.synced),
       updatedAt: _timestampToDate(data['updatedAt']),
     );

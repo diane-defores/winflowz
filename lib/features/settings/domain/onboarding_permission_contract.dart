@@ -4,12 +4,13 @@ import '../../keyboard/domain/keyboard_models.dart';
 enum OnboardingStepCategory { mandatory, recommended }
 
 enum OnboardingStepId {
-  overlay,
   keyboardIme,
-  accessibility,
+  keyboardClipboard,
   microphoneForDictation,
+  accessibility,
   mediaSessionAccess,
   brightnessSystemSettings,
+  overlay,
 }
 
 class OnboardingStepDefinition {
@@ -113,49 +114,48 @@ class OnboardingReadiness {
 
 const _stepDefinitions = <OnboardingStepDefinition>[
   OnboardingStepDefinition(
-    id: OnboardingStepId.overlay,
-    title: 'Autorisation Overlay',
-    description: 'Active la bulle flottante WinFlowz.',
-    why:
-        'La bulle flottante permet de démarrer et arrêter la dictée sans repasser par les menus.',
-    category: OnboardingStepCategory.mandatory,
-    openActionLabel: 'Activer l’overlay',
-    whereToFind:
-        'Réglages Android → Applications → WinFlowz → Autorisations → Afficher les fenêtres',
-  ),
-  OnboardingStepDefinition(
     id: OnboardingStepId.keyboardIme,
     title: 'Clavier WinFlowz keyboard',
     description:
         'Active et sélectionne WinFlowz keyboard comme clavier Android.',
     why:
-        'Sans clavier natif actif, la dictée ne peut pas écrire directement dans les champs.',
+        'C’est le socle du produit: le clavier reste utile même si la dictée, le clipboard ou l’overlay sont ignorés.',
     category: OnboardingStepCategory.mandatory,
-    openActionLabel: 'Ouvrir les paramètres Clavier',
+    openActionLabel: 'Activer le clavier',
     secondaryActionLabel: 'Choisir le clavier',
     whereToFind:
         'Réglages Android → Système → Langues et clavier → Claviers virtuels',
+  ),
+  OnboardingStepDefinition(
+    id: OnboardingStepId.keyboardClipboard,
+    title: 'Clipboard clavier',
+    description: 'Active l’intention de synchroniser le clipboard du clavier.',
+    why:
+        'Utile pour retrouver les copies récentes depuis le clavier; optionnel si tu veux seulement taper.',
+    category: OnboardingStepCategory.recommended,
+    openActionLabel: 'Activer le clipboard clavier',
+    whereToFind: 'WinFlowz → Settings → Keyboard clipboard sync intent',
+  ),
+  OnboardingStepDefinition(
+    id: OnboardingStepId.microphoneForDictation,
+    title: 'Microphone',
+    description: 'Autorise l’accès micro pour la dictée dans le clavier.',
+    why:
+        'Indispensable pour dicter; optionnel si tu veux utiliser uniquement la saisie clavier.',
+    category: OnboardingStepCategory.recommended,
+    openActionLabel: 'Ouvrir les permissions micro',
+    whereToFind:
+        'Réglages Android → Applications → WinFlowz → Autorisations → Microphone',
   ),
   OnboardingStepDefinition(
     id: OnboardingStepId.accessibility,
     title: 'Service Accessibilité',
     description: 'Active le service d’accessibilité WinFlowz.',
     why:
-        'Ce service améliore la précision de l’injection directe et évite certains blocages.',
+        'Améliore certains cas d’injection directe, mais le clavier reste utilisable sans ce service.',
     category: OnboardingStepCategory.recommended,
     openActionLabel: 'Ouvrir Accessibilité',
     whereToFind: 'Réglages Android → Accessibilité → Service WinFlowz',
-  ),
-  OnboardingStepDefinition(
-    id: OnboardingStepId.microphoneForDictation,
-    title: 'Microphone',
-    description: 'Autorise l’accès micro pour la dictée.',
-    why:
-        'Sans micro, la dictée vocale est indisponible; la saisie clavier reste active.',
-    category: OnboardingStepCategory.recommended,
-    openActionLabel: 'Ouvrir les permissions App',
-    whereToFind:
-        'Réglages Android → Applications → WinFlowz → Autorisations → Microphone',
   ),
   OnboardingStepDefinition(
     id: OnboardingStepId.mediaSessionAccess,
@@ -179,6 +179,17 @@ const _stepDefinitions = <OnboardingStepDefinition>[
     whereToFind:
         'Réglages Android → Applications → Accès spécial → Modifier les paramètres système → WinFlowz',
   ),
+  OnboardingStepDefinition(
+    id: OnboardingStepId.overlay,
+    title: 'Overlay flottant',
+    description: 'Active la bulle flottante WinFlowz.',
+    why:
+        'L’overlay est désormais un complément: il sert aux usages hors clavier, pas au parcours principal.',
+    category: OnboardingStepCategory.recommended,
+    openActionLabel: 'Activer l’overlay',
+    whereToFind:
+        'Réglages Android → Applications → WinFlowz → Autorisations → Afficher les fenêtres',
+  ),
 ];
 
 OnboardingReadiness evaluateOnboardingReadiness({
@@ -187,10 +198,12 @@ OnboardingReadiness evaluateOnboardingReadiness({
   required AndroidKeyboardStatus keyboardStatus,
   required int persistedStep,
   required bool onboardingCompleted,
+  bool clipboardSkipped = false,
   bool accessibilitySkipped = false,
   bool microphoneSkipped = false,
   bool mediaAccessSkipped = false,
   bool brightnessSkipped = false,
+  bool overlaySkipped = false,
 }) {
   if (!isPlatformSupported) {
     return const OnboardingReadiness(
@@ -209,10 +222,12 @@ OnboardingReadiness evaluateOnboardingReadiness({
     );
     final skipped = _isStepSkipped(
       definition: definition,
+      clipboardSkipped: clipboardSkipped,
       accessibilitySkipped: accessibilitySkipped,
       microphoneSkipped: microphoneSkipped,
       mediaAccessSkipped: mediaAccessSkipped,
       brightnessSkipped: brightnessSkipped,
+      overlaySkipped: overlaySkipped,
     );
     final satisfied = skipped
         ? true
@@ -262,11 +277,16 @@ OnboardingReadiness evaluateOnboardingReadiness({
 
 bool _isStepSkipped({
   required OnboardingStepDefinition definition,
+  required bool clipboardSkipped,
   required bool accessibilitySkipped,
   required bool microphoneSkipped,
   required bool mediaAccessSkipped,
   required bool brightnessSkipped,
+  required bool overlaySkipped,
 }) {
+  if (definition.id == OnboardingStepId.keyboardClipboard) {
+    return clipboardSkipped;
+  }
   if (definition.id == OnboardingStepId.accessibility) {
     return accessibilitySkipped;
   }
@@ -278,6 +298,9 @@ bool _isStepSkipped({
   }
   if (definition.id == OnboardingStepId.brightnessSystemSettings) {
     return brightnessSkipped;
+  }
+  if (definition.id == OnboardingStepId.overlay) {
+    return overlaySkipped;
   }
   return false;
 }
@@ -300,6 +323,8 @@ bool _isStepSatisfied({
   switch (definition.id) {
     case OnboardingStepId.overlay:
       return overlayStatus.overlayPermissionGranted && overlayStatus.enabled;
+    case OnboardingStepId.keyboardClipboard:
+      return keyboardStatus.clipboardSyncDesired;
     case OnboardingStepId.accessibility:
       return overlayStatus.accessibilityPermissionGranted;
     case OnboardingStepId.keyboardIme:
@@ -320,12 +345,17 @@ String? _stepBlockerReason({
 }) {
   if (definition.id == OnboardingStepId.overlay) {
     if (!overlayStatus.overlayPermissionGranted) {
-      return 'Permission Overlay refusée: la bulle est bloquée.';
+      return 'Overlay non autorisé: ignore cette étape si tu utilises uniquement le clavier.';
     }
     if (!overlayStatus.enabled) {
-      return 'Overlay autorisé mais désactivé: active la bulle WinFlowz.';
+      return 'Overlay autorisé mais désactivé: active la bulle seulement si tu veux l’utiliser hors clavier.';
     }
     return null;
+  }
+  if (definition.id == OnboardingStepId.keyboardClipboard) {
+    return keyboardStatus.clipboardSyncDesired
+        ? null
+        : 'Clipboard clavier désactivé: les copies restent disponibles via le système, mais WinFlowz ne les synchronise pas.';
   }
   if (definition.id == OnboardingStepId.accessibility) {
     return overlayStatus.accessibilityPermissionGranted

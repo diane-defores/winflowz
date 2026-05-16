@@ -17,6 +17,8 @@ class LocalSettingsStore implements SettingsStore {
   static const _onboardingCompletedKey = 'settings_onboarding_completed';
   static const _onboardingCurrentStepKey = 'settings_onboarding_current_step';
   static const _onboardingLastSeenAtKey = 'settings_onboarding_last_seen_at';
+  static const _onboardingClipboardSkippedKey =
+      'settings_onboarding_clipboard_skipped';
   static const _onboardingAccessibilitySkippedKey =
       'settings_onboarding_accessibility_skipped';
   static const _onboardingMicrophoneSkippedKey =
@@ -25,6 +27,8 @@ class LocalSettingsStore implements SettingsStore {
       'settings_onboarding_media_access_skipped';
   static const _onboardingBrightnessSkippedKey =
       'settings_onboarding_brightness_skipped';
+  static const _onboardingOverlaySkippedKey =
+      'settings_onboarding_overlay_skipped';
 
   final FlutterSecureStorage _storage;
   final _controller = StreamController<UserSettingsSnapshot>.broadcast();
@@ -54,6 +58,10 @@ class LocalSettingsStore implements SettingsStore {
     final onboardingLastSeenAt = _dateFromValue(
       await _read(_onboardingLastSeenAtKey),
     );
+    final onboardingClipboardSkipped = _boolFromValue(
+      await _read(_onboardingClipboardSkippedKey),
+      fallback: false,
+    );
     final onboardingAccessibilitySkipped = _boolFromValue(
       await _read(_onboardingAccessibilitySkippedKey),
       fallback: false,
@@ -70,6 +78,10 @@ class LocalSettingsStore implements SettingsStore {
       await _read(_onboardingBrightnessSkippedKey),
       fallback: false,
     );
+    final onboardingOverlaySkipped = _boolFromValue(
+      await _read(_onboardingOverlaySkippedKey),
+      fallback: false,
+    );
 
     return UserSettingsSnapshot.defaults().copyWith(
       themeMode: themeMode,
@@ -79,10 +91,12 @@ class LocalSettingsStore implements SettingsStore {
       onboardingCompleted: onboardingCompleted,
       onboardingCurrentStep: onboardingCurrentStep,
       onboardingLastSeenAt: onboardingLastSeenAt,
+      onboardingClipboardSkipped: onboardingClipboardSkipped,
       onboardingAccessibilitySkipped: onboardingAccessibilitySkipped,
       onboardingMicrophoneSkipped: onboardingMicrophoneSkipped,
       onboardingMediaAccessSkipped: onboardingMediaAccessSkipped,
       onboardingBrightnessSkipped: onboardingBrightnessSkipped,
+      onboardingOverlaySkipped: onboardingOverlaySkipped,
     );
   }
 
@@ -105,6 +119,10 @@ class LocalSettingsStore implements SettingsStore {
       settings.onboardingLastSeenAt?.toUtc().toIso8601String(),
     );
     await _write(
+      _onboardingClipboardSkippedKey,
+      settings.onboardingClipboardSkipped.toString(),
+    );
+    await _write(
       _onboardingAccessibilitySkippedKey,
       settings.onboardingAccessibilitySkipped.toString(),
     );
@@ -119,6 +137,10 @@ class LocalSettingsStore implements SettingsStore {
     await _write(
       _onboardingBrightnessSkippedKey,
       settings.onboardingBrightnessSkipped.toString(),
+    );
+    await _write(
+      _onboardingOverlaySkippedKey,
+      settings.onboardingOverlaySkipped.toString(),
     );
     _controller.add(settings);
   }

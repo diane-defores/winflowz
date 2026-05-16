@@ -420,7 +420,10 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
       expect(find.text('Configuration WinFlowz'), findsOneWidget);
-      expect(find.text('Autorisation Overlay • Étape 1/6'), findsOneWidget);
+      expect(
+        find.text('Clavier WinFlowz keyboard • Étape 1/7'),
+        findsOneWidget,
+      );
 
       await tester.tap(find.byTooltip('Fermer (reprendre plus tard)'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));

@@ -181,10 +181,12 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         keyboardStatus: keyboardStatus,
         persistedStep: rawSettings.onboardingCurrentStep,
         onboardingCompleted: rawSettings.onboardingCompleted,
+        clipboardSkipped: rawSettings.onboardingClipboardSkipped,
         accessibilitySkipped: rawSettings.onboardingAccessibilitySkipped,
         microphoneSkipped: rawSettings.onboardingMicrophoneSkipped,
         mediaAccessSkipped: rawSettings.onboardingMediaAccessSkipped,
         brightnessSkipped: rawSettings.onboardingBrightnessSkipped,
+        overlaySkipped: rawSettings.onboardingOverlaySkipped,
       );
       final forcedStep = _forcedOnboardingStepIndex(readiness);
       if (forcedStep != null) {
@@ -276,6 +278,28 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         }
       } else if (step.id == OnboardingStepId.keyboardIme) {
         await AndroidKeyboardBridge.openInputMethodSettings();
+      } else if (step.id == OnboardingStepId.keyboardClipboard) {
+        final status = await _loadKeyboardStatusForOnboarding();
+        await AndroidKeyboardBridge.setPreferences(
+          voiceEnabled: status.voiceEnabled,
+          clipboardSyncDesired: true,
+          mediaControlsEnabled: status.mediaControlsEnabled,
+          themeMode: status.themeMode,
+          layoutProfile: status.layoutProfile,
+          cornerModeEnabled: status.cornerModeEnabled,
+          debugTouchOverlayEnabled: status.debugTouchOverlayEnabled,
+          keyVibrationEnabled: status.keyVibrationEnabled,
+          keySoundEnabled: status.keySoundEnabled,
+          spellingSuggestionsEnabled: status.spellingSuggestionsEnabled,
+          specialKeyCornersEnabled: status.specialKeyCornersEnabled,
+          frenchLanguageEnabled: status.frenchLanguageEnabled,
+          englishLanguageEnabled: status.englishLanguageEnabled,
+          doubleSpacePeriodEnabled: status.doubleSpacePeriodEnabled,
+          punctuationAutoSpacingEnabled: status.punctuationAutoSpacingEnabled,
+          keyboardHeightScale: status.keyboardHeightScale,
+          compactModeEnabled: status.compactModeEnabled,
+          privacyMode: status.privacyMode,
+        );
       } else if (step.id == OnboardingStepId.accessibility) {
         await AndroidOverlayBridge.openAccessibilitySettings();
       } else if (step.id == OnboardingStepId.mediaSessionAccess) {
@@ -359,6 +383,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       return;
     }
     final updated = switch (step.definition.id) {
+      OnboardingStepId.keyboardClipboard => settings.copyWith(
+        onboardingClipboardSkipped: true,
+        onboardingLastSeenAt: DateTime.now().toUtc(),
+      ),
       OnboardingStepId.accessibility => settings.copyWith(
         onboardingAccessibilitySkipped: true,
         onboardingLastSeenAt: DateTime.now().toUtc(),
@@ -373,6 +401,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       ),
       OnboardingStepId.brightnessSystemSettings => settings.copyWith(
         onboardingBrightnessSkipped: true,
+        onboardingLastSeenAt: DateTime.now().toUtc(),
+      ),
+      OnboardingStepId.overlay => settings.copyWith(
+        onboardingOverlaySkipped: true,
         onboardingLastSeenAt: DateTime.now().toUtc(),
       ),
       _ => settings.copyWith(onboardingLastSeenAt: DateTime.now().toUtc()),
@@ -842,7 +874,7 @@ class _OnboardingStepContent extends StatelessWidget {
             AppTag(
               label: definition.category == OnboardingStepCategory.mandatory
                   ? 'Obligatoire'
-                  : 'Recommandé',
+                  : 'Optionnel',
             ),
           ],
         ),
@@ -872,6 +904,7 @@ class _OnboardingStepContent extends StatelessWidget {
         Wrap(
           spacing: AppSpacing.x2,
           runSpacing: AppSpacing.x2,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             if (isBusy)
               const SizedBox(
@@ -880,29 +913,34 @@ class _OnboardingStepContent extends StatelessWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else if (!step.satisfied)
-              ElevatedButton(
+              FilledButton.icon(
                 onPressed: () => onPrimaryAction(),
-                child: Text(definition.openActionLabel),
+                icon: const Icon(Icons.play_arrow_outlined),
+                label: Text(definition.openActionLabel),
               )
             else
-              OutlinedButton(
+              FilledButton.tonalIcon(
                 onPressed: () => onRefresh(),
-                child: const Text('Re-vérifier'),
+                icon: const Icon(Icons.refresh_outlined),
+                label: const Text('Re-vérifier'),
               ),
             if (!isBusy && onSecondaryAction != null)
-              OutlinedButton(
+              OutlinedButton.icon(
                 onPressed: () => onSecondaryAction?.call(),
-                child: Text(definition.secondaryActionLabel ?? ''),
+                icon: const Icon(Icons.keyboard_alt_outlined),
+                label: Text(definition.secondaryActionLabel ?? ''),
               ),
             if (!isBusy && !step.isMandatory)
-              TextButton(
+              TextButton.icon(
                 onPressed: () => onSkip(),
-                child: const Text('Plus tard'),
+                icon: const Icon(Icons.skip_next_outlined),
+                label: const Text('Passer cette option'),
               ),
             if (!isBusy)
-              TextButton(
+              OutlinedButton.icon(
                 onPressed: onOpenSettings,
-                child: const Text('Paramètres'),
+                icon: const Icon(Icons.settings_outlined),
+                label: const Text('Paramètres'),
               ),
           ],
         ),
@@ -951,7 +989,7 @@ class _OnboardingCompletionContent extends StatelessWidget {
           runSpacing: AppSpacing.x2,
           children: [
             AppTag(label: 'Obligatoire $mandatoryDone/${mandatory.length}'),
-            AppTag(label: 'Recommandé $recommendedDone/${recommended.length}'),
+            AppTag(label: 'Optionnel $recommendedDone/${recommended.length}'),
           ],
         ),
         AppGaps.x2,
@@ -963,7 +1001,7 @@ class _OnboardingCompletionContent extends StatelessWidget {
             title: step.definition.title,
             text: step.completed
                 ? 'OK'
-                : 'Recommandé: ${step.definition.whereToFind}',
+                : 'Optionnel: ${step.definition.whereToFind}',
           ),
         AppGaps.x3,
         Wrap(
@@ -977,14 +1015,16 @@ class _OnboardingCompletionContent extends StatelessWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else
-              ElevatedButton(
+              FilledButton.icon(
                 onPressed: () => onComplete(),
-                child: const Text('Terminer'),
+                icon: const Icon(Icons.check_circle_outline),
+                label: const Text('Terminer'),
               ),
             if (!isBusy)
-              TextButton(
+              OutlinedButton.icon(
                 onPressed: onOpenSettings,
-                child: const Text('Paramètres'),
+                icon: const Icon(Icons.settings_outlined),
+                label: const Text('Paramètres'),
               ),
           ],
         ),
