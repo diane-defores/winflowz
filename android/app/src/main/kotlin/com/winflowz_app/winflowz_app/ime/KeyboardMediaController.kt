@@ -1,5 +1,6 @@
 package com.winflowz_app.winflowz_app.ime
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -7,7 +8,9 @@ import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.provider.Settings
 import android.view.KeyEvent
+import com.winflowz_app.winflowz_app.WinFlowzNotificationListenerService
 
 class KeyboardMediaController(context: Context) {
     private val appContext = context.applicationContext
@@ -26,21 +29,27 @@ class KeyboardMediaController(context: Context) {
     }
 
     fun nowPlayingLabel(): String {
+        if (!KeyboardStateStore(appContext).isMediaSessionAccessGranted()) {
+            return MEDIA_ACCESS_REQUIRED
+        }
         val controller =
             try {
                 activeController()
             } catch (_: SecurityException) {
-                return "Now playing: enable media session access"
+                return MEDIA_ACCESS_REQUIRED
             } ?: return "Now playing: nothing detected"
         return controller.metadata?.toNowPlayingLabel() ?: "Now playing: metadata unavailable"
     }
 
     fun openActiveMediaApp(): String {
+        if (!KeyboardStateStore(appContext).isMediaSessionAccessGranted()) {
+            return MEDIA_ACCESS_REQUIRED
+        }
         val controller =
             try {
                 activeController()
             } catch (_: SecurityException) {
-                return "Media app: enable media session access"
+                return MEDIA_ACCESS_REQUIRED
             } ?: return "Media app: nothing detected"
         val packageName = controller.packageName ?: return "Media app: unavailable"
         val intent =
@@ -55,12 +64,42 @@ class KeyboardMediaController(context: Context) {
         return "Media app opened"
     }
 
+    fun adjustBrightness(delta: Int): String {
+        if (!KeyboardStateStore(appContext).canWriteSystemSettings()) {
+            return BRIGHTNESS_ACCESS_REQUIRED
+        }
+        val resolver = appContext.contentResolver
+        val current =
+            runCatching {
+                Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS)
+            }.getOrDefault(DEFAULT_BRIGHTNESS)
+        val next = (current + delta).coerceIn(MIN_BRIGHTNESS, MAX_BRIGHTNESS)
+        return try {
+            Settings.System.putInt(
+                resolver,
+                Settings.System.SCREEN_BRIGHTNESS_MODE,
+                Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
+            )
+            val applied = Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, next)
+            if (applied) {
+                "Brightness ${next * 100 / MAX_BRIGHTNESS}%"
+            } else {
+                "Brightness unavailable"
+            }
+        } catch (_: SecurityException) {
+            BRIGHTNESS_ACCESS_REQUIRED
+        } catch (_: IllegalArgumentException) {
+            "Brightness unavailable"
+        }
+    }
+
     private fun activeController(): MediaController? {
         val sessionManager =
             appContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+        val listener = ComponentName(appContext, WinFlowzNotificationListenerService::class.java)
         val controllers =
             try {
-                sessionManager.getActiveSessions(null)
+                sessionManager.getActiveSessions(listener)
             } catch (error: SecurityException) {
                 throw error
             }
@@ -93,5 +132,13 @@ class KeyboardMediaController(context: Context) {
 
     private fun MediaMetadata.firstText(vararg keys: String): String? {
         return keys.firstNotNullOfOrNull { key -> getText(key)?.toString()?.trim()?.takeIf { it.isNotBlank() } }
+    }
+
+    companion object {
+        const val MEDIA_ACCESS_REQUIRED = "MEDIA_ACCESS_REQUIRED"
+        const val BRIGHTNESS_ACCESS_REQUIRED = "BRIGHTNESS_ACCESS_REQUIRED"
+        private const val MIN_BRIGHTNESS = 1
+        private const val MAX_BRIGHTNESS = 255
+        private const val DEFAULT_BRIGHTNESS = 128
     }
 }

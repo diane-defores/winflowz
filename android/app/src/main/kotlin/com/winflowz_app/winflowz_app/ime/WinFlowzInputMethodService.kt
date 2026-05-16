@@ -251,31 +251,14 @@ class WinFlowzInputMethodService :
             refreshTypingAssistantState(editor)
             return deleted
         }
-        val sent = sendSoftKey(KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
-        if (sent) {
+        val deleted = editor.deleteWordBeforeCursor()
+        if (deleted.applied) {
+            refreshTypingAssistantState(editor)
             return true
         }
-        val before = editor.textBeforeCursor(128)?.toString().orEmpty()
-        if (before.isEmpty()) {
-            return false
-        }
-        var index = before.length - 1
-        while (index >= 0 && before[index].isWhitespace()) {
-            index--
-        }
-        if (index < 0) {
-            val deleted = editor.deleteCodePointsBefore(before.codePointCount(0, before.length)).applied
-            refreshTypingAssistantState(editor)
-            return deleted
-        }
-        while (index >= 0 && !before[index].isWhitespace()) {
-            index--
-        }
-        val segment = before.substring(index + 1)
-        val codePointCount = segment.codePointCount(0, segment.length)
-        val deleted = editor.deleteCodePointsBefore(codePointCount).applied
+        val sent = sendSoftKey(KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
         refreshTypingAssistantState(editor)
-        return deleted
+        return sent
     }
 
     override fun onDeleteWordAfter(): Boolean {
@@ -288,26 +271,14 @@ class WinFlowzInputMethodService :
             refreshTypingAssistantState(editor)
             return deleted
         }
-        val sent = sendSoftKey(KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
-        if (sent) {
+        val deleted = editor.deleteWordAfterCursor()
+        if (deleted.applied) {
+            refreshTypingAssistantState(editor)
             return true
         }
-        val after = editor.textAfterCursor(128)?.toString().orEmpty()
-        if (after.isEmpty()) {
-            return false
-        }
-        var index = 0
-        while (index < after.length && after[index].isWhitespace()) {
-            index++
-        }
-        while (index < after.length && !after[index].isWhitespace()) {
-            index++
-        }
-        val segment = after.substring(0, index.coerceAtLeast(1))
-        val codePointCount = segment.codePointCount(0, segment.length)
-        val deleted = editor.deleteCodePointsAfter(codePointCount)
+        val sent = sendSoftKey(KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
         refreshTypingAssistantState(editor)
-        return deleted.applied
+        return sent
     }
 
     override fun onEnter(): Boolean {
@@ -353,8 +324,18 @@ class WinFlowzInputMethodService :
         if (copied && !selectedText.isNullOrBlank()) {
             stateStore.pushClipboardEntry(selectedText)
             applyRuntimePreferencesToView()
+            showStatus("Selection copied")
+            return
         }
-        showStatus(if (copied) "Selection copied" else "No selectable text")
+        if (editor().performContextMenuAction(android.R.id.copy).applied) {
+            showStatus("Copy sent")
+            return
+        }
+        if (isTermuxInputTarget() && sendTermuxClipboardShortcut(KeyEvent.KEYCODE_C)) {
+            showStatus("Termux copy shortcut sent")
+            return
+        }
+        showStatus("No selectable text")
     }
 
     override fun onCutSelection(): Boolean {
@@ -363,11 +344,24 @@ class WinFlowzInputMethodService :
             return false
         }
         if (!selectionState.hasSelection && editor().selectedText().isNullOrEmpty()) {
+            if (isTermuxInputTarget() && sendTermuxClipboardShortcut(KeyEvent.KEYCODE_X)) {
+                showStatus("Termux cut shortcut sent")
+                return true
+            }
             showStatus("No selectable text")
             return false
         }
         val cut = editor().performContextMenuAction(android.R.id.cut)
+        if (cut.applied) {
+            refreshTypingAssistantState()
+            return true
+        }
+        val sent = isTermuxInputTarget() && sendTermuxClipboardShortcut(KeyEvent.KEYCODE_X)
         refreshTypingAssistantState()
+        if (sent) {
+            showStatus("Termux cut shortcut sent")
+            return true
+        }
         return cut.reportFailure("Cut rejected by field")
     }
 
@@ -480,6 +474,30 @@ class WinFlowzInputMethodService :
         }
     }
 
+    private fun openMediaAccessOnboarding() {
+        runServiceSafely("openMediaAccessOnboarding") {
+            val intent =
+                Intent(this, MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putExtra("openRoute", "/settings?onboarding=media")
+                }
+            startActivity(intent)
+            showStatus("Enable media access in WinFlowz")
+        }
+    }
+
+    private fun openBrightnessOnboarding() {
+        runServiceSafely("openBrightnessOnboarding") {
+            val intent =
+                Intent(this, MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putExtra("openRoute", "/settings?onboarding=brightness")
+                }
+            startActivity(intent)
+            showStatus("Enable brightness access in WinFlowz")
+        }
+    }
+
     override fun onKeyboardPicker() {
         runServiceSafely("showKeyboardPicker") {
             val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -519,7 +537,12 @@ class WinFlowzInputMethodService :
         if (!stateStore.mediaControlsEnabled) {
             return "Now playing: media controls disabled"
         }
-        return mediaController.nowPlayingLabel()
+        val label = mediaController.nowPlayingLabel()
+        if (label == KeyboardMediaController.MEDIA_ACCESS_REQUIRED) {
+            openMediaAccessOnboarding()
+            return "Media access required"
+        }
+        return label
     }
 
     override fun onOpenMediaApp() {
@@ -527,7 +550,33 @@ class WinFlowzInputMethodService :
             showStatus("Media controls disabled")
             return
         }
-        showStatus(mediaController.openActiveMediaApp())
+        val status = mediaController.openActiveMediaApp()
+        if (status == KeyboardMediaController.MEDIA_ACCESS_REQUIRED) {
+            openMediaAccessOnboarding()
+            return
+        }
+        showStatus(status)
+    }
+
+    override fun onBrightnessDown() {
+        adjustBrightness(delta = -26)
+    }
+
+    override fun onBrightnessUp() {
+        adjustBrightness(delta = 26)
+    }
+
+    private fun adjustBrightness(delta: Int) {
+        if (!stateStore.mediaControlsEnabled) {
+            showStatus("Media controls disabled")
+            return
+        }
+        val status = mediaController.adjustBrightness(delta)
+        if (status == KeyboardMediaController.BRIGHTNESS_ACCESS_REQUIRED) {
+            openBrightnessOnboarding()
+            return
+        }
+        showStatus(status)
     }
 
     override fun onNavigateCharLeft(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_LEFT, 0)
@@ -559,13 +608,13 @@ class WinFlowzInputMethodService :
     }
 
     override fun onNavigateLineStart(): Boolean {
-        val moved = if (inputContext.selectionModeAllowed) editor().moveLineBoundary(start = true).applied else false
-        return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_HOME, 0)
+        val moved = if (inputContext.selectionModeAllowed) editor().moveDocumentBoundary(start = true).applied else false
+        return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.META_CTRL_ON)
     }
 
     override fun onNavigateLineEnd(): Boolean {
-        val moved = if (inputContext.selectionModeAllowed) editor().moveLineBoundary(start = false).applied else false
-        return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_END, 0)
+        val moved = if (inputContext.selectionModeAllowed) editor().moveDocumentBoundary(start = false).applied else false
+        return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_END, KeyEvent.META_CTRL_ON)
     }
 
     override fun onKeyEvent(
@@ -852,6 +901,17 @@ class WinFlowzInputMethodService :
         keyCode: Int,
         metaState: Int,
     ): Boolean = editor().sendSoftKey(keyCode, metaState).applied
+
+    private fun sendTermuxClipboardShortcut(keyCode: Int): Boolean {
+        return sendSoftKey(
+            keyCode = keyCode,
+            metaState = KeyEvent.META_CTRL_ON or KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON,
+        )
+    }
+
+    private fun isTermuxInputTarget(): Boolean {
+        return currentInputEditorInfo?.packageName?.startsWith("com.termux") == true
+    }
 
     private fun editor(): InputConnectionEditor = InputConnectionEditor(currentInputConnection)
 

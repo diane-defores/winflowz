@@ -1352,6 +1352,8 @@ class AndroidKeyboardStatus {
     required this.voiceEnabled,
     required this.clipboardSyncDesired,
     required this.mediaControlsEnabled,
+    required this.mediaSessionAccessGranted,
+    required this.systemSettingsWriteGranted,
     required this.themeMode,
     required this.themePresetId,
     required this.themePressEffect,
@@ -1384,6 +1386,8 @@ class AndroidKeyboardStatus {
   final bool voiceEnabled;
   final bool clipboardSyncDesired;
   final bool mediaControlsEnabled;
+  final bool mediaSessionAccessGranted;
+  final bool systemSettingsWriteGranted;
   final String themeMode;
   final String themePresetId;
   final String themePressEffect;
@@ -1417,6 +1421,8 @@ class AndroidKeyboardStatus {
       voiceEnabled: false,
       clipboardSyncDesired: false,
       mediaControlsEnabled: false,
+      mediaSessionAccessGranted: false,
+      systemSettingsWriteGranted: false,
       themeMode: 'system',
       themePresetId: 'system',
       themePressEffect: 'none',
@@ -1452,6 +1458,10 @@ class AndroidKeyboardStatus {
       voiceEnabled: map['voiceEnabled'] as bool? ?? true,
       clipboardSyncDesired: map['clipboardSyncDesired'] as bool? ?? false,
       mediaControlsEnabled: map['mediaControlsEnabled'] as bool? ?? true,
+      mediaSessionAccessGranted:
+          map['mediaSessionAccessGranted'] as bool? ?? false,
+      systemSettingsWriteGranted:
+          map['systemSettingsWriteGranted'] as bool? ?? false,
       themeMode: map['themeMode'] as String? ?? 'system',
       themePresetId: map['themePresetId'] as String? ?? 'system',
       themePressEffect: map['themePressEffect'] as String? ?? 'none',

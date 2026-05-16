@@ -112,6 +112,26 @@ class AndroidKeyboardBridge {
     await _invoke<void>('showInputMethodPicker');
   }
 
+  static Future<void> openNotificationListenerSettings() async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      throw const AndroidKeyboardBridgeException(
+        code: 'KEYBOARD_UNSUPPORTED',
+        message: 'Android keyboard IME is not supported on this platform.',
+      );
+    }
+    await _invoke<void>('openNotificationListenerSettings');
+  }
+
+  static Future<void> openWriteSettingsPermission() async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      throw const AndroidKeyboardBridgeException(
+        code: 'KEYBOARD_UNSUPPORTED',
+        message: 'Android keyboard IME is not supported on this platform.',
+      );
+    }
+    await _invoke<void>('openWriteSettingsPermission');
+  }
+
   static Future<AndroidKeyboardStatus> setPreferences({
     required bool voiceEnabled,
     required bool clipboardSyncDesired,

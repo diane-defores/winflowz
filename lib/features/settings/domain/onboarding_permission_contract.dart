@@ -8,6 +8,8 @@ enum OnboardingStepId {
   keyboardIme,
   accessibility,
   microphoneForDictation,
+  mediaSessionAccess,
+  brightnessSystemSettings,
 }
 
 class OnboardingStepDefinition {
@@ -124,7 +126,8 @@ const _stepDefinitions = <OnboardingStepDefinition>[
   OnboardingStepDefinition(
     id: OnboardingStepId.keyboardIme,
     title: 'Clavier WinFlowz keyboard',
-    description: 'Active et sélectionne WinFlowz keyboard comme clavier Android.',
+    description:
+        'Active et sélectionne WinFlowz keyboard comme clavier Android.',
     why:
         'Sans clavier natif actif, la dictée ne peut pas écrire directement dans les champs.',
     category: OnboardingStepCategory.mandatory,
@@ -154,6 +157,28 @@ const _stepDefinitions = <OnboardingStepDefinition>[
     whereToFind:
         'Réglages Android → Applications → WinFlowz → Autorisations → Microphone',
   ),
+  OnboardingStepDefinition(
+    id: OnboardingStepId.mediaSessionAccess,
+    title: 'Accès média',
+    description: 'Autorise WinFlowz à lire les sessions média Android.',
+    why:
+        'Cet accès permet au clavier d’afficher le titre en cours et d’ouvrir l’app qui lit le son.',
+    category: OnboardingStepCategory.recommended,
+    openActionLabel: 'Ouvrir Accès aux notifications',
+    whereToFind:
+        'Réglages Android → Applications → Accès spécial → Accès aux notifications → WinFlowz media access',
+  ),
+  OnboardingStepDefinition(
+    id: OnboardingStepId.brightnessSystemSettings,
+    title: 'Luminosité système',
+    description: 'Autorise WinFlowz à modifier la luminosité Android.',
+    why:
+        'Cet accès permet aux boutons Bri- et Bri+ du clavier d’ajuster la luminosité.',
+    category: OnboardingStepCategory.recommended,
+    openActionLabel: 'Ouvrir Modifier les paramètres système',
+    whereToFind:
+        'Réglages Android → Applications → Accès spécial → Modifier les paramètres système → WinFlowz',
+  ),
 ];
 
 OnboardingReadiness evaluateOnboardingReadiness({
@@ -164,6 +189,8 @@ OnboardingReadiness evaluateOnboardingReadiness({
   required bool onboardingCompleted,
   bool accessibilitySkipped = false,
   bool microphoneSkipped = false,
+  bool mediaAccessSkipped = false,
+  bool brightnessSkipped = false,
 }) {
   if (!isPlatformSupported) {
     return const OnboardingReadiness(
@@ -184,6 +211,8 @@ OnboardingReadiness evaluateOnboardingReadiness({
       definition: definition,
       accessibilitySkipped: accessibilitySkipped,
       microphoneSkipped: microphoneSkipped,
+      mediaAccessSkipped: mediaAccessSkipped,
+      brightnessSkipped: brightnessSkipped,
     );
     final satisfied = skipped
         ? true
@@ -235,12 +264,20 @@ bool _isStepSkipped({
   required OnboardingStepDefinition definition,
   required bool accessibilitySkipped,
   required bool microphoneSkipped,
+  required bool mediaAccessSkipped,
+  required bool brightnessSkipped,
 }) {
   if (definition.id == OnboardingStepId.accessibility) {
     return accessibilitySkipped;
   }
   if (definition.id == OnboardingStepId.microphoneForDictation) {
     return microphoneSkipped;
+  }
+  if (definition.id == OnboardingStepId.mediaSessionAccess) {
+    return mediaAccessSkipped;
+  }
+  if (definition.id == OnboardingStepId.brightnessSystemSettings) {
+    return brightnessSkipped;
   }
   return false;
 }
@@ -269,6 +306,10 @@ bool _isStepSatisfied({
       return keyboardStatus.enabled && keyboardStatus.active;
     case OnboardingStepId.microphoneForDictation:
       return overlayStatus.recordAudioGranted;
+    case OnboardingStepId.mediaSessionAccess:
+      return keyboardStatus.mediaSessionAccessGranted;
+    case OnboardingStepId.brightnessSystemSettings:
+      return keyboardStatus.systemSettingsWriteGranted;
   }
 }
 
@@ -291,8 +332,8 @@ String? _stepBlockerReason({
         ? null
         : 'Service Accessibilité désactivé: dictée en mode compatibilité.';
   }
-    if (definition.id == OnboardingStepId.keyboardIme) {
-      if (!keyboardStatus.supported) {
+  if (definition.id == OnboardingStepId.keyboardIme) {
+    if (!keyboardStatus.supported) {
       return 'IME WinFlowz keyboard non disponible sur cet appareil.';
     }
     if (!keyboardStatus.enabled) {
@@ -307,6 +348,16 @@ String? _stepBlockerReason({
     return overlayStatus.recordAudioGranted
         ? null
         : 'Microphone refusé: la dictée vocale est indisponible.';
+  }
+  if (definition.id == OnboardingStepId.mediaSessionAccess) {
+    return keyboardStatus.mediaSessionAccessGranted
+        ? null
+        : 'Accès média désactivé: Now/App ne peuvent pas lire les sessions média.';
+  }
+  if (definition.id == OnboardingStepId.brightnessSystemSettings) {
+    return keyboardStatus.systemSettingsWriteGranted
+        ? null
+        : 'Modification système désactivée: Bri-/Bri+ ne peuvent pas régler la luminosité.';
   }
   return null;
 }

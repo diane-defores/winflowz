@@ -121,6 +121,41 @@ class InputConnectionEditor(
         }
     }
 
+    fun deleteWordBeforeCursor(): KeyboardEditorResult {
+        val before = textBeforeCursor(128)?.toString() ?: return KeyboardEditorResult.Unavailable
+        if (before.isEmpty()) {
+            return KeyboardEditorResult.Rejected
+        }
+        var index = before.length - 1
+        while (index >= 0 && before[index].isWhitespace()) {
+            index--
+        }
+        if (index < 0) {
+            return deleteCodePointsBefore(before.codePointCount(0, before.length))
+        }
+        while (index >= 0 && !before[index].isWhitespace()) {
+            index--
+        }
+        val segment = before.substring(index + 1)
+        return deleteCodePointsBefore(segment.codePointCount(0, segment.length))
+    }
+
+    fun deleteWordAfterCursor(): KeyboardEditorResult {
+        val after = textAfterCursor(128)?.toString() ?: return KeyboardEditorResult.Unavailable
+        if (after.isEmpty()) {
+            return KeyboardEditorResult.Rejected
+        }
+        var index = 0
+        while (index < after.length && after[index].isWhitespace()) {
+            index++
+        }
+        while (index < after.length && !after[index].isWhitespace()) {
+            index++
+        }
+        val segment = after.substring(0, index.coerceAtLeast(1))
+        return deleteCodePointsAfter(segment.codePointCount(0, segment.length))
+    }
+
     fun performEditorAction(actionId: Int): KeyboardEditorResult {
         val connection = inputConnection ?: return KeyboardEditorResult.Unavailable
         return if (connection.performEditorAction(actionId)) {
@@ -193,6 +228,13 @@ class InputConnectionEditor(
         val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
         val selection = extracted.selectionStart.coerceIn(0, text.length)
         val target = KeyboardTextNavigation.lineBoundary(text, selection, start)
+        return moveSelectionFromExtracted(extracted, target)
+    }
+
+    fun moveDocumentBoundary(start: Boolean): KeyboardEditorResult {
+        val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
+        val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
+        val target = if (start) 0 else text.length
         return moveSelectionFromExtracted(extracted, target)
     }
 

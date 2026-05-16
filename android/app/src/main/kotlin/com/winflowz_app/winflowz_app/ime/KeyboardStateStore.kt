@@ -1,9 +1,13 @@
 package com.winflowz_app.winflowz_app.ime
 
 import android.content.Context
+import android.content.ComponentName
+import android.os.Build
 import android.provider.Settings
 import android.view.inputmethod.InputMethodInfo
 import android.view.inputmethod.InputMethodManager
+import android.text.TextUtils
+import com.winflowz_app.winflowz_app.WinFlowzNotificationListenerService
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressBehavior
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardAttachedActionRowState
@@ -167,6 +171,8 @@ class KeyboardStateStore(private val context: Context) {
             "voiceEnabled" to voiceEnabled,
             "clipboardSyncDesired" to clipboardSyncDesired,
             "mediaControlsEnabled" to mediaControlsEnabled,
+            "mediaSessionAccessGranted" to isMediaSessionAccessGranted(),
+            "systemSettingsWriteGranted" to canWriteSystemSettings(),
             "themeMode" to themeMode,
             "themePresetId" to theme.presetId,
             "themePressEffect" to theme.pressEffect,
@@ -461,6 +467,27 @@ class KeyboardStateStore(private val context: Context) {
                 ?: return false
         return current.contains(context.packageName) &&
             current.contains(WinFlowzInputMethodService::class.java.simpleName)
+    }
+
+    fun isMediaSessionAccessGranted(): Boolean {
+        val expected = ComponentName(context, WinFlowzNotificationListenerService::class.java).flattenToString()
+        val enabled =
+            Settings.Secure.getString(
+                context.contentResolver,
+                "enabled_notification_listeners",
+            ) ?: return false
+        val splitter = TextUtils.SimpleStringSplitter(':')
+        splitter.setString(enabled)
+        while (splitter.hasNext()) {
+            if (splitter.next().equals(expected, ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun canWriteSystemSettings(): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(context)
     }
 
     private fun isWinFlowzIme(info: InputMethodInfo): Boolean {

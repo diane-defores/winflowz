@@ -176,6 +176,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       onboardingCompleted: settings.onboardingCompleted,
       accessibilitySkipped: settings.onboardingAccessibilitySkipped,
       microphoneSkipped: settings.onboardingMicrophoneSkipped,
+      mediaAccessSkipped: settings.onboardingMediaAccessSkipped,
+      brightnessSkipped: settings.onboardingBrightnessSkipped,
     );
   }
 

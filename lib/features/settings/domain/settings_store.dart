@@ -15,6 +15,8 @@ class UserSettingsSnapshot {
     this.onboardingLastSeenAt,
     this.onboardingAccessibilitySkipped = false,
     this.onboardingMicrophoneSkipped = false,
+    this.onboardingMediaAccessSkipped = false,
+    this.onboardingBrightnessSkipped = false,
     this.updatedAt,
   });
 
@@ -29,6 +31,8 @@ class UserSettingsSnapshot {
       onboardingLastSeenAt = null,
       onboardingAccessibilitySkipped = false,
       onboardingMicrophoneSkipped = false,
+      onboardingMediaAccessSkipped = false,
+      onboardingBrightnessSkipped = false,
       updatedAt = null;
 
   final ThemeMode themeMode;
@@ -41,6 +45,8 @@ class UserSettingsSnapshot {
   final DateTime? onboardingLastSeenAt;
   final bool onboardingAccessibilitySkipped;
   final bool onboardingMicrophoneSkipped;
+  final bool onboardingMediaAccessSkipped;
+  final bool onboardingBrightnessSkipped;
   final DateTime? updatedAt;
 
   UserSettingsSnapshot copyWith({
@@ -54,6 +60,8 @@ class UserSettingsSnapshot {
     DateTime? onboardingLastSeenAt,
     bool? onboardingAccessibilitySkipped,
     bool? onboardingMicrophoneSkipped,
+    bool? onboardingMediaAccessSkipped,
+    bool? onboardingBrightnessSkipped,
     DateTime? updatedAt,
   }) {
     return UserSettingsSnapshot(
@@ -70,6 +78,10 @@ class UserSettingsSnapshot {
           onboardingAccessibilitySkipped ?? this.onboardingAccessibilitySkipped,
       onboardingMicrophoneSkipped:
           onboardingMicrophoneSkipped ?? this.onboardingMicrophoneSkipped,
+      onboardingMediaAccessSkipped:
+          onboardingMediaAccessSkipped ?? this.onboardingMediaAccessSkipped,
+      onboardingBrightnessSkipped:
+          onboardingBrightnessSkipped ?? this.onboardingBrightnessSkipped,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }

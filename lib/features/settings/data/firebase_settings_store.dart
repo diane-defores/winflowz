@@ -64,6 +64,8 @@ class FirebaseSettingsStore implements SettingsStore {
       'onboardingLastSeenAt': settings.onboardingLastSeenAt,
       'onboardingAccessibilitySkipped': settings.onboardingAccessibilitySkipped,
       'onboardingMicrophoneSkipped': settings.onboardingMicrophoneSkipped,
+      'onboardingMediaAccessSkipped': settings.onboardingMediaAccessSkipped,
+      'onboardingBrightnessSkipped': settings.onboardingBrightnessSkipped,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -87,6 +89,10 @@ class FirebaseSettingsStore implements SettingsStore {
           data['onboardingAccessibilitySkipped'] as bool? ?? false,
       onboardingMicrophoneSkipped:
           data['onboardingMicrophoneSkipped'] as bool? ?? false,
+      onboardingMediaAccessSkipped:
+          data['onboardingMediaAccessSkipped'] as bool? ?? false,
+      onboardingBrightnessSkipped:
+          data['onboardingBrightnessSkipped'] as bool? ?? false,
       syncStatus: const SyncStatus(health: SyncHealth.synced),
       updatedAt: _timestampToDate(data['updatedAt']),
     );

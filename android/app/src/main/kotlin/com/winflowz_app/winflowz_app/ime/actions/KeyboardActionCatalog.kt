@@ -149,6 +149,8 @@ class KeyboardActionCatalog private constructor(
                                     actionRowKey("media-row-next", "Next", KeyboardKeyAction.MediaNext),
                                     actionRowKey("media-row-now", "Now", KeyboardKeyAction.MediaNowPlaying),
                                     actionRowKey("media-row-open", "App", KeyboardKeyAction.OpenMediaApp),
+                                    actionRowKey("media-row-brightness-down", "Bri-", KeyboardKeyAction.BrightnessDown),
+                                    actionRowKey("media-row-brightness-up", "Bri+", KeyboardKeyAction.BrightnessUp),
                                 ),
                         ),
                     )

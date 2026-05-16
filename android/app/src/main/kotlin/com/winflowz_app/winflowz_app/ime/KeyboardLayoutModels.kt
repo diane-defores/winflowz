@@ -84,6 +84,8 @@ enum class KeyboardKeyAction {
     MediaNext,
     MediaNowPlaying,
     OpenMediaApp,
+    BrightnessDown,
+    BrightnessUp,
     InsertSnippetOne,
     OpenWinFlowzSettings,
     OpenThemeSettings,

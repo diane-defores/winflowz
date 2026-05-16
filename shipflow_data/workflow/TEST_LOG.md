@@ -36,3 +36,36 @@
 - Bug pointer: BUG-2026-05-16-004 -> bugs/BUG-2026-05-16-004.md
 - Evidence pointer: user confirmation in chat at 2026-05-16 09:27:41 UTC.
 - Follow-up: closed
+
+## 2026-05-16 - Android keyboard Termux/modifier regression retest
+
+- Scope: keyboard Android IME regression checks
+- Environment: Android real device, Termux and other apps
+- Tester: user
+- Source: sf-test manual confirmation
+- Status: pass
+- Confidence: high
+- Result summary: `Del` works in Termux and no longer activates `MAJ`; `Ctrl+J` inserts a newline; long press `MAJ` keeps shift active after the first letter.
+- Bug pointer: none dedicated; removes these cases from the remaining manual QA checklist.
+- Evidence pointer: user confirmation in chat at 2026-05-16 13:23:53 UTC.
+- Follow-up: continue remaining action-bar/page-swipe, compact-mode, theme/effects, private-field checks.
+
+## 2026-05-16 - Keyboard Theme Studio Android/web retest confirmations
+
+- Scope: Keyboard Theme Studio and native keyboard theme behavior
+- Environment: Android real device and web preview where applicable
+- Tester: user
+- Source: sf-test manual confirmation
+- Status: pass
+- Confidence: high
+- Result summary: Theme preview container is sticky; color picker works; key gap setting works; key press effects work.
+- Bug pointer: none dedicated in this run; these items are removed from the remaining manual QA checklist.
+- Evidence pointer: user confirmations in chat before and at 2026-05-16 13:23:53 UTC.
+- Follow-up: continue remaining Android action-bar pagination, action-row behavior, private-field, and compact-mode bottom spacing checks.
+
+## 2026-05-16 - Media brightness controls
+- Added Android `WRITE_SETTINGS` brightness onboarding and `Bri-`/`Bri+` media action row buttons.
+- `flutter analyze`: PASS.
+- `git diff --check`: PASS.
+- `cd android && ./gradlew :app:compileDebugKotlin -x :app:processDebugResources`: PASS.
+- Manual Android APK verification: pending.

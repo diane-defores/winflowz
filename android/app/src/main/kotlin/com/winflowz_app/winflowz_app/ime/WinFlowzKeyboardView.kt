@@ -21,7 +21,7 @@ import android.view.MotionEvent
 import android.view.SoundEffectConstants
 import android.view.View
 import android.view.View.MeasureSpec
-import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarController
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionCatalog
@@ -114,6 +114,8 @@ class WinFlowzKeyboardView(
         fun onMediaNext()
         fun onMediaNowPlaying(): String
         fun onOpenMediaApp()
+        fun onBrightnessDown()
+        fun onBrightnessUp()
         fun onNavigateCharLeft(): Boolean
         fun onNavigateCharRight(): Boolean
         fun onNavigateWordLeft(): Boolean
@@ -209,6 +211,7 @@ class WinFlowzKeyboardView(
     private var lastHorizontalScrollX = 0f
     private var activeHorizontalRowId: String? = null
     private var horizontalGestureStartOffset = 0f
+    private var horizontalGestureDragDx = 0f
     private val horizontalRowScrollOffsetById = mutableMapOf<String, Float>()
     private val horizontalRowMaxOffsetById = mutableMapOf<String, Float>()
     private val horizontalRowPageWidthById = mutableMapOf<String, Float>()
@@ -305,8 +308,8 @@ class WinFlowzKeyboardView(
     private val repeatDelayMs = 72L
     private val spaceSlideStartPx = dp(18f)
     private val spaceSlideStepPx = dp(34f)
-    private val horizontalSnapDurationMs = 190L
-    private val horizontalSnapInterpolator = DecelerateInterpolator(1.8f)
+    private val horizontalSnapDurationMs = 340L
+    private val horizontalSnapInterpolator = OvershootInterpolator(0.85f)
 
     private val longPressRunnable =
         Runnable {
@@ -797,6 +800,7 @@ class WinFlowzKeyboardView(
         lastHorizontalScrollX = 0f
         activeHorizontalRowId = null
         horizontalGestureStartOffset = 0f
+        horizontalGestureDragDx = 0f
         scrollingVerticalPanel = false
         lastVerticalScrollY = 0f
     }
@@ -931,6 +935,19 @@ class WinFlowzKeyboardView(
             lastHorizontalScrollX = gestureStartX
             cancelHorizontalRowAnimation(rowId)
         }
+        if (frame.isPagedScrollableRowFrame()) {
+            val pageWidth = max(dp(1f), horizontalRowPageWidthById[rowId] ?: frame?.rowVisibleWidth ?: width.toFloat())
+            val maxPage = ceil(maxOffset / pageWidth).toInt().coerceAtLeast(0)
+            val startPage = (horizontalGestureStartOffset / pageWidth).roundToInt().coerceIn(0, maxPage)
+            val startOffset = pageOffset(startPage, pageWidth, maxOffset)
+            val dragPreview = (-dxFromStart * 0.28f).coerceIn(-pageWidth * 0.18f, pageWidth * 0.18f)
+            val previewOffset = (startOffset + dragPreview).coerceIn(0f, maxOffset)
+            horizontalGestureDragDx = dxFromStart
+            horizontalRowScrollOffsetById[rowId] = previewOffset
+            postInvalidateOnAnimation()
+            lastHorizontalScrollX = x
+            return
+        }
         val delta = lastHorizontalScrollX - x
         val next = resistedHorizontalOffset(currentOffset + delta, maxOffset)
         if (next != currentOffset) {
@@ -949,15 +966,17 @@ class WinFlowzKeyboardView(
             val pageWidth = max(dp(1f), horizontalRowPageWidthById[rowId] ?: frame?.rowVisibleWidth ?: width.toFloat())
             val maxPage = ceil(maxOffset / pageWidth).toInt().coerceAtLeast(0)
             val startPage = (horizontalGestureStartOffset / pageWidth).roundToInt().coerceIn(0, maxPage)
-            val dragDistance = currentOffset - horizontalGestureStartOffset
             val threshold = min(pageWidth * 0.22f, dp(96f))
             val targetPage =
-                if (abs(dragDistance) >= threshold) {
-                    startPage + if (dragDistance > 0f) 1 else -1
-                } else {
-                    (currentOffset.coerceIn(0f, maxOffset) / pageWidth).roundToInt()
+                when {
+                    horizontalGestureDragDx <= -threshold -> startPage + 1
+                    horizontalGestureDragDx >= threshold -> startPage - 1
+                    else -> startPage
                 }.coerceIn(0, maxPage)
             val targetOffset = pageOffset(targetPage, pageWidth, maxOffset)
+            if (targetPage != startPage) {
+                performKeyboardHaptic(HapticFeedbackConstants.CLOCK_TICK)
+            }
             setActionBarState(
                 actionBarController.setRowPage(
                     rowId = rowId,
@@ -1051,6 +1070,7 @@ class WinFlowzKeyboardView(
         horizontalRowMaxOffsetById.clear()
         activeHorizontalRowId = null
         horizontalGestureStartOffset = 0f
+        horizontalGestureDragDx = 0f
     }
 
     private fun handleVerticalPanelScroll(
@@ -1157,7 +1177,7 @@ class WinFlowzKeyboardView(
         val keyWidths =
             row.keys.map { key ->
                 if (visibleCount != null && visibleCount > 0) {
-                    baseKeyWidth * key.weight * keyWidthScale()
+                    baseKeyWidth * keyWidthScale()
                 } else {
                     max(dp(54f), baseKeyWidth * key.weight)
                 }
@@ -1559,6 +1579,8 @@ class WinFlowzKeyboardView(
                 refreshLayout()
             }
             KeyboardKeyAction.OpenMediaApp -> callbacks.onOpenMediaApp()
+            KeyboardKeyAction.BrightnessDown -> callbacks.onBrightnessDown()
+            KeyboardKeyAction.BrightnessUp -> callbacks.onBrightnessUp()
             KeyboardKeyAction.InsertSnippetOne -> {
                 val snippet = commandKey.suggestion
                 if (snippet.isNullOrBlank()) {

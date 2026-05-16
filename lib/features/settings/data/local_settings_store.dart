@@ -21,6 +21,10 @@ class LocalSettingsStore implements SettingsStore {
       'settings_onboarding_accessibility_skipped';
   static const _onboardingMicrophoneSkippedKey =
       'settings_onboarding_microphone_skipped';
+  static const _onboardingMediaAccessSkippedKey =
+      'settings_onboarding_media_access_skipped';
+  static const _onboardingBrightnessSkippedKey =
+      'settings_onboarding_brightness_skipped';
 
   final FlutterSecureStorage _storage;
   final _controller = StreamController<UserSettingsSnapshot>.broadcast();
@@ -58,6 +62,14 @@ class LocalSettingsStore implements SettingsStore {
       await _read(_onboardingMicrophoneSkippedKey),
       fallback: false,
     );
+    final onboardingMediaAccessSkipped = _boolFromValue(
+      await _read(_onboardingMediaAccessSkippedKey),
+      fallback: false,
+    );
+    final onboardingBrightnessSkipped = _boolFromValue(
+      await _read(_onboardingBrightnessSkippedKey),
+      fallback: false,
+    );
 
     return UserSettingsSnapshot.defaults().copyWith(
       themeMode: themeMode,
@@ -69,6 +81,8 @@ class LocalSettingsStore implements SettingsStore {
       onboardingLastSeenAt: onboardingLastSeenAt,
       onboardingAccessibilitySkipped: onboardingAccessibilitySkipped,
       onboardingMicrophoneSkipped: onboardingMicrophoneSkipped,
+      onboardingMediaAccessSkipped: onboardingMediaAccessSkipped,
+      onboardingBrightnessSkipped: onboardingBrightnessSkipped,
     );
   }
 
@@ -97,6 +111,14 @@ class LocalSettingsStore implements SettingsStore {
     await _write(
       _onboardingMicrophoneSkippedKey,
       settings.onboardingMicrophoneSkipped.toString(),
+    );
+    await _write(
+      _onboardingMediaAccessSkippedKey,
+      settings.onboardingMediaAccessSkipped.toString(),
+    );
+    await _write(
+      _onboardingBrightnessSkippedKey,
+      settings.onboardingBrightnessSkipped.toString(),
     );
     _controller.add(settings);
   }

@@ -314,6 +314,14 @@ class MainActivity : FlutterActivity() {
                         showInputMethodPicker()
                         result.success(true)
                     }
+                    "openNotificationListenerSettings" -> {
+                        openNotificationListenerSettings()
+                        result.success(true)
+                    }
+                    "openWriteSettingsPermission" -> {
+                        openWriteSettingsPermission()
+                        result.success(true)
+                    }
                     "setKeyboardPreferences" -> {
                         call.argument<Boolean>("voiceEnabled")?.let {
                             keyboardState.voiceEnabled = it
@@ -597,6 +605,25 @@ class MainActivity : FlutterActivity() {
 
     private fun openInputMethodSettings() {
         val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    }
+
+    private fun openNotificationListenerSettings() {
+        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    }
+
+    private fun openWriteSettingsPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return
+        }
+        val intent =
+            Intent(
+                Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                Uri.parse("package:$packageName"),
+            )
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
     }

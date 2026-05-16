@@ -19,9 +19,14 @@ import '../../snippets/presentation/snippets_screen.dart';
 import '../../voice/presentation/voice_screen.dart';
 
 class AppShellScreen extends ConsumerStatefulWidget {
-  const AppShellScreen({super.key, this.initialIndex = 0});
+  const AppShellScreen({
+    super.key,
+    this.initialIndex = 0,
+    this.initialOnboardingStep,
+  });
 
   final int initialIndex;
+  final String? initialOnboardingStep;
 
   @override
   ConsumerState<AppShellScreen> createState() => _AppShellScreenState();
@@ -170,7 +175,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       final rawSettings = await store.load();
       final overlayStatus = await _loadOverlayStatusForOnboarding();
       final keyboardStatus = await _loadKeyboardStatusForOnboarding();
-      final readiness = evaluateOnboardingReadiness(
+      var readiness = evaluateOnboardingReadiness(
         isPlatformSupported: PlatformCapabilities.overlaySupported,
         overlayStatus: overlayStatus,
         keyboardStatus: keyboardStatus,
@@ -178,7 +183,18 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         onboardingCompleted: rawSettings.onboardingCompleted,
         accessibilitySkipped: rawSettings.onboardingAccessibilitySkipped,
         microphoneSkipped: rawSettings.onboardingMicrophoneSkipped,
+        mediaAccessSkipped: rawSettings.onboardingMediaAccessSkipped,
+        brightnessSkipped: rawSettings.onboardingBrightnessSkipped,
       );
+      final forcedStep = _forcedOnboardingStepIndex(readiness);
+      if (forcedStep != null) {
+        readiness = OnboardingReadiness(
+          platformSupported: readiness.platformSupported,
+          steps: readiness.steps,
+          currentStep: forcedStep,
+          onboardingCompleted: false,
+        );
+      }
 
       var nextSettings = rawSettings;
       if (rawSettings.onboardingCurrentStep != readiness.currentStep ||
@@ -197,7 +213,11 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         _onboardingReadiness = readiness;
         _onboardingSettings = nextSettings;
         _onboardingBusy = false;
-        if (readiness.shouldShowOnboarding && !_onboardingDismissed) {
+        if (forcedStep != null) {
+          _onboardingVisible = true;
+          _onboardingDismissed = false;
+          _onboardingOpenedManually = true;
+        } else if (readiness.shouldShowOnboarding && !_onboardingDismissed) {
           _onboardingVisible = true;
         }
         if (!readiness.shouldShowOnboarding && !_onboardingOpenedManually) {
@@ -222,6 +242,20 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     }
   }
 
+  int? _forcedOnboardingStepIndex(OnboardingReadiness readiness) {
+    final requested = widget.initialOnboardingStep?.trim();
+    if (requested != 'media' && requested != 'brightness') {
+      return null;
+    }
+    final target = requested == 'brightness'
+        ? OnboardingStepId.brightnessSystemSettings
+        : OnboardingStepId.mediaSessionAccess;
+    final index = readiness.steps.indexWhere(
+      (step) => step.definition.id == target,
+    );
+    return index < 0 ? null : index;
+  }
+
   Future<void> _openCurrentStepPrimaryAction() async {
     final step = _onboardingReadiness?.activeStep?.definition;
     if (step == null) {
@@ -244,6 +278,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         await AndroidKeyboardBridge.openInputMethodSettings();
       } else if (step.id == OnboardingStepId.accessibility) {
         await AndroidOverlayBridge.openAccessibilitySettings();
+      } else if (step.id == OnboardingStepId.mediaSessionAccess) {
+        await AndroidKeyboardBridge.openNotificationListenerSettings();
+      } else if (step.id == OnboardingStepId.brightnessSystemSettings) {
+        await AndroidKeyboardBridge.openWriteSettingsPermission();
       } else {
         await AndroidOverlayBridge.openAppSettings();
       }
@@ -320,15 +358,25 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     if (settings == null) {
       return;
     }
-    final updated = step.definition.id == OnboardingStepId.accessibility
-        ? settings.copyWith(
-            onboardingAccessibilitySkipped: true,
-            onboardingLastSeenAt: DateTime.now().toUtc(),
-          )
-        : settings.copyWith(
-            onboardingMicrophoneSkipped: true,
-            onboardingLastSeenAt: DateTime.now().toUtc(),
-          );
+    final updated = switch (step.definition.id) {
+      OnboardingStepId.accessibility => settings.copyWith(
+        onboardingAccessibilitySkipped: true,
+        onboardingLastSeenAt: DateTime.now().toUtc(),
+      ),
+      OnboardingStepId.microphoneForDictation => settings.copyWith(
+        onboardingMicrophoneSkipped: true,
+        onboardingLastSeenAt: DateTime.now().toUtc(),
+      ),
+      OnboardingStepId.mediaSessionAccess => settings.copyWith(
+        onboardingMediaAccessSkipped: true,
+        onboardingLastSeenAt: DateTime.now().toUtc(),
+      ),
+      OnboardingStepId.brightnessSystemSettings => settings.copyWith(
+        onboardingBrightnessSkipped: true,
+        onboardingLastSeenAt: DateTime.now().toUtc(),
+      ),
+      _ => settings.copyWith(onboardingLastSeenAt: DateTime.now().toUtc()),
+    };
     await _saveOnboardingSettings(updated);
     if (!mounted) {
       return;
