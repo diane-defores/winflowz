@@ -762,7 +762,7 @@ class _OnboardingOverlay extends StatelessWidget {
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       final overlayWidth =
-                          (constraints.maxWidth - (AppSpacing.x6 * 2)).clamp(
+                          (constraints.maxWidth - (AppSpacing.x4 * 2)).clamp(
                             0.0,
                             constraints.maxWidth,
                           );
