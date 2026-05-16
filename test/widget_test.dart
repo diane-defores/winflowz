@@ -696,6 +696,7 @@ void main() {
       expect(find.text('DelW←'), findsOneWidget);
       expect(find.text('Del→'), findsOneWidget);
       expect(find.text('DelW→'), findsOneWidget);
+      expect(find.text('Clip'), findsOneWidget);
       expect(find.text('q'), findsOneWidget);
       expect(find.text('Space'), findsOneWidget);
       expect(find.text('Ctrl'), findsOneWidget);

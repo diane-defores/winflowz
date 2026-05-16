@@ -1058,56 +1058,39 @@ class KeyboardPreviewSnapshot {
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightCompact,
             keys: [
+              _unsupportedKey('DelW←'),
+              _unsupportedKey('DelW→'),
               _unsupportedKey('All'),
               _unsupportedKey('Copy'),
               _unsupportedKey('Cut'),
               _unsupportedKey('Paste'),
-              _unsupportedKey('Undo'),
-              _unsupportedKey('Redo'),
-              const KeyboardPreviewKey(
-                label: 'Back',
-                special: true,
-                weight: 1.2,
-                action: KeyboardPreviewKeyAction.closePanel,
-              ),
             ],
           ),
           KeyboardPreviewRow(
-            height: AppKeyboardPreview.rowHeightRegular,
+            height: AppKeyboardPreview.rowHeightCompact,
+            keys: [
+              _unsupportedKey('Word←'),
+              _unsupportedKey('Word→'),
+              _unsupportedKey('Undo'),
+              _unsupportedKey('Redo'),
+              _unsupportedKey('↑'),
+              _unsupportedKey('↓'),
+            ],
+          ),
+          KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: [
               const KeyboardPreviewKey(
                 label: 'Del←',
                 special: true,
                 action: KeyboardPreviewKeyAction.backspace,
               ),
-              _unsupportedKey('⏫', weight: 1.1),
-              _unsupportedKey('↑', weight: 1.1),
-              _unsupportedKey('Del→', weight: 1.1),
+              _unsupportedKey('Del→'),
+              _unsupportedKey('⏫'),
+              _unsupportedKey('⏬'),
+              _unsupportedKey('←'),
+              _unsupportedKey('→'),
             ],
-            leadingWeight: .35,
-            trailingWeight: .35,
-          ),
-          KeyboardPreviewRow(
-            height: AppKeyboardPreview.rowHeightRegular,
-            keys: [
-              _unsupportedKey('Word←', weight: 1.3),
-              _unsupportedKey('←', weight: 1.1),
-              _unsupportedKey('→', weight: 1.1),
-              _unsupportedKey('Word→', weight: 1.3),
-            ],
-            leadingWeight: .6,
-            trailingWeight: .6,
-          ),
-          KeyboardPreviewRow(
-            height: AppKeyboardPreview.rowHeightRegular,
-            keys: [
-              _unsupportedKey('DelW←', weight: 1.2),
-              _unsupportedKey('⏬', weight: 1.1),
-              _unsupportedKey('↓', weight: 1.1),
-              _unsupportedKey('DelW→', weight: 1.2),
-            ],
-            leadingWeight: .35,
-            trailingWeight: .35,
           ),
         ];
       case KeyboardPreviewPanel.accents:

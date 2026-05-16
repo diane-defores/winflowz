@@ -396,27 +396,23 @@ object KeyboardLayoutBuilder {
                 KeyboardRowSpec(
                     keys =
                         listOf(
-                            KeyboardKeySpec("nav-line-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
-                            KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
-                            KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
-                            KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
-                            KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight),
-                            KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
-                            KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
-                            KeyboardKeySpec("nav-line-end", "Fin", KeyboardKeyAction.NavigateLineEnd, weight = 1.15f),
+                            KeyboardKeySpec("nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore),
+                            KeyboardKeySpec("nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter),
+                            KeyboardKeySpec("nav-select-all", "All", KeyboardKeyAction.SelectAll),
+                            KeyboardKeySpec("nav-copy", "Copy", KeyboardKeyAction.CopySelection),
+                            KeyboardKeySpec("nav-cut", "Cut", KeyboardKeyAction.CutSelection),
+                            KeyboardKeySpec("nav-paste", "Paste", KeyboardKeyAction.PasteClipboard),
                         ),
                 ),
                 KeyboardRowSpec(
                     keys =
                         listOf(
-                            KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.2f),
-                            KeyboardKeySpec("nav-tab", "Tab", KeyboardKeyAction.InsertTab),
-                            KeyboardKeySpec("nav-select-all", "All", KeyboardKeyAction.SelectAll),
+                            KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft),
+                            KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight),
                             KeyboardKeySpec("nav-undo", "Undo", KeyboardKeyAction.Undo),
                             KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
-                            KeyboardKeySpec("nav-clip", "Clip", KeyboardKeyAction.ToggleClipboardPanel),
-                            KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.2f),
-                            KeyboardKeySpec("nav-close", "Back", KeyboardKeyAction.ClosePanel, weight = 1.1f),
+                            KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+                            KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
                         ),
                 ),
                 KeyboardRowSpec(
@@ -424,14 +420,11 @@ object KeyboardLayoutBuilder {
                         listOf(
                             KeyboardKeySpec("nav-del-before", "Del←", KeyboardKeyAction.Backspace),
                             KeyboardKeySpec("nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
-                            KeyboardKeySpec("nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.2f),
-                            KeyboardKeySpec("nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.2f),
-                            KeyboardKeySpec("nav-cut", "Cut", KeyboardKeyAction.CutSelection),
-                            KeyboardKeySpec("nav-copy", "Copy", KeyboardKeyAction.CopySelection),
-                            KeyboardKeySpec("nav-paste", "Paste", KeyboardKeyAction.PasteClipboard),
+                            KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
+                            KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
+                            KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
+                            KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight),
                         ),
-                    leadingWeight = 0.2f,
-                    trailingWeight = 0.2f,
                 ),
             )
         }
@@ -440,47 +433,34 @@ object KeyboardLayoutBuilder {
                 keys =
                     listOf(
                         KeyboardKeySpec("nav-select-all", "All", KeyboardKeyAction.SelectAll),
+                        KeyboardKeySpec("nav-copy", "Copy", KeyboardKeyAction.CopySelection),
+                        KeyboardKeySpec("nav-cut", "Cut", KeyboardKeyAction.CutSelection),
+                        KeyboardKeySpec("nav-paste", "Paste", KeyboardKeyAction.PasteClipboard),
+                        KeyboardKeySpec("nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore),
+                        KeyboardKeySpec("nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter),
+                    ),
+            ),
+            KeyboardRowSpec(
+                keys =
+                    listOf(
+                        KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft),
+                        KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight),
                         KeyboardKeySpec("nav-undo", "Undo", KeyboardKeyAction.Undo),
                         KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
-                        KeyboardKeySpec("nav-clip", "Clip", KeyboardKeyAction.ToggleClipboardPanel),
-                        KeyboardKeySpec("nav-close", "Back", KeyboardKeyAction.ClosePanel, weight = 1.2f),
+                        KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+                        KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
                     ),
             ),
             KeyboardRowSpec(
                 keys =
                     listOf(
                         KeyboardKeySpec("nav-del-before", "Del←", KeyboardKeyAction.Backspace),
-                        KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp, weight = 1.1f),
-                        KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp, weight = 1.1f),
-                        KeyboardKeySpec("nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete, weight = 1.1f),
+                        KeyboardKeySpec("nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
+                        KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
+                        KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
+                        KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
+                        KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight),
                     ),
-                leadingWeight = 0.35f,
-                trailingWeight = 0.35f,
-            ),
-            KeyboardRowSpec(
-                keys =
-                    listOf(
-                        KeyboardKeySpec("nav-line-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
-                        KeyboardKeySpec("nav-tab", "Tab", KeyboardKeyAction.InsertTab),
-                        KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.2f),
-                        KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft, weight = 1.1f),
-                        KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight, weight = 1.1f),
-                        KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.2f),
-                        KeyboardKeySpec("nav-line-end", "Fin", KeyboardKeyAction.NavigateLineEnd, weight = 1.15f),
-                    ),
-                leadingWeight = 0.15f,
-                trailingWeight = 0.15f,
-            ),
-            KeyboardRowSpec(
-                keys =
-                    listOf(
-                        KeyboardKeySpec("nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.2f),
-                        KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown, weight = 1.1f),
-                        KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown, weight = 1.1f),
-                        KeyboardKeySpec("nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.2f),
-                    ),
-                leadingWeight = 0.35f,
-                trailingWeight = 0.35f,
             ),
         )
     }

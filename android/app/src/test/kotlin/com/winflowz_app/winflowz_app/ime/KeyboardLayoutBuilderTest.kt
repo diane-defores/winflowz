@@ -194,12 +194,16 @@ class KeyboardLayoutBuilderTest {
         val panelActions = panelRows.flatMap { row -> row.keys.map { it.action } }
         val labels = panelRows.flatMap { row -> row.keys.map { it.label } }
 
-        assertEquals(4, snapshot.panelRowCount)
-        assertTrue(labels.take(4).containsAll(listOf("All", "Undo", "Redo", "Clip")))
+        assertEquals(3, snapshot.panelRowCount)
+        assertTrue(labels.take(6).containsAll(listOf("All", "Copy", "Cut", "Paste", "DelW←", "DelW→")))
         assertTrue(labels.containsAll(listOf("Del←", "Del→", "DelW←", "DelW→")))
         assertTrue(labels.containsAll(listOf("⏫", "↑", "⏬", "↓")))
+        assertFalse(labels.contains("Clip"))
+        assertFalse(labels.contains("Back"))
         assertTrue(panelActions.contains(KeyboardKeyAction.SelectAll))
-        assertTrue(panelActions.contains(KeyboardKeyAction.ToggleClipboardPanel))
+        assertTrue(panelActions.contains(KeyboardKeyAction.CopySelection))
+        assertTrue(panelActions.contains(KeyboardKeyAction.CutSelection))
+        assertTrue(panelActions.contains(KeyboardKeyAction.PasteClipboard))
         assertTrue(panelActions.contains(KeyboardKeyAction.Undo))
         assertTrue(panelActions.contains(KeyboardKeyAction.Redo))
         assertTrue(panelActions.contains(KeyboardKeyAction.NavigateLineUp))
@@ -638,7 +642,7 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
-    fun `navigation panel routes clipboard actions through clip entry point`() {
+    fun `navigation panel exposes clipboard actions directly`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
                 KeyboardLayoutRequest(
@@ -662,10 +666,11 @@ class KeyboardLayoutBuilderTest {
             )
 
         val navActions = snapshot.rows.drop(1).flatMap { row -> row.keys.map { it.action } }
-        assertTrue(KeyboardKeyAction.CopySelection !in navActions)
-        assertTrue(KeyboardKeyAction.CutSelection !in navActions)
-        assertTrue(KeyboardKeyAction.PasteClipboard !in navActions)
-        assertTrue(KeyboardKeyAction.ToggleClipboardPanel in navActions)
+        assertTrue(KeyboardKeyAction.CopySelection in navActions)
+        assertTrue(KeyboardKeyAction.CutSelection in navActions)
+        assertTrue(KeyboardKeyAction.PasteClipboard in navActions)
+        assertTrue(KeyboardKeyAction.ToggleClipboardPanel !in navActions)
+        assertTrue(KeyboardKeyAction.ClosePanel !in navActions)
     }
 
     @Test
