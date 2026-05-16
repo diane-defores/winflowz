@@ -494,6 +494,14 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     });
   }
 
+  Future<void> _openSettingsFromOnboarding() async {
+    await _pauseOnboarding();
+    if (!mounted) {
+      return;
+    }
+    _selectTab(5);
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = [
@@ -621,7 +629,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                                   isBusy: _onboardingBusy,
                                   message: _onboardingMessage,
                                   onClose: _pauseOnboarding,
-                                  onOpenSettings: () => _selectTab(5),
+                                  onOpenSettings: _openSettingsFromOnboarding,
                                   onPrimaryAction:
                                       _openCurrentStepPrimaryAction,
                                   onSecondaryAction:

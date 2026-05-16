@@ -447,7 +447,7 @@ void main() {
         findsNothing,
       );
 
-      await tester.tap(find.byTooltip('Fermer (reprendre plus tard)'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Paramètres'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
       expect(find.text('Configuration WinFlowz'), findsNothing);
       expect(find.text('WinFlowz • Settings'), findsOneWidget);
