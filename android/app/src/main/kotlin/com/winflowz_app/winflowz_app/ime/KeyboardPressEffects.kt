@@ -143,9 +143,9 @@ class KeyboardPressEffects(
         accentColor: Int,
     ) {
         val eased = easedProgress(effect.spec, progress)
-        val inset = -6f * density * effect.spec.intensity * (1f - eased)
+        val inset = -14f * density * effect.spec.intensity.coerceAtLeast(0.35f) * (1f - eased)
         val rect = RectF(effect.rect).apply { inset(inset, inset) }
-        fillPaint.color = alphaColor(accentColor, (70 * (1f - progress)).toInt())
+        fillPaint.color = alphaColor(accentColor, (135 * (1f - progress)).toInt())
         canvas.drawRoundRect(rect, keyRadius, keyRadius, fillPaint)
     }
 
@@ -157,11 +157,11 @@ class KeyboardPressEffects(
         accentColor: Int,
     ) {
         val rect = RectF(effect.rect).apply {
-            val inset = -10f * density * effect.spec.intensity * progress
+            val inset = -16f * density * effect.spec.intensity.coerceAtLeast(0.35f) * progress
             inset(inset, inset)
         }
-        strokePaint.color = alphaColor(accentColor, (150 * (1f - progress)).toInt())
-        strokePaint.strokeWidth = max(1f * density, 3f * density * (1f - progress))
+        strokePaint.color = alphaColor(accentColor, (210 * (1f - progress)).toInt())
+        strokePaint.strokeWidth = max(2f * density, 5f * density * (1f - progress))
         canvas.drawRoundRect(rect, keyRadius, keyRadius, strokePaint)
     }
 
@@ -172,10 +172,10 @@ class KeyboardPressEffects(
         keyRadius: Float,
         accentColor: Int,
     ) {
-        val offset = ((if ((progress * 8).toInt() % 2 == 0) 1 else -1) * 4f * density * effect.spec.intensity * (1f - progress))
+        val offset = ((if ((progress * 10).toInt() % 2 == 0) 1 else -1) * 9f * density * effect.spec.intensity.coerceAtLeast(0.35f) * (1f - progress))
         val rect = RectF(effect.rect).apply { offset(offset, 0f) }
-        strokePaint.color = alphaColor(accentColor, (120 * (1f - progress)).toInt())
-        strokePaint.strokeWidth = 2f * density
+        strokePaint.color = alphaColor(accentColor, (210 * (1f - progress)).toInt())
+        strokePaint.strokeWidth = 4f * density
         canvas.drawRoundRect(rect, keyRadius, keyRadius, strokePaint)
     }
 
@@ -185,8 +185,8 @@ class KeyboardPressEffects(
         progress: Float,
         accentColor: Int,
     ) {
-        strokePaint.color = alphaColor(accentColor, (120 * (1f - progress)).toInt())
-        strokePaint.strokeWidth = max(1f * density, 4f * density * (1f - progress))
+        strokePaint.color = alphaColor(accentColor, (220 * (1f - progress)).toInt())
+        strokePaint.strokeWidth = max(2f * density, 6f * density * (1f - progress))
         val radius = max(effect.rect.width(), effect.rect.height()) * (0.2f + progress * 0.65f)
         canvas.drawCircle(effect.rect.centerX(), effect.rect.centerY(), radius, strokePaint)
     }
@@ -198,8 +198,8 @@ class KeyboardPressEffects(
         keyRadius: Float,
         accentColor: Int,
     ) {
-        val rect = RectF(effect.rect).apply { inset(-3f * density, -3f * density) }
-        fillPaint.color = alphaColor(accentColor, (55 * (1f - progress)).toInt())
+        val rect = RectF(effect.rect).apply { inset(-8f * density, -8f * density) }
+        fillPaint.color = alphaColor(accentColor, (115 * (1f - progress)).toInt())
         canvas.drawRoundRect(rect, keyRadius, keyRadius, fillPaint)
     }
 
@@ -214,7 +214,7 @@ class KeyboardPressEffects(
             canvas.drawCircle(
                 effect.rect.centerX() + cos(particle.angle) * distance,
                 effect.rect.centerY() + sin(particle.angle) * distance,
-                2.3f * density * (1f - progress * 0.5f),
+                3.8f * density * (1f - progress * 0.45f),
                 fillPaint,
             )
         }
@@ -231,7 +231,7 @@ class KeyboardPressEffects(
         return List(count) { index ->
             Particle(
                 angle = ((PI * 2.0 * index) / count).toFloat(),
-                speed = 14f + (index % 4) * 5f + spec.intensity * 14f,
+                speed = 24f + (index % 4) * 7f + spec.intensity * 22f,
                 color = palette[index % palette.size],
             )
         }

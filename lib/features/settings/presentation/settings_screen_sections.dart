@@ -90,13 +90,13 @@ class _BackendProviderSection extends StatelessWidget {
         children: [
           Text(detail, style: Theme.of(context).textTheme.bodySmall),
           AppGaps.x3,
-          ExpansionTile(
-            tilePadding: EdgeInsets.zero,
-            childrenPadding: EdgeInsets.zero,
-            title: const Text('Logs & diagnostic'),
-            subtitle: const Text('Afficher/masquer le bloc complet'),
-            children: [SelectableText(diagnosticText), AppGaps.x3],
+          Text(
+            'Logs & diagnostic',
+            style: Theme.of(context).textTheme.titleSmall,
           ),
+          AppGaps.x2,
+          _DiagnosticLogPanel(diagnosticText: diagnosticText),
+          AppGaps.x3,
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -114,6 +114,57 @@ class _BackendProviderSection extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DiagnosticLogPanel extends StatefulWidget {
+  const _DiagnosticLogPanel({required this.diagnosticText});
+
+  final String diagnosticText;
+
+  @override
+  State<_DiagnosticLogPanel> createState() => _DiagnosticLogPanelState();
+}
+
+class _DiagnosticLogPanelState extends State<_DiagnosticLogPanel> {
+  final ScrollController _controller = ScrollController(keepScrollOffset: false);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 220),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+        border: Border.all(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(AppSpacing.x2),
+      ),
+      child: Scrollbar(
+        controller: _controller,
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          key: const PageStorageKey<String>('backend_diagnostic_log_scroll'),
+          controller: _controller,
+          primary: false,
+          padding: const EdgeInsets.all(AppSpacing.x2),
+          child: SelectableText(
+            widget.diagnosticText,
+            key: const Key('backend-diagnostic-log-text'),
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontFamily: 'monospace',
+              height: 1.35,
+            ),
+          ),
+        ),
       ),
     );
   }

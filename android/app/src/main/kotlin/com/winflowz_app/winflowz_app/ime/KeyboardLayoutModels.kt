@@ -54,6 +54,7 @@ enum class KeyboardKeyAction {
     ForwardDelete,
     DeleteWordBefore,
     DeleteWordAfter,
+    InsertTab,
     Enter,
     Shift,
     ModeLetters,
@@ -137,6 +138,7 @@ data class KeyboardKeySpec(
     val weight: Float = 1f,
     val enabled: Boolean = true,
     val active: Boolean = false,
+    val actionSurface: Boolean = false,
     val suggestion: String? = null,
     val cornerAssignments: KeyboardCornerAssignments = KeyboardCornerAssignments.Empty,
 )
@@ -146,6 +148,7 @@ data class KeyboardRowSpec(
     val leadingWeight: Float = 0f,
     val trailingWeight: Float = leadingWeight,
     val horizontalScrollable: Boolean = false,
+    val pagedHorizontalScrollable: Boolean = false,
 )
 
 data class KeyboardLayoutSnapshot(
@@ -184,6 +187,7 @@ data class KeyboardLayoutRequest(
     val snippets: List<KeyboardTextRule> = emptyList(),
     val suggestions: List<String>,
     val numberRowPinned: Boolean = false,
+    val navigationRowPinned: Boolean = false,
     val mediaNowPlayingLabel: String? = null,
     val cornerConfig: KeyboardCornerConfig = KeyboardCornerConfig(),
     val fieldPolicy: KeyboardFieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO),
@@ -212,7 +216,7 @@ object KeyboardLayoutBuilder {
             if (request.panel.suppressesTypingRows()) {
                 emptyList()
             } else {
-                pinnedNumberRows(request, effectiveMode) + suggestionRows(request)
+                pinnedNumberRows(request, effectiveMode) + pinnedNavigationRows(request) + suggestionRows(request)
             }
         rows.addAll(suggestionRows)
         val panelRows = panelRows(request)
@@ -321,7 +325,7 @@ object KeyboardLayoutBuilder {
                     modeKey("123", KeyboardKeyAction.ModeNumbers, mode == KeyboardLayoutMode.Numbers || request.numberRowPinned),
                     panelKey("Acc", KeyboardKeyAction.ToggleAccentPanel, request.panel == KeyboardPanelMode.Accents),
                     modeKey("#+=", KeyboardKeyAction.ModeSymbols, mode == KeyboardLayoutMode.Symbols),
-                    panelKey("Nav", KeyboardKeyAction.ToggleNavigationPanel, request.panel == KeyboardPanelMode.Navigation),
+                    panelKey("Nav", KeyboardKeyAction.ToggleNavigationPanel, request.panel == KeyboardPanelMode.Navigation || request.navigationRowPinned),
                     panelKey("Emoji", KeyboardKeyAction.ToggleEmojiPanel, request.panel == KeyboardPanelMode.Emoji),
                     panelKey(
                         "Clip",
@@ -368,15 +372,39 @@ object KeyboardLayoutBuilder {
         return listOf(
             KeyboardRowSpec(
                 keys =
-                    "1234567890".map { digit ->
-                        KeyboardKeySpec(
-                            id = "pinned-number-$digit",
-                            label = digit.toString(),
-                            action = KeyboardKeyAction.Text,
-                            keyValue = KeyboardKeyValue.text(digit.toString()),
-                            weight = 0.9f,
-                        )
+                    listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "+", "-", "=", "$").map { value ->
+                        textKey(value, weight = if (value.length == 1) 0.9f else 1f).asActionSurface()
                     },
+                horizontalScrollable = true,
+                pagedHorizontalScrollable = true,
+            ),
+        )
+    }
+
+    private fun pinnedNavigationRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
+        if (!request.navigationRowPinned) {
+            return emptyList()
+        }
+        return listOf(
+            KeyboardRowSpec(
+                keys =
+                    listOf(
+                        KeyboardKeySpec("pinned-nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
+                        KeyboardKeySpec("pinned-nav-right", "→", KeyboardKeyAction.NavigateCharRight),
+                        KeyboardKeySpec("pinned-nav-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                        KeyboardKeySpec("pinned-nav-end", "Fin", KeyboardKeyAction.NavigateLineEnd),
+                        KeyboardKeySpec("pinned-nav-tab", "Tab", KeyboardKeyAction.InsertTab),
+                        KeyboardKeySpec("pinned-nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.15f),
+                        KeyboardKeySpec("pinned-nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.15f),
+                        KeyboardKeySpec("pinned-nav-del-before", "Del←", KeyboardKeyAction.Backspace),
+                        KeyboardKeySpec("pinned-nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
+                        KeyboardKeySpec("pinned-nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+                        KeyboardKeySpec("pinned-nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
+                        KeyboardKeySpec("pinned-nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.1f),
+                        KeyboardKeySpec("pinned-nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.1f),
+                    ).map { it.asActionSurface() },
+                horizontalScrollable = true,
+                pagedHorizontalScrollable = true,
             ),
         )
     }
@@ -384,14 +412,14 @@ object KeyboardLayoutBuilder {
     private fun panelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         return when (request.panel) {
             KeyboardPanelMode.None -> emptyList()
-            KeyboardPanelMode.Navigation -> navigationPanelRows()
-            KeyboardPanelMode.Accents -> accentPanelRows()
-            KeyboardPanelMode.Emoji -> emojiPanelRows(request)
-            KeyboardPanelMode.Clipboard -> listOf(clipboardPanelRow(request))
-            KeyboardPanelMode.ClipboardFull -> clipboardFullPanelRows(request)
-            KeyboardPanelMode.Media -> mediaPanelRows(request)
-            KeyboardPanelMode.Snippets -> listOf(snippetsPanelRow(request))
-            KeyboardPanelMode.Settings -> settingsPanelRows(request)
+            KeyboardPanelMode.Navigation -> navigationPanelRows().asActionSurfaceRows()
+            KeyboardPanelMode.Accents -> accentPanelRows().asActionSurfaceRows()
+            KeyboardPanelMode.Emoji -> emojiPanelRows(request).asActionSurfaceRows()
+            KeyboardPanelMode.Clipboard -> listOf(clipboardPanelRow(request)).asActionSurfaceRows()
+            KeyboardPanelMode.ClipboardFull -> clipboardFullPanelRows(request).asActionSurfaceRows()
+            KeyboardPanelMode.Media -> mediaPanelRows(request).asActionSurfaceRows()
+            KeyboardPanelMode.Snippets -> listOf(snippetsPanelRow(request)).asActionSurfaceRows()
+            KeyboardPanelMode.Settings -> settingsPanelRows(request).asActionSurfaceRows()
         }
     }
 
@@ -423,13 +451,16 @@ object KeyboardLayoutBuilder {
             KeyboardRowSpec(
                 keys =
                     listOf(
-                        KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.3f),
+                        KeyboardKeySpec("nav-line-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                        KeyboardKeySpec("nav-tab", "Tab", KeyboardKeyAction.InsertTab),
+                        KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.2f),
                         KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft, weight = 1.1f),
                         KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight, weight = 1.1f),
-                        KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.3f),
+                        KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.2f),
+                        KeyboardKeySpec("nav-line-end", "Fin", KeyboardKeyAction.NavigateLineEnd, weight = 1.15f),
                     ),
-                leadingWeight = 0.6f,
-                trailingWeight = 0.6f,
+                leadingWeight = 0.15f,
+                trailingWeight = 0.15f,
             ),
             KeyboardRowSpec(
                 keys =
@@ -831,7 +862,7 @@ object KeyboardLayoutBuilder {
     private fun compactSymbolRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         return listOf(
             KeyboardRowSpec(listOf("[", "]", "{", "}", "#", "%", "^", "*", "+").map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace, weight = 0.9f)),
-            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "€", "£").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter, weight = 1.0f)),
+            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter, weight = 1.0f)),
             KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey(".", weight = 0.8f), textKey(","), textKey("?"), textKey("!"), textKey("Espace", " ", weight = 2f))),
         )
     }
@@ -841,13 +872,13 @@ object KeyboardLayoutBuilder {
             KeyboardLayoutProfile.QWERTY ->
                 listOf(
                     rowFromChars("qwertyuiop"),
-                    rowFromChars("asdfghjkl", leading = 0.45f),
+                    rowFromChars("asdfghjkl", leading = 0.5f),
                     bottomLetterRowWithControls("zxcvbnm", request.shifted),
                 )
             KeyboardLayoutProfile.AZERTY ->
                 listOf(
                     rowFromChars("azertyuiop"),
-                    rowFromChars("qsdfghjklm", leading = 0.25f),
+                    rowFromChars("qsdfghjklm"),
                     bottomLetterRowWithControls("wxcvbn", request.shifted),
                 )
         }
@@ -921,7 +952,7 @@ object KeyboardLayoutBuilder {
     private fun symbolRows(): List<KeyboardRowSpec> {
         return listOf(
             KeyboardRowSpec(listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "=").map { textKey(it) }),
-            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "€", "£", "¥").map { textKey(it) }, leadingWeight = 0.45f),
+            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£", "¥").map { textKey(it) }, leadingWeight = 0.3f),
             KeyboardRowSpec(listOf(".", ",", "?", "!", "'", "`", "•").map { textKey(it) }, leadingWeight = 1.2f),
         )
     }
@@ -1054,6 +1085,16 @@ object KeyboardLayoutBuilder {
             keyValue = value,
             weight = weight,
         )
+    }
+
+    private fun KeyboardKeySpec.asActionSurface(): KeyboardKeySpec = copy(actionSurface = true)
+
+    private fun KeyboardRowSpec.asActionSurfaceRow(): KeyboardRowSpec {
+        return copy(keys = keys.map { it.asActionSurface() })
+    }
+
+    private fun List<KeyboardRowSpec>.asActionSurfaceRows(): List<KeyboardRowSpec> {
+        return map { it.asActionSurfaceRow() }
     }
 
     private fun modifierKey(

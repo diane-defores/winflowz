@@ -299,6 +299,9 @@ class KeyboardThemeConfig {
     required this.borderColor,
     required this.borderWidth,
     required this.keyRadius,
+    required this.keyHorizontalGap,
+    required this.rowVerticalGap,
+    required this.keyWidthScale,
     required this.shadowColor,
     required this.shadowBlur,
     required this.shadowOffsetY,
@@ -326,6 +329,9 @@ class KeyboardThemeConfig {
   final int borderColor;
   final double borderWidth;
   final double keyRadius;
+  final double keyHorizontalGap;
+  final double rowVerticalGap;
+  final double keyWidthScale;
   final int shadowColor;
   final double shadowBlur;
   final double shadowOffsetY;
@@ -354,6 +360,9 @@ class KeyboardThemeConfig {
       borderColor: 0x00000000,
       borderWidth: 0,
       keyRadius: 8,
+      keyHorizontalGap: 5,
+      rowVerticalGap: 5,
+      keyWidthScale: 1,
       shadowColor: 0x33000000,
       shadowBlur: 4,
       shadowOffsetY: 1,
@@ -422,6 +431,17 @@ class KeyboardThemeConfig {
               .clamp(0.0, 4.0),
       keyRadius: ((map['keyRadius'] as num?)?.toDouble() ?? defaults.keyRadius)
           .clamp(0.0, 24.0),
+      keyHorizontalGap:
+          ((map['keyHorizontalGap'] as num?)?.toDouble() ??
+                  defaults.keyHorizontalGap)
+              .clamp(0.0, 14.0),
+      rowVerticalGap:
+          ((map['rowVerticalGap'] as num?)?.toDouble() ??
+                  defaults.rowVerticalGap)
+              .clamp(0.0, 16.0),
+      keyWidthScale:
+          ((map['keyWidthScale'] as num?)?.toDouble() ?? defaults.keyWidthScale)
+              .clamp(0.75, 1.0),
       shadowColor: asColor(map['shadowColor'], defaults.shadowColor),
       shadowBlur:
           ((map['shadowBlur'] as num?)?.toDouble() ?? defaults.shadowBlur)
@@ -467,6 +487,9 @@ class KeyboardThemeConfig {
       'borderColor': borderColor,
       'borderWidth': borderWidth,
       'keyRadius': keyRadius,
+      'keyHorizontalGap': keyHorizontalGap,
+      'rowVerticalGap': rowVerticalGap,
+      'keyWidthScale': keyWidthScale,
       'shadowColor': shadowColor,
       'shadowBlur': shadowBlur,
       'shadowOffsetY': shadowOffsetY,
@@ -496,6 +519,9 @@ class KeyboardThemeConfig {
     int? borderColor,
     double? borderWidth,
     double? keyRadius,
+    double? keyHorizontalGap,
+    double? rowVerticalGap,
+    double? keyWidthScale,
     int? shadowColor,
     double? shadowBlur,
     double? shadowOffsetY,
@@ -523,6 +549,9 @@ class KeyboardThemeConfig {
       borderColor: borderColor ?? this.borderColor,
       borderWidth: borderWidth ?? this.borderWidth,
       keyRadius: keyRadius ?? this.keyRadius,
+      keyHorizontalGap: keyHorizontalGap ?? this.keyHorizontalGap,
+      rowVerticalGap: rowVerticalGap ?? this.rowVerticalGap,
+      keyWidthScale: keyWidthScale ?? this.keyWidthScale,
       shadowColor: shadowColor ?? this.shadowColor,
       shadowBlur: shadowBlur ?? this.shadowBlur,
       shadowOffsetY: shadowOffsetY ?? this.shadowOffsetY,

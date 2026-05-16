@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -395,6 +396,50 @@ class _KeyboardThemeStudioScreenState extends State<KeyboardThemeStudioScreen> {
           ),
           const SizedBox(height: 12),
           _StudioSection(
+            title: 'Spacing',
+            subtitle:
+                'Control touch density: no gap for larger targets, airy gap for visual style.',
+            initiallyExpanded: false,
+            child: Column(
+              children: [
+                _SliderField(
+                  label: 'Key gap',
+                  value: _draft.keyHorizontalGap,
+                  min: 0,
+                  max: 14,
+                  divisions: 14,
+                  valueLabel: '${_draft.keyHorizontalGap.round()} px',
+                  onChanged: (value) => setState(
+                    () => _draft = _draft.copyWith(keyHorizontalGap: value),
+                  ),
+                ),
+                _SliderField(
+                  label: 'Row gap',
+                  value: _draft.rowVerticalGap,
+                  min: 0,
+                  max: 16,
+                  divisions: 16,
+                  valueLabel: '${_draft.rowVerticalGap.round()} px',
+                  onChanged: (value) => setState(
+                    () => _draft = _draft.copyWith(rowVerticalGap: value),
+                  ),
+                ),
+                _SliderField(
+                  label: 'Key width',
+                  value: _draft.keyWidthScale,
+                  min: 0.75,
+                  max: 1,
+                  divisions: 25,
+                  valueLabel: '${(_draft.keyWidthScale * 100).round()}%',
+                  onChanged: (value) => setState(
+                    () => _draft = _draft.copyWith(keyWidthScale: value),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          _StudioSection(
             title: 'Borders & shadows',
             subtitle: 'Rounded keys, thin borders and bounded shadows.',
             initiallyExpanded: false,
@@ -771,22 +816,25 @@ class _ThemeDraftPreview extends StatefulWidget {
 
 class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
   final Set<String> _pressedKeys = <String>{};
+  final Map<String, int> _pressTokens = <String, int>{};
 
   void _press(String key) {
     if (widget.theme.pressEffect == KeyboardThemePressEffect.none) {
       return;
     }
+    final token = (_pressTokens[key] ?? 0) + 1;
     setState(() => _pressedKeys.add(key));
+    _pressTokens[key] = token;
     final holdMs = widget.theme.effectDurationMs.clamp(80, 600);
     Future<void>.delayed(Duration(milliseconds: holdMs), () {
       if (!mounted) return;
+      if (_pressTokens[key] != token) return;
       setState(() => _pressedKeys.remove(key));
     });
   }
 
   void _release(String key) {
-    if (!mounted) return;
-    setState(() => _pressedKeys.remove(key));
+    // Let the configured effect duration complete so quick taps remain visible.
   }
 
   @override
@@ -822,17 +870,22 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
         child: Column(
           children: [
             _previewRow(theme, const ['Q', 'W', 'E', 'R', 'T']),
-            const SizedBox(height: 8),
+            SizedBox(height: theme.rowVerticalGap),
             _previewRow(theme, const ['A', 'S', 'D', 'F', 'G']),
-            const SizedBox(height: 8),
+            SizedBox(height: theme.rowVerticalGap),
             _previewRow(theme, const ['Shift', 'Z', 'X', 'C', '⌫']),
-            const SizedBox(height: 8),
+            SizedBox(height: theme.rowVerticalGap),
             Row(
               children: [
                 _previewKey(theme, ',', special: true),
-                const SizedBox(width: 6),
-                Expanded(child: _previewKey(theme, 'space')),
-                const SizedBox(width: 6),
+                SizedBox(width: theme.keyHorizontalGap),
+                Expanded(
+                  child: FractionallySizedBox(
+                    widthFactor: theme.keyWidthScale,
+                    child: _previewKey(theme, 'space'),
+                  ),
+                ),
+                SizedBox(width: theme.keyHorizontalGap),
                 _previewKey(theme, '↵', special: true, active: true),
               ],
             ),
@@ -860,13 +913,16 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
       children: [
         for (var i = 0; i < labels.length; i++) ...[
           Expanded(
-            child: _previewKey(
-              theme,
-              labels[i],
-              special: labels[i] == 'Shift' || labels[i] == '⌫',
+            child: FractionallySizedBox(
+              widthFactor: theme.keyWidthScale,
+              child: _previewKey(
+                theme,
+                labels[i],
+                special: labels[i] == 'Shift' || labels[i] == '⌫',
+              ),
             ),
           ),
-          if (i != labels.length - 1) const SizedBox(width: 6),
+          if (i != labels.length - 1) SizedBox(width: theme.keyHorizontalGap),
         ],
       ],
     );
@@ -885,9 +941,11 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
               ? theme.pressedKeyColor
               : (special ? theme.specialKeyColor : theme.keyColor));
     final double animatedScale = switch (theme.pressEffect) {
-      KeyboardThemePressEffect.scale => pressed ? 1.08 : 1,
-      KeyboardThemePressEffect.pulse => pressed ? 1.06 : 1,
-      KeyboardThemePressEffect.shake => pressed ? 1.03 : 1,
+      KeyboardThemePressEffect.scale =>
+        pressed ? 1 + 0.16 * theme.effectIntensity.clamp(0.25, 1) : 1,
+      KeyboardThemePressEffect.pulse =>
+        pressed ? 1 + 0.12 * theme.effectIntensity.clamp(0.25, 1) : 1,
+      KeyboardThemePressEffect.shake => pressed ? 1.04 : 1,
       KeyboardThemePressEffect.none ||
       KeyboardThemePressEffect.ripple ||
       KeyboardThemePressEffect.glow ||
@@ -896,7 +954,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
     };
     final animatedOffsetX =
         theme.pressEffect == KeyboardThemePressEffect.shake && pressed
-        ? 2.0
+        ? 8.0 * theme.effectIntensity.clamp(0.35, 1)
         : 0.0;
     return GestureDetector(
       onTapDown: (_) => _press(label),
@@ -914,52 +972,141 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
             milliseconds: (theme.effectDurationMs * 0.4).round().clamp(60, 200),
           ),
           curve: Curves.easeOut,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Color(bg),
-              borderRadius: BorderRadius.circular(theme.keyRadius),
-              border: pressed && theme.pressEffect != KeyboardThemePressEffect.none
-                  ? Border.all(color: Color(theme.activeKeyColor), width: 2)
-                  : (theme.borderWidth > 0
-                        ? Border.all(
-                            color: Color(theme.borderColor),
-                            width: theme.borderWidth,
-                          )
-                        : null),
-              boxShadow:
-                  pressed && theme.pressEffect != KeyboardThemePressEffect.none
-                  ? [
-                      BoxShadow(
-                        color: Color(theme.activeKeyColor).withValues(alpha: 0.35),
-                        blurRadius: 10 + theme.effectIntensity * 8,
-                        spreadRadius: 1 + theme.effectIntensity * 2,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Color(bg),
+                  borderRadius: BorderRadius.circular(theme.keyRadius),
+                  border:
+                      pressed &&
+                          theme.pressEffect != KeyboardThemePressEffect.none
+                      ? Border.all(color: Color(theme.activeKeyColor), width: 2)
+                      : (theme.borderWidth > 0
+                            ? Border.all(
+                                color: Color(theme.borderColor),
+                                width: theme.borderWidth,
+                              )
+                            : null),
+                  boxShadow:
+                      pressed &&
+                          theme.pressEffect != KeyboardThemePressEffect.none
+                      ? [
+                          BoxShadow(
+                            color: Color(
+                              theme.activeKeyColor,
+                            ).withValues(alpha: 0.45),
+                            blurRadius: 14 + theme.effectIntensity * 14,
+                            spreadRadius: 2 + theme.effectIntensity * 4,
+                          ),
+                        ]
+                      : (theme.shadowBlur > 0
+                            ? [
+                                BoxShadow(
+                                  color: Color(theme.shadowColor),
+                                  blurRadius: theme.shadowBlur,
+                                  offset: Offset(0, theme.shadowOffsetY),
+                                ),
+                              ]
+                            : null),
+                ),
+                child: SizedBox(
+                  height: 36,
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: Color(theme.textColor),
+                        fontWeight: FontWeight.w700,
                       ),
-                    ]
-                  : (theme.shadowBlur > 0
-                        ? [
-                            BoxShadow(
-                              color: Color(theme.shadowColor),
-                              blurRadius: theme.shadowBlur,
-                              offset: Offset(0, theme.shadowOffsetY),
-                            ),
-                          ]
-                        : null),
-            ),
-            child: SizedBox(
-              height: 36,
-              child: Center(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: Color(theme.textColor),
-                    fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (pressed)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(
+                      painter: _PreviewPressEffectPainter(theme: theme),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _PreviewPressEffectPainter extends CustomPainter {
+  const _PreviewPressEffectPainter({required this.theme});
+
+  final KeyboardThemeConfig theme;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final accent = Color(theme.activeKeyColor);
+    final center = Offset(size.width / 2, size.height / 2);
+    final paint = Paint()..isAntiAlias = true;
+    switch (theme.pressEffect) {
+      case KeyboardThemePressEffect.ripple:
+        paint
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3
+          ..color = accent.withValues(alpha: 0.75);
+        canvas.drawCircle(
+          center,
+          math.max(size.width, size.height) * 0.42,
+          paint,
+        );
+      case KeyboardThemePressEffect.glow:
+        paint
+          ..style = PaintingStyle.fill
+          ..color = accent.withValues(alpha: 0.24);
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(-5, -5, size.width + 10, size.height + 10),
+            Radius.circular(theme.keyRadius + 5),
+          ),
+          paint,
+        );
+      case KeyboardThemePressEffect.confettiLite:
+      case KeyboardThemePressEffect.fireworksLite:
+        final count =
+            theme.pressEffect == KeyboardThemePressEffect.fireworksLite
+            ? 16
+            : 10;
+        final colors = <Color>[
+          const Color(0xFF36B384),
+          const Color(0xFFFFD166),
+          const Color(0xFFEF476F),
+          const Color(0xFF4CC9F0),
+        ];
+        for (var i = 0; i < count; i++) {
+          final angle = math.pi * 2 * i / count;
+          final distance = 18 + (i % 4) * 5 + theme.effectIntensity * 16;
+          paint
+            ..style = PaintingStyle.fill
+            ..color = colors[i % colors.length];
+          canvas.drawCircle(
+            center +
+                Offset(math.cos(angle) * distance, math.sin(angle) * distance),
+            2.8,
+            paint,
+          );
+        }
+      case KeyboardThemePressEffect.none:
+      case KeyboardThemePressEffect.scale:
+      case KeyboardThemePressEffect.pulse:
+      case KeyboardThemePressEffect.shake:
+        break;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PreviewPressEffectPainter oldDelegate) {
+    return oldDelegate.theme != theme;
   }
 }

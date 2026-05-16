@@ -24,6 +24,9 @@ void main() {
       gradientStyle: KeyboardThemeGradientStyle.radial,
       borderWidth: 1.5,
       keyRadius: 14,
+      keyHorizontalGap: 0,
+      rowVerticalGap: 10,
+      keyWidthScale: 0.88,
       shadowBlur: 9,
       shadowOffsetY: 2,
       effectEasing: KeyboardThemeEffectEasing.spring,
@@ -34,6 +37,9 @@ void main() {
     expect(parsed.gradientStyle, KeyboardThemeGradientStyle.radial);
     expect(parsed.borderWidth, 1.5);
     expect(parsed.keyRadius, 14);
+    expect(parsed.keyHorizontalGap, 0);
+    expect(parsed.rowVerticalGap, 10);
+    expect(parsed.keyWidthScale, 0.88);
     expect(parsed.shadowBlur, 9);
     expect(parsed.effectEasing, KeyboardThemeEffectEasing.spring);
   });

@@ -513,6 +513,49 @@ void main() {
     _clearAndroidBridgeMocks();
   });
 
+  testWidgets('settings backend diagnostics panel opens without layout error', (
+    tester,
+  ) async {
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _useLargeViewport(tester);
+    _installAndroidBridgeMocks();
+
+    try {
+      await tester.pumpWidget(_appShellTestWidget());
+      await _pumpNavigationFrame(tester);
+
+      final closeOnboarding = find.byTooltip('Fermer (reprendre plus tard)');
+      if (closeOnboarding.evaluate().isNotEmpty) {
+        await tester.tap(closeOnboarding);
+        await tester.pumpAndSettle(const Duration(milliseconds: 300));
+      }
+
+      await tester.tap(find.byIcon(Icons.settings_outlined).last);
+      await _pumpNavigationFrame(tester);
+
+      final backendSection = find.text('Backend Provider').first;
+      await tester.scrollUntilVisible(
+        backendSection,
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(backendSection, warnIfMissed: false);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(
+        find.byKey(const Key('backend-diagnostic-log-text')),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    }
+  });
+
   testWidgets(
     'keyboard preview sandbox types letters and handles Space Back Enter Shift suggestion',
     (tester) async {
