@@ -27,6 +27,7 @@
 
 | Pri | Task | Status |
 |-----|------|--------|
+| ✅ | Remove GitHub Actions Node.js 20 deprecation warnings from Flutter Android CI | ✅ done — `dorny/paths-filter@v4` and `actions/cache@v5` now target Node 24; tracked as `BUG-2026-05-16-005` pending hosted CI confirmation |
 | 🟡 | Expand automated coverage beyond the template test for auth gate, repositories, and sync/error flows | 📋 todo |
 | ✅ | Rework core documentation path governance to remove compatibility doc files at repo root and use canonical `shipflow_data` paths | ✅ done |
 | ✅ | Revisit README/docs wording after verification so they reflect shipped behavior rather than migration intent | ✅ done — Firebase OIDC CI playbook added and Supabase migration docs explicitly archived/legacy |

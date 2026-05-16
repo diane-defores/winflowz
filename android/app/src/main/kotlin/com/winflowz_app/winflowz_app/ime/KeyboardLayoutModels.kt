@@ -812,14 +812,18 @@ object KeyboardLayoutBuilder {
         return when (request.layoutProfile) {
             KeyboardLayoutProfile.QWERTY ->
                 listOf(
-                    KeyboardRowSpec(rowFromChars("qwertyuiop").keys + KeyboardKeySpec("del-letter-row", "Del", KeyboardKeyAction.Backspace, weight = 0.9f)),
-                    KeyboardRowSpec(rowFromChars("asdfghjkl").keys + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter, weight = 1.0f), leadingWeight = 0.2f),
+                    KeyboardRowSpec(rowFromChars("qwertyuiop").keys + KeyboardKeySpec("del-letter-row", "Del", KeyboardKeyAction.Backspace)),
+                    KeyboardRowSpec(
+                        rowFromChars("asdfghjkl").keys + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter),
+                        leadingWeight = 0.5f,
+                        trailingWeight = 0.5f,
+                    ),
                     compactControlLetterRow("zxcvbnm", request),
                 )
             KeyboardLayoutProfile.AZERTY ->
                 listOf(
-                    KeyboardRowSpec(rowFromChars("azertyuiop").keys + KeyboardKeySpec("del-letter-row", "Del", KeyboardKeyAction.Backspace, weight = 0.9f)),
-                    KeyboardRowSpec(rowFromChars("qsdfghjklm").keys + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter, weight = 1.0f)),
+                    KeyboardRowSpec(rowFromChars("azertyuiop").keys + KeyboardKeySpec("del-letter-row", "Del", KeyboardKeyAction.Backspace)),
+                    KeyboardRowSpec(rowFromChars("qsdfghjklm").keys + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter)),
                     compactControlLetterRow("wxcvbn", request),
                 )
         }
@@ -839,32 +843,32 @@ object KeyboardLayoutBuilder {
                 ) +
                     chars.map { letterKey(it) } +
                     listOf(
-                        textKey("Espace", " ", weight = 2f),
+                        textKey("Espace", " "),
                     ),
         )
     }
 
     private fun compactNumberRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         return listOf(
-            KeyboardRowSpec(listOf(textKey("@", weight = 0.8f), textKey("+", weight = 0.8f), textKey("1"), textKey("2"), textKey("3"), textKey("-"), textKey("#"), KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace, weight = 0.9f))),
-            KeyboardRowSpec(listOf(textKey("?"), textKey("*"), textKey("4"), textKey("5"), textKey("6"), textKey("/"), textKey("!"), KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter, weight = 1.0f))),
-            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("7"), textKey("8"), textKey("9"), textKey("."), textKey(",", weight = 0.8f), textKey("Espace", " ", weight = 2f))),
+            KeyboardRowSpec(listOf(textKey("@"), textKey("+"), textKey("1"), textKey("2"), textKey("3"), textKey("-"), textKey("#"), KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace))),
+            KeyboardRowSpec(listOf(textKey("?"), textKey("*"), textKey("4"), textKey("5"), textKey("6"), textKey("/"), textKey("!"), KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter))),
+            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("7"), textKey("8"), textKey("9"), textKey("."), textKey(","), textKey("Espace", " "))),
         )
     }
 
     private fun compactAccentRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         return listOf(
-            KeyboardRowSpec(listOf("à", "â", "ä", "ç", "é", "è", "ê", "ë").map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace, weight = 0.9f)),
-            KeyboardRowSpec(listOf("î", "ï", "ô", "ö", "ù", "û", "ü", "ÿ").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter, weight = 1.0f)),
-            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("œ"), textKey("æ"), textKey("ñ"), textKey("’"), textKey("Espace", " ", weight = 2f))),
+            KeyboardRowSpec(listOf("à", "â", "ä", "ç", "é", "è", "ê", "ë").map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace)),
+            KeyboardRowSpec(listOf("î", "ï", "ô", "ö", "ù", "û", "ü", "ÿ").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter)),
+            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("œ"), textKey("æ"), textKey("ñ"), textKey("’"), textKey("Espace", " "))),
         )
     }
 
     private fun compactSymbolRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         return listOf(
-            KeyboardRowSpec(listOf("[", "]", "{", "}", "#", "%", "^", "*", "+").map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace, weight = 0.9f)),
-            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter, weight = 1.0f)),
-            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey(".", weight = 0.8f), textKey(","), textKey("?"), textKey("!"), textKey("Espace", " ", weight = 2f))),
+            KeyboardRowSpec(listOf("[", "]", "{", "}", "#", "%", "^", "*", "+").map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace)),
+            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter)),
+            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("."), textKey(","), textKey("?"), textKey("!"), textKey("Espace", " "))),
         )
     }
 

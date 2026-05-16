@@ -12,15 +12,12 @@ import android.graphics.RectF
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.graphics.Typeface
-import android.os.Build
 import android.os.SystemClock
-import android.provider.Settings
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.SoundEffectConstants
 import android.view.View
 import android.view.View.MeasureSpec
-import android.view.WindowInsets
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
@@ -481,7 +478,12 @@ class WinFlowzKeyboardView(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
         val desiredHeight = desiredKeyboardHeight()
-        setMeasuredDimension(width, resolveSize(desiredHeight, heightMeasureSpec))
+        val height =
+            when (MeasureSpec.getMode(heightMeasureSpec)) {
+                MeasureSpec.AT_MOST -> minOf(desiredHeight, MeasureSpec.getSize(heightMeasureSpec))
+                else -> desiredHeight
+            }
+        setMeasuredDimension(width, height)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -742,6 +744,10 @@ class WinFlowzKeyboardView(
         } else if (key.action == KeyboardKeyAction.ModeNumbers) {
             longPressTriggered = true
             numberRowPinned = !numberRowPinned
+            layoutMode = KeyboardLayoutMode.Letters
+            panelMode = KeyboardPanelMode.None
+            horizontalRowScrollOffset = 0f
+            verticalPanelScrollOffset = 0f
             setStatus(if (numberRowPinned) "Number row pinned" else "Number row hidden")
             refreshLayout()
         } else if (key.action == KeyboardKeyAction.ToggleNavigationPanel) {
@@ -1438,26 +1444,10 @@ class WinFlowzKeyboardView(
 
     private fun triggerPressEffect(key: KeyboardKeySpec) {
         val frame = gestureStartFrame?.takeIf { it.key.id == key.id } ?: return
-        val spec =
-            if (systemAnimationsEnabled()) {
-                KeyboardPressEffectPolicy.resolve(themeConfig, fieldPolicy.privateMode)
-            } else {
-                KeyboardPressEffectSpec(
-                    effect = "none",
-                    durationMs = themeConfig.effectDurationMs,
-                    intensity = themeConfig.effectIntensity,
-                    easing = themeConfig.effectEasing,
-                )
-            }
+        val spec = KeyboardPressEffectPolicy.resolve(themeConfig, fieldPolicy.privateMode)
         if (pressEffects.trigger(key.id, frame.rect, spec)) {
             postInvalidateOnAnimation()
         }
-    }
-
-    private fun systemAnimationsEnabled(): Boolean {
-        return runCatching {
-            Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) != 0f
-        }.getOrDefault(true)
     }
 
     private fun dispatchKeyValue(
@@ -1700,15 +1690,15 @@ class WinFlowzKeyboardView(
                 layoutSnapshot.rows.indices.sumOf { index ->
                     rowHeightFor(index).toDouble()
                 }.toFloat()
-            }
+        }
         val effectiveRowCount = if (usesVerticalPanelScroll()) 2 else rowCount
         val baseHeight = outerPadding * 2 + statusHeight + rowsHeight + rowGap() * effectiveRowCount
         return (baseHeight * keyboardHeightScale).toInt()
-            .plus(bottomSafeInset())
     }
 
     private fun usesVerticalPanelScroll(): Boolean {
-        return panelMode == KeyboardPanelMode.ClipboardFull
+        return panelMode == KeyboardPanelMode.ClipboardFull ||
+            (panelMode == KeyboardPanelMode.Settings && compactModeEnabled)
     }
 
     private fun firstPanelRowIndex(): Int {
@@ -1718,19 +1708,6 @@ class WinFlowzKeyboardView(
     private fun visiblePanelHeight(): Float {
         val visibleRows = if (compactModeEnabled) 2 else 3
         return panelRowHeight * visibleRows + rowGap() * (visibleRows - 1)
-    }
-
-    private fun bottomSafeInset(): Int {
-        val insets = rootWindowInsets
-        val navigationInset =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                insets?.getInsets(WindowInsets.Type.navigationBars())?.bottom ?: 0
-            } else {
-                @Suppress("DEPRECATION")
-                insets?.systemWindowInsetBottom ?: 0
-            }
-        val fallbackInset = if (compactModeEnabled) dp(28f).toInt() else dp(8f).toInt()
-        return max(navigationInset, fallbackInset)
     }
 
     private fun toggleCompactMode() {
