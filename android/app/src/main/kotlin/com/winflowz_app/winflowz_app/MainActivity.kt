@@ -21,6 +21,7 @@ import com.winflowz_app.winflowz_app.ime.KeyboardLayoutProfile
 import com.winflowz_app.winflowz_app.ime.KeyboardStateStore
 import com.winflowz_app.winflowz_app.ime.KeyboardThemeConfig
 import com.winflowz_app.winflowz_app.ime.KeyboardTextRule
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressBehavior
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -364,6 +365,9 @@ class MainActivity : FlutterActivity() {
                         }
                         call.argument<Boolean>("compactModeEnabled")?.let {
                             keyboardState.compactModeEnabled = it
+                        }
+                        call.argument<String>("actionBarLongPressBehavior")?.let {
+                            keyboardState.actionBarLongPressBehavior = KeyboardActionLongPressBehavior.fromRaw(it)
                         }
                         call.argument<String>("privacyMode")?.let {
                             keyboardState.privacyMode = it

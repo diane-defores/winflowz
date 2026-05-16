@@ -4,6 +4,9 @@ import android.content.Context
 import android.provider.Settings
 import android.view.inputmethod.InputMethodInfo
 import android.view.inputmethod.InputMethodManager
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressBehavior
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardAttachedActionRowState
 import java.io.File
 import java.util.Locale
 import org.json.JSONArray
@@ -99,6 +102,14 @@ class KeyboardStateStore(private val context: Context) {
         get() = preferences.getBoolean(KEY_COMPACT_MODE_ENABLED, false)
         set(value) = preferences.edit().putBoolean(KEY_COMPACT_MODE_ENABLED, value).apply()
 
+    var actionBarLongPressBehavior: KeyboardActionLongPressBehavior
+        get() = KeyboardActionLongPressBehavior.fromRaw(
+            preferences.getString(KEY_ACTION_BAR_LONG_PRESS_BEHAVIOR, DEFAULT_ACTION_BAR_LONG_PRESS_BEHAVIOR),
+        )
+        set(value) {
+            preferences.edit().putString(KEY_ACTION_BAR_LONG_PRESS_BEHAVIOR, value.wireValue).apply()
+        }
+
     var privacyMode: String
         get() = preferences.getString(KEY_PRIVACY_MODE, PRIVACY_AUTO) ?: PRIVACY_AUTO
         set(value) {
@@ -176,6 +187,7 @@ class KeyboardStateStore(private val context: Context) {
             "punctuationAutoSpacingEnabled" to punctuationAutoSpacingEnabled,
             "keyboardHeightScale" to keyboardHeightScale,
             "compactModeEnabled" to compactModeEnabled,
+            "actionBarLongPressBehavior" to actionBarLongPressBehavior.wireValue,
             "privacyMode" to privacyMode,
             "lastKeyboardError" to (lastKeyboardError ?: ""),
             "lastKeyboardErrorAt" to (lastKeyboardErrorAt ?: ""),
@@ -226,6 +238,108 @@ class KeyboardStateStore(private val context: Context) {
     }
 
     fun clipboardEntries(): List<KeyboardClipboardEntry> = readClipboardEntries()
+
+    fun actionBarState(): KeyboardActionBarState {
+        val raw = preferences.getString(KEY_ACTION_BAR_STATE, null).orEmpty()
+        if (raw.isBlank()) {
+            return KeyboardActionBarState(longPressBehavior = actionBarLongPressBehavior)
+        }
+        return runCatching {
+            val objectValue = JSONObject(raw)
+            val order = parseStringArray(objectValue.optJSONArray("orderedActionIds"))
+            val pinned = parseStringArray(objectValue.optJSONArray("pinnedActionIds")).toSet()
+            val attached =
+                objectValue.optJSONArray("attachedRows")
+                    ?.let { array ->
+                        buildList {
+                            for (index in 0 until array.length()) {
+                                val item = array.optJSONObject(index) ?: continue
+                                val providerActionId = item.optString("providerActionId").trim()
+                                val rowId = item.optString("rowId").trim()
+                                val dedupeKey = item.optString("dedupeKey").trim()
+                                if (providerActionId.isNotEmpty() && rowId.isNotEmpty() && dedupeKey.isNotEmpty()) {
+                                    add(
+                                        KeyboardAttachedActionRowState(
+                                            providerActionId = providerActionId,
+                                            rowId = rowId,
+                                            dedupeKey = dedupeKey,
+                                        ),
+                                    )
+                                }
+                            }
+                        }
+                    }.orEmpty()
+            val rowPageById =
+                objectValue.optJSONObject("rowPageById")
+                    ?.let { value ->
+                        buildMap {
+                            val iterator = value.keys()
+                            while (iterator.hasNext()) {
+                                val key = iterator.next()
+                                val page = value.optInt(key, 0)
+                                put(key, page.coerceAtLeast(0))
+                            }
+                        }
+                    }.orEmpty()
+            val usage =
+                objectValue.optJSONObject("adaptiveUsageScoreById")
+                    ?.let { value ->
+                        buildMap {
+                            val iterator = value.keys()
+                            while (iterator.hasNext()) {
+                                val key = iterator.next()
+                                put(key, value.optLong(key, 0L))
+                            }
+                        }
+                    }.orEmpty()
+            KeyboardActionBarState(
+                orderedActionIds = order,
+                pinnedActionIds = pinned,
+                attachedRows = attached,
+                rowPageById = rowPageById,
+                adaptiveUsageScoreById = usage,
+                longPressBehavior = actionBarLongPressBehavior,
+            )
+        }.getOrDefault(KeyboardActionBarState(longPressBehavior = actionBarLongPressBehavior))
+    }
+
+    fun replaceActionBarState(state: KeyboardActionBarState) {
+        val encoded =
+            JSONObject()
+                .put("orderedActionIds", JSONArray(state.orderedActionIds))
+                .put("pinnedActionIds", JSONArray(state.pinnedActionIds.toList()))
+                .put(
+                    "attachedRows",
+                    JSONArray().apply {
+                        state.attachedRows.forEach { row ->
+                            put(
+                                JSONObject()
+                                    .put("providerActionId", row.providerActionId)
+                                    .put("rowId", row.rowId)
+                                    .put("dedupeKey", row.dedupeKey),
+                            )
+                        }
+                    },
+                )
+                .put(
+                    "rowPageById",
+                    JSONObject().apply {
+                        state.rowPageById.forEach { (rowId, page) ->
+                            put(rowId, page.coerceAtLeast(0))
+                        }
+                    },
+                )
+                .put(
+                    "adaptiveUsageScoreById",
+                    JSONObject().apply {
+                        state.adaptiveUsageScoreById.forEach { (actionId, score) ->
+                            put(actionId, score)
+                        }
+                    },
+                )
+                .toString()
+        preferences.edit().putString(KEY_ACTION_BAR_STATE, encoded).apply()
+    }
 
     fun cornerConfig(): KeyboardCornerConfig {
         return KeyboardCornerConfig.fromJson(preferences.getString(KEY_CORNER_CONFIG, null))
@@ -382,6 +496,20 @@ class KeyboardStateStore(private val context: Context) {
         }.getOrDefault(emptyList())
     }
 
+    private fun parseStringArray(array: JSONArray?): List<String> {
+        if (array == null) {
+            return emptyList()
+        }
+        return buildList {
+            for (index in 0 until array.length()) {
+                val value = array.optString(index).trim()
+                if (value.isNotEmpty()) {
+                    add(value)
+                }
+            }
+        }
+    }
+
     private fun encodeRules(rules: List<KeyboardTextRule>): String {
         val array = JSONArray()
         rules
@@ -453,6 +581,8 @@ class KeyboardStateStore(private val context: Context) {
         const val KEY_PUNCTUATION_AUTO_SPACING_ENABLED = "punctuation_auto_spacing_enabled"
         const val KEY_KEYBOARD_HEIGHT_SCALE = "keyboard_height_scale"
         const val KEY_COMPACT_MODE_ENABLED = "compact_mode_enabled"
+        const val KEY_ACTION_BAR_STATE = "action_bar_state"
+        const val KEY_ACTION_BAR_LONG_PRESS_BEHAVIOR = "action_bar_long_press_behavior"
         const val KEY_EMOJI_RECENTS = "emoji_recents"
         const val KEY_PRIVACY_MODE = "privacy_mode"
         const val KEY_TEXT_EXPANSION_SNIPPETS = "text_expansion_snippets"
@@ -477,5 +607,6 @@ class KeyboardStateStore(private val context: Context) {
         const val KEYBOARD_HEIGHT_MIN = 0.85f
         const val KEYBOARD_HEIGHT_MAX = 1.20f
         const val KEYBOARD_HEIGHT_DEFAULT = 1.0f
+        const val DEFAULT_ACTION_BAR_LONG_PRESS_BEHAVIOR = "pin_action"
     }
 }

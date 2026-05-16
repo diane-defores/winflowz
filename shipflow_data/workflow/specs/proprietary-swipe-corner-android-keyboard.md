@@ -5,8 +5,8 @@ artifact_version: "1.0.0"
 project: "WinFlowz"
 created: "2026-05-09"
 created_at: "2026-05-09 15:32:50 UTC"
-updated: "2026-05-11"
-updated_at: "2026-05-11 17:53:55 UTC"
+updated: "2026-05-16"
+updated_at: "2026-05-16 12:16:33 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -36,16 +36,16 @@ depends_on:
     artifact_version: "1.0.0"
     required_status: "reviewed"
   - artifact: "shipflow_data/technical/guidelines.md"
-    artifact_version: "0.1.0"
+    artifact_version: "1.0.0"
     required_status: "reviewed"
   - artifact: "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
     artifact_version: "1.0.0"
     required_status: "reviewed"
   - artifact: "shipflow_data/workflow/specs/clipboard-backend-agnostic-api.md"
-    artifact_version: "0.1.0"
+    artifact_version: "1.0.0"
     required_status: "ready"
   - artifact: "shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
-    artifact_version: "0.1.0"
+    artifact_version: "1.0.0"
     required_status: "ready"
 supersedes: []
 evidence:
@@ -77,10 +77,12 @@ evidence:
   - "User decision 2026-05-09: special keys such as Shift/Maj and Control can support a double-tap policy for secondary actions."
   - "User decision 2026-05-09: add drawable gesture shortcuts starting from the space bar, with a settings page to record shapes and bind each recognized shape to an action."
   - "User decision 2026-05-09: drawable gestures from the space bar should start by movement threshold, not long press; tap remains space, swipe/draw beyond a configurable threshold starts the gesture."
+  - "User decision 2026-05-16: action bars and attached quick-action rows must share one normalized architecture; individual actions must declare capabilities and content, not reimplement tap, long-press, pinning, paging, availability, rendering or feedback behavior."
+  - "User decision 2026-05-16: attached action rows scroll by whole pages, not by arbitrary pixel drift; the number row first page keeps digits 1-0 visible and extra math/sign characters live on adjacent pages."
   - "User decision 2026-05-09: backend work is backend-agnostic, Firebase is the first remote adapter, and Supabase is legacy/reference only."
   - "Android official docs checked 2026-05-10: external actions should use explicit/implicit Intents where available, common intents for standard tasks, app launch intents, settings intents, app shortcuts when exposed by apps, and package visibility constraints when querying availability."
   - "Reference keyboard reviewed at /home/claude/keyboard on 2026-05-11: mature IME service uses input-method subtypes, supports switching to next input method, onStartInputView/onUpdateSelection lifecycle hooks, EditorConfig-style field context, layout parsing, candidates, dictionaries, direct-boot-aware preferences and parser-level tests."
-next_step: "/sf-start Proprietary Swipe-Corner Android Keyboard"
+next_step: "/sf-start Proprietary Swipe-Corner Android Keyboard action-bar architecture"
 ---
 
 # Title
@@ -89,7 +91,7 @@ Proprietary Swipe-Corner Android Keyboard
 
 # Status
 
-Ready for implementation. This spec defines a WinFlowz-owned Android keyboard implementation coded in-house. Current code state as of 2026-05-10: `WinFlowzKeyboardView.kt` and `WinFlowzInputMethodService.kt` now include a modular Canvas/touch keyboard with tap + swipe-corner classifier, QWERTY/AZERTY profile switching, field-context behavior (email/url/phone/search), minimal navigation panel, lightweight emoji panel with local recents, basic double-space and punctuation auto-spacing corrections with exclusions, and optional touch-debug overlay. Double-tap and long-press action policies are still pending. The full spec remains open because advanced modules (full navigation matrix, adaptive/smartbar behavior, richer emoji/clipboard workflows) and Android real-device QA are not complete. Fast next slice as of 2026-05-12: make the FlutterWeb/Vercel keyboard preview interactive with a simulated input field so product review can see what typed output each key/suggestion/action produces before native Android device QA.
+Ready for implementation. This spec defines a WinFlowz-owned Android keyboard implementation coded in-house. Current code state as of 2026-05-16: `WinFlowzKeyboardView.kt` and `WinFlowzInputMethodService.kt` include a modular Canvas/touch keyboard with tap + swipe-corner classifier, QWERTY/AZERTY profile switching, field-context behavior, native panels, configurable height/compact behavior, theme application, and transitional pinned action rows. The full spec remains open because advanced modules, final action-bar architecture, richer emoji/clipboard workflows, Android packaging proof and Android real-device QA are not complete. Next slice: replace transitional action-row branches with the shared action-bar architecture contract from Taches 10-11.
 
 # User Story
 
@@ -110,6 +112,31 @@ Precision Navigation: le mouvement paragraphe haut/bas cible un vrai paragraphe,
 Politique touches speciales: les touches speciales comme Shift/Maj, Controle, espace, entree, backspace, Navigation ou Parametres peuvent declarer des actions distinctes pour simple appui, double appui et appui long. Le double appui est reserve aux actions utiles mais non critiques, doit avoir un delai court configurable, un feedback visible/haptique specifique, et doit etre desactivable globalement ou par touche si l'utilisateur declenche trop d'actions par accident. Priorite de detection: si un appui long est atteint, il gagne sur double appui; sinon deux taps de la meme touche dans la fenetre configurée declenchent l'action double appui; un tap seul garde l'action normale.
 
 Gestes dessines depuis espace: l'utilisateur demarre sur la barre espace; si le doigt se leve sans depasser le seuil de mouvement, l'action reste un espace normal, et si le mouvement depasse le seuil configurable, par defaut autour de 20 px/dp apres calibration densite, le clavier bascule en mode trace et l'utilisateur dessine un motif simple sur la surface clavier, par exemple ligne, angle, zigzag, carre ou cercle. Pendant le trace, le clavier affiche le motif reconnu et l'action associee a cote; au relachement, si la confiance de reconnaissance depasse le seuil et que l'action est autorisee dans le contexte courant, l'action est lancee. Une page de parametres permet d'enregistrer des gestes, tester la reconnaissance, regler le seuil de demarrage, voir les collisions entre motifs, choisir l'action associee et desactiver la fonctionnalite. Les actions disponibles passent par un catalogue Android conservateur: actions WinFlowz internes, ouverture d'une app installee via launch intent, intents Android communs quand disponibles, ecrans Settings Android connus, raccourcis d'app exposes quand Android les rend disponibles, media controls deja supportes, et insertion de texte/snippet. Les actions qui exigent permissions, accessibilite, automatisation systeme profonde ou controle d'une autre app non expose par Android sont marquees indisponibles au lieu d'etre promises.
+
+# Action Bar Architecture Contract
+
+Les barres d'action WinFlowz doivent etre implementees par une architecture commune, pas par une addition de cas speciaux dans `WinFlowzKeyboardView.kt`. Chaque action declare ses capacites dans un catalogue local, et le moteur commun gere le tap, l'appui long, l'epinglage, les rangees attachees, les pages horizontales, la disponibilite par contexte, le mode prive, le rendu, le feedback et les fallbacks. Une action fournit du contenu et des commandes; elle ne doit pas reimplementer le comportement de barre.
+
+Contrat de modele attendu:
+- `KeyboardActionDescriptor`: id stable, label court, icone/glyphe, description accessibilite, commande tap, politique de disponibilite, eligibilite a l'epinglage, eligibilite au tri adaptatif, surface visuelle, et fournisseur optionnel de rangee attachee.
+- `KeyboardActionCatalog`: source locale unique des actions disponibles (`123`, `ABC`, accents, symboles, emoji, navigation, clip, media, theme, langues, prefs, snippets, dictation, configuration de barre). Le catalogue remplace les listes ad hoc dans le renderer.
+- `KeyboardActionBarState`: ordre courant, actions epinglees, page visible, action active, rangees attachees, preference `actionBarLongPressBehavior`, et offsets/pages de lignes.
+- `KeyboardActionRowSpec`: rangee d'actions attachable ou permanente avec items, taille de page visible, comportement `pagedHorizontal`, politique de fermeture, dedupe key, et surface `actionSurface`.
+- `KeyboardActionRowProvider`: interface fournie par une action pour construire sa ou ses rangees contextuelles selon le contexte courant. Exemples: `123` produit chiffres puis signes mathematiques; `Navigation` produit fleches/debut/fin/del; `Media` produit controles media; `Clip` produit cut/copy/paste/paste history quand autorise.
+- `KeyboardActionBarController`: applique la preference de long press, attache/detache les rangees, remet a zero les pages quand le contexte change, route les commandes vers le dispatcher, et garantit qu'aucune action ne peut creer de doublon.
+- `KeyboardActionRenderer`: dessine toutes les barres/rangees d'action avec les memes regles de hitbox, paging, feedback pressed, couleurs action-surface et theming.
+
+Comportement standardise:
+- Tap: execute la commande primaire de l'action, ou ouvre le panneau/layout cible si l'action est un mode.
+- Long press en `pin_action`: epingle/desepingle l'action si elle est pinnable; sinon feedback indisponible.
+- Long press en `attach_context_row`: attache la rangee contextuelle fournie par l'action; si aucune rangee n'est disponible, feedback indisponible sans changer l'etat.
+- Une rangee deja attachee n'est jamais dupliquee; le moteur la garde visible, la deplace selon l'ordre configure ou la remplace uniquement si la regle de dedupe le demande.
+- Les rangees attachees utilisent un scroll horizontal par pages entieres. Un swipe gauche/droite remplace la page visible par la page precedente/suivante; les hitboxes correspondent toujours aux touches visibles.
+- La rangee `123` affiche `1 2 3 4 5 6 7 8 9 0` sur la premiere page. Les signes comme `+`, `-`, `=`, `$` et autres caracteres utiles vont sur les pages suivantes.
+- Les actions clipboard sensibles (`cut`, `copy`, `paste`, historique) appartiennent a l'action `Clip`, pas aux rangees Navigation ou Symboles.
+- En mode prive, le moteur masque ou desactive les actions sensibles via la policy commune et n'incremente aucun usage adaptatif.
+- Les actions/rangees indisponibles restent recuperables: statut bref, haptique de rejet si active, aucun crash, aucune emission de texte inattendue.
+- Toute nouvelle barre ou action future doit passer par ces descriptors/providers; ajouter un nouveau `if (action == X)` dans le renderer ou dans la gestion long press est une regression d'architecture.
 
 # Success Behavior
 
@@ -346,6 +373,8 @@ Construire une implementation proprietaire et independante du clavier Android Wi
 - Appearance mode is one of `light`, `dark`, or `system`; `system` resolves from Android UI night mode at render time.
 - Native IME settings and Flutter Settings must converge through the same preference contract and cannot expose contradictory values.
 - The action bar is built from a local modular action catalog and user configuration, never from remote code.
+- All action bars, pinned rows and attached quick-action rows use the same descriptor/provider/controller/renderer contract; action-specific code only declares content and command semantics.
+- Action rows use page-based horizontal navigation when configured as paged; a swipe changes the visible page, not an arbitrary partial offset.
 - A minimal pinned action set is always recoverable even if user action-bar configuration is empty or corrupt.
 - Pinned smartbar actions have stable positions; adaptive sorting applies only to unpinned eligible actions.
 - Private/incognito sessions do not update adaptive action usage stats.
@@ -375,6 +404,8 @@ Construire une implementation proprietaire et independante du clavier Android Wi
 - `KeyboardSecurityPolicy.kt`: extend tests and edge-case coverage, not necessarily behavior.
 - `KeyboardClipboardController.kt`: may need better sensitive marking and paste/copy failure reporting.
 - New `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/*`: modular action catalog, action-bar configuration, usage sorting and availability rules.
+- Existing `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardLayoutModels.kt`: current `KeyboardRowSpec.horizontalScrollable`, `pagedHorizontalScrollable`, `visiblePageKeyCount` and `actionSurface` fields are implementation evidence for the shared row contract; the final architecture should move action-specific row construction behind catalog/providers.
+- Existing `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`: current `numberRowPinned`, `navigationRowPinned`, `handleLongPressUnsafe()` and `drawScrollableRow()` are transitional code; the target is a controller/renderer split that avoids adding one branch per action.
 - `lib/features/settings/presentation/settings_screen.dart`: may gain layout preference later, but not required for MVP.
 - `docs/PLATFORM_BEHAVIOR.md`, `docs/OVERLAY_ANDROID.md`, `docs/VERIFICATION.md`, `README.md`: update claims from "minimal QWERTY" to "swipe-corner proprietary keyboard" only after implementation passes manual QA.
 - Security consequence: a keyboard is a high-trust surface; privacy defaults and logging discipline are mandatory.
@@ -597,21 +628,21 @@ Priority 4 - Advanced typing:
   - Validate with : tests unitaires de profil vide/corrompu, module inconnu, module obligatoire, incompatibilite, ajout/retrait/reordre; QA manuelle de configuration du clavier depuis parametres.
   - Notes : Le profil ne doit stocker que des ids de modules, options et ordre; jamais de contenu utilisateur.
 
-- [ ] Tache 10 : Implementer la configuration modulaire de la barre d'actions
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionBarConfigStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionBarConfigPanel.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
-  - Action : Ajouter un bouton configuration de barre dans la barre et dans le panneau parametres; permettre d'ajouter, retirer, reordonner, epingler/desepingler et restaurer les actions; ajouter la preference `actionBarLongPressBehavior` avec valeurs `pin_action` et `attach_context_row`; persister la configuration localement avec fallback minimal epingle.
+- [x] Tache 10 : Implementer la configuration modulaire de la barre d'actions
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionDescriptor.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionCatalog.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionBarState.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionBarController.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionBarConfigStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionBarConfigPanel.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
+  - Action : Ajouter le catalogue local de descriptors d'actions, un etat de barre unique et un controller commun qui gere tap, long press, epinglage, disponibilite, ordre, pages et fallback; ajouter un bouton configuration de barre dans la barre et dans le panneau parametres; permettre d'ajouter, retirer, reordonner, epingler/desepingler et restaurer les actions; ajouter la preference `actionBarLongPressBehavior` avec valeurs `pin_action` et `attach_context_row`; persister la configuration localement avec fallback minimal epingle.
   - User story link : le clavier devient compose de briques modulaires ajustables par l'utilisateur.
   - Depends on : Taches 4-9.
-  - Validate with : tests unitaires de config vide/corrompue, action inconnue, action obligatoire, ajout/retrait/reordre, long press pin vs attach; QA manuelle de la configuration depuis la barre et depuis parametres.
-  - Notes : Le catalogue definit id, icone, label accessibilite, action tap, rangee contextuelle optionnelle, disponibilite par contexte, pinning et eligibilite au tri adaptatif.
+  - Validate with : tests unitaires de config vide/corrompue, action inconnue, action obligatoire, ajout/retrait/reordre, long press pin vs attach, private mode, availability, page changes; QA manuelle de la configuration depuis la barre et depuis parametres.
+  - Notes : Le catalogue definit id, icone, label accessibilite, action tap, rangee contextuelle optionnelle, disponibilite par contexte, pinning, surface visuelle et eligibilite au tri adaptatif. Le renderer ne doit pas contenir une branche speciale par action.
 
-- [ ] Tache 11 : Implementer les rangees contextuelles attachables
-  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardContextRow.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardContextRowStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardContextRowRenderer.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionCatalog.kt`
-  - Action : Permettre a une action compatible d'attacher une rangee de quick actions sous la barre principale via long press quand `actionBarLongPressBehavior=attach_context_row`; fournir fermeture manuelle, dedupe, limite de hauteur, ordre stable, persistance locale et fallback si la rangee devient invalide.
+- [x] Tache 11 : Implementer les rangees contextuelles attachables
+  - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionRowSpec.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionRowProvider.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardContextRowStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionRowRenderer.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionCatalog.kt`
+  - Action : Permettre a une action compatible d'attacher une rangee de quick actions sous la barre principale via long press quand `actionBarLongPressBehavior=attach_context_row`; fournir fermeture manuelle, dedupe, limite de hauteur, ordre stable, page-based horizontal scroll, persistance locale et fallback si la rangee devient invalide.
   - User story link : l'utilisateur peut ajouter a la volee une rangee de travail, par exemple chiffres ou media, sans quitter son champ de saisie.
   - Depends on : Taches 4, 5, 8, 10.
-  - Validate with : tests unitaires d'attachement, fermeture, dedupe, limite de rangees, action indisponible, config corrompue; QA manuelle long press Chiffres et Media.
-  - Notes : MVP requis: rangee Chiffres `1` a `0` et rangee Media avec controles disponibles. Les rangees ne stockent que des ids/actions, jamais de contenu utilisateur.
+  - Validate with : tests unitaires d'attachement, fermeture, dedupe, limite de rangees, action indisponible, config corrompue, paging gauche/droite, hitboxes visibles; QA manuelle long press Chiffres, Navigation, Media et Clip.
+  - Notes : MVP requis: rangee Chiffres premiere page `1` a `0` puis pages signes mathematiques, rangee Navigation, rangee Media avec controles disponibles, rangee Clip pour cut/copy/paste. Les rangees ne stockent que des ids/actions, jamais de contenu utilisateur.
 
 - [ ] Tache 12 : Implementer les langues actives clavier et dictee
   - Fichiers : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/languages/KeyboardLanguageStore.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/languages/KeyboardLanguagePanel.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/languages/KeyboardLanguageResolver.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardVoiceController.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
@@ -776,6 +807,11 @@ Priority 4 - Advanced typing:
 - [ ] CA 50 : Given une rangee contextuelle est deja attachee, when l'utilisateur long press la meme action compatible, then le clavier ne cree pas de doublon et conserve un etat previsible.
 - [ ] CA 51 : Given plusieurs rangees contextuelles sont attachees, when la hauteur disponible devient insuffisante, then le clavier applique sa limite visible et conserve une surface de frappe utilisable.
 - [ ] CA 52 : Given l'utilisateur change la preference long press dans Settings Flutter ou dans le panneau parametres IME, when il revient au clavier, then le long press suivant respecte la nouvelle preference.
+- [ ] CA 52a : Given une rangee contextuelle paginee est visible, when l'utilisateur swipe gauche ou droite sur la rangee, then toute la page visible est remplacee par la page precedente/suivante et aucun tap d'action n'est declenche accidentellement.
+- [ ] CA 52b : Given la rangee Chiffres est attachee, when elle s'ouvre sur sa premiere page, then les dix chiffres `1 2 3 4 5 6 7 8 9 0` sont visibles; when l'utilisateur change de page, then les signes mathematiques et caracteres supplementaires apparaissent.
+- [ ] CA 52c : Given l'action Navigation est long-press avec `attach_context_row`, when elle fournit une rangee contextuelle, then cette rangee utilise le meme moteur de paging/dedupe/hitbox que Chiffres et Media.
+- [ ] CA 52d : Given une nouvelle action de barre est ajoutee au catalogue, when elle declare un provider de rangee, then aucun changement dans la logique centrale de long press ou de rendu n'est necessaire.
+- [ ] CA 52e : Given le champ est prive, when une action sensible comme Clip, Dictation ou Snippets expose des quick actions, then le moteur commun les masque/desactive et n'enregistre aucun usage adaptatif.
 - [ ] CA 53 : Given WinFlowz keyboard n'est pas active dans Android, when l'utilisateur ouvre Settings clavier, then l'assistant affiche `pas active` et propose d'ouvrir les reglages Android de methode de saisie.
 - [ ] CA 54 : Given WinFlowz keyboard est active mais pas clavier actif, when l'utilisateur revient dans Settings, then l'assistant affiche `active mais pas actif` et propose d'ouvrir le picker clavier.
 - [ ] CA 55 : Given WinFlowz keyboard est actif, when l'utilisateur ouvre l'assistant, then il affiche `actif` et propose un champ de test utilisable.
@@ -938,14 +974,19 @@ Stop conditions:
 | 2026-05-13 03:27:07 UTC | sf-start | GPT-5 Codex | Implemented FlutterWeb keyboard typing sandbox: simulated input buffer/cursor/status, tappable `_KeyCap` dispatch for letters/numbers/punctuation and Shift/Space/Back/Enter/suggestions, clear/reset controls, explicit disabled/non-simulated statuses, and widget tests for typing plus email/private behavior | implemented | /sf-verify Proprietary Swipe-Corner Android Keyboard |
 | 2026-05-13 03:30:25 UTC | sf-verify | GPT-5 Codex | Verified the FlutterWeb typing sandbox locally, fixed suggestion spacing so suggestions do not attach to existing text, and reran widget tests, analyzer and diff whitespace checks | partial | /sf-ship FlutterWeb keyboard typing sandbox, then /sf-prod and preview browser check |
 | 2026-05-14 11:24:18 UTC | sf-build | GPT-5 Codex | Moved hardcoded swipe-corner accent behavior into the dedicated configurable corner shortcuts chantier; native layout now resolves corner assignments from presets/overrides and Flutter preview/settings use the same config contract | implemented in child chantier | /sf-verify Configurable Key Corner Swipes |
+| 2026-05-16 11:38:42 UTC | sf-spec | GPT-5 Codex | Formalized the shared action-bar architecture contract: descriptors, catalog, state, controller, row providers, page-based rows, shared renderer, private-mode availability and anti-duplication rules for every action bar/context row. | updated | /sf-ready Proprietary Swipe-Corner Android Keyboard action-bar architecture |
+| 2026-05-16 11:43:15 UTC | sf-verify | GPT-5 Codex | Verified the action-bar architecture spec update against the user decisions, metadata, dependencies, language doctrine, bug gate and diff hygiene; this verifies the contract update only, not native implementation readiness. | verified | /sf-ready Proprietary Swipe-Corner Android Keyboard action-bar architecture |
+| 2026-05-16 11:47:47 UTC | sf-ready | GPT-5 Codex | Evaluated the action-bar architecture readiness gate, refreshed stale dependency versions and next-step/status metadata, and confirmed the slice is unambiguous enough for implementation. | ready | /sf-start Proprietary Swipe-Corner Android Keyboard action-bar architecture |
+| 2026-05-16 12:11:41 UTC | sf-start | GPT-5.3 Codex | Implemented shared native action-bar architecture across IME actions with descriptor/catalog/state/controller/row-provider/renderer contracts, paged attached rows, private-mode sensitive-action masking, adaptive-usage gating, and integration in keyboard view/layout/service/store/tests. | implemented | /sf-verify Proprietary Swipe-Corner Android Keyboard action-bar architecture |
+| 2026-05-16 12:16:33 UTC | sf-verify | GPT-5 Codex | Verified the native action-bar architecture slice locally, fixed remaining Navigation-panel clipboard action leakage into the Clip entry point, reran whitespace and Kotlin compile checks, and identified remaining proof gaps: AAPT2-blocked unit test on ARM64, missing Android device QA, and Settings UI exposure for long-press behavior. | partial | CI/Blacksmith x86_64 test/build proof plus Android device QA for action rows |
 
 # Current Chantier Flow
 
-- sf-spec: updated 2026-05-12 with the fast FlutterWeb keyboard typing sandbox slice in `shipflow_data/workflow/specs/proprietary-swipe-corner-android-keyboard.md`
-- sf-ready: ready as of 2026-05-10 22:10:51 UTC
-- sf-start: implemented 2026-05-13 for the FlutterWeb keyboard typing sandbox slice (`Tache 0d/0e` scope): `/keyboard` now exposes a simulated input field with local buffer/cursor/status, tappable key dispatch for core typing actions, explicit private/disabled/non-simulated feedback, and widget coverage for typing + context/private transitions
-- sf-verify: partial as of 2026-05-13 for the FlutterWeb typing sandbox slice: local code/test proof passes with `flutter test test/widget_test.dart`, `flutter analyze`, and `git diff --check`, including a verifier fix for suggestion spacing; Vercel preview/manual browser proof remains pending because project development mode is undocumented while `vercel.json` is present, and broader Android native packaging/device QA constraints remain tracked in prior runs
+- sf-spec: updated 2026-05-16 with the shared action-bar architecture contract in `shipflow_data/workflow/specs/proprietary-swipe-corner-android-keyboard.md`
+- sf-ready: ready as of 2026-05-16 11:47:47 UTC for the action-bar architecture slice
+- sf-start: implemented 2026-05-16 12:11:41 UTC for the native action-bar architecture slice (Taches 10-11), with Kotlin compile proof and pending hosted/manual verification.
+- sf-verify: partial as of 2026-05-16 12:16:33 UTC; local diff hygiene and Kotlin compile pass, but full unit test/build proof on x86_64 CI plus Android real-device QA remain required.
 - sf-end: deferred as of 2026-05-11 03:15:38 UTC; session closed as partial because compile/device evidence is still missing
 - sf-ship: shipped on 2026-05-11 15:12:10 UTC for the current parity/FlutterWeb preview slice; not a final Android native readiness ship
 
-Next command: /sf-ship FlutterWeb keyboard typing sandbox, then /sf-prod and preview browser check for `/keyboard`
+Next command: CI/Blacksmith x86_64 test/build proof plus Android device QA for action rows

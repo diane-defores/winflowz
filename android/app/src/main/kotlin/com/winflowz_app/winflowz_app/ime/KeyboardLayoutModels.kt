@@ -1,5 +1,11 @@
 package com.winflowz_app.winflowz_app.ime
 
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarController
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionCatalog
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionEnvironment
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionRenderer
+
 enum class KeyboardLayoutProfile {
     QWERTY,
     AZERTY,
@@ -140,6 +146,8 @@ data class KeyboardKeySpec(
     val enabled: Boolean = true,
     val active: Boolean = false,
     val actionSurface: Boolean = false,
+    val actionDescriptorId: String? = null,
+    val actionDescriptorPrimary: Boolean = false,
     val suggestion: String? = null,
     val cornerAssignments: KeyboardCornerAssignments = KeyboardCornerAssignments.Empty,
 )
@@ -151,6 +159,7 @@ data class KeyboardRowSpec(
     val horizontalScrollable: Boolean = false,
     val pagedHorizontalScrollable: Boolean = false,
     val visiblePageKeyCount: Int? = null,
+    val rowId: String? = null,
 )
 
 data class KeyboardLayoutSnapshot(
@@ -186,10 +195,10 @@ data class KeyboardLayoutRequest(
     val clipboardEntries: List<KeyboardClipboardEntry> = emptyList(),
     val voiceAllowed: Boolean,
     val snippetsAllowed: Boolean,
+    val mediaControlsEnabled: Boolean = true,
     val snippets: List<KeyboardTextRule> = emptyList(),
     val suggestions: List<String>,
-    val numberRowPinned: Boolean = false,
-    val navigationRowPinned: Boolean = false,
+    val actionBarState: KeyboardActionBarState = KeyboardActionBarState(),
     val mediaNowPlayingLabel: String? = null,
     val cornerConfig: KeyboardCornerConfig = KeyboardCornerConfig(),
     val fieldPolicy: KeyboardFieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO),
@@ -204,6 +213,9 @@ object KeyboardLayoutBuilder {
             add(KeyboardSystemModifier.Fn, KeyboardKeyValue.text("l"), KeyboardKeyValue.keyEvent(android.view.KeyEvent.KEYCODE_DPAD_RIGHT, "Right"))
         }
 
+    private val actionBarController = KeyboardActionBarController(KeyboardActionCatalog.default())
+    private val actionRenderer = KeyboardActionRenderer()
+
     fun build(request: KeyboardLayoutRequest): KeyboardLayoutSnapshot {
         val effectiveMode =
             if (request.fieldContext.isNumericEntry()) {
@@ -212,13 +224,31 @@ object KeyboardLayoutBuilder {
                 request.mode
             }
 
+        val actionEnvironment =
+            KeyboardActionEnvironment(
+                fieldPolicy = request.fieldPolicy,
+                layoutMode = effectiveMode,
+                panelMode = request.panel,
+                clipboardAllowed = request.clipboardAllowed,
+                voiceAllowed = request.voiceAllowed,
+                snippetsAllowed = request.snippetsAllowed,
+                mediaControlsEnabled = request.mediaControlsEnabled,
+            )
+        val renderedActionRows =
+            actionRenderer.renderRows(
+                actionBarController.buildRenderSnapshot(
+                    state = request.actionBarState,
+                    environment = actionEnvironment,
+                ),
+            )
+
         val rows = mutableListOf<KeyboardRowSpec>()
-        rows.add(actionRow(request, effectiveMode))
+        rows.add(renderedActionRows.first())
         val suggestionRows =
             if (request.panel.suppressesTypingRows()) {
                 emptyList()
             } else {
-                pinnedNumberRows(request, effectiveMode) + pinnedNavigationRows(request) + suggestionRows(request)
+                renderedActionRows.drop(1) + suggestionRows(request)
             }
         rows.addAll(suggestionRows)
         val panelRows = panelRows(request)
@@ -316,33 +346,6 @@ object KeyboardLayoutBuilder {
         return this == KeyboardPanelMode.Settings || this == KeyboardPanelMode.ClipboardFull
     }
 
-    private fun actionRow(
-        request: KeyboardLayoutRequest,
-        mode: KeyboardLayoutMode,
-    ): KeyboardRowSpec {
-        return KeyboardRowSpec(
-            keys =
-                listOf(
-                    modeKey("ABC", KeyboardKeyAction.ModeLetters, mode == KeyboardLayoutMode.Letters),
-                    modeKey("123", KeyboardKeyAction.ModeNumbers, mode == KeyboardLayoutMode.Numbers || request.numberRowPinned),
-                    panelKey("Acc", KeyboardKeyAction.ToggleAccentPanel, request.panel == KeyboardPanelMode.Accents),
-                    modeKey("#+=", KeyboardKeyAction.ModeSymbols, mode == KeyboardLayoutMode.Symbols),
-                    panelKey("Nav", KeyboardKeyAction.ToggleNavigationPanel, request.panel == KeyboardPanelMode.Navigation || request.navigationRowPinned),
-                    panelKey("Emoji", KeyboardKeyAction.ToggleEmojiPanel, request.panel == KeyboardPanelMode.Emoji),
-                    panelKey(
-                        "Clip",
-                        KeyboardKeyAction.ToggleClipboardPanel,
-                        request.panel == KeyboardPanelMode.Clipboard || request.panel == KeyboardPanelMode.ClipboardFull,
-                        request.clipboardAllowed,
-                    ),
-                    panelKey("Snip", KeyboardKeyAction.ToggleSnippetsPanel, request.panel == KeyboardPanelMode.Snippets, request.snippetsAllowed),
-                    panelKey("Media", KeyboardKeyAction.ToggleMediaPanel, request.panel == KeyboardPanelMode.Media),
-                    panelKey("Prefs", KeyboardKeyAction.ToggleSettingsPanel, request.panel == KeyboardPanelMode.Settings),
-                    KeyboardKeySpec("voice", "Mic", KeyboardKeyAction.Voice, enabled = request.voiceAllowed),
-                ),
-        )
-    }
-
     private fun suggestionRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         val suggestions = request.suggestions.map { it.trim() }.filter { it.isNotEmpty() }.take(3)
         if (suggestions.isEmpty()) {
@@ -360,54 +363,6 @@ object KeyboardLayoutBuilder {
                             weight = 1.4f,
                         )
                     },
-            ),
-        )
-    }
-
-    private fun pinnedNumberRows(
-        request: KeyboardLayoutRequest,
-        mode: KeyboardLayoutMode,
-    ): List<KeyboardRowSpec> {
-        if (!request.numberRowPinned || mode == KeyboardLayoutMode.Numbers || request.fieldContext.isNumericEntry()) {
-            return emptyList()
-        }
-        return listOf(
-            KeyboardRowSpec(
-                keys =
-                    listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "+", "-", "=", "$").map { value ->
-                        textKey(value).asActionSurface()
-                    },
-                horizontalScrollable = true,
-                pagedHorizontalScrollable = true,
-                visiblePageKeyCount = 10,
-            ),
-        )
-    }
-
-    private fun pinnedNavigationRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
-        if (!request.navigationRowPinned) {
-            return emptyList()
-        }
-        return listOf(
-            KeyboardRowSpec(
-                keys =
-                    listOf(
-                        KeyboardKeySpec("pinned-nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
-                        KeyboardKeySpec("pinned-nav-right", "→", KeyboardKeyAction.NavigateCharRight),
-                        KeyboardKeySpec("pinned-nav-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
-                        KeyboardKeySpec("pinned-nav-end", "Fin", KeyboardKeyAction.NavigateLineEnd),
-                        KeyboardKeySpec("pinned-nav-tab", "Tab", KeyboardKeyAction.InsertTab),
-                        KeyboardKeySpec("pinned-nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.15f),
-                        KeyboardKeySpec("pinned-nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.15f),
-                        KeyboardKeySpec("pinned-nav-del-before", "Del←", KeyboardKeyAction.Backspace),
-                        KeyboardKeySpec("pinned-nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
-                        KeyboardKeySpec("pinned-nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
-                        KeyboardKeySpec("pinned-nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
-                        KeyboardKeySpec("pinned-nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.1f),
-                        KeyboardKeySpec("pinned-nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.1f),
-                    ).map { it.asActionSurface() },
-                horizontalScrollable = true,
-                pagedHorizontalScrollable = true,
             ),
         )
     }
@@ -432,11 +387,9 @@ object KeyboardLayoutBuilder {
                 keys =
                     listOf(
                         KeyboardKeySpec("nav-select-all", "All", KeyboardKeyAction.SelectAll),
-                        KeyboardKeySpec("nav-copy", "Copy", KeyboardKeyAction.CopySelection),
-                        KeyboardKeySpec("nav-cut", "Cut", KeyboardKeyAction.CutSelection),
-                        KeyboardKeySpec("nav-paste", "Paste", KeyboardKeyAction.PasteClipboard),
                         KeyboardKeySpec("nav-undo", "Undo", KeyboardKeyAction.Undo),
                         KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
+                        KeyboardKeySpec("nav-clip", "Clip", KeyboardKeyAction.ToggleClipboardPanel),
                         KeyboardKeySpec("nav-close", "Back", KeyboardKeyAction.ClosePanel, weight = 1.2f),
                     ),
             ),
@@ -532,6 +485,7 @@ object KeyboardLayoutBuilder {
 
     private fun clipboardPanelRow(request: KeyboardLayoutRequest): KeyboardRowSpec {
         return KeyboardRowSpec(
+            rowId = "panel-clipboard",
             keys = clipboardEntryKeys(request.clipboardEntries.take(12), request.clipboardAllowed),
             horizontalScrollable = true,
         )
@@ -644,6 +598,7 @@ object KeyboardLayoutBuilder {
                 snippetKeys
             }
         return KeyboardRowSpec(
+            rowId = "panel-snippets",
             keys =
                 contentKeys +
                     listOf(

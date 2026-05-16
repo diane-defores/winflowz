@@ -1,0 +1,255 @@
+package com.winflowz_app.winflowz_app.ime.actions
+
+import com.winflowz_app.winflowz_app.ime.KeyboardKeyAction
+import com.winflowz_app.winflowz_app.ime.KeyboardKeySpec
+import com.winflowz_app.winflowz_app.ime.KeyboardLayoutMode
+import com.winflowz_app.winflowz_app.ime.KeyboardPanelMode
+import com.winflowz_app.winflowz_app.ime.KeyboardStateStore
+
+class KeyboardActionCatalog private constructor(
+    val descriptorsById: Map<String, KeyboardActionDescriptor>,
+    val defaultOrder: List<String>,
+    val minimalPinnedActionIds: Set<String>,
+) {
+    fun descriptor(actionId: String): KeyboardActionDescriptor? = descriptorsById[actionId]
+
+    fun orderedDescriptors(ids: List<String>): List<KeyboardActionDescriptor> {
+        return ids.mapNotNull { descriptorsById[it] }
+    }
+
+    fun defaultDescriptors(): List<KeyboardActionDescriptor> {
+        return defaultOrder.mapNotNull { descriptorsById[it] }
+    }
+
+    fun isActionActive(
+        descriptor: KeyboardActionDescriptor,
+        environment: KeyboardActionEnvironment,
+        state: KeyboardActionBarState,
+    ): Boolean {
+        return when (descriptor.id) {
+            "letters" -> environment.layoutMode == KeyboardLayoutMode.Letters
+            "numbers" -> environment.layoutMode == KeyboardLayoutMode.Numbers ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
+            "accents" -> environment.panelMode == KeyboardPanelMode.Accents
+            "symbols" -> environment.layoutMode == KeyboardLayoutMode.Symbols
+            "navigation" -> environment.panelMode == KeyboardPanelMode.Navigation ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
+            "emoji" -> environment.panelMode == KeyboardPanelMode.Emoji
+            "clipboard" -> environment.panelMode == KeyboardPanelMode.Clipboard ||
+                environment.panelMode == KeyboardPanelMode.ClipboardFull ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
+            "snippets" -> environment.panelMode == KeyboardPanelMode.Snippets
+            "media" -> environment.panelMode == KeyboardPanelMode.Media ||
+                state.attachedRows.any { it.providerActionId == descriptor.id }
+            "prefs" -> environment.panelMode == KeyboardPanelMode.Settings
+            else -> false
+        }
+    }
+
+    companion object {
+        fun default(): KeyboardActionCatalog {
+            val numberProvider =
+                KeyboardActionRowProvider {
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-numbers",
+                            dedupeKey = "numbers",
+                            visiblePageKeyCount = 10,
+                            pagedHorizontal = true,
+                            items =
+                                listOf(
+                                    textActionKey("1"),
+                                    textActionKey("2"),
+                                    textActionKey("3"),
+                                    textActionKey("4"),
+                                    textActionKey("5"),
+                                    textActionKey("6"),
+                                    textActionKey("7"),
+                                    textActionKey("8"),
+                                    textActionKey("9"),
+                                    textActionKey("0"),
+                                    textActionKey("+"),
+                                    textActionKey("-"),
+                                    textActionKey("="),
+                                    textActionKey("$"),
+                                    textActionKey("/"),
+                                    textActionKey("%"),
+                                    textActionKey("(", output = "("),
+                                    textActionKey(")", output = ")"),
+                                    textActionKey("?"),
+                                    textActionKey("!"),
+                                ),
+                        ),
+                    )
+                }
+
+            val navigationProvider =
+                KeyboardActionRowProvider {
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-navigation",
+                            dedupeKey = "navigation",
+                            visiblePageKeyCount = 7,
+                            pagedHorizontal = true,
+                            items =
+                                listOf(
+                                    actionRowKey("pinned-nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
+                                    actionRowKey("pinned-nav-right", "→", KeyboardKeyAction.NavigateCharRight),
+                                    actionRowKey("pinned-nav-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                                    actionRowKey("pinned-nav-end", "Fin", KeyboardKeyAction.NavigateLineEnd),
+                                    actionRowKey("pinned-nav-tab", "Tab", KeyboardKeyAction.InsertTab),
+                                    actionRowKey("pinned-nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.15f),
+                                    actionRowKey("pinned-nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.15f),
+                                    actionRowKey("pinned-nav-del-before", "Del←", KeyboardKeyAction.Backspace),
+                                    actionRowKey("pinned-nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
+                                    actionRowKey("pinned-nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+                                    actionRowKey("pinned-nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
+                                    actionRowKey("pinned-nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.1f),
+                                    actionRowKey("pinned-nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.1f),
+                                ),
+                        ),
+                    )
+                }
+
+            val clipboardProvider =
+                KeyboardActionRowProvider { context ->
+                    if (context.fieldPolicy.privateMode || !context.fieldPolicy.clipboardAllowed) {
+                        emptyList()
+                    } else {
+                        listOf(
+                            KeyboardActionRowSpec(
+                                rowId = "action-row-clipboard",
+                                dedupeKey = "clipboard",
+                                visiblePageKeyCount = 4,
+                                pagedHorizontal = true,
+                                items =
+                                    listOf(
+                                        actionRowKey("clip-cut", "Cut", KeyboardKeyAction.CutSelection),
+                                        actionRowKey("clip-copy", "Copy", KeyboardKeyAction.CopySelection),
+                                        actionRowKey("clip-paste", "Paste", KeyboardKeyAction.PasteClipboard),
+                                        actionRowKey("clip-history", "History", KeyboardKeyAction.ToggleClipboardPanel, weight = 1.3f),
+                                    ),
+                            ),
+                        )
+                    }
+                }
+
+            val mediaProvider =
+                KeyboardActionRowProvider {
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-media",
+                            dedupeKey = "media",
+                            visiblePageKeyCount = 5,
+                            pagedHorizontal = true,
+                            items =
+                                listOf(
+                                    actionRowKey("media-row-prev", "Prev", KeyboardKeyAction.MediaPrevious),
+                                    actionRowKey("media-row-play", ">||", KeyboardKeyAction.MediaPlayPause, weight = 1.15f),
+                                    actionRowKey("media-row-next", "Next", KeyboardKeyAction.MediaNext),
+                                    actionRowKey("media-row-now", "Now", KeyboardKeyAction.MediaNowPlaying),
+                                    actionRowKey("media-row-open", "App", KeyboardKeyAction.OpenMediaApp),
+                                ),
+                        ),
+                    )
+                }
+
+            val descriptors =
+                listOf(
+                    KeyboardActionDescriptor("letters", "ABC", "ABC", "Letters keyboard", KeyboardKeyAction.ModeLetters, pinnable = false, adaptiveEligible = false),
+                    KeyboardActionDescriptor("numbers", "123", "123", "Numbers keyboard", KeyboardKeyAction.ModeNumbers, rowProvider = numberProvider),
+                    KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel),
+                    KeyboardActionDescriptor("symbols", "#+=", "#+=", "Symbols keyboard", KeyboardKeyAction.ModeSymbols),
+                    KeyboardActionDescriptor("navigation", "Nav", "Nav", "Navigation panel", KeyboardKeyAction.ToggleNavigationPanel, rowProvider = navigationProvider),
+                    KeyboardActionDescriptor(
+                        "emoji",
+                        "Emoji",
+                        "Emoji",
+                        "Emoji panel",
+                        KeyboardKeyAction.ToggleEmojiPanel,
+                        sensitiveInPrivate = true,
+                    ),
+                    KeyboardActionDescriptor(
+                        "clipboard",
+                        "Clip",
+                        "Clip",
+                        "Clipboard actions",
+                        KeyboardKeyAction.ToggleClipboardPanel,
+                        availabilityPolicy = KeyboardActionAvailabilityPolicy.ClipboardAllowed,
+                        sensitiveInPrivate = true,
+                        rowProvider = clipboardProvider,
+                    ),
+                    KeyboardActionDescriptor(
+                        "snippets",
+                        "Snip",
+                        "Snip",
+                        "Snippets panel",
+                        KeyboardKeyAction.ToggleSnippetsPanel,
+                        availabilityPolicy = KeyboardActionAvailabilityPolicy.SnippetsAllowed,
+                        sensitiveInPrivate = true,
+                    ),
+                    KeyboardActionDescriptor(
+                        "media",
+                        "Media",
+                        "Media",
+                        "Media controls",
+                        KeyboardKeyAction.ToggleMediaPanel,
+                        availabilityPolicy = KeyboardActionAvailabilityPolicy.MediaControlsEnabled,
+                        rowProvider = mediaProvider,
+                    ),
+                    KeyboardActionDescriptor("prefs", "Prefs", "Prefs", "Keyboard settings", KeyboardKeyAction.ToggleSettingsPanel, pinnable = false, adaptiveEligible = false),
+                    KeyboardActionDescriptor(
+                        "voice",
+                        "Mic",
+                        "Mic",
+                        "Voice dictation",
+                        KeyboardKeyAction.Voice,
+                        availabilityPolicy = KeyboardActionAvailabilityPolicy.VoiceAllowed,
+                        sensitiveInPrivate = true,
+                    ),
+                )
+
+            val ids = descriptors.map { it.id }
+            return KeyboardActionCatalog(
+                descriptorsById = descriptors.associateBy { it.id },
+                defaultOrder = ids,
+                minimalPinnedActionIds = setOf("letters", "numbers", "prefs"),
+            )
+        }
+
+        fun defaultLongPressBehavior(): KeyboardActionLongPressBehavior {
+            return KeyboardActionLongPressBehavior.fromRaw(
+                KeyboardStateStore.DEFAULT_ACTION_BAR_LONG_PRESS_BEHAVIOR,
+            )
+        }
+
+        private fun textActionKey(
+            label: String,
+            output: String = label,
+            weight: Float = 1f,
+        ): KeyboardKeySpec {
+            return KeyboardKeySpec(
+                id = "action-text-${output.codePoints().toArray().joinToString("-")}",
+                label = label,
+                action = KeyboardKeyAction.Text,
+                glyph = com.winflowz_app.winflowz_app.ime.KeyboardKeyGlyph(primary = output),
+                keyValue = com.winflowz_app.winflowz_app.ime.KeyboardKeyValue.text(output, label),
+                weight = weight,
+            )
+        }
+
+        private fun actionRowKey(
+            id: String,
+            label: String,
+            action: KeyboardKeyAction,
+            weight: Float = 1f,
+        ): KeyboardKeySpec {
+            return KeyboardKeySpec(
+                id = id,
+                label = label,
+                action = action,
+                weight = weight,
+            )
+        }
+    }
+}

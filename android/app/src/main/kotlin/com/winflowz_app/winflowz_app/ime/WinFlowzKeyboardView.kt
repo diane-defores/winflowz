@@ -18,6 +18,11 @@ import android.view.MotionEvent
 import android.view.SoundEffectConstants
 import android.view.View
 import android.view.View.MeasureSpec
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarController
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionCatalog
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionEnvironment
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressBehavior
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
@@ -126,20 +131,22 @@ class WinFlowzKeyboardView(
         fun onPunctuationAutoSpacingChanged(enabled: Boolean)
         fun onKeyboardHeightScaleChanged(scale: Float)
         fun onCompactModeChanged(enabled: Boolean)
+        fun onActionBarStateChanged(state: KeyboardActionBarState)
     }
 
     private data class KeyFrame(
         val key: KeyboardKeySpec,
         val rect: RectF,
+        val rowId: String? = null,
         val rowScrollable: Boolean = false,
         val rowPagedScrollable: Boolean = false,
+        val rowVisibleWidth: Float = 0f,
         val panelScrollable: Boolean = false,
     )
 
     private var shifted = false
     private var shiftLocked = false
-    private var numberRowPinned = false
-    private var navigationRowPinned = false
+    private var actionBarState = KeyboardActionBarState()
     private var themeMode = KeyboardStateStore.THEME_SYSTEM
     private var themeConfig = KeyboardThemeConfig()
     private var themeImagePath: String? = null
@@ -157,6 +164,7 @@ class WinFlowzKeyboardView(
     private var keyVibrationEnabled = true
     private var keySoundEnabled = false
     private var spellingSuggestionsEnabled = true
+    private var mediaControlsEnabled = true
     private var specialKeyCornersEnabled = false
     private var frenchLanguageEnabled = true
     private var englishLanguageEnabled = true
@@ -193,8 +201,8 @@ class WinFlowzKeyboardView(
     private var scrollingHorizontalRow = false
     private var horizontalPageGestureConsumed = false
     private var lastHorizontalScrollX = 0f
-    private var horizontalRowScrollOffset = 0f
-    private var horizontalRowMaxScrollOffset = 0f
+    private val horizontalRowScrollOffsetById = mutableMapOf<String, Float>()
+    private val horizontalRowMaxOffsetById = mutableMapOf<String, Float>()
     private var scrollingVerticalPanel = false
     private var lastVerticalScrollY = 0f
     private var verticalPanelScrollOffset = 0f
@@ -318,6 +326,8 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.NavigateParagraphDown,
         )
 
+    private val actionBarController = KeyboardActionBarController(KeyboardActionCatalog.default())
+
     init {
         isClickable = true
         isFocusable = true
@@ -340,6 +350,7 @@ class WinFlowzKeyboardView(
             } else {
                 "WinFlowz"
             }
+        reconcileActionBarState()
         refreshLayout()
     }
 
@@ -350,6 +361,7 @@ class WinFlowzKeyboardView(
         keyVibration: Boolean,
         keySound: Boolean,
         spellingSuggestions: Boolean,
+        mediaControlsEnabled: Boolean,
         specialKeyCorners: Boolean,
         frenchLanguage: Boolean,
         englishLanguage: Boolean,
@@ -363,6 +375,8 @@ class WinFlowzKeyboardView(
         clipboardEntries: List<KeyboardClipboardEntry>,
         snippets: List<KeyboardTextRule>,
         cornerConfig: KeyboardCornerConfig,
+        actionBarState: KeyboardActionBarState,
+        actionBarLongPressBehavior: KeyboardActionLongPressBehavior,
     ) {
         layoutProfile = profile
         cornerModeEnabled = cornersEnabled
@@ -370,6 +384,7 @@ class WinFlowzKeyboardView(
         keyVibrationEnabled = keyVibration
         keySoundEnabled = keySound
         spellingSuggestionsEnabled = spellingSuggestions
+        this.mediaControlsEnabled = mediaControlsEnabled
         specialKeyCornersEnabled = specialKeyCorners
         frenchLanguageEnabled = frenchLanguage
         englishLanguageEnabled = englishLanguage
@@ -389,6 +404,13 @@ class WinFlowzKeyboardView(
         this.clipboardEntries = clipboardEntries
         this.snippets = snippets
         this.cornerConfig = cornerConfig
+        setActionBarState(
+            actionBarState.copy(
+                longPressBehavior = actionBarLongPressBehavior,
+            ),
+            notify = false,
+        )
+        reconcileActionBarState()
         recentEmojis = if (fieldPolicy.privateMode) emptyList() else recents
         if (fieldPolicy.privateMode && emojiCategory == KeyboardEmojiCategory.Recents) {
             emojiCategory = KeyboardEmojiCategory.Smileys
@@ -456,6 +478,7 @@ class WinFlowzKeyboardView(
     ) {
         fieldContext = contextMode
         enterLabel = enterActionLabel
+        reconcileActionBarState()
         refreshLayout()
     }
 
@@ -468,6 +491,44 @@ class WinFlowzKeyboardView(
         }
         suggestions = candidates.take(3)
         refreshLayout()
+    }
+
+    private fun actionEnvironment(
+        mode: KeyboardLayoutMode = layoutMode,
+        panel: KeyboardPanelMode = panelMode,
+    ): KeyboardActionEnvironment {
+        return KeyboardActionEnvironment(
+            fieldPolicy = fieldPolicy,
+            layoutMode = mode,
+            panelMode = panel,
+            clipboardAllowed = fieldPolicy.clipboardAllowed,
+            voiceAllowed = fieldPolicy.voiceAllowed,
+            snippetsAllowed = fieldPolicy.snippetsAllowed,
+            mediaControlsEnabled = mediaControlsEnabled,
+        )
+    }
+
+    private fun reconcileActionBarState(
+        mode: KeyboardLayoutMode = layoutMode,
+        panel: KeyboardPanelMode = panelMode,
+    ) {
+        val next =
+            actionBarController.sanitizeState(
+                state = actionBarState,
+                environment = actionEnvironment(mode = mode, panel = panel),
+            )
+        setActionBarState(next)
+    }
+
+    private fun setActionBarState(
+        state: KeyboardActionBarState,
+        notify: Boolean = true,
+    ) {
+        val changed = state != actionBarState
+        actionBarState = state
+        if (notify && changed) {
+            callbacks.onActionBarStateChanged(state)
+        }
     }
 
     fun setStatus(message: String) {
@@ -495,6 +556,7 @@ class WinFlowzKeyboardView(
 
     private fun drawKeyboard(canvas: Canvas) {
         keyFrames.clear()
+        horizontalRowMaxOffsetById.clear()
         if (!fieldPolicy.privateMode && themeConfig.useGradient && themeConfig.presetId != "system" && !themeConfig.useImage) {
             backgroundPaint.shader =
                 if (themeConfig.gradientStyle == "radial") {
@@ -735,33 +797,28 @@ class WinFlowzKeyboardView(
             dispatch(key, GestureSelection.PrimaryTap)
             removeCallbacks(repeatRunnable)
             postDelayed(repeatRunnable, repeatDelayMs)
+        } else if (key.actionDescriptorPrimary && key.actionDescriptorId != null) {
+            val result =
+                actionBarController.onLongPress(
+                    actionId = key.actionDescriptorId,
+                    state = actionBarState,
+                    environment = actionEnvironment(),
+                )
+            if (!result.consumed) {
+                invalidate()
+                return
+            }
+            longPressTriggered = true
+            setActionBarState(result.nextState)
+            result.status?.let { setStatus(it) }
+            horizontalRowScrollOffsetById.clear()
+            reconcileActionBarState()
+            refreshLayout()
         } else if (key.action == KeyboardKeyAction.Shift) {
             longPressTriggered = true
             shiftLocked = true
             shifted = true
             setStatus("Shift locked")
-            refreshLayout()
-        } else if (key.action == KeyboardKeyAction.ModeNumbers) {
-            longPressTriggered = true
-            numberRowPinned = !numberRowPinned
-            layoutMode = KeyboardLayoutMode.Letters
-            panelMode = KeyboardPanelMode.None
-            horizontalRowScrollOffset = 0f
-            verticalPanelScrollOffset = 0f
-            setStatus(if (numberRowPinned) "Number row pinned" else "Number row hidden")
-            refreshLayout()
-        } else if (key.action == KeyboardKeyAction.ToggleNavigationPanel) {
-            longPressTriggered = true
-            navigationRowPinned = !navigationRowPinned
-            horizontalRowScrollOffset = 0f
-            setStatus(if (navigationRowPinned) "Navigation row pinned" else "Navigation row hidden")
-            refreshLayout()
-        } else if (key.action == KeyboardKeyAction.ToggleClipboardPanel) {
-            longPressTriggered = true
-            horizontalRowScrollOffset = 0f
-            verticalPanelScrollOffset = 0f
-            panelMode = KeyboardPanelMode.ClipboardFull
-            setStatus("Clipboard history")
             refreshLayout()
         } else if (dispatchLongPressShortcut(key)) {
             longPressTriggered = true
@@ -826,7 +883,9 @@ class WinFlowzKeyboardView(
         dxFromStart: Float,
         x: Float,
     ) {
-        if (!gestureStartFrame.isScrollableRowFrame() || abs(dxFromStart) < dp(8f)) {
+        val frame = gestureStartFrame
+        val rowId = frame?.rowId
+        if (!frame.isScrollableRowFrame() || rowId.isNullOrBlank() || abs(dxFromStart) < dp(8f)) {
             return
         }
         if (abs(dxFromStart) < abs(gestureLatestY - gestureStartY) * 1.2f) {
@@ -837,13 +896,23 @@ class WinFlowzKeyboardView(
             scrollingHorizontalRow = true
             lastHorizontalScrollX = x
         }
-        if (gestureStartFrame.isPagedScrollableRowFrame()) {
+        val currentOffset = horizontalRowScrollOffsetById[rowId] ?: 0f
+        val maxOffset = horizontalRowMaxOffsetById[rowId] ?: 0f
+        if (frame.isPagedScrollableRowFrame()) {
             if (!horizontalPageGestureConsumed && abs(dxFromStart) >= dp(36f)) {
-                val pageWidth = max(dp(1f), width - outerPadding * 2f)
+                val pageWidth = max(dp(1f), frame.rowVisibleWidth)
                 val direction = if (dxFromStart < 0f) 1f else -1f
-                val next = (horizontalRowScrollOffset + direction * pageWidth).coerceIn(0f, horizontalRowMaxScrollOffset)
-                if (next != horizontalRowScrollOffset) {
-                    horizontalRowScrollOffset = next
+                val next = (currentOffset + direction * pageWidth).coerceIn(0f, maxOffset)
+                if (next != currentOffset) {
+                    horizontalRowScrollOffsetById[rowId] = next
+                    setActionBarState(
+                        actionBarController.setRowPage(
+                            rowId = rowId,
+                            page = (next / pageWidth).toInt(),
+                            state = actionBarState,
+                            environment = actionEnvironment(),
+                        ),
+                    )
                     invalidate()
                 }
                 horizontalPageGestureConsumed = true
@@ -852,9 +921,9 @@ class WinFlowzKeyboardView(
             return
         }
         val delta = lastHorizontalScrollX - x
-        val next = (horizontalRowScrollOffset + delta).coerceIn(0f, horizontalRowMaxScrollOffset)
-        if (next != horizontalRowScrollOffset) {
-            horizontalRowScrollOffset = next
+        val next = (currentOffset + delta).coerceIn(0f, maxOffset)
+        if (next != currentOffset) {
+            horizontalRowScrollOffsetById[rowId] = next
             invalidate()
         }
         lastHorizontalScrollX = x
@@ -938,7 +1007,7 @@ class WinFlowzKeyboardView(
             val keyWidth = slotWidth * keyWidthScale()
             val keyLeft = x + (slotWidth - keyWidth) / 2f
             val rect = RectF(keyLeft, top, keyLeft + keyWidth, top + height)
-            keyFrames.add(KeyFrame(key, rect))
+            keyFrames.add(KeyFrame(key, rect, rowId = row.rowId))
             drawKey(canvas, key, rect)
             x += slotWidth + keyGap()
         }
@@ -952,6 +1021,7 @@ class WinFlowzKeyboardView(
         width: Float,
         height: Float,
     ) {
+        val rowId = row.rowId ?: "scroll-row-${top.toInt()}"
         val visibleCount = row.visiblePageKeyCount
         val baseKeyWidth =
             if (visibleCount != null && visibleCount > 0) {
@@ -969,17 +1039,33 @@ class WinFlowzKeyboardView(
                 }
             }
         val contentWidth = keyWidths.sum() + keyGap() * max(0, row.keys.size - 1)
-        horizontalRowMaxScrollOffset = max(0f, contentWidth - width)
-        horizontalRowScrollOffset = horizontalRowScrollOffset.coerceIn(0f, horizontalRowMaxScrollOffset)
+        val maxOffset = max(0f, contentWidth - width)
+        horizontalRowMaxOffsetById[rowId] = maxOffset
+        if (row.pagedHorizontalScrollable) {
+            val pageWidth = max(dp(1f), width)
+            val page = actionBarState.rowPageById[rowId] ?: 0
+            horizontalRowScrollOffsetById[rowId] = (page * pageWidth).coerceIn(0f, maxOffset)
+        }
+        val rowOffset = (horizontalRowScrollOffsetById[rowId] ?: 0f).coerceIn(0f, maxOffset)
+        horizontalRowScrollOffsetById[rowId] = rowOffset
 
         val clipSave = canvas.save()
         canvas.clipRect(left, top, left + width, top + height)
-        var x = left - horizontalRowScrollOffset
+        var x = left - rowOffset
         row.keys.forEachIndexed { index, key ->
             val keyWidth = keyWidths[index]
             val rect = RectF(x, top, x + keyWidth, top + height)
             if (rect.right >= left && rect.left <= left + width) {
-                keyFrames.add(KeyFrame(key, rect, rowScrollable = true, rowPagedScrollable = row.pagedHorizontalScrollable))
+                keyFrames.add(
+                    KeyFrame(
+                        key = key,
+                        rect = rect,
+                        rowId = rowId,
+                        rowScrollable = true,
+                        rowPagedScrollable = row.pagedHorizontalScrollable,
+                        rowVisibleWidth = width,
+                    ),
+                )
                 drawKey(canvas, key, rect)
             }
             x += keyWidth + keyGap()
@@ -1030,7 +1116,7 @@ class WinFlowzKeyboardView(
             val keyWidth = slotWidth * keyWidthScale()
             val keyLeft = x + (slotWidth - keyWidth) / 2f
             val rect = RectF(keyLeft, top, keyLeft + keyWidth, top + height)
-            keyFrames.add(KeyFrame(key, rect, panelScrollable = true))
+            keyFrames.add(KeyFrame(key, rect, rowId = row.rowId, panelScrollable = true))
             drawKey(canvas, key, rect)
             x += slotWidth + keyGap()
         }
@@ -1137,6 +1223,31 @@ class WinFlowzKeyboardView(
             performKeyboardHaptic(HapticFeedbackConstants.REJECT)
             return
         }
+        var commandKey = key
+        if (selection == GestureSelection.PrimaryTap && key.actionDescriptorId != null) {
+            val result =
+                actionBarController.onTap(
+                    actionId = key.actionDescriptorId,
+                    state = actionBarState,
+                    environment = actionEnvironment(),
+                )
+            setActionBarState(result.nextState)
+            if (result.command == null) {
+                setStatus(result.status ?: "Action unavailable")
+                refreshLayout()
+                return
+            }
+            commandKey =
+                if (result.command == key.action) {
+                    key
+                } else {
+                    key.copy(
+                        action = result.command,
+                        actionDescriptorId = null,
+                        actionDescriptorPrimary = false,
+                    )
+                }
+        }
         triggerPressEffect(key)
         performKeyboardHaptic(HapticFeedbackConstants.KEYBOARD_TAP)
         performKeySound()
@@ -1147,15 +1258,17 @@ class WinFlowzKeyboardView(
             }
             return
         }
-        when (key.action) {
+        val previousMode = layoutMode
+        val previousPanel = panelMode
+        when (commandKey.action) {
             KeyboardKeyAction.KeyValue -> {
-                val keyValue = key.keyValue ?: return
+                val keyValue = commandKey.keyValue ?: return
                 if (!dispatchKeyValue(keyValue, selection, clearModifiersAfter = true)) {
                     setStatus("Key unavailable")
                 }
             }
             KeyboardKeyAction.Text -> {
-                val keyValue = keyValueForSelection(key, selection) ?: return
+                val keyValue = keyValueForSelection(commandKey, selection) ?: return
                 val committed = dispatchKeyValue(keyValue, selection, clearModifiersAfter = true)
                 if (!committed) {
                     setStatus("Text input unavailable")
@@ -1255,7 +1368,7 @@ class WinFlowzKeyboardView(
                 }
             }
             KeyboardKeyAction.InsertClipboardEntry -> {
-                val content = key.suggestion
+                val content = commandKey.suggestion
                 if (content.isNullOrBlank()) {
                     setStatus("Clipboard empty")
                 } else if (callbacks.onText(content)) {
@@ -1285,7 +1398,7 @@ class WinFlowzKeyboardView(
                 }
             }
             KeyboardKeyAction.InsertSuggestion -> {
-                val suggestion = key.suggestion ?: return
+                val suggestion = commandKey.suggestion ?: return
                 if (!callbacks.onSuggestionSelected(suggestion)) {
                     setStatus("Suggestion unavailable")
                 }
@@ -1308,7 +1421,7 @@ class WinFlowzKeyboardView(
             }
             KeyboardKeyAction.OpenMediaApp -> callbacks.onOpenMediaApp()
             KeyboardKeyAction.InsertSnippetOne -> {
-                val snippet = key.suggestion
+                val snippet = commandKey.suggestion
                 if (snippet.isNullOrBlank()) {
                     callbacks.onSnippets()
                 } else if (callbacks.onText(snippet)) {
@@ -1446,6 +1559,11 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.ClosePanel -> panelMode = KeyboardPanelMode.None
             KeyboardKeyAction.Voice -> callbacks.onVoice()
         }
+        if (previousMode != layoutMode || previousPanel != panelMode) {
+            horizontalRowScrollOffsetById.clear()
+            verticalPanelScrollOffset = 0f
+        }
+        reconcileActionBarState()
         refreshLayout()
     }
 
@@ -1580,13 +1698,14 @@ class WinFlowzKeyboardView(
     }
 
     private fun togglePanel(target: KeyboardPanelMode) {
-        horizontalRowScrollOffset = 0f
+        horizontalRowScrollOffsetById.clear()
         verticalPanelScrollOffset = 0f
         panelMode = if (panelMode == target) KeyboardPanelMode.None else target
+        reconcileActionBarState()
     }
 
     private fun toggleClipboardPanel() {
-        horizontalRowScrollOffset = 0f
+        horizontalRowScrollOffsetById.clear()
         verticalPanelScrollOffset = 0f
         panelMode =
             if (panelMode == KeyboardPanelMode.Clipboard || panelMode == KeyboardPanelMode.ClipboardFull) {
@@ -1594,6 +1713,7 @@ class WinFlowzKeyboardView(
             } else {
                 KeyboardPanelMode.Clipboard
             }
+        reconcileActionBarState()
     }
 
     private fun buildSnapshot(): KeyboardLayoutSnapshot {
@@ -1605,6 +1725,7 @@ class WinFlowzKeyboardView(
             } else {
                 layoutMode
             }
+        reconcileActionBarState(mode = effectiveMode, panel = panelMode)
         return KeyboardLayoutBuilder.build(
             KeyboardLayoutRequest(
                 mode = effectiveMode,
@@ -1631,10 +1752,10 @@ class WinFlowzKeyboardView(
                 clipboardEntries = clipboardEntries,
                 voiceAllowed = fieldPolicy.voiceAllowed,
                 snippetsAllowed = fieldPolicy.snippetsAllowed,
+                mediaControlsEnabled = mediaControlsEnabled,
                 snippets = snippets,
                 suggestions = suggestions,
-                numberRowPinned = numberRowPinned,
-                navigationRowPinned = navigationRowPinned,
+                actionBarState = actionBarState,
                 mediaNowPlayingLabel = mediaNowPlayingLabel,
                 cornerConfig = cornerConfig,
                 fieldPolicy = fieldPolicy,

@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.winflowz_app.winflowz_app.MainActivity
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
 
 class WinFlowzInputMethodService :
     InputMethodService(),
@@ -653,6 +654,10 @@ class WinFlowzInputMethodService :
         showStatus(if (enabled) "Compact keyboard enabled" else "Compact keyboard disabled")
     }
 
+    override fun onActionBarStateChanged(state: KeyboardActionBarState) {
+        stateStore.replaceActionBarState(state)
+    }
+
     private fun applyRuntimePreferencesToView() {
         runServiceSafely("applyRuntimePreferencesToView") {
             val emojiRecents =
@@ -668,6 +673,7 @@ class WinFlowzInputMethodService :
                 keyVibration = stateStore.keyVibrationEnabled,
                 keySound = stateStore.keySoundEnabled,
                 spellingSuggestions = stateStore.spellingSuggestionsEnabled,
+                mediaControlsEnabled = stateStore.mediaControlsEnabled,
                 specialKeyCorners = stateStore.specialKeyCornersEnabled,
                 frenchLanguage = stateStore.frenchLanguageEnabled,
                 englishLanguage = stateStore.englishLanguageEnabled,
@@ -681,6 +687,8 @@ class WinFlowzInputMethodService :
                 clipboardEntries = clipboardEntriesForKeyboard(),
                 snippets = stateStore.snippetRules(),
                 cornerConfig = stateStore.cornerConfig(),
+                actionBarState = stateStore.actionBarState(),
+                actionBarLongPressBehavior = stateStore.actionBarLongPressBehavior,
             )
         }
     }

@@ -1,5 +1,7 @@
 package com.winflowz_app.winflowz_app.ime
 
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardAttachedActionRowState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -484,7 +486,7 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
-    fun `pinned number row appears above typing rows`() {
+    fun `attached number row appears above typing rows with paged digits then symbols`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
                 KeyboardLayoutRequest(
@@ -504,13 +506,106 @@ class KeyboardLayoutBuilderTest {
                     voiceAllowed = true,
                     snippetsAllowed = true,
                     suggestions = emptyList(),
-                    numberRowPinned = true,
+                    actionBarState =
+                        KeyboardActionBarState(
+                            attachedRows =
+                                listOf(
+                                    KeyboardAttachedActionRowState(
+                                        providerActionId = "numbers",
+                                        rowId = "action-row-numbers",
+                                        dedupeKey = "numbers",
+                                    ),
+                                ),
+                        ),
                 ),
             )
 
         assertEquals(1, snapshot.suggestionRowCount)
-        assertEquals("1234567890", snapshot.rows[1].keys.joinToString(separator = "") { it.label })
+        assertEquals("1234567890", snapshot.rows[1].keys.take(10).joinToString(separator = "") { it.label })
+        assertTrue(snapshot.rows[1].keys.drop(10).map { it.label }.containsAll(listOf("+", "-", "=", "$")))
+        assertTrue(snapshot.rows[1].pagedHorizontalScrollable)
+        assertEquals(10, snapshot.rows[1].visiblePageKeyCount)
         assertTrue(snapshot.rows[0].keys.any { it.label == "123" && it.active })
+    }
+
+    @Test
+    fun `clipboard attached row is hidden in private mode`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.None,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = false,
+                    voiceAllowed = false,
+                    snippetsAllowed = false,
+                    suggestions = emptyList(),
+                    fieldPolicy =
+                        KeyboardFieldPolicy(
+                            privateMode = true,
+                            reason = "password",
+                            inputAllowed = true,
+                            voiceAllowed = false,
+                            clipboardAllowed = false,
+                            snippetsAllowed = false,
+                            learningAllowed = false,
+                        ),
+                    actionBarState =
+                        KeyboardActionBarState(
+                            attachedRows =
+                                listOf(
+                                    KeyboardAttachedActionRowState(
+                                        providerActionId = "clipboard",
+                                        rowId = "action-row-clipboard",
+                                        dedupeKey = "clipboard",
+                                    ),
+                                ),
+                        ),
+                ),
+            )
+
+        assertTrue(snapshot.rows[0].keys.none { it.label == "Clip" })
+        assertTrue(snapshot.rows.drop(1).none { row -> row.rowId == "action-row-clipboard" })
+    }
+
+    @Test
+    fun `navigation panel routes clipboard actions through clip entry point`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.Navigation,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val navActions = snapshot.rows.drop(1).flatMap { row -> row.keys.map { it.action } }
+        assertTrue(KeyboardKeyAction.CopySelection !in navActions)
+        assertTrue(KeyboardKeyAction.CutSelection !in navActions)
+        assertTrue(KeyboardKeyAction.PasteClipboard !in navActions)
+        assertTrue(KeyboardKeyAction.ToggleClipboardPanel in navActions)
     }
 
     @Test
