@@ -937,7 +937,11 @@ class _OnboardingOverviewContentState
           style: Theme.of(context).textTheme.labelMedium,
         ),
         AppGaps.x2,
-        _OnboardingProgressDots(count: _pages.length, index: _pageIndex),
+        _OnboardingProgressDots(
+          pages: _pages,
+          readiness: widget.readiness,
+          index: _pageIndex,
+        ),
         AppGaps.x2,
         _OnboardingUseCaseCard(
           icon: page.icon,
@@ -1015,9 +1019,14 @@ class _OnboardingUseCasePage {
 }
 
 class _OnboardingProgressDots extends StatelessWidget {
-  const _OnboardingProgressDots({required this.count, required this.index});
+  const _OnboardingProgressDots({
+    required this.pages,
+    required this.readiness,
+    required this.index,
+  });
 
-  final int count;
+  final List<_OnboardingUseCasePage> pages;
+  final OnboardingReadiness readiness;
   final int index;
 
   @override
@@ -1025,21 +1034,36 @@ class _OnboardingProgressDots extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
-        for (var i = 0; i < count; i++) ...[
+        for (var i = 0; i < pages.length; i++) ...[
           Container(
             width: i == index ? 20 : 8,
             height: 8,
             decoration: BoxDecoration(
-              color: i == index
-                  ? colorScheme.primary
-                  : colorScheme.outlineVariant,
+              color: _dotColor(
+                colorScheme: colorScheme,
+                stepId: pages[i].stepId,
+                isCurrent: i == index,
+              ),
               borderRadius: BorderRadius.circular(999),
             ),
           ),
-          if (i != count - 1) const SizedBox(width: AppSpacing.x1),
+          if (i != pages.length - 1) const SizedBox(width: AppSpacing.x1),
         ],
       ],
     );
+  }
+
+  Color _dotColor({
+    required ColorScheme colorScheme,
+    required OnboardingStepId stepId,
+    required bool isCurrent,
+  }) {
+    for (final step in readiness.steps) {
+      if (step.definition.id == stepId && step.satisfied) {
+        return AppColors.success;
+      }
+    }
+    return isCurrent ? colorScheme.primary : colorScheme.outlineVariant;
   }
 }
 
