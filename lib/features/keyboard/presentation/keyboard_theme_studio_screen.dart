@@ -1390,9 +1390,9 @@ double _relativeLuminance(Color color) {
         : math.pow((normalized + .055) / 1.055, 2.4).toDouble();
   }
 
-  return .2126 * channel(color.red.toDouble()) +
-      .7152 * channel(color.green.toDouble()) +
-      .0722 * channel(color.blue.toDouble());
+  return .2126 * channel((color.r * 255).roundToDouble()) +
+      .7152 * channel((color.g * 255).roundToDouble()) +
+      .0722 * channel((color.b * 255).roundToDouble());
 }
 
 class _PreviewPressEffectPainter extends CustomPainter {
