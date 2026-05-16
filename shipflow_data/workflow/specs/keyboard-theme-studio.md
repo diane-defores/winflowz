@@ -416,6 +416,7 @@ None. The spec fixes v1 choices as local-only image storage, no marketplace, no 
 | 2026-05-16 01:03:55 UTC | sf-start | GPT-5 Codex | Implemented diagnostics/fallback slice: Settings keyboard diagnostic now exposes theme preset/effect/background/config-size/fallback status, native theme replacement/reset now cleans superseded private images, and press effects now apply configured easing (`easeOut`/`linear`/`spring`). | partial | /sf-verify Keyboard Theme Studio |
 | 2026-05-16 01:23:41 UTC | sf-verify | GPT-5 Codex | Verified diagnostics/cleanup/easing slice against Keyboard Theme Studio contract; local Flutter checks pass and diagnostics contract is now covered, while Android device QA and full Kotlin unit execution remain pending due environment constraints. | partial | /sf-start Keyboard Theme Studio (device QA proof + full Kotlin unit run on healthy runner) |
 | 2026-05-16 02:05:00 UTC | sf-start | GPT-5 Codex | Improved Theme Studio web/live preview editing sync: form controls now rebind correctly after preset/import/reset and color fields react during typing; kept contract/tests coherent. | partial | /sf-verify Keyboard Theme Studio |
+| 2026-05-16 03:35:00 UTC | sf-test | GPT-5 Codex | Ran manual user QA card on web preview flow; steps 2/3/4 passed but JSON import step failed and opened BUG-2026-05-16-001. | partial | /sf-fix BUG-2026-05-16-001 |
 
 ## Current Chantier Flow
 
@@ -424,6 +425,7 @@ None. The spec fixes v1 choices as local-only image storage, no marketplace, no 
 - sf-start: partial implementation includes diagnostics/fallback fields, private-theme-image cleanup on replace/reset, and native easing-aware press effects.
 - sf-verify: partial after diagnostics/cleanup/easing verification; remaining known gaps are Android device QA evidence and full Kotlin unit execution on a healthy AAPT2 runner.
 - sf-start (latest): partial web preview/control sync hardening completed for Theme Studio fields/presets/import-reset flows.
+- sf-test: manual local web test logged; JSON import failed (`BUG-2026-05-16-001`), while other checked steps passed.
 - sf-end: not launched.
 - sf-ship: not launched.
-- Prochaine commande recommandée: `/sf-verify Keyboard Theme Studio`.
+- Prochaine commande recommandée: `/sf-fix BUG-2026-05-16-001`.

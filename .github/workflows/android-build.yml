@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Analyze, Test, Build APK
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+  analyze:
+    name: Flutter Analyze
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 20
 
     steps:
       - name: Configure Git default branch
@@ -38,8 +38,75 @@ jobs:
       - name: Static analysis
         run: flutter analyze
 
+  test:
+    name: Flutter Test
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 25
+
+    steps:
+      - name: Configure Git default branch
+        run: git config --global init.defaultBranch main
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
       - name: Run tests
         run: flutter test
+
+  build_apk:
+    name: Build Debug APK
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 45
+    needs:
+      - analyze
+      - test
+
+    steps:
+      - name: Configure Git default branch
+        run: git config --global init.defaultBranch main
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Build debug APK
         env:
