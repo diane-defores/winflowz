@@ -420,7 +420,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
       expect(find.text('Configuration WinFlowz'), findsOneWidget);
-      expect(find.text('Autorisation Overlay • Étape 1/4'), findsOneWidget);
+      expect(find.text('Autorisation Overlay • Étape 1/6'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Fermer (reprendre plus tard)'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
