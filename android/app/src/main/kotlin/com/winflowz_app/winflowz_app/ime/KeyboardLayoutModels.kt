@@ -247,7 +247,7 @@ object KeyboardLayoutBuilder {
         val rows = mutableListOf<KeyboardRowSpec>()
         rows.add(renderedActionRows.first())
         val suggestionRows =
-            if (request.panel.suppressesTypingRows()) {
+            if (request.panel.suppressesTypingRows(request.compactModeEnabled)) {
                 emptyList()
             } else {
                 renderedActionRows.drop(1) + suggestionRows(request)
@@ -255,7 +255,7 @@ object KeyboardLayoutBuilder {
         rows.addAll(suggestionRows)
         val panelRows = panelRows(request)
         rows.addAll(panelRows)
-        if (!request.panel.suppressesTypingRows()) {
+        if (!request.panel.suppressesTypingRows(request.compactModeEnabled)) {
             rows.addAll(letterRows(request, effectiveMode))
             if (!request.compactModeEnabled) {
                 rows.add(controlRow(request, effectiveMode))
@@ -344,8 +344,10 @@ object KeyboardLayoutBuilder {
         )
     }
 
-    private fun KeyboardPanelMode.suppressesTypingRows(): Boolean {
-        return this == KeyboardPanelMode.Settings || this == KeyboardPanelMode.ClipboardFull
+    private fun KeyboardPanelMode.suppressesTypingRows(compactModeEnabled: Boolean): Boolean {
+        return this == KeyboardPanelMode.Settings ||
+            this == KeyboardPanelMode.ClipboardFull ||
+            (compactModeEnabled && this != KeyboardPanelMode.None)
     }
 
     private fun suggestionRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
@@ -372,7 +374,7 @@ object KeyboardLayoutBuilder {
     private fun panelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         return when (request.panel) {
             KeyboardPanelMode.None -> emptyList()
-            KeyboardPanelMode.Navigation -> navigationPanelRows().asActionSurfaceRows()
+            KeyboardPanelMode.Navigation -> navigationPanelRows(request.compactModeEnabled).asActionSurfaceRows()
             KeyboardPanelMode.Accents -> accentPanelRows().asActionSurfaceRows()
             KeyboardPanelMode.Emoji -> emojiPanelRows(request).asActionSurfaceRows()
             KeyboardPanelMode.Clipboard -> listOf(clipboardPanelRow(request)).asActionSurfaceRows()
@@ -383,7 +385,43 @@ object KeyboardLayoutBuilder {
         }
     }
 
-    private fun navigationPanelRows(): List<KeyboardRowSpec> {
+    private fun navigationPanelRows(compactModeEnabled: Boolean): List<KeyboardRowSpec> {
+        if (compactModeEnabled) {
+            return listOf(
+                KeyboardRowSpec(
+                    keys =
+                        listOf(
+                            KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
+                            KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight),
+                            KeyboardKeySpec("nav-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.2f),
+                            KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.2f),
+                            KeyboardKeySpec("nav-line-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                            KeyboardKeySpec("nav-line-end", "Fin", KeyboardKeyAction.NavigateLineEnd, weight = 1.15f),
+                            KeyboardKeySpec("nav-tab", "Tab", KeyboardKeyAction.InsertTab),
+                            KeyboardKeySpec("nav-close", "Back", KeyboardKeyAction.ClosePanel, weight = 1.1f),
+                        ),
+                    horizontalScrollable = true,
+                ),
+                KeyboardRowSpec(
+                    keys =
+                        listOf(
+                            KeyboardKeySpec("nav-del-before", "Del←", KeyboardKeyAction.Backspace),
+                            KeyboardKeySpec("nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
+                            KeyboardKeySpec("nav-del-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.2f),
+                            KeyboardKeySpec("nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.2f),
+                            KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
+                            KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+                            KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
+                            KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
+                            KeyboardKeySpec("nav-select-all", "All", KeyboardKeyAction.SelectAll),
+                            KeyboardKeySpec("nav-undo", "Undo", KeyboardKeyAction.Undo),
+                            KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
+                            KeyboardKeySpec("nav-clip", "Clip", KeyboardKeyAction.ToggleClipboardPanel),
+                        ),
+                    horizontalScrollable = true,
+                ),
+            )
+        }
         return listOf(
             KeyboardRowSpec(
                 keys =

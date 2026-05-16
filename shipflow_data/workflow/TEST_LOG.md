@@ -69,3 +69,39 @@
 - `git diff --check`: PASS.
 - `cd android && ./gradlew :app:compileDebugKotlin -x :app:processDebugResources`: PASS.
 - Manual Android APK verification: pending.
+
+## 2026-05-16 - Android manual QA retest from user
+Environment: Android APK on real phone.
+
+### PASS
+- Media: Now with access shows current media when available.
+- Media: App opens current media app.
+- Media: Bri-/Bri+ with Write Settings permission changes brightness.
+- Media: Prev, Play/Pause, Next still work.
+- Media paged row: horizontal swipe is page-by-page.
+- Media paged row: page 2 shows Bri-/Bri+.
+- Onboarding: Android settings buttons redirect correctly.
+- Onboarding: skip recommended steps still works.
+- Navigation: DelW← works.
+- Navigation: DelW→ works in Termux, SMS, browser, email.
+- Navigation: Début/Fin work in non-Termux text apps.
+- Termux: Del, Ctrl+J, long-press MAJ, Paste work.
+- Action bars: main bar compact, contextual bars page-swipe, Nav pinning, pinned color all pass.
+- Compact: ABC, preferences, bottom positioning, bottom bar overlap pass.
+- Theme: sticky preview, color picker, gaps, effects, action-bar coloring, preview key widths pass.
+- Layout: DEL/ENTER widths, letter alignment, symbols layout, Escape, 10-digit row pass.
+- Logs: diagnostic panel opens and collapses.
+
+### FAIL / unresolved
+- DelW→ in Obsidian Android deletes one letter left instead of one word right.
+- Début/Fin fail in Termux.
+- Copy/Cut fail in Termux.
+- Compact mode fails for navigation/media/clipboard/symbols/accents panels.
+- Diagnostic text does not include mediaSessionAccessGranted/systemSettingsWriteGranted labels.
+- Clear logs button not confirmed.
+
+### Fixes applied after this QA
+- Diagnostic now exposes media_session_access and system_settings_write.
+- Compact panel mode suppresses typing rows for active panels, and navigation has a compact 2-row scrollable panel.
+- Obsidian DelW→ now avoids the direct delete-after-cursor path and uses Ctrl+ForwardDelete fallback.
+- Termux Début/Fin now use Ctrl+A/Ctrl+E fallback.

@@ -271,6 +271,11 @@ class WinFlowzInputMethodService :
             refreshTypingAssistantState(editor)
             return deleted
         }
+        if (isObsidianInputTarget()) {
+            val sent = sendSoftKey(KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+            refreshTypingAssistantState(editor)
+            return sent
+        }
         val deleted = editor.deleteWordAfterCursor()
         if (deleted.applied) {
             refreshTypingAssistantState(editor)
@@ -608,11 +613,17 @@ class WinFlowzInputMethodService :
     }
 
     override fun onNavigateLineStart(): Boolean {
+        if (isTermuxInputTarget()) {
+            return sendSoftKey(KeyEvent.KEYCODE_A, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+        }
         val moved = if (inputContext.selectionModeAllowed) editor().moveDocumentBoundary(start = true).applied else false
         return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.META_CTRL_ON)
     }
 
     override fun onNavigateLineEnd(): Boolean {
+        if (isTermuxInputTarget()) {
+            return sendSoftKey(KeyEvent.KEYCODE_E, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+        }
         val moved = if (inputContext.selectionModeAllowed) editor().moveDocumentBoundary(start = false).applied else false
         return moved || sendSoftKey(KeyEvent.KEYCODE_MOVE_END, KeyEvent.META_CTRL_ON)
     }
@@ -911,6 +922,10 @@ class WinFlowzInputMethodService :
 
     private fun isTermuxInputTarget(): Boolean {
         return currentInputEditorInfo?.packageName?.startsWith("com.termux") == true
+    }
+
+    private fun isObsidianInputTarget(): Boolean {
+        return currentInputEditorInfo?.packageName?.equals("md.obsidian", ignoreCase = true) == true
     }
 
     private fun editor(): InputConnectionEditor = InputConnectionEditor(currentInputConnection)

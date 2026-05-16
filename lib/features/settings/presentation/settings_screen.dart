@@ -804,6 +804,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       'voice_enabled=${status.voiceEnabled}',
       'clipboard_sync_desired=${status.clipboardSyncDesired}',
       'media_controls=${status.mediaControlsEnabled}',
+      'media_session_access=${status.mediaSessionAccessGranted}',
+      'system_settings_write=${status.systemSettingsWriteGranted}',
       'theme=${status.themeMode}',
       'theme_preset=${status.themePresetId}',
       'theme_effect=${status.themePressEffect}',
