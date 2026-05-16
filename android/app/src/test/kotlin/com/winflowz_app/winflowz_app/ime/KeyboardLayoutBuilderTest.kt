@@ -204,7 +204,7 @@ class KeyboardLayoutBuilderTest {
         assertEquals(3, snapshot.panelRowCount)
         assertEquals(listOf("All", "Copy", "DelW←", "DelW→", "⏫", "↑"), panelRows[0].keys.map { it.label })
         assertEquals(listOf("Cut", "Paste", "Word←", "Word→", "⏬", "↓"), panelRows[1].keys.map { it.label })
-        assertEquals(listOf("Undo", "Redo", "Del←", "Del→", "←", "→"), panelRows[2].keys.map { it.label })
+        assertEquals(listOf("Undo", "Redo", "Del←", "Del→", "⬅", "➡"), panelRows[2].keys.map { it.label })
         assertTrue(labels.containsAll(listOf("Del←", "Del→", "DelW←", "DelW→")))
         assertTrue(labels.containsAll(listOf("⏫", "↑", "⏬", "↓")))
         assertFalse(labels.contains("Clip"))

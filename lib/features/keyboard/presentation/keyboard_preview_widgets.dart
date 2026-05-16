@@ -1088,8 +1088,8 @@ class KeyboardPreviewSnapshot {
                 action: KeyboardPreviewKeyAction.backspace,
               ),
               _unsupportedKey('Del→'),
-              _unsupportedKey('←'),
-              _unsupportedKey('→'),
+              _unsupportedKey('⬅'),
+              _unsupportedKey('➡'),
             ],
           ),
         ];

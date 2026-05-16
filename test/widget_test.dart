@@ -693,8 +693,8 @@ void main() {
       expect(find.text('⏫'), findsOneWidget);
       expect(find.text('↑'), findsOneWidget);
       expect(find.text('Word←'), findsOneWidget);
-      expect(find.text('←'), findsOneWidget);
-      expect(find.text('→'), findsOneWidget);
+      expect(find.text('⬅'), findsOneWidget);
+      expect(find.text('➡'), findsOneWidget);
       expect(find.text('Word→'), findsOneWidget);
       expect(find.text('↓'), findsOneWidget);
       expect(find.text('⏬'), findsOneWidget);

@@ -431,8 +431,8 @@ object KeyboardLayoutBuilder {
                             KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
                             KeyboardKeySpec("nav-del-before", "Del←", KeyboardKeyAction.Backspace),
                             KeyboardKeySpec("nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
-                            KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
-                            KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight),
+                            KeyboardKeySpec("nav-left", "⬅", KeyboardKeyAction.NavigateCharLeft),
+                            KeyboardKeySpec("nav-right", "➡", KeyboardKeyAction.NavigateCharRight),
                         ),
                 ),
             )
@@ -467,8 +467,8 @@ object KeyboardLayoutBuilder {
                         KeyboardKeySpec("nav-redo", "Redo", KeyboardKeyAction.Redo),
                         KeyboardKeySpec("nav-del-before", "Del←", KeyboardKeyAction.Backspace),
                         KeyboardKeySpec("nav-del-after", "Del→", KeyboardKeyAction.ForwardDelete),
-                        KeyboardKeySpec("nav-left", "←", KeyboardKeyAction.NavigateCharLeft),
-                        KeyboardKeySpec("nav-right", "→", KeyboardKeyAction.NavigateCharRight),
+                        KeyboardKeySpec("nav-left", "⬅", KeyboardKeyAction.NavigateCharLeft),
+                        KeyboardKeySpec("nav-right", "➡", KeyboardKeyAction.NavigateCharRight),
                     ),
             ),
         )
