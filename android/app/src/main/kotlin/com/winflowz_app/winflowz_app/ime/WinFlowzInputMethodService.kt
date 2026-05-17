@@ -418,6 +418,13 @@ class WinFlowzInputMethodService :
             showInlineStatus("Clipboard paste disabled for private field")
             return false
         }
+        val targetPaste = editor().performContextMenuAction(android.R.id.paste)
+        if (targetPaste.applied) {
+            clipboardController.primaryText()?.let { stateStore.pushClipboardEntry(it) }
+            applyRuntimePreferencesToView()
+            showInlineStatus("Clipboard paste sent")
+            return true
+        }
         val pasted =
             clipboardController.pastePrimaryText(
                 currentInputConnection,
