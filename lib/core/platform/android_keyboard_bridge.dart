@@ -32,6 +32,57 @@ class AndroidKeyboardBridge {
     return AndroidKeyboardStatus.fromMap(raw ?? const {});
   }
 
+  static Future<KeyboardStatusBarConfig> getStatusBarConfig() async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      return KeyboardStatusBarConfig.defaults();
+    }
+    final raw = await _invoke<Map<Object?, Object?>>(
+      'getKeyboardStatusBarConfig',
+    );
+    return KeyboardStatusBarConfig.fromMap(raw ?? const {});
+  }
+
+  static Future<KeyboardStatusBarConfig> setStatusBarConfig(
+    KeyboardStatusBarConfig config,
+  ) async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      throw const AndroidKeyboardBridgeException(
+        code: 'KEYBOARD_UNSUPPORTED',
+        message: 'Android keyboard IME is not supported on this platform.',
+      );
+    }
+    final raw = await _invoke<Map<Object?, Object?>>(
+      'setKeyboardStatusBarConfig',
+      config.toMap(),
+    );
+    return KeyboardStatusBarConfig.fromMap(raw ?? const {});
+  }
+
+  static Future<KeyboardStatusBarConfig> resetStatusBarConfig() async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      return KeyboardStatusBarConfig.defaults();
+    }
+    final raw = await _invoke<Map<Object?, Object?>>(
+      'resetKeyboardStatusBarConfig',
+    );
+    return KeyboardStatusBarConfig.fromMap(raw ?? const {});
+  }
+
+  static Future<void> setKeyboardUserContext({
+    String? accountLabel,
+    String? accountLabelMode,
+    int? tipsLastResetAtMs,
+  }) async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      return;
+    }
+    await _invoke<void>('setKeyboardUserContext', {
+      'accountLabel': accountLabel,
+      'accountLabelMode': accountLabelMode,
+      'tipsLastResetAtMs': tipsLastResetAtMs,
+    });
+  }
+
   static Future<AndroidKeyboardStatus> clearDiagnostics() async {
     if (!PlatformCapabilities.keyboardImeSupported) {
       return AndroidKeyboardStatus.unsupported();

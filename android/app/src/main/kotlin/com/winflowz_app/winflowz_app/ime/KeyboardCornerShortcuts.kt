@@ -35,6 +35,7 @@ data class KeyboardCornerShortcut(
     val expression: String,
     val label: String? = null,
     val sensitive: Boolean = false,
+    val disabled: Boolean = false,
 ) {
     fun parsedValue(): KeyboardKeyValue {
         return KeyboardKeyValueParser.parse(expression)
@@ -51,6 +52,7 @@ data class KeyboardCornerShortcut(
             "expression" to expression,
             "label" to label,
             "sensitive" to sensitive,
+            "disabled" to disabled,
         )
     }
 
@@ -61,6 +63,7 @@ data class KeyboardCornerShortcut(
             .put("expression", expression)
             .put("label", label)
             .put("sensitive", sensitive)
+            .put("disabled", disabled)
     }
 
     companion object {
@@ -71,12 +74,14 @@ data class KeyboardCornerShortcut(
             val expression = (map["expression"] as? String).orEmpty().trim()
             val label = (map["label"] as? String)?.trim()?.takeIf { it.isNotEmpty() }
             val sensitive = map["sensitive"] as? Boolean ?: false
+            val disabled = map["disabled"] as? Boolean ?: false
             return KeyboardCornerShortcut(
                 keyId = keyId,
                 slot = slot,
                 expression = expression,
                 label = label,
                 sensitive = sensitive,
+                disabled = disabled,
             ).validated()
         }
 
@@ -88,6 +93,7 @@ data class KeyboardCornerShortcut(
                     "expression" to json.optString("expression"),
                     "label" to json.optString("label").takeIf { it.isNotBlank() },
                     "sensitive" to json.optBoolean("sensitive", false),
+                    "disabled" to json.optBoolean("disabled", false),
                 ),
             )
         }
@@ -377,7 +383,13 @@ object KeyboardCornerShortcutResolver {
             .forEach { bySlot[it.slot] = it }
         config.overrides
             .filter { it.keyId == key.id }
-            .forEach { bySlot[it.slot] = it }
+            .forEach {
+                if (it.disabled) {
+                    bySlot.remove(it.slot)
+                } else {
+                    bySlot[it.slot] = it
+                }
+            }
 
         if (bySlot.isEmpty()) {
             return KeyboardCornerAssignments.Empty
@@ -385,6 +397,9 @@ object KeyboardCornerShortcutResolver {
 
         val assignments =
             bySlot.values.mapNotNull { shortcut ->
+                if (shortcut.disabled) {
+                    return@mapNotNull null
+                }
                 val value = runCatching { shortcut.parsedValue() }.getOrNull() ?: return@mapNotNull null
                 if (!isAllowedForPolicy(shortcut, value, fieldPolicy)) {
                     return@mapNotNull null
@@ -445,6 +460,9 @@ private fun KeyboardCornerShortcut.validated(): KeyboardCornerShortcut {
     }
     if (keyId.length > KeyboardCornerConfig.MAX_KEY_ID_LENGTH) {
         throw KeyboardCornerConfigException("Corner shortcut keyId is too long")
+    }
+    if (disabled) {
+        return this
     }
     if (expression.isBlank()) {
         throw KeyboardCornerConfigException("Corner shortcut expression is required")

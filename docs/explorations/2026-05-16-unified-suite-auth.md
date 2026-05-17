@@ -1,7 +1,7 @@
 ---
 artifact: exploration_report
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "WinFlowz"
 created: "2026-05-16"
 updated: "2026-05-17"
@@ -17,7 +17,7 @@ linked_systems:
   - "winflows.com / WinFlowz site"
   - "WinFlowz Flutter app"
   - "TubeFlow / YouTube app"
-  - "VoiceFlowz historical tracker"
+  - "VoiceFlowz historical tracker, now legacy naming for WinFlowz app"
   - "Clerk"
   - "Firebase Auth"
   - "Convex"
@@ -60,10 +60,11 @@ domains?
   auth playbook says one documented session owner per runtime and separate
   local/preview/staging/prod auth environments. It explicitly scopes out
   migrating every app to one provider.
-- `/home/claude/shipflow_data/projects/VoiceFlowz/TASKS.md` - Historical task:
-  "Configure Clerk for auth (shared with WinFlowz)", plus a deferred
-  "Integration with WinFlowz Pro tier as premium feature". This is a signal in
-  favor of shared suite auth, not against it.
+- `/home/claude/shipflow_data/projects/VoiceFlowz/TASKS.md` - Historical
+  tracker for the app now known as WinFlowz app. The legacy task "Configure
+  Clerk for auth (shared with WinFlowz)" is a signal in favor of shared suite
+  auth, not against it. Treat VoiceFlowz / VoiceFlows as old naming, not as a
+  separate current product.
 - `/home/claude/.claude/projects/-home-claude-winflowz/...` - Historical session
   decided to keep separate product sites while making WinFlowz an umbrella brand
   with unified pricing/bundle. This decision is about sites/pricing, not account

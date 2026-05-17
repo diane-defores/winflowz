@@ -128,4 +128,116 @@ void main() {
     expect(status.lastKeyboardErrorAt, '2026-05-16T08:05:00Z');
     expect(status.keyboardRecoveryCount, 3);
   });
+
+  test('AndroidKeyboardStatus parses status bar config defaults', () {
+    final status = AndroidKeyboardStatus.fromMap({
+      'supported': true,
+      'statusBarConfig': {
+        'mode': 'compact',
+        'modules': ['keyboardLabel', 'time'],
+        'accountLabelMode': 'visible',
+        'tipLevel': 'minimal',
+      },
+      'accountLabel': 'diane@example.com',
+      'accountLabelMode': 'visible',
+      'tipsLastResetAtMs': 1715930000000,
+    });
+
+    expect(status.statusBarConfig.mode, KeyboardStatusBarMode.compact);
+    expect(status.statusBarConfig.modules, [
+      KeyboardStatusBarModule.keyboardLabel,
+      KeyboardStatusBarModule.time,
+    ]);
+    expect(
+      status.statusBarConfig.accountLabelMode,
+      KeyboardStatusBarAccountLabelMode.visible,
+    );
+    expect(status.statusBarConfig.tipLevel, KeyboardTipLevel.minimal);
+    expect(status.accountLabel, 'diane@example.com');
+    expect(status.accountLabelMode, KeyboardStatusBarAccountLabelMode.visible);
+    expect(status.tipsLastResetAtMs, 1715930000000);
+  });
+
+  test(
+    'SettingsKeyboardController loads and sets keyboard status bar config',
+    () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_keyboardChannel, (call) async {
+            calls.add(call);
+            if (call.method == 'setKeyboardStatusBarConfig') {
+              return {
+                'mode': call.arguments['mode'],
+                'modules': call.arguments['modules'],
+                'accountLabelMode': call.arguments['accountLabelMode'],
+                'tipLevel': call.arguments['tipLevel'],
+              };
+            }
+            if (call.method == 'getKeyboardStatusBarConfig') {
+              return {
+                'mode': 'hidden',
+                'modules': ['keyboardLabel'],
+                'accountLabelMode': 'masked',
+                'tipLevel': 'off',
+              };
+            }
+            return null;
+          });
+
+      final controller = const SettingsKeyboardController();
+      final loaded = await controller.loadStatusBarConfig();
+      final updated = await controller.setStatusBarConfig(
+        KeyboardStatusBarConfig(
+          mode: KeyboardStatusBarMode.standard,
+          modules: [
+            KeyboardStatusBarModule.keyboardLabel,
+            KeyboardStatusBarModule.date,
+          ],
+          accountLabelMode: KeyboardStatusBarAccountLabelMode.visible,
+          tipLevel: KeyboardTipLevel.contextual,
+        ),
+      );
+
+      expect(loaded.mode, KeyboardStatusBarMode.hidden);
+      expect(updated.mode, KeyboardStatusBarMode.standard);
+      expect(updated.modules, [
+        KeyboardStatusBarModule.keyboardLabel,
+        KeyboardStatusBarModule.date,
+      ]);
+      expect(
+        calls.any((call) => call.method == 'getKeyboardStatusBarConfig'),
+        isTrue,
+      );
+      expect(
+        calls.any((call) => call.method == 'setKeyboardStatusBarConfig'),
+        isTrue,
+      );
+    },
+  );
+
+  test(
+    'SettingsKeyboardController sends keyboard user context to native channel',
+    () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_keyboardChannel, (call) async {
+            calls.add(call);
+            return null;
+          });
+
+      await const SettingsKeyboardController().setKeyboardUserContext(
+        accountLabel: 'd@example.com',
+        accountLabelMode: KeyboardStatusBarAccountLabelMode.visible,
+        tipsLastResetAtMs: 1715930001111,
+      );
+
+      final call = calls.single;
+      expect(call.method, 'setKeyboardUserContext');
+      expect(call.arguments, containsPair('accountLabel', 'd@example.com'));
+      expect(call.arguments, containsPair('accountLabelMode', 'visible'));
+      expect(call.arguments, containsPair('tipsLastResetAtMs', 1715930001111));
+    },
+  );
 }

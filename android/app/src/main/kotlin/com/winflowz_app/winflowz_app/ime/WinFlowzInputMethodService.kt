@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.winflowz_app.winflowz_app.MainActivity
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import com.winflowz_app.winflowz_app.ime.actions.withAttachedClipboardActionRow
 
 class WinFlowzInputMethodService :
     InputMethodService(),
@@ -355,7 +356,7 @@ class WinFlowzInputMethodService :
 
     override fun onCopySelection() {
         if (!fieldPolicy.clipboardAllowed) {
-            showStatus("Clipboard capture disabled for private field")
+            showInlineStatus("Clipboard capture disabled for private field")
             return
         }
         val selectedText = editor().selectedText()?.toString()?.trim()
@@ -367,31 +368,31 @@ class WinFlowzInputMethodService :
         if (copied && !selectedText.isNullOrBlank()) {
             stateStore.pushClipboardEntry(selectedText)
             applyRuntimePreferencesToView()
-            showStatus("Selection copied")
+            showInlineStatus("Selection copied")
             return
         }
         if (editor().performContextMenuAction(android.R.id.copy).applied) {
-            showStatus("Copy sent")
+            showInlineStatus("Copy sent")
             return
         }
         if (isTermuxInputTarget() && sendTermuxClipboardShortcut(KeyEvent.KEYCODE_C)) {
-            showStatus("Termux copy shortcut sent")
+            showInlineStatus("Termux copy shortcut sent")
             return
         }
-        showStatus("No selectable text")
+        showInlineStatus("No selectable text")
     }
 
     override fun onCutSelection(): Boolean {
         if (!fieldPolicy.clipboardAllowed) {
-            showStatus("Clipboard capture disabled for private field")
+            showInlineStatus("Clipboard capture disabled for private field")
             return false
         }
         if (!selectionState.hasSelection && editor().selectedText().isNullOrEmpty()) {
             if (isTermuxInputTarget() && sendTermuxClipboardShortcut(KeyEvent.KEYCODE_X)) {
-                showStatus("Termux cut shortcut sent")
+                showInlineStatus("Termux cut shortcut sent")
                 return true
             }
-            showStatus("No selectable text")
+            showInlineStatus("No selectable text")
             return false
         }
         val cut = editor().performContextMenuAction(android.R.id.cut)
@@ -402,15 +403,18 @@ class WinFlowzInputMethodService :
         val sent = isTermuxInputTarget() && sendTermuxClipboardShortcut(KeyEvent.KEYCODE_X)
         refreshTypingAssistantState()
         if (sent) {
-            showStatus("Termux cut shortcut sent")
+            showInlineStatus("Termux cut shortcut sent")
             return true
         }
-        return cut.reportFailure("Cut rejected by field")
+        if (!cut.applied) {
+            showInlineStatus("Cut rejected by field")
+        }
+        return cut.applied
     }
 
     override fun onPasteClipboard(): Boolean {
         if (!fieldPolicy.clipboardAllowed) {
-            showStatus("Clipboard paste disabled for private field")
+            showInlineStatus("Clipboard paste disabled for private field")
             return false
         }
         val pasted =
@@ -422,18 +426,18 @@ class WinFlowzInputMethodService :
             clipboardController.primaryText()?.let { stateStore.pushClipboardEntry(it) }
             applyRuntimePreferencesToView()
         }
-        showStatus(if (pasted) "Clipboard pasted" else "No text clipboard")
+        showInlineStatus(if (pasted) "Clipboard pasted" else "No text clipboard")
         return pasted
     }
 
     override fun onPastePlainClipboard(): Boolean {
         if (!fieldPolicy.clipboardAllowed) {
-            showStatus("Clipboard paste disabled for private field")
+            showInlineStatus("Clipboard paste disabled for private field")
             return false
         }
         val plainPaste = editor().performContextMenuAction(android.R.id.pasteAsPlainText)
         if (plainPaste.applied) {
-            showStatus("Plain clipboard pasted")
+            showInlineStatus("Plain clipboard pasted")
             return true
         }
         return onPasteClipboard()
@@ -842,10 +846,21 @@ class WinFlowzInputMethodService :
                 clipboardEntries = clipboardEntriesForKeyboard(),
                 snippets = stateStore.snippetRules(),
                 cornerConfig = stateStore.cornerConfig(),
-                actionBarState = stateStore.actionBarState(),
+                actionBarState = actionBarStateForCurrentField(),
                 actionBarLongPressBehavior = stateStore.actionBarLongPressBehavior,
+                statusBarConfig = stateStore.statusBarConfig,
+                accountLabel = stateStore.accountLabel,
+                accountLabelMode = stateStore.accountLabelMode,
             )
         }
+    }
+
+    private fun actionBarStateForCurrentField(): KeyboardActionBarState {
+        val stored = stateStore.actionBarState()
+        if (!fieldPolicy.inputAllowed || fieldPolicy.privateMode || !fieldPolicy.clipboardAllowed) {
+            return stored
+        }
+        return stored.withAttachedClipboardActionRow()
     }
 
     private fun clipboardEntriesForKeyboard(): List<KeyboardClipboardEntry> {
@@ -880,13 +895,7 @@ class WinFlowzInputMethodService :
         if (fieldPolicy.privateMode) {
             return true
         }
-        return inputContext.fieldContext in
-            setOf(
-                KeyboardFieldContextMode.Email,
-                KeyboardFieldContextMode.Url,
-                KeyboardFieldContextMode.Phone,
-                KeyboardFieldContextMode.Number,
-            )
+        return !inputContext.typingCorrectionsAllowed
     }
 
     private fun commitWithTypingCorrections(
@@ -1059,6 +1068,10 @@ class WinFlowzInputMethodService :
     private fun showStatus(message: String) {
         keyboardView?.setStatus(message)
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showInlineStatus(message: String) {
+        keyboardView?.setStatus(message)
     }
 
     private fun <T> runServiceSafely(

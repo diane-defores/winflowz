@@ -23,6 +23,7 @@ enum class KeyboardLayoutMode {
     Numbers,
     Accents,
     Symbols,
+    Navigation,
 }
 
 enum class KeyboardPanelMode {
@@ -53,6 +54,7 @@ enum class KeyboardFieldContextMode {
     Text,
     Email,
     Url,
+    Password,
     Phone,
     Number,
     Search,
@@ -73,6 +75,7 @@ enum class KeyboardKeyAction {
     ModeNumbers,
     ModeAccents,
     ModeSymbols,
+    ModeNavigation,
     ToggleNavigationPanel,
     ToggleAccentPanel,
     ToggleEmojiPanel,
@@ -423,6 +426,7 @@ object KeyboardLayoutBuilder {
                             KeyboardKeySpec("nav-del-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter),
                             KeyboardKeySpec("nav-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
                             KeyboardKeySpec("nav-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+                            KeyboardKeySpec("nav-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
                         ),
                 ),
                 KeyboardRowSpec(
@@ -434,6 +438,7 @@ object KeyboardLayoutBuilder {
                             KeyboardKeySpec("nav-word-right", "Word→", KeyboardKeyAction.NavigateWordRight),
                             KeyboardKeySpec("nav-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
                             KeyboardKeySpec("nav-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
+                            KeyboardKeySpec("nav-end", "Fin", KeyboardKeyAction.NavigateLineEnd),
                         ),
                 ),
                 KeyboardRowSpec(
@@ -483,6 +488,64 @@ object KeyboardLayoutBuilder {
                         KeyboardKeySpec("nav-right", "➡", KeyboardKeyAction.NavigateCharRight),
                     ),
             ),
+        )
+    }
+
+    private fun compactNavigationModeRows(): List<KeyboardRowSpec> {
+        return listOf(
+            KeyboardRowSpec(listOf(
+                KeyboardKeySpec("nav-mode-select-all", "All", KeyboardKeyAction.SelectAll),
+                KeyboardKeySpec("nav-mode-copy", "Copy", KeyboardKeyAction.CopySelection),
+                KeyboardKeySpec("nav-mode-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                KeyboardKeySpec("nav-mode-end", "Fin", KeyboardKeyAction.NavigateLineEnd),
+                KeyboardKeySpec("nav-mode-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+                KeyboardKeySpec("nav-mode-del", "Del", KeyboardKeyAction.Backspace),
+            )),
+            KeyboardRowSpec(listOf(
+                KeyboardKeySpec("nav-mode-cut", "Cut", KeyboardKeyAction.CutSelection),
+                KeyboardKeySpec("nav-mode-paste", "Paste", KeyboardKeyAction.PasteClipboard),
+                KeyboardKeySpec("nav-mode-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.15f),
+                KeyboardKeySpec("nav-mode-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.15f),
+                KeyboardKeySpec("nav-mode-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
+                KeyboardKeySpec("nav-mode-forward-del", "Del→", KeyboardKeyAction.ForwardDelete),
+            )),
+            KeyboardRowSpec(listOf(
+                modeKey("ABC", KeyboardKeyAction.ModeLetters, false),
+                KeyboardKeySpec("nav-mode-undo", "Undo", KeyboardKeyAction.Undo),
+                KeyboardKeySpec("nav-mode-redo", "Redo", KeyboardKeyAction.Redo),
+                KeyboardKeySpec("nav-mode-left", "←", KeyboardKeyAction.NavigateCharLeft),
+                KeyboardKeySpec("nav-mode-right", "→", KeyboardKeyAction.NavigateCharRight),
+                textKey("Espace", " ", weight = 2f),
+            )),
+        )
+    }
+
+    private fun navigationModeRows(): List<KeyboardRowSpec> {
+        return listOf(
+            KeyboardRowSpec(listOf(
+                KeyboardKeySpec("nav-mode-select-all", "All", KeyboardKeyAction.SelectAll),
+                KeyboardKeySpec("nav-mode-copy", "Copy", KeyboardKeyAction.CopySelection),
+                KeyboardKeySpec("nav-mode-start", "Début", KeyboardKeyAction.NavigateLineStart, weight = 1.15f),
+                KeyboardKeySpec("nav-mode-end", "Fin", KeyboardKeyAction.NavigateLineEnd),
+                KeyboardKeySpec("nav-mode-paragraph-up", "⏫", KeyboardKeyAction.NavigateParagraphUp),
+                KeyboardKeySpec("nav-mode-line-up", "↑", KeyboardKeyAction.NavigateLineUp),
+            )),
+            KeyboardRowSpec(listOf(
+                KeyboardKeySpec("nav-mode-cut", "Cut", KeyboardKeyAction.CutSelection),
+                KeyboardKeySpec("nav-mode-paste", "Paste", KeyboardKeyAction.PasteClipboard),
+                KeyboardKeySpec("nav-mode-word-left", "Word←", KeyboardKeyAction.NavigateWordLeft, weight = 1.15f),
+                KeyboardKeySpec("nav-mode-word-right", "Word→", KeyboardKeyAction.NavigateWordRight, weight = 1.15f),
+                KeyboardKeySpec("nav-mode-paragraph-down", "⏬", KeyboardKeyAction.NavigateParagraphDown),
+                KeyboardKeySpec("nav-mode-line-down", "↓", KeyboardKeyAction.NavigateLineDown),
+            )),
+            KeyboardRowSpec(listOf(
+                KeyboardKeySpec("nav-mode-undo", "Undo", KeyboardKeyAction.Undo),
+                KeyboardKeySpec("nav-mode-redo", "Redo", KeyboardKeyAction.Redo),
+                KeyboardKeySpec("nav-mode-delete-word-before", "DelW←", KeyboardKeyAction.DeleteWordBefore, weight = 1.1f),
+                KeyboardKeySpec("nav-mode-delete-word-after", "DelW→", KeyboardKeyAction.DeleteWordAfter, weight = 1.1f),
+                KeyboardKeySpec("nav-mode-left", "←", KeyboardKeyAction.NavigateCharLeft),
+                KeyboardKeySpec("nav-mode-right", "→", KeyboardKeyAction.NavigateCharRight),
+            )),
         )
     }
 
@@ -924,6 +987,7 @@ object KeyboardLayoutBuilder {
             KeyboardLayoutMode.Numbers -> numberRows()
             KeyboardLayoutMode.Accents -> accentRows()
             KeyboardLayoutMode.Symbols -> symbolRows()
+            KeyboardLayoutMode.Navigation -> navigationModeRows()
         }
     }
 
@@ -936,6 +1000,7 @@ object KeyboardLayoutBuilder {
             KeyboardLayoutMode.Numbers -> compactNumberRows(request)
             KeyboardLayoutMode.Accents -> compactAccentRows(request)
             KeyboardLayoutMode.Symbols -> compactSymbolRows(request)
+            KeyboardLayoutMode.Navigation -> compactNavigationModeRows()
         }
     }
 
@@ -1124,6 +1189,7 @@ object KeyboardLayoutBuilder {
                 KeyboardFieldContextMode.Number,
                 -> "+"
                 KeyboardFieldContextMode.Text,
+                KeyboardFieldContextMode.Password,
                 KeyboardFieldContextMode.Search,
                 -> ","
             }
@@ -1134,6 +1200,7 @@ object KeyboardLayoutBuilder {
                 KeyboardFieldContextMode.Phone -> "#"
                 KeyboardFieldContextMode.Number -> "-"
                 KeyboardFieldContextMode.Text,
+                KeyboardFieldContextMode.Password,
                 KeyboardFieldContextMode.Search,
                 -> "."
             }

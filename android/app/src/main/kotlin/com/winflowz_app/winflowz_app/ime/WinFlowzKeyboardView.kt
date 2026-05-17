@@ -201,6 +201,16 @@ class WinFlowzKeyboardView(
     private var fieldContext = KeyboardFieldContextMode.Text
     private var enterLabel = "Enter"
     private var statusText = "WinFlowz"
+    private var baseStatusText = "WinFlowz"
+    private var transientStatusText: String? = null
+    private var statusBarMode = KeyboardStatusBarMode.STANDARD
+    private var statusBarModules = listOf(
+        KeyboardStatusBarModule.KEYBOARD_LABEL,
+        KeyboardStatusBarModule.DATE,
+        KeyboardStatusBarModule.TIME,
+    )
+    private var accountLabel: String? = null
+    private var accountLabelMode = KeyboardStatusBarAccountLabelMode.NONE
     private var suggestions = emptyList<String>()
     private var clipboardEntries = emptyList<KeyboardClipboardEntry>()
     private var snippets = emptyList<KeyboardTextRule>()
@@ -395,8 +405,9 @@ class WinFlowzKeyboardView(
             if (policy.privateMode) {
                 "WinFlowz - private input (${policy.reason})"
             } else {
-                "WinFlowz"
+                composeStatusText()
             }
+        baseStatusText = statusText
         reconcileActionBarState()
         refreshLayout()
     }
@@ -425,6 +436,9 @@ class WinFlowzKeyboardView(
         cornerConfig: KeyboardCornerConfig,
         actionBarState: KeyboardActionBarState,
         actionBarLongPressBehavior: KeyboardActionLongPressBehavior,
+        statusBarConfig: KeyboardStatusBarConfig,
+        accountLabel: String?,
+        accountLabelMode: KeyboardStatusBarAccountLabelMode,
     ) {
         layoutProfile = profile
         cornerModeEnabled = cornersEnabled
@@ -434,6 +448,10 @@ class WinFlowzKeyboardView(
         spellingSuggestionsEnabled = spellingSuggestions
         this.mediaControlsEnabled = mediaControlsEnabled
         specialKeyCornersEnabled = specialKeyCorners
+        statusBarMode = statusBarConfig.mode
+        statusBarModules = statusBarConfig.modules
+        this.accountLabel = accountLabel
+        this.accountLabelMode = accountLabelMode
         frenchLanguageEnabled = frenchLanguage
         englishLanguageEnabled = englishLanguage
         doubleSpacePeriodEnabled = doubleSpacePeriod
@@ -464,6 +482,8 @@ class WinFlowzKeyboardView(
         if (fieldPolicy.privateMode && emojiCategory == KeyboardEmojiCategory.Recents) {
             emojiCategory = KeyboardEmojiCategory.Smileys
         }
+        baseStatusText = composeStatusText()
+        statusText = transientStatusText ?: baseStatusText
         requestLayout()
         refreshLayout()
     }
@@ -632,9 +652,72 @@ class WinFlowzKeyboardView(
     }
 
     fun setStatus(message: String) {
+        transientStatusText = message
         statusText = message
         requestLayout()
         invalidate()
+    }
+
+    private fun clearTransientStatus() {
+        transientStatusText = null
+        statusText = baseStatusText
+        requestLayout()
+        invalidate()
+    }
+
+    private fun composeStatusText(): String {
+        if (statusBarMode == KeyboardStatusBarMode.HIDDEN) {
+            return baseStatusText
+        }
+        val items = mutableListOf<String>()
+        val includes = statusBarModules.toSet()
+        if (KeyboardStatusBarModule.KEYBOARD_LABEL in includes) {
+            items.add("WinFlowz")
+        }
+        if (KeyboardStatusBarModule.DATE in includes) {
+            items.add(currentDateLabel())
+        }
+        if (KeyboardStatusBarModule.TIME in includes) {
+            items.add(currentTimeLabel())
+        }
+        if (KeyboardStatusBarModule.ACCOUNT_LABEL in includes) {
+            val label = when (accountLabelMode) {
+                KeyboardStatusBarAccountLabelMode.NONE -> null
+                KeyboardStatusBarAccountLabelMode.MASKED -> maskedAccountLabel(accountLabel)
+                KeyboardStatusBarAccountLabelMode.VISIBLE -> accountLabel?.trim()
+            }
+            label?.let { items.add(it) }
+        }
+        if (items.isEmpty()) {
+            items.add("WinFlowz")
+        }
+        return items.joinToString(" | ")
+    }
+
+    private fun currentDateLabel(): String {
+        val now = java.util.Calendar.getInstance()
+        return java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(now.time)
+    }
+
+    private fun currentTimeLabel(): String {
+        val now = java.util.Calendar.getInstance()
+        return java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(now.time)
+    }
+
+    private fun maskedAccountLabel(rawLabel: String?): String? {
+        val trimmed = rawLabel?.trim().orEmpty()
+        if (trimmed.isEmpty()) {
+            return null
+        }
+        val at = trimmed.indexOf('@')
+        if (at <= 0) {
+            return "Compte"
+        }
+        val local = trimmed.take(at)
+        if (local.length <= 2) {
+            return "${local.firstOrNull() ?: '*'}…"
+        }
+        return "${local.first()}***${local.last()}"
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -702,8 +785,10 @@ class WinFlowzKeyboardView(
 
         val contentWidth = right - left
         val statusHeight = statusHeightFor(contentWidth)
-        drawStatus(canvas, y, contentWidth, statusHeight)
-        y += statusHeight + rowGap()
+        if (statusHeight > 0f) {
+            drawStatus(canvas, y, contentWidth, statusHeight)
+            y += statusHeight + rowGap()
+        }
 
         layoutSnapshot.rows.forEachIndexed { index, row ->
             if (usesVerticalPanelScroll() && index == firstPanelRowIndex()) {
@@ -1232,6 +1317,9 @@ class WinFlowzKeyboardView(
     }
 
     private fun statusHeightFor(contentWidth: Float): Float {
+        if (statusBarMode == KeyboardStatusBarMode.HIDDEN) {
+            return 0f
+        }
         statusPaint.textSize = sp(13f)
         val lineCount = statusLines(contentWidth).size.coerceAtLeast(1)
         return max(minStatusHeight, lineCount * statusLineHeight() + dp(10f))
@@ -1804,7 +1892,7 @@ class WinFlowzKeyboardView(
                 }
             }
             KeyboardKeyAction.InsertTab -> {
-                if (!callbacks.onText("\t")) {
+                if (!callbacks.onKeyEvent(android.view.KeyEvent.KEYCODE_TAB, metaState = 0)) {
                     setStatus("Tab unavailable")
                 }
             }
@@ -1849,6 +1937,15 @@ class WinFlowzKeyboardView(
                         KeyboardLayoutMode.Letters
                     } else {
                         KeyboardLayoutMode.Symbols
+                    }
+                panelMode = KeyboardPanelMode.None
+            }
+            KeyboardKeyAction.ModeNavigation -> {
+                layoutMode =
+                    if (layoutMode == KeyboardLayoutMode.Navigation) {
+                        KeyboardLayoutMode.Letters
+                    } else {
+                        KeyboardLayoutMode.Navigation
                     }
                 panelMode = KeyboardPanelMode.None
             }

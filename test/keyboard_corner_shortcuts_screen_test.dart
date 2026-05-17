@@ -99,8 +99,33 @@ void main() {
     expect(KeyboardConfigurableKeyCatalog.contains('letter-a'), isTrue);
     expect(KeyboardConfigurableKeyCatalog.contains('space'), isTrue);
     expect(changed.dirty, isTrue);
-    expect(resetCorner.draftConfig.overrides, isEmpty);
-    expect(resetKey.draftConfig.overrides, isEmpty);
+    expect(resetCorner.draftConfig.overrides, hasLength(1));
+    expect(resetCorner.draftConfig.overrides.single.disabled, isTrue);
+    expect(
+      KeyboardCornerPresetCatalog.resolvedForKey(
+        config: resetCorner.draftConfig,
+        keyId: 'letter-a',
+        cornersEnabled: true,
+        specialKeyCornersEnabled: true,
+        privateMode: false,
+      )[KeyboardCornerSlot.topLeft],
+      isNull,
+    );
+    expect(resetKey.draftConfig.overrides, hasLength(4));
+    expect(
+      resetKey.draftConfig.overrides.every((item) => item.disabled),
+      isTrue,
+    );
+    expect(
+      KeyboardCornerPresetCatalog.resolvedForKey(
+        config: resetKey.draftConfig,
+        keyId: 'letter-a',
+        cornersEnabled: true,
+        specialKeyCornersEnabled: true,
+        privateMode: false,
+      ),
+      isEmpty,
+    );
   });
 
   test('guided actions generate native expressions and labels', () {
@@ -150,6 +175,36 @@ void main() {
       );
       expect(saveCalls, hasLength(1));
       expect(find.textContaining('Saved'), findsWidgets);
+    });
+  });
+
+  testWidgets('visual editor reset corner hides inherited preset shortcut', (
+    tester,
+  ) async {
+    await _runAsAndroid(tester, () async {
+      _installKeyboardMock(calls: <MethodCall>[]);
+
+      await tester.pumpWidget(_testWidget(await _snippetStore()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('corner-preview-key-letter-e')));
+      await tester.pumpAndSettle();
+
+      final topLeftE = find.byKey(const Key('corner-preview-slot-topLeft-E'));
+      expect(
+        find.descendant(of: topLeftE, matching: find.text('é')),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Reset corner'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.descendant(of: topLeftE, matching: find.text('é')),
+        findsNothing,
+      );
+      expect(find.text('Top left: tap'), findsOneWidget);
+      expect(find.textContaining('Draft has unsaved changes'), findsOneWidget);
     });
   });
 

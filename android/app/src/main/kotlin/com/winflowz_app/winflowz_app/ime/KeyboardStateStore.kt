@@ -137,9 +137,59 @@ class KeyboardStateStore(private val context: Context) {
                     value
                 } else {
                     PRIVACY_AUTO
-                }
+            }
             preferences.edit().putString(KEY_PRIVACY_MODE, normalized).apply()
         }
+
+    var statusBarConfig: KeyboardStatusBarConfig
+        get() {
+            val rawConfig = preferences.getString(KEY_STATUS_BAR_CONFIG, null)
+            if (rawConfig == null || rawConfig.isBlank()) {
+                return KeyboardStatusBarConfig.defaults()
+            }
+            return runCatching {
+                val payload = JSONObject(rawConfig)
+                KeyboardStatusBarConfig.fromMap(payload.toMap())
+            }.getOrElse { KeyboardStatusBarConfig.defaults() }
+        }
+        set(value) {
+            val safeModules = value.sanitizeModuleList()
+            val safeConfig =
+                KeyboardStatusBarConfig(
+                    mode = value.mode,
+                    modules = safeModules,
+                    accountLabelMode = value.accountLabelMode,
+                    tipLevel = value.tipLevel,
+                )
+            preferences
+                .edit()
+                .putString(KEY_STATUS_BAR_CONFIG, safeConfig.toJSONObject().toString())
+                .apply()
+        }
+
+    var accountLabelMode: KeyboardStatusBarAccountLabelMode
+        get() =
+            KeyboardStatusBarAccountLabelMode.fromRaw(
+                preferences.getString(KEY_ACCOUNT_LABEL_MODE, null),
+            )
+        set(value) =
+            preferences
+                .edit()
+                .putString(KEY_ACCOUNT_LABEL_MODE, value.wireValue)
+                .apply()
+
+    var accountLabel: String?
+        get() = preferences.getString(KEY_ACCOUNT_LABEL, null)
+        set(value) =
+            if (value == null) {
+                preferences.edit().remove(KEY_ACCOUNT_LABEL).apply()
+            } else {
+                preferences.edit().putString(KEY_ACCOUNT_LABEL, value.take(48)).apply()
+            }
+
+    var tipsLastResetAtMs: Long
+        get() = preferences.getLong(KEY_TIPS_LAST_RESET_AT, 0L)
+        set(value) = preferences.edit().putLong(KEY_TIPS_LAST_RESET_AT, value).apply()
 
     val lastKeyboardError: String?
         get() = preferences.getString(KEY_LAST_KEYBOARD_ERROR, null)
@@ -213,10 +263,37 @@ class KeyboardStateStore(private val context: Context) {
             "compactModeEnabled" to compactModeEnabled,
             "actionBarLongPressBehavior" to actionBarLongPressBehavior.wireValue,
             "privacyMode" to privacyMode,
+            "statusBarConfig" to statusBarConfig.toMap(),
+            "accountLabel" to (accountLabel ?: ""),
+            "accountLabelMode" to accountLabelMode.wireValue,
+            "tipsLastResetAtMs" to tipsLastResetAtMs,
             "lastKeyboardError" to (lastKeyboardError ?: ""),
             "lastKeyboardErrorAt" to (lastKeyboardErrorAt ?: ""),
             "keyboardRecoveryCount" to keyboardRecoveryCount,
         )
+    }
+
+    fun setStatusBarConfig(config: KeyboardStatusBarConfig): KeyboardStatusBarConfig {
+        statusBarConfig = config
+        return statusBarConfig
+    }
+
+    fun resetStatusBarConfig(): KeyboardStatusBarConfig {
+        val reset = KeyboardStatusBarConfig.defaults()
+        statusBarConfig = reset
+        return reset
+    }
+
+    fun setKeyboardUserContext(
+        rawAccountLabel: String?,
+        rawAccountLabelMode: String?,
+        rawTipsLastResetAtMs: Long?,
+    ) {
+        accountLabel = rawAccountLabel?.trim()?.take(64)
+        accountLabelMode = KeyboardStatusBarAccountLabelMode.fromRaw(rawAccountLabelMode)
+        if (rawTipsLastResetAtMs != null && rawTipsLastResetAtMs > 0) {
+            tipsLastResetAtMs = rawTipsLastResetAtMs
+        }
     }
 
     fun emojiRecents(limit: Int = 16): List<String> {
@@ -632,6 +709,49 @@ class KeyboardStateStore(private val context: Context) {
 
     private fun clipboardDedupeKey(content: String): String = content.replace(Regex("\\s+"), " ").trim().lowercase()
 
+    private fun JSONObject.toMap(): Map<String, Any> {
+        return mutableMapOf<String, Any>().also { map ->
+            val keys = keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                val value = this.opt(key)
+                if (value == null || value == JSONObject.NULL) {
+                    map[key] = ""
+                    continue
+                }
+                when (value) {
+                    is JSONObject -> map[key] = value.toMap()
+                    is JSONArray -> {
+                        val values = mutableListOf<Any>()
+                        for (index in 0 until value.length()) {
+                            val entry = value.opt(index)
+                            values.add(
+                                when (entry) {
+                                    is JSONObject -> entry.toMap()
+                                    is JSONArray -> entry.toList()
+                                    else -> entry
+                                },
+                            )
+                        }
+                        map[key] = values
+                    }
+                    else -> map[key] = value
+                }
+            }
+        }
+    }
+
+    private fun JSONArray.toList(): List<Any> {
+        return List(length()) { index ->
+            val entry = this.opt(index)
+            when (entry) {
+                is JSONObject -> entry.toMap()
+                is JSONArray -> entry.toList()
+                else -> entry
+            }
+        }
+    }
+
     companion object {
         const val PREFERENCES_NAME = "winflowz_app_keyboard_prefs"
         const val KEY_VOICE_ENABLED = "voice_enabled"
@@ -663,6 +783,10 @@ class KeyboardStateStore(private val context: Context) {
         const val KEY_CLIPBOARD_ENTRIES = "clipboard_entries"
         const val KEY_CORNER_CONFIG = "corner_config"
         const val KEY_THEME_CONFIG = "theme_config"
+        const val KEY_STATUS_BAR_CONFIG = "status_bar_config"
+        const val KEY_ACCOUNT_LABEL = "keyboard_statusbar_account_label"
+        const val KEY_ACCOUNT_LABEL_MODE = "keyboard_statusbar_account_label_mode"
+        const val KEY_TIPS_LAST_RESET_AT = "keyboard_statusbar_tips_last_reset_at_ms"
         const val KEY_LAST_KEYBOARD_ERROR = "last_keyboard_error"
         const val KEY_LAST_KEYBOARD_ERROR_AT = "last_keyboard_error_at"
         const val KEY_KEYBOARD_RECOVERY_COUNT = "keyboard_recovery_count"

@@ -376,6 +376,143 @@ class KeyboardThemePresetCatalog {
   }
 }
 
+enum KeyboardStatusBarMode {
+  hidden,
+  compact,
+  standard,
+  smart;
+
+  static KeyboardStatusBarMode fromName(String value) {
+    return KeyboardStatusBarMode.values.firstWhere(
+      (mode) => mode.name == value,
+      orElse: () => KeyboardStatusBarMode.smart,
+    );
+  }
+}
+
+enum KeyboardStatusBarModule {
+  keyboardLabel,
+  date,
+  time,
+  accountLabel,
+  tips;
+
+  static KeyboardStatusBarModule fromName(String value) {
+    return KeyboardStatusBarModule.values.firstWhere(
+      (module) => module.name == value,
+      orElse: () => KeyboardStatusBarModule.keyboardLabel,
+    );
+  }
+}
+
+enum KeyboardStatusBarAccountLabelMode {
+  none,
+  masked,
+  visible;
+
+  static KeyboardStatusBarAccountLabelMode fromName(String value) {
+    return KeyboardStatusBarAccountLabelMode.values.firstWhere(
+      (mode) => mode.name == value,
+      orElse: () => KeyboardStatusBarAccountLabelMode.none,
+    );
+  }
+}
+
+enum KeyboardTipLevel {
+  off,
+  minimal,
+  standard,
+  contextual;
+
+  static KeyboardTipLevel fromName(String value) {
+    return KeyboardTipLevel.values.firstWhere(
+      (level) => level.name == value,
+      orElse: () => KeyboardTipLevel.off,
+    );
+  }
+}
+
+class KeyboardStatusBarConfig {
+  const KeyboardStatusBarConfig({
+    required this.mode,
+    required this.modules,
+    required this.accountLabelMode,
+    required this.tipLevel,
+  });
+
+  final KeyboardStatusBarMode mode;
+  final List<KeyboardStatusBarModule> modules;
+  final KeyboardStatusBarAccountLabelMode accountLabelMode;
+  final KeyboardTipLevel tipLevel;
+
+  factory KeyboardStatusBarConfig.defaults() {
+    return const KeyboardStatusBarConfig(
+      mode: KeyboardStatusBarMode.smart,
+      modules: [
+        KeyboardStatusBarModule.keyboardLabel,
+        KeyboardStatusBarModule.date,
+        KeyboardStatusBarModule.time,
+        KeyboardStatusBarModule.accountLabel,
+      ],
+      accountLabelMode: KeyboardStatusBarAccountLabelMode.masked,
+      tipLevel: KeyboardTipLevel.standard,
+    );
+  }
+
+  factory KeyboardStatusBarConfig.fromMap(Map<Object?, Object?> map) {
+    final defaults = KeyboardStatusBarConfig.defaults();
+
+    final rawModules =
+        (map['modules'] as List<dynamic>?) ??
+        (map['module'] != null ? [map['module']] : []);
+    final parsedModules = <KeyboardStatusBarModule>[];
+    for (final item in rawModules) {
+      if (item is String) {
+        final module = KeyboardStatusBarModule.fromName(item);
+        if (!parsedModules.contains(module)) {
+          parsedModules.add(module);
+        }
+      }
+    }
+
+    return KeyboardStatusBarConfig(
+      mode: KeyboardStatusBarMode.fromName(
+        map['mode'] as String? ?? defaults.mode.name,
+      ),
+      modules: parsedModules.isEmpty ? defaults.modules : parsedModules,
+      accountLabelMode: KeyboardStatusBarAccountLabelMode.fromName(
+        map['accountLabelMode'] as String? ?? defaults.accountLabelMode.name,
+      ),
+      tipLevel: KeyboardTipLevel.fromName(
+        map['tipLevel'] as String? ?? defaults.tipLevel.name,
+      ),
+    );
+  }
+
+  Map<String, Object?> toMap() {
+    return {
+      'mode': mode.name,
+      'modules': modules.map((module) => module.name).toList(growable: false),
+      'accountLabelMode': accountLabelMode.name,
+      'tipLevel': tipLevel.name,
+    };
+  }
+
+  KeyboardStatusBarConfig copyWith({
+    KeyboardStatusBarMode? mode,
+    List<KeyboardStatusBarModule>? modules,
+    KeyboardStatusBarAccountLabelMode? accountLabelMode,
+    KeyboardTipLevel? tipLevel,
+  }) {
+    return KeyboardStatusBarConfig(
+      mode: mode ?? this.mode,
+      modules: modules ?? this.modules,
+      accountLabelMode: accountLabelMode ?? this.accountLabelMode,
+      tipLevel: tipLevel ?? this.tipLevel,
+    );
+  }
+}
+
 class KeyboardThemeConfig {
   const KeyboardThemeConfig({
     required this.version,
@@ -489,7 +626,8 @@ class KeyboardThemeConfig {
     final rawPresetId = map['presetId'] as String? ?? defaults.presetId;
     final presetId = switch (rawPresetId) {
       KeyboardThemePresetCatalog.winflowzLight ||
-      KeyboardThemePresetCatalog.winflowzDark => KeyboardThemePresetCatalog.winflowz,
+      KeyboardThemePresetCatalog.winflowzDark =>
+        KeyboardThemePresetCatalog.winflowz,
       _ => rawPresetId,
     };
     return KeyboardThemeConfig(
@@ -859,15 +997,28 @@ class AndroidKeyboardCornerShortcut {
     required this.expression,
     this.label,
     this.sensitive = false,
+    this.disabled = false,
   });
+
+  const AndroidKeyboardCornerShortcut.disabled({
+    required this.keyId,
+    required this.slot,
+  }) : expression = '',
+       label = null,
+       sensitive = false,
+       disabled = true;
 
   final String keyId;
   final KeyboardCornerSlot slot;
   final String expression;
   final String? label;
   final bool sensitive;
+  final bool disabled;
 
   String get displayLabel {
+    if (disabled) {
+      return 'tap';
+    }
     final explicit = label?.trim();
     if (explicit != null && explicit.isNotEmpty) {
       return explicit;
@@ -891,6 +1042,7 @@ class AndroidKeyboardCornerShortcut {
     String? expression,
     String? label,
     bool? sensitive,
+    bool? disabled,
   }) {
     return AndroidKeyboardCornerShortcut(
       keyId: keyId ?? this.keyId,
@@ -898,6 +1050,7 @@ class AndroidKeyboardCornerShortcut {
       expression: expression ?? this.expression,
       label: label ?? this.label,
       sensitive: sensitive ?? this.sensitive,
+      disabled: disabled ?? this.disabled,
     );
   }
 
@@ -908,6 +1061,7 @@ class AndroidKeyboardCornerShortcut {
       expression: map['expression'] as String? ?? '',
       label: map['label'] as String?,
       sensitive: map['sensitive'] as bool? ?? false,
+      disabled: map['disabled'] as bool? ?? false,
     );
   }
 
@@ -918,6 +1072,7 @@ class AndroidKeyboardCornerShortcut {
       'expression': expression,
       'label': label,
       'sensitive': sensitive,
+      'disabled': disabled,
     };
   }
 }
@@ -1175,6 +1330,7 @@ class KeyboardCornerDraft {
         overrides: [
           for (final item in draftConfig.overrides)
             if (item.keyId != keyId || item.slot != slot) item,
+          AndroidKeyboardCornerShortcut.disabled(keyId: keyId, slot: slot),
         ],
       ),
       validationMessage: null,
@@ -1187,6 +1343,8 @@ class KeyboardCornerDraft {
         overrides: [
           for (final item in draftConfig.overrides)
             if (item.keyId != keyId) item,
+          for (final slot in KeyboardCornerSlot.values)
+            AndroidKeyboardCornerShortcut.disabled(keyId: keyId, slot: slot),
         ],
       ),
       validationMessage: null,
@@ -1265,7 +1423,8 @@ class AndroidKeyboardCornerConfig {
                 .where(
                   (shortcut) =>
                       shortcut.keyId.trim().isNotEmpty &&
-                      shortcut.expression.trim().isNotEmpty,
+                      (shortcut.disabled ||
+                          shortcut.expression.trim().isNotEmpty),
                 )
                 .toList(growable: false)
           : const [],
@@ -1356,7 +1515,12 @@ class KeyboardCornerPresetCatalog {
       }
     }
     for (final shortcut in config.overrides) {
-      if (shortcut.keyId == keyId && _allowedInPreview(shortcut, privateMode)) {
+      if (shortcut.keyId != keyId) {
+        continue;
+      }
+      if (shortcut.disabled) {
+        resolved.remove(shortcut.slot);
+      } else if (_allowedInPreview(shortcut, privateMode)) {
         resolved[shortcut.slot] = shortcut;
       }
     }
@@ -1481,6 +1645,10 @@ class AndroidKeyboardStatus {
     required this.actionRowHeightScale,
     required this.compactModeEnabled,
     required this.privacyMode,
+    required this.statusBarConfig,
+    required this.accountLabel,
+    required this.accountLabelMode,
+    required this.tipsLastResetAtMs,
     required this.lastKeyboardError,
     required this.lastKeyboardErrorAt,
     required this.keyboardRecoveryCount,
@@ -1518,12 +1686,16 @@ class AndroidKeyboardStatus {
   final double actionRowHeightScale;
   final bool compactModeEnabled;
   final KeyboardPrivacyMode privacyMode;
+  final KeyboardStatusBarConfig statusBarConfig;
+  final String? accountLabel;
+  final KeyboardStatusBarAccountLabelMode accountLabelMode;
+  final int? tipsLastResetAtMs;
   final String? lastKeyboardError;
   final String? lastKeyboardErrorAt;
   final int keyboardRecoveryCount;
 
   factory AndroidKeyboardStatus.unsupported() {
-    return const AndroidKeyboardStatus(
+    return AndroidKeyboardStatus(
       supported: false,
       enabled: false,
       active: false,
@@ -1556,6 +1728,10 @@ class AndroidKeyboardStatus {
       actionRowHeightScale: 1,
       compactModeEnabled: false,
       privacyMode: KeyboardPrivacyMode.auto,
+      statusBarConfig: KeyboardStatusBarConfig.defaults(),
+      accountLabel: null,
+      accountLabelMode: KeyboardStatusBarAccountLabelMode.none,
+      tipsLastResetAtMs: null,
       lastKeyboardError: null,
       lastKeyboardErrorAt: null,
       keyboardRecoveryCount: 0,
@@ -1575,10 +1751,9 @@ class AndroidKeyboardStatus {
               .clamp(5, 30)
               .toInt(),
       mediaBrightnessStepPercent:
-          ((map['mediaBrightnessStepPercent'] as num?)?.toInt() ?? 10).clamp(
-            5,
-            30,
-          ).toInt(),
+          ((map['mediaBrightnessStepPercent'] as num?)?.toInt() ?? 10)
+              .clamp(5, 30)
+              .toInt(),
       mediaSessionAccessGranted:
           map['mediaSessionAccessGranted'] as bool? ?? false,
       systemSettingsWriteGranted:
@@ -1622,6 +1797,17 @@ class AndroidKeyboardStatus {
       privacyMode: KeyboardPrivacyMode.fromName(
         map['privacyMode'] as String? ?? KeyboardPrivacyMode.auto.name,
       ),
+      statusBarConfig: KeyboardStatusBarConfig.fromMap(
+        map['statusBarConfig'] is Map<Object?, Object?>
+            ? map['statusBarConfig'] as Map<Object?, Object?>
+            : const <Object?, Object?>{},
+      ),
+      accountLabel: _nonEmptyString(map['accountLabel']),
+      accountLabelMode: KeyboardStatusBarAccountLabelMode.fromName(
+        map['accountLabelMode'] as String? ??
+            KeyboardStatusBarAccountLabelMode.none.name,
+      ),
+      tipsLastResetAtMs: (map['tipsLastResetAtMs'] as num?)?.toInt(),
       lastKeyboardError: _nonEmptyString(map['lastKeyboardError']),
       lastKeyboardErrorAt: _nonEmptyString(map['lastKeyboardErrorAt']),
       keyboardRecoveryCount:
@@ -1654,6 +1840,7 @@ class AndroidKeyboardStatus {
     bool? punctuationAutoSpacingEnabled,
     double? actionRowHeightScale,
     KeyboardPrivacyMode? privacyMode,
+    KeyboardStatusBarConfig? statusBarConfig,
   }) {
     return {
       'voiceEnabled': voiceEnabled ?? this.voiceEnabled,
@@ -1684,6 +1871,7 @@ class AndroidKeyboardStatus {
           punctuationAutoSpacingEnabled ?? this.punctuationAutoSpacingEnabled,
       'actionRowHeightScale': actionRowHeightScale ?? this.actionRowHeightScale,
       'privacyMode': (privacyMode ?? this.privacyMode).name,
+      'statusBarConfig': (statusBarConfig ?? this.statusBarConfig).toMap(),
     };
   }
 

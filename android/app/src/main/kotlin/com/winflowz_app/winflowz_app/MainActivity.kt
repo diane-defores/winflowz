@@ -19,6 +19,7 @@ import com.winflowz_app.winflowz_app.ime.KeyboardVoiceEventQueue
 import com.winflowz_app.winflowz_app.ime.KeyboardCornerConfig
 import com.winflowz_app.winflowz_app.ime.KeyboardCornerConfigException
 import com.winflowz_app.winflowz_app.ime.KeyboardLayoutProfile
+import com.winflowz_app.winflowz_app.ime.KeyboardStatusBarConfig
 import com.winflowz_app.winflowz_app.ime.KeyboardStateStore
 import com.winflowz_app.winflowz_app.ime.KeyboardThemeConfig
 import com.winflowz_app.winflowz_app.ime.KeyboardTextRule
@@ -291,6 +292,40 @@ class MainActivity : FlutterActivity() {
                     }
                     "resetKeyboardCornerConfig" -> {
                         result.success(keyboardState.resetCornerConfig().toMap(includePresets = true))
+                    }
+                    "getKeyboardStatusBarConfig" -> {
+                        result.success(keyboardState.statusBarConfig.toMap())
+                    }
+                    "setKeyboardStatusBarConfig" -> {
+                        val rawConfig = call.arguments as? Map<*, *>
+                        if (rawConfig == null) {
+                            result.error(
+                                "KEYBOARD_STATUS_BAR_CONFIG_INVALID",
+                                "Status bar config payload must be a map.",
+                                null,
+                            )
+                            return@setMethodCallHandler
+                        }
+                        result.success(
+                            keyboardState.setStatusBarConfig(
+                                KeyboardStatusBarConfig.fromMap(rawConfig),
+                            ).toMap(),
+                        )
+                    }
+                    "resetKeyboardStatusBarConfig" -> {
+                        result.success(keyboardState.resetStatusBarConfig().toMap())
+                    }
+                    "setKeyboardUserContext" -> {
+                        keyboardState.setKeyboardUserContext(
+                            rawAccountLabel = call.argument<String>("accountLabel"),
+                            rawAccountLabelMode = call.argument<String>(
+                                "accountLabelMode",
+                            ),
+                            rawTipsLastResetAtMs = call.argument<Number>(
+                                "tipsLastResetAtMs",
+                            )?.toLong(),
+                        )
+                        result.success(true)
                     }
                     "setKeyboardCornerPreset" -> {
                         val presetId = call.argument<String>("presetId").orEmpty().trim()

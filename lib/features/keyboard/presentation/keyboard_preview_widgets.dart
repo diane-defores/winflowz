@@ -980,9 +980,9 @@ class KeyboardPreviewSnapshot {
           key: _modeKey('#+=', KeyboardPreviewMode.symbols),
         ),
         _withCorners(
-          keyId: 'panel-Nav',
+          keyId: 'mode-Nav',
           specialKey: true,
-          key: _panelKey('Nav', KeyboardPreviewPanel.navigation),
+          key: _modeKey('Nav', KeyboardPreviewMode.navigation),
         ),
         _withCorners(
           keyId: 'panel-Emoji',
@@ -1482,7 +1482,47 @@ class KeyboardPreviewSnapshot {
             trailingWeight: .8,
           ),
         ];
+      case KeyboardPreviewMode.navigation:
+        return _navigationRows();
     }
+  }
+
+  List<KeyboardPreviewRow> _navigationRows() {
+    return [
+      KeyboardPreviewRow(
+        height: AppKeyboardPreview.rowHeightRegular,
+        keys: [
+          _unsupportedKey('All'),
+          _unsupportedKey('Copy'),
+          _unsupportedKey('Début'),
+          _unsupportedKey('Fin'),
+          _unsupportedKey('⏫'),
+          _unsupportedKey('↑'),
+        ],
+      ),
+      KeyboardPreviewRow(
+        height: AppKeyboardPreview.rowHeightRegular,
+        keys: [
+          _unsupportedKey('Cut'),
+          _unsupportedKey('Paste'),
+          _unsupportedKey('Word←'),
+          _unsupportedKey('Word→'),
+          _unsupportedKey('⏬'),
+          _unsupportedKey('↓'),
+        ],
+      ),
+      KeyboardPreviewRow(
+        height: AppKeyboardPreview.rowHeightRegular,
+        keys: [
+          _unsupportedKey('Undo'),
+          _unsupportedKey('Redo'),
+          _unsupportedKey('DelW←'),
+          _unsupportedKey('DelW→'),
+          _unsupportedKey('←'),
+          _unsupportedKey('→'),
+        ],
+      ),
+    ];
   }
 
   List<KeyboardPreviewRow> _letterRows() {

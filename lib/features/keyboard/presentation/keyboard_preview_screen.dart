@@ -42,7 +42,8 @@ enum KeyboardPreviewPanel {
 enum KeyboardPreviewMode {
   letters('ABC'),
   numbers('123'),
-  symbols('#+=');
+  symbols('#+='),
+  navigation('Nav');
 
   const KeyboardPreviewMode(this.label);
 

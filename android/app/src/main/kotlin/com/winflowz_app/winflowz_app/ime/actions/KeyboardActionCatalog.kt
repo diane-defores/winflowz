@@ -33,7 +33,8 @@ class KeyboardActionCatalog private constructor(
                 state.attachedRows.any { it.providerActionId == descriptor.id }
             "symbols" -> environment.layoutMode == KeyboardLayoutMode.Symbols ||
                 state.attachedRows.any { it.providerActionId == descriptor.id }
-            "navigation" -> environment.panelMode == KeyboardPanelMode.Navigation ||
+            "navigation" -> environment.layoutMode == KeyboardLayoutMode.Navigation ||
+                environment.panelMode == KeyboardPanelMode.Navigation ||
                 state.attachedRows.any { it.providerActionId == descriptor.id }
             "emoji" -> environment.panelMode == KeyboardPanelMode.Emoji ||
                 state.attachedRows.any { it.providerActionId == descriptor.id }
@@ -264,7 +265,7 @@ class KeyboardActionCatalog private constructor(
                     KeyboardActionDescriptor("numbers", "123", "123", "Numbers keyboard", KeyboardKeyAction.ModeNumbers, rowProvider = numberProvider),
                     KeyboardActionDescriptor("symbols", "#+=", "#+=", "Symbols keyboard", KeyboardKeyAction.ModeSymbols, rowProvider = symbolsProvider),
                     KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel, rowProvider = accentsProvider),
-                    KeyboardActionDescriptor("navigation", "Nav", "Nav", "Navigation panel", KeyboardKeyAction.ToggleNavigationPanel, rowProvider = navigationProvider),
+                    KeyboardActionDescriptor("navigation", "Nav", "Nav", "Navigation keyboard", KeyboardKeyAction.ModeNavigation, rowProvider = navigationProvider),
                     KeyboardActionDescriptor(
                         "emoji",
                         "Emoji",

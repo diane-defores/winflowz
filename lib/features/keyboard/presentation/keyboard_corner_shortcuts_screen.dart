@@ -143,6 +143,9 @@ class _KeyboardCornerShortcutsScreenState
     if (!KeyboardConfigurableKeyCatalog.contains(shortcut.keyId)) {
       return 'Unknown key id: ${shortcut.keyId}.';
     }
+    if (shortcut.disabled) {
+      return null;
+    }
     if (shortcut.expression.trim().isEmpty) {
       return 'Expression is required.';
     }
@@ -219,29 +222,28 @@ class _KeyboardCornerShortcutsScreenState
   void _resetCorner() {
     setState(() {
       _draft = _draft.resetCorner(_draft.selectedKeyId, _draft.selectedSlot);
-      _message = 'Selected corner override reset in draft.';
+      _message = 'Selected corner cleared in draft.';
     });
     _syncAdvancedEditor();
   }
 
   Future<void> _resetKey() async {
-    final count = _draft.draftConfig.overrides
-        .where((item) => item.keyId == _draft.selectedKeyId)
-        .length;
+    final count = _selectedKeyShortcuts().length;
     if (count == 0) {
-      setState(() => _message = 'This key has no overrides to reset.');
+      setState(() => _message = 'This key has no corners to reset.');
       return;
     }
     final confirmed = await _confirm(
       title: 'Reset key?',
-      body: 'This removes $count override(s) from the selected key draft.',
+      body:
+          'This clears $count corner shortcut(s) from the selected key draft.',
     );
     if (!confirmed || !mounted) {
       return;
     }
     setState(() {
       _draft = _draft.resetKey(_draft.selectedKeyId);
-      _message = 'Selected key overrides reset in draft.';
+      _message = 'Selected key corners cleared in draft.';
     });
     _syncAdvancedEditor();
   }
@@ -380,15 +382,13 @@ class _KeyboardCornerShortcutsScreenState
   }
 
   AndroidKeyboardCornerShortcut? _selectedShortcut() {
-    for (final shortcut in _draft.draftConfig.overrides.reversed) {
-      if (shortcut.keyId == _draft.selectedKeyId &&
-          shortcut.slot == _draft.selectedSlot) {
-        return shortcut;
-      }
-    }
-    final presetOnly = _draft.draftConfig.copyWith(overrides: const []);
+    return _selectedKeyShortcuts()[_draft.selectedSlot];
+  }
+
+  Map<KeyboardCornerSlot, AndroidKeyboardCornerShortcut>
+  _selectedKeyShortcuts() {
     return KeyboardCornerPresetCatalog.resolvedForKey(
-      config: presetOnly,
+      config: _draft.draftConfig,
       keyId: _draft.selectedKeyId,
       cornersEnabled: true,
       specialKeyCornersEnabled: true,
@@ -396,7 +396,7 @@ class _KeyboardCornerShortcutsScreenState
       specialKey: KeyboardConfigurableKeyCatalog.byId(
         _draft.selectedKeyId,
       ).special,
-    )[_draft.selectedSlot];
+    );
   }
 
   void _applyAdvanced() {
@@ -865,7 +865,6 @@ class _ActionCatalog extends StatelessWidget {
               for (final action in entry.value)
                 ActionChip(
                   key: Key('corner-action-${action.title}'),
-                  avatar: Icon(_iconFor(action)),
                   label: Text(action.title),
                   onPressed: () => onSelected(action),
                 ),
@@ -875,17 +874,6 @@ class _ActionCatalog extends StatelessWidget {
         ],
       ],
     );
-  }
-
-  IconData _iconFor(KeyboardGuidedAction action) {
-    return switch (action.category) {
-      KeyboardGuidedActionCategory.accent => Icons.text_fields,
-      KeyboardGuidedActionCategory.punctuation => Icons.more_horiz,
-      KeyboardGuidedActionCategory.snippet => Icons.text_snippet_outlined,
-      KeyboardGuidedActionCategory.action => Icons.touch_app_outlined,
-      KeyboardGuidedActionCategory.macro => Icons.account_tree_outlined,
-      KeyboardGuidedActionCategory.advancedExpression => Icons.code,
-    };
   }
 }
 
@@ -917,7 +905,6 @@ class _SnippetCatalog extends StatelessWidget {
             for (final snippet in snippets)
               ActionChip(
                 key: Key('corner-snippet-${snippet.trigger}'),
-                avatar: const Icon(Icons.text_snippet_outlined),
                 label: Text(snippet.label ?? snippet.trigger),
                 onPressed: () => onSelected(snippet),
               ),

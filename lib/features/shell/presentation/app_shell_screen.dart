@@ -33,6 +33,7 @@ class AppShellScreen extends ConsumerStatefulWidget {
 
 class _AppShellScreenState extends ConsumerState<AppShellScreen>
     with WidgetsBindingObserver {
+  static const _bottomNavIconOffset = Offset(0, -3);
   static const _unsupportedOverlayStatus = AndroidOverlayStatus(
     enabled: false,
     requestedEnabled: false,
@@ -561,7 +562,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
             }
           },
           child: Scaffold(
-            appBar: AppBar(title: Text('WinFlowz • ${titles[_index]}')),
+            appBar: AppBar(
+              title: Text('WinFlowz • ${titles[_index]}'),
+              titleSpacing: AppSpacing.x4,
+            ),
             body: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: AppGradients.shell(colorScheme.brightness),
@@ -670,37 +674,78 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
             ),
             bottomNavigationBar: useRail || _onboardingVisible
                 ? null
-                : NavigationBar(
-                    labelBehavior:
-                        NavigationDestinationLabelBehavior.onlyShowSelected,
-                    selectedIndex: _index,
-                    onDestinationSelected: _selectTab,
-                    destinations: const [
-                      NavigationDestination(
-                        icon: Icon(Icons.keyboard_voice_outlined),
-                        label: 'Voice',
+                : DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: colorScheme.outlineVariant.withValues(
+                            alpha: 0.72,
+                          ),
+                        ),
                       ),
-                      NavigationDestination(
-                        icon: Icon(Icons.content_paste_outlined),
-                        label: 'Clipboard',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.text_snippet_outlined),
-                        label: 'Snippets',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.auto_fix_high_outlined),
-                        label: 'Dictionary',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.settings_outlined),
-                        label: 'Settings',
-                      ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.black.withValues(
+                            alpha: colorScheme.brightness == Brightness.dark
+                                ? 0.34
+                                : 0.08,
+                          ),
+                          blurRadius: 18,
+                          offset: const Offset(0, -6),
+                        ),
+                      ],
+                    ),
+                    child: NavigationBar(
+                      labelBehavior:
+                          NavigationDestinationLabelBehavior.onlyShowSelected,
+                      selectedIndex: _index,
+                      onDestinationSelected: _selectTab,
+                      destinations: const [
+                        NavigationDestination(
+                          icon: _BottomNavIcon(Icons.keyboard_voice_outlined),
+                          selectedIcon: _BottomNavIcon(Icons.keyboard_voice),
+                          label: 'Voice',
+                        ),
+                        NavigationDestination(
+                          icon: _BottomNavIcon(Icons.content_paste_outlined),
+                          selectedIcon: _BottomNavIcon(Icons.content_paste),
+                          label: 'Clipboard',
+                        ),
+                        NavigationDestination(
+                          icon: _BottomNavIcon(Icons.text_snippet_outlined),
+                          selectedIcon: _BottomNavIcon(Icons.text_snippet),
+                          label: 'Snippets',
+                        ),
+                        NavigationDestination(
+                          icon: _BottomNavIcon(Icons.auto_fix_high_outlined),
+                          selectedIcon: _BottomNavIcon(Icons.auto_fix_high),
+                          label: 'Dictionary',
+                        ),
+                        NavigationDestination(
+                          icon: _BottomNavIcon(Icons.settings_outlined),
+                          selectedIcon: _BottomNavIcon(Icons.settings),
+                          label: 'Settings',
+                        ),
+                      ],
+                    ),
                   ),
           ),
         );
       },
+    );
+  }
+}
+
+class _BottomNavIcon extends StatelessWidget {
+  const _BottomNavIcon(this.icon);
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: _AppShellScreenState._bottomNavIconOffset,
+      child: Icon(icon),
     );
   }
 }

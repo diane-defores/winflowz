@@ -3,6 +3,7 @@ package com.winflowz_app.winflowz_app.ime
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarController
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionEnvironment
+import com.winflowz_app.winflowz_app.ime.actions.withAttachedClipboardActionRow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -64,6 +65,24 @@ class KeyboardActionBarControllerTest {
 
         assertTrue(snapshot.attachedRows.any { it.dedupeKey == "symbols" })
         assertTrue(snapshot.attachedRows.any { it.dedupeKey == "emoji" })
+    }
+
+    @Test
+    fun `field clipboard row attaches once and exposes paste`() {
+        val state =
+            KeyboardActionBarState()
+                .withAttachedClipboardActionRow()
+                .withAttachedClipboardActionRow()
+        val snapshot =
+            controller.buildRenderSnapshot(
+                state = state,
+                environment = environment(),
+            )
+
+        assertEquals(1, state.attachedRows.count { it.dedupeKey == "clipboard" })
+        assertEquals(0, state.rowPageById["action-row-clipboard"])
+        val clipboardRow = snapshot.attachedRows.single { it.dedupeKey == "clipboard" }
+        assertTrue(clipboardRow.items.any { it.action == KeyboardKeyAction.PasteClipboard })
     }
 
     @Test

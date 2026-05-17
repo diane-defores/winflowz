@@ -33,10 +33,39 @@ class SettingsKeyboardController {
       'compact=${status.compactModeEnabled}',
       'height=${status.keyboardHeightScale}',
       'action_height=${status.actionRowHeightScale}',
+      'status_bar_mode=${status.statusBarConfig.mode.name}',
+      'status_bar_modules=${status.statusBarConfig.modules.map((module) => module.name).join(',')}',
+      'status_bar_tips=${status.statusBarConfig.tipLevel.name}',
       'recoveries=${status.keyboardRecoveryCount}',
       'last_error_at=${status.lastKeyboardErrorAt ?? 'none'}',
       'last_error=${SensitiveRedactor.redact(status.lastKeyboardError ?? 'none')}',
     ].join('; ');
+  }
+
+  Future<KeyboardStatusBarConfig> loadStatusBarConfig() {
+    return AndroidKeyboardBridge.getStatusBarConfig();
+  }
+
+  Future<KeyboardStatusBarConfig> setStatusBarConfig(
+    KeyboardStatusBarConfig config,
+  ) {
+    return AndroidKeyboardBridge.setStatusBarConfig(config);
+  }
+
+  Future<KeyboardStatusBarConfig> resetStatusBarConfig() {
+    return AndroidKeyboardBridge.resetStatusBarConfig();
+  }
+
+  Future<void> setKeyboardUserContext({
+    String? accountLabel,
+    KeyboardStatusBarAccountLabelMode? accountLabelMode,
+    int? tipsLastResetAtMs,
+  }) {
+    return AndroidKeyboardBridge.setKeyboardUserContext(
+      accountLabel: accountLabel,
+      accountLabelMode: accountLabelMode?.name,
+      tipsLastResetAtMs: tipsLastResetAtMs,
+    );
   }
 
   Future<AndroidKeyboardStatus> setPreferences({

@@ -138,8 +138,20 @@ class AppSpacing {
 class AppInsets {
   static const none = EdgeInsets.zero;
   static const screen = EdgeInsets.all(AppSpacing.x4);
-  static const card = EdgeInsets.all(AppSpacing.x3);
-  static const compactCard = EdgeInsets.all(AppSpacing.x2);
+  static const card = EdgeInsets.all(AppSpacing.x4);
+  static const compactCard = EdgeInsets.all(AppSpacing.x3);
+  static const button = EdgeInsets.symmetric(
+    horizontal: AppSpacing.x3,
+    vertical: AppSpacing.x2,
+  );
+  static const textButton = EdgeInsets.symmetric(
+    horizontal: AppSpacing.x2 + AppSpacing.x1 / 2,
+    vertical: AppSpacing.x1 + 1,
+  );
+  static const input = EdgeInsets.symmetric(
+    horizontal: AppSpacing.x2 + AppSpacing.x1 / 2,
+    vertical: AppSpacing.x1 + 1,
+  );
   static const onboarding = EdgeInsets.fromLTRB(
     AppSpacing.x4,
     AppSpacing.x3,
@@ -184,6 +196,10 @@ class AppIconMetrics {
   static const stepAvatarRadius = AppSpacing.x3;
   static const minTarget = 44.0;
   static const listActionSpacing = AppSpacing.x1;
+}
+
+class AppButtonMetrics {
+  static const minHeight = 40.0;
 }
 
 class AppLayoutMetrics {
@@ -406,14 +422,20 @@ class AppTheme {
       textTheme: textTheme,
       canvasColor: colorScheme.surface,
       appBarTheme: AppBarTheme(
-        centerTitle: false,
-        elevation: TubeflowSiteThemeTokens.appBarElevation,
+        centerTitle: true,
+        elevation: 0,
+        scrolledUnderElevation: TubeflowSiteThemeTokens.appBarElevation,
         backgroundColor: colorScheme.surface.withValues(alpha: 0.92),
         foregroundColor: colorScheme.onSurface,
         surfaceTintColor: AppColors.transparent,
+        shape: Border(
+          bottom: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.72),
+          ),
+        ),
         titleTextStyle: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
-          fontWeight: AppFontWeights.bold,
+          fontWeight: AppFontWeights.xBold,
         ),
       ),
       cardTheme: CardThemeData(
@@ -454,14 +476,12 @@ class AppTheme {
                 alpha: TubeflowSiteThemeTokens.textFieldFillAlpha,
               )
             : TubeflowSiteThemeTokens.appLightInput,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.x3,
-          vertical: AppSpacing.x1 + 2,
-        ),
+        contentPadding: AppInsets.input,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, AppIconMetrics.minTarget),
+          minimumSize: const Size(0, AppButtonMetrics.minHeight),
+          padding: AppInsets.button,
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           elevation: isDark ? 0 : 2,
@@ -474,7 +494,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(0, AppIconMetrics.minTarget),
+          minimumSize: const Size(0, AppButtonMetrics.minHeight),
+          padding: AppInsets.button,
           foregroundColor: colorScheme.primary,
           side: BorderSide(color: colorScheme.outline),
           backgroundColor: colorScheme.surfaceContainer.withValues(alpha: 0.2),
@@ -486,7 +507,8 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          minimumSize: const Size(0, AppIconMetrics.minTarget),
+          minimumSize: const Size(0, AppButtonMetrics.minHeight),
+          padding: AppInsets.textButton,
           foregroundColor: colorScheme.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.sm),
@@ -502,16 +524,39 @@ class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
+        height: 76,
+        elevation: 10,
         indicatorColor: colorScheme.primary.withValues(
-          alpha: isDark ? 0.14 : 0.1,
+          alpha: isDark ? 0.2 : 0.14,
+        ),
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.pill),
         ),
         backgroundColor: isDark
-            ? colorScheme.surfaceContainerLow
-            : colorScheme.surfaceContainerLow,
+            ? colorScheme.surfaceContainer
+            : colorScheme.surfaceContainerLowest,
         surfaceTintColor: AppColors.transparent,
-        shadowColor: AppColors.black.withValues(alpha: 0.28),
-        labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(fontWeight: AppFontWeights.semiBold),
+        shadowColor: AppColors.black.withValues(alpha: isDark ? 0.4 : 0.18),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected
+                ? colorScheme.primary
+                : colorScheme.onSurfaceVariant,
+            size: selected ? 25 : 24,
+          );
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return textTheme.labelSmall?.copyWith(
+            color: selected
+                ? colorScheme.primary
+                : colorScheme.onSurfaceVariant,
+            fontWeight: selected ? AppFontWeights.xBold : AppFontWeights.medium,
+          );
+        }),
+        overlayColor: WidgetStateProperty.all(
+          colorScheme.primary.withValues(alpha: isDark ? 0.12 : 0.08),
         ),
       ),
       navigationRailTheme: NavigationRailThemeData(

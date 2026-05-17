@@ -79,6 +79,12 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  static const _sectionGap = SizedBox(height: AppSpacing.x2);
+  static const _sectionRunSpacing = AppSpacing.x2;
+  static const _collapsibleSectionMargin = EdgeInsets.symmetric(
+    vertical: AppSpacing.x1,
+  );
+
   late final TextEditingController _openAiController;
   late final TextEditingController _anthropicController;
   late final ScrollController _scrollController;
@@ -941,7 +947,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _scrollController,
               padding: AppInsets.screen,
               itemCount: sections.length,
-              separatorBuilder: (_, _) => AppGaps.x4,
+              separatorBuilder: (_, _) => _sectionGap,
               itemBuilder: (context, index) => sections[index],
             ),
           );
@@ -959,7 +965,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             padding: AppInsets.screen,
             child: Wrap(
               spacing: columnSpacing,
-              runSpacing: AppSpacing.x4,
+              runSpacing: _sectionRunSpacing,
               children: [
                 for (final section in sections)
                   SizedBox(width: itemWidth, child: section),
@@ -978,6 +984,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }) {
     final expanded = _expandedSections[id] ?? false;
     return Card(
+      margin: _collapsibleSectionMargin,
       child: ExpansionTile(
         key: PageStorageKey<String>('settings_section_$id'),
         initiallyExpanded: expanded,
@@ -1039,8 +1046,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             syncStateLabel: _appearanceSyncLabel(authAsync),
             syncStateDetail: _appearanceSyncDetail(authAsync),
             onOpenKeyboardThemeStudio: _openKeyboardThemeStudio,
-            onConfirmDestructiveActionsChanged:
-                _setConfirmDestructiveActions,
+            onConfirmDestructiveActionsChanged: _setConfirmDestructiveActions,
             onChanged: (mode) {
               ref.read(appThemeModeProvider.notifier).setMode(mode);
             },

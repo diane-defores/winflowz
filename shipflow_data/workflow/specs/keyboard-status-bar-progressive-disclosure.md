@@ -1,8 +1,9 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "winflowz_app"
+confidence: "high"
 created: "2026-05-17"
 created_at: "2026-05-17 08:10:37 UTC"
 updated: "2026-05-17"
@@ -447,14 +448,16 @@ None for v1. The spec deliberately chooses a conservative local-first approach: 
 |----------|-------|-------|--------|--------|-----------|
 | 2026-05-17 08:10:37 UTC | sf-spec | GPT-5 Codex | Created full feature/architecture spec for optional keyboard status bar and local progressive disclosure. | Draft saved in chantier registry. | /sf-ready Keyboard status bar progressive disclosure |
 | 2026-05-17 09:22:32 UTC | sf-ready | GPT-5 Codex | Reviewed structure, metadata, user story alignment, behavior contracts, task ordering, docs/freshness posture, adversarial cases, language doctrine, and security posture. | ready | /sf-start Keyboard status bar progressive disclosure |
+| 2026-05-17 11:01:22 UTC | sf-start | GPT-5.3-Codex | Updated Android keyboard status bar model/storage/channel wiring and fixed Kotlin import/build-blocker; started implementation continuation from prior partial state. | implemented | /sf-verify Keyboard status bar progressive disclosure |
+| 2026-05-17 12:18:55 UTC | sf-verify | GPT-5 Codex | Verified end-to-end wiring, checked required docs/rules, and ran Dart controller tests. | partial | /sf-end Keyboard status bar progressive disclosure |
 
 ## Current Chantier Flow
 
 - sf-spec: done, draft saved.
 - sf-ready: done, ready.
-- sf-start: not launched.
-- sf-verify: not launched.
+- sf-start: launched, implemented.
+- sf-verify: launched, partial.
 - sf-end: not launched.
 - sf-ship: not launched.
 
-Prochaine commande recommandee: `/sf-start Keyboard status bar progressive disclosure`.
+Prochaine commande recommandee: `/sf-end Keyboard status bar progressive disclosure`.
