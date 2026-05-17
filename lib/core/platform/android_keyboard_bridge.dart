@@ -286,6 +286,20 @@ class AndroidKeyboardBridge {
         .toList(growable: false);
   }
 
+  static Future<List<AndroidKeyboardVoiceEvent>>
+  drainKeyboardVoiceEvents() async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      return const <AndroidKeyboardVoiceEvent>[];
+    }
+    final raw = await _invoke<List<Object?>>('drainKeyboardVoiceEvents');
+    return (raw ?? const <Object?>[])
+        .whereType<Map<Object?, Object?>>()
+        .map(AndroidKeyboardVoiceEvent.fromMap)
+        .where((event) => event != null)
+        .cast<AndroidKeyboardVoiceEvent>()
+        .toList(growable: false);
+  }
+
   static Future<T?> _invoke<T>(String method, [Object? arguments]) async {
     try {
       return await _channel.invokeMethod<T>(method, arguments);
@@ -369,6 +383,55 @@ class AndroidKeyboardClipboardEvent {
         isUtc: true,
       ),
       sourceMetadata: metadata,
+    );
+  }
+}
+
+class AndroidKeyboardVoiceEvent {
+  const AndroidKeyboardVoiceEvent({
+    required this.rawText,
+    required this.cleanedText,
+    required this.language,
+    required this.source,
+    required this.durationMs,
+    required this.capturedAtUtc,
+  });
+
+  final String rawText;
+  final String cleanedText;
+  final String language;
+  final String source;
+  final int durationMs;
+  final DateTime capturedAtUtc;
+
+  static AndroidKeyboardVoiceEvent? fromMap(Map<Object?, Object?> map) {
+    final rawText = map['rawText'];
+    final cleanedText = map['cleanedText'];
+    final language = map['language'];
+    final source = map['source'];
+    final durationMs = map['durationMs'];
+    final capturedAtEpochMillis = map['capturedAtEpochMillis'];
+    if (rawText is! String ||
+        rawText.trim().isEmpty ||
+        cleanedText is! String ||
+        cleanedText.trim().isEmpty ||
+        capturedAtEpochMillis is! num) {
+      return null;
+    }
+    return AndroidKeyboardVoiceEvent(
+      rawText: rawText.trim(),
+      cleanedText: cleanedText.trim(),
+      language: language is String && language.trim().isNotEmpty
+          ? language.trim()
+          : 'und',
+      source: source is String && source.trim().isNotEmpty
+          ? source.trim()
+          : 'keyboard',
+      durationMs: durationMs is num ? durationMs.toInt().clamp(0, 1 << 31) : 0,
+      capturedAtUtc: DateTime.fromMillisecondsSinceEpoch(
+        capturedAtEpochMillis.toInt(),
+        isUtc: true,
+      ),
     );
   }
 }

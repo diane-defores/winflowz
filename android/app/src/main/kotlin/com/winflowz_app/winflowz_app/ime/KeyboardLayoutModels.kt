@@ -35,6 +35,7 @@ enum class KeyboardPanelMode {
     Media,
     Snippets,
     Settings,
+    ThemeSettings,
 }
 
 enum class KeyboardEmojiCategory {
@@ -99,6 +100,7 @@ enum class KeyboardKeyAction {
     OpenWinFlowzSnippets,
     OpenWinFlowzSettings,
     OpenThemeSettings,
+    SelectThemePreset,
     ShowKeyboardPicker,
     ToggleCornerMode,
     ToggleLayoutProfile,
@@ -134,6 +136,10 @@ enum class KeyboardKeyAction {
     NavigateLineEnd,
     ClosePanel,
     Voice,
+    VoicePause,
+    VoiceResume,
+    VoiceRestart,
+    VoiceCancel,
     CutSelection,
     SelectAll,
     PastePlainClipboard,
@@ -218,6 +224,7 @@ data class KeyboardLayoutRequest(
     val actionBarState: KeyboardActionBarState = KeyboardActionBarState(),
     val mediaNowPlayingLabel: String? = null,
     val cornerConfig: KeyboardCornerConfig = KeyboardCornerConfig(),
+    val themePresetId: String = "system",
     val fieldPolicy: KeyboardFieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO),
 )
 
@@ -362,6 +369,7 @@ object KeyboardLayoutBuilder {
 
     private fun KeyboardPanelMode.suppressesTypingRows(compactModeEnabled: Boolean): Boolean {
         return this == KeyboardPanelMode.Settings ||
+            this == KeyboardPanelMode.ThemeSettings ||
             this == KeyboardPanelMode.ClipboardFull ||
             (compactModeEnabled && this != KeyboardPanelMode.None)
     }
@@ -398,6 +406,7 @@ object KeyboardLayoutBuilder {
             KeyboardPanelMode.Media -> mediaPanelRows(request).asActionSurfaceRows()
             KeyboardPanelMode.Snippets -> listOf(snippetsPanelRow(request)).asActionSurfaceRows()
             KeyboardPanelMode.Settings -> settingsPanelRows(request).asActionSurfaceRows()
+            KeyboardPanelMode.ThemeSettings -> themePanelRows(request).asActionSurfaceRows()
         }
     }
 
@@ -868,6 +877,37 @@ object KeyboardLayoutBuilder {
                     ),
             ),
         )
+    }
+
+    private fun themePanelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
+        val presetRows =
+            KeyboardThemePresets.all.chunked(5).mapIndexed { rowIndex, presets ->
+                KeyboardRowSpec(
+                    keys =
+                        presets.map { preset ->
+                            KeyboardKeySpec(
+                                id = "theme-${preset.id}",
+                                label = preset.name,
+                                action = KeyboardKeyAction.SelectThemePreset,
+                                suggestion = preset.id,
+                                active = preset.id == request.themePresetId,
+                                weight = if (preset.id == KeyboardThemePresets.MINIMAL_CONTRAST) 1.25f else 1f,
+                            )
+                        },
+                    rowId = "theme-row-$rowIndex",
+                )
+            }
+        return presetRows +
+            KeyboardRowSpec(
+                keys =
+                    listOf(
+                        KeyboardKeySpec("theme-back", "Back", KeyboardKeyAction.ToggleSettingsPanel),
+                        KeyboardKeySpec("theme-close", "Close", KeyboardKeyAction.ClosePanel),
+                    ),
+                leadingWeight = 1f,
+                trailingWeight = 1f,
+                rowId = "theme-actions",
+            )
     }
 
     private fun letterRows(

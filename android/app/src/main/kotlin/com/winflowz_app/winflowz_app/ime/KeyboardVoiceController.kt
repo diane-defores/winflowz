@@ -18,16 +18,20 @@ class KeyboardVoiceController(
 ) {
     private var recognizer: SpeechRecognizer? = null
     private var listening = false
+    private var pauseRequested = false
+
+    fun isListening(): Boolean = listening
 
     fun start() {
         if (listening) {
-            stop()
+            cancel()
             return
         }
         if (!hasAudioPermission()) {
             onState("Microphone permission required")
             return
         }
+        pauseRequested = false
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
             onState("Speech recognition unavailable")
             return
@@ -52,12 +56,15 @@ class KeyboardVoiceController(
 
             override fun onError(error: Int) {
                 listening = false
+                pauseRequested = false
                 destroy()
                 onState("Dictation failed")
             }
 
             override fun onResults(results: Bundle?) {
                 listening = false
+                val wasPaused = pauseRequested
+                pauseRequested = false
                 val matches =
                     results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         .orEmpty()
@@ -65,7 +72,9 @@ class KeyboardVoiceController(
                 destroy()
                 if (best.isNotEmpty()) {
                     onResult(best)
-                    onState("Inserted dictation")
+                    onState(if (wasPaused) "Dictation paused" else "Inserted dictation")
+                } else if (wasPaused) {
+                    onState("Dictation paused")
                 } else {
                     onState("No speech detected")
                 }
@@ -91,17 +100,46 @@ class KeyboardVoiceController(
                 )
                 putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
+                putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 600000)
+                putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 600000)
+                putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 600000)
             },
         )
     }
 
     fun stop() {
+        pauseRequested = false
         recognizer?.stopListening()
         listening = false
         onState("Processing")
     }
 
+    fun pause() {
+        if (!listening) {
+            onState("Dictation already paused")
+            return
+        }
+        pauseRequested = true
+        recognizer?.stopListening()
+        listening = false
+        onState("Dictation paused")
+    }
+
+    fun resume() {
+        if (listening) {
+            onState("Recording")
+            return
+        }
+        start()
+    }
+
+    fun restart() {
+        cancel()
+        start()
+    }
+
     fun cancel() {
+        pauseRequested = false
         recognizer?.cancel()
         listening = false
         destroy()

@@ -386,6 +386,10 @@ class KeyboardStateStore(private val context: Context) {
         return validated
     }
 
+    fun setThemePreset(presetId: String): KeyboardThemeConfig {
+        return replaceThemeConfig(KeyboardThemePresets.configFor(presetId))
+    }
+
     fun resetThemeConfig(): KeyboardThemeConfig {
         val previous = themeConfig()
         preferences.edit().remove(KEY_THEME_CONFIG).apply()

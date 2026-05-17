@@ -35,7 +35,6 @@ class OverlayForegroundService : Service() {
         private const val NOTIFICATION_ID = 71011
         private const val notificationChannelId = "winflowz_app_overlay_recording"
         private const val notificationChannelName = "WinFlowz Overlay Recording"
-        private const val HOLD_TO_RECORD_DELAY_MS = 220L
         private const val TAG = "WinFlowzOverlay"
 
         private const val maxXOffset = 16
@@ -68,7 +67,6 @@ class OverlayForegroundService : Service() {
     private var layoutParams: WindowManager.LayoutParams? = null
     private var isShowing = false
     private var isDragging = false
-    private var isHoldRecording = false
     private var initialX = 0
     private var initialY = 0
     private var initialTouchX = 0f
@@ -142,6 +140,7 @@ class OverlayForegroundService : Service() {
             if (running) {
                 OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "already_running"))
                 ensureOverlay()
+                setOverlayStateInternal("recording")
                 return
             }
             if (!Settings.canDrawOverlays(this)) {
@@ -161,7 +160,7 @@ class OverlayForegroundService : Service() {
                 return
             }
             running = true
-            updateServiceState("running")
+            setOverlayStateInternal("recording")
             OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "running"))
         }
     }
@@ -236,7 +235,7 @@ class OverlayForegroundService : Service() {
         overlayView = OverlayView(this).apply {
             onBubbleTap = {
                 OverlayEventQueue.enqueue("bubbleTap")
-                setOverlayStateInternal("recording")
+                toggleRecordingState()
             }
             onRecordStop = {
                 OverlayEventQueue.enqueue("recordStop")
@@ -248,7 +247,7 @@ class OverlayForegroundService : Service() {
             }
             onBubbleLongPress = {
                 OverlayEventQueue.enqueue("longPress")
-                setOverlayStateInternal("recording")
+                toggleRecordingState()
             }
         }
 
@@ -347,18 +346,6 @@ class OverlayForegroundService : Service() {
                         initialTouchX = event.rawX
                         initialTouchY = event.rawY
                         isDragging = false
-                        isHoldRecording = false
-
-                        longPressRunnable?.let { view ->
-                            overlayView?.removeCallbacks(view)
-                        }
-                        longPressRunnable = Runnable {
-                            if (!isDragging) {
-                                isHoldRecording = true
-                                overlayView?.emitLongPress()
-                            }
-                        }
-                        overlayView?.postDelayed(longPressRunnable, HOLD_TO_RECORD_DELAY_MS)
                         true
                     } ?: false
                 }
@@ -368,7 +355,6 @@ class OverlayForegroundService : Service() {
                     val dy = event.rawY - initialTouchY
                     if (!isDragging && (kotlin.math.abs(dx) > 10 || kotlin.math.abs(dy) > 10)) {
                         isDragging = true
-                        isHoldRecording = false
                         longPressRunnable?.let { overlayView?.removeCallbacks(it) }
                     }
                     if (isDragging) {
@@ -389,15 +375,10 @@ class OverlayForegroundService : Service() {
                     if (isDragging) {
                         clampToScreen()
                         savePositionPreference()
-                    } else if (isHoldRecording) {
-                        overlayView?.onRecordStop?.let { onRecordStop ->
-                            onRecordStop()
-                        }
                     } else {
                         overlayView?.performClick()
                     }
                     isDragging = false
-                    isHoldRecording = false
                     true
                 }
                 else -> false
@@ -422,9 +403,20 @@ class OverlayForegroundService : Service() {
         }
     }
 
+    private fun toggleRecordingState() {
+        val current = overlayView?.getCurrentState() ?: pendingState
+        if (current == "recording") {
+            OverlayEventQueue.enqueue("recordStop")
+            setOverlayStateInternal("processing")
+        } else {
+            setOverlayStateInternal("recording")
+        }
+    }
+
     private fun setOverlayStateInternal(state: String?) {
         val normalized = normalizeState(state ?: "collapsed")
         pendingState = normalized
+        updateServiceState(normalized)
         overlayView?.post {
             overlayView?.setState(normalized)
             setWindowStateForOverlay(normalized)

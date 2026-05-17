@@ -17,11 +17,12 @@ object OverlayTextInjectionHelper {
                 "sensitiveField" to false,
             )
         }
+        val dictatedText = "$normalizedText "
 
         var sensitiveField = false
         val injected =
-            injectViaAccessibility(normalizedText) { isSensitive -> sensitiveField = isSensitive }
-        val clipboardCopied = copyToClipboard(context, normalizedText)
+            injectViaAccessibility(dictatedText) { isSensitive -> sensitiveField = isSensitive }
+        val clipboardCopied = copyToClipboard(context, dictatedText)
         return mapOf(
             "injected" to injected,
             "clipboardCopied" to clipboardCopied,

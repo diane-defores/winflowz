@@ -168,6 +168,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<void> _setConfirmDestructiveActions(bool value) async {
+    final store = ref.read(settingsStoreProvider);
+    final current = _onboardingSettings ?? await store.load();
+    final next = current.copyWith(confirmDestructiveActions: value);
+    await store.save(next);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _onboardingSettings = next;
+      _message = value
+          ? 'Delete confirmations enabled.'
+          : 'Delete confirmations disabled.';
+    });
+  }
+
   OnboardingReadiness _onboardingReadiness() {
     final settings =
         _onboardingSettings ?? const UserSettingsSnapshot.defaults();
@@ -949,9 +965,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           title: 'Appearance',
           child: _AppearanceSection(
             themeMode: themeMode,
+            confirmDestructiveActions:
+                (_onboardingSettings ?? const UserSettingsSnapshot.defaults())
+                    .confirmDestructiveActions,
             syncStateLabel: _appearanceSyncLabel(authAsync),
             syncStateDetail: _appearanceSyncDetail(authAsync),
             onOpenKeyboardThemeStudio: _openKeyboardThemeStudio,
+            onConfirmDestructiveActionsChanged:
+                _setConfirmDestructiveActions,
             onChanged: (mode) {
               ref.read(appThemeModeProvider.notifier).setMode(mode);
             },

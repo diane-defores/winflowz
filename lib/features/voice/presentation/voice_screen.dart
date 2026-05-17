@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/diagnostics/app_diagnostics.dart';
+import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../../core/widgets/local_mode_notice.dart';
+import '../../settings/application/settings_store_provider.dart';
 import '../application/transcription_store.dart';
 import '../application/transcription_store_provider.dart';
 import '../domain/transcription_draft.dart';
@@ -20,11 +22,6 @@ class VoiceScreen extends ConsumerStatefulWidget {
 }
 
 class _VoiceScreenState extends ConsumerState<VoiceScreen> {
-  final _rawController = TextEditingController();
-  final _cleanedController = TextEditingController();
-  final _languageController = TextEditingController(text: 'en');
-  final _durationController = TextEditingController(text: '0');
-  String _source = 'advanced';
   bool _busy = false;
   bool _overlayBusy = false;
   AndroidOverlayStatus? _overlayStatus;
@@ -40,10 +37,6 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
 
   @override
   void dispose() {
-    _rawController.dispose();
-    _cleanedController.dispose();
-    _languageController.dispose();
-    _durationController.dispose();
     super.dispose();
   }
 
@@ -51,6 +44,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     setState(() => _busy = true);
     try {
       final store = ref.read(transcriptionStoreProvider);
+      await _importKeyboardVoiceEvents(store);
       final rows = await store.list();
       AppDiagnostics.record(
         'voice_load',
@@ -71,6 +65,31 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       if (mounted) {
         setState(() => _busy = false);
       }
+    }
+  }
+
+  Future<void> _importKeyboardVoiceEvents(TranscriptionStore store) async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      return;
+    }
+    final events = await AndroidKeyboardBridge.drainKeyboardVoiceEvents();
+    for (final event in events) {
+      final draft = TranscriptionDraft(
+        rawText: event.rawText,
+        cleanedText: event.cleanedText,
+        language: event.language,
+        source: event.source,
+        durationMs: event.durationMs,
+      );
+      if (draft.isValid) {
+        await store.insert(draft);
+      }
+    }
+    if (events.isNotEmpty) {
+      AppDiagnostics.record(
+        'voice_keyboard_import',
+        'events=${events.length}',
+      );
     }
   }
 
@@ -111,6 +130,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         _overlayStatus = status;
         _message = 'Overlay started from Voice.';
       });
+      _refreshOverlayStatusSoon();
     } on AndroidOverlayBridgeException catch (error) {
       if (!mounted) {
         return;
@@ -137,6 +157,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         _overlayStatus = status;
         _message = 'Overlay stopped from Voice.';
       });
+      _refreshOverlayStatusSoon();
     } on AndroidOverlayBridgeException catch (error) {
       if (!mounted) {
         return;
@@ -163,6 +184,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         _overlayStatus = status;
         _message = 'Overlay canceled from Voice.';
       });
+      _refreshOverlayStatusSoon();
     } on AndroidOverlayBridgeException catch (error) {
       if (!mounted) {
         return;
@@ -178,40 +200,27 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     }
   }
 
-  Future<void> _add() async {
-    final duration = int.tryParse(_durationController.text.trim()) ?? 0;
-    final draft = TranscriptionDraft(
-      rawText: _rawController.text,
-      cleanedText: _cleanedController.text,
-      language: _languageController.text.trim().isEmpty
-          ? 'en'
-          : _languageController.text.trim(),
-      source: _source,
-      durationMs: duration,
-    );
-    setState(() {
-      _busy = true;
-      _message = null;
-    });
-    try {
-      final store = ref.read(transcriptionStoreProvider);
-      await store.insert(draft);
-      _rawController.clear();
-      _cleanedController.clear();
-      _durationController.text = '0';
-      await _load();
-    } catch (error) {
-      if (mounted) {
-        setState(() => _message = 'Insertion impossible: $error');
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _busy = false);
-      }
+  Future<void> _toggleOverlayRecording() async {
+    if (_overlayStatus?.serviceState == 'recording') {
+      await _stopOverlay();
+    } else {
+      await _startOverlay();
     }
   }
 
+  void _refreshOverlayStatusSoon() {
+    Future<void>.delayed(const Duration(milliseconds: 250), () {
+      if (mounted) {
+        _loadOverlayStatus();
+      }
+    });
+  }
+
   Future<void> _delete(String id) async {
+    final settings = await ref.read(settingsStoreProvider).load();
+    if (!mounted) {
+      return;
+    }
     final confirmed = await showConfirmActionDialog(
       context: context,
       title: 'Delete transcription?',
@@ -219,6 +228,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
           'This removes the transcription from the current history. This action cannot be undone from this screen.',
       confirmLabel: 'Delete',
       destructive: true,
+      confirmationEnabled: settings.confirmDestructiveActions,
     );
     if (!mounted || !confirmed) {
       return;
@@ -295,6 +305,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
   Widget build(BuildContext context) {
     AppDiagnostics.record('screen_build', 'Voice');
     final overlayStatus = _overlayStatus;
+    final overlayRecording = overlayStatus?.serviceState == 'recording';
     return ListView(
       padding: AppInsets.screen,
       children: [
@@ -324,9 +335,10 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: FilledButton(
-                        onPressed: _overlayBusy ? null : _startOverlay,
-                        child: const Text('Start overlay'),
+                      child: _RecordingMicAction(
+                        isRecording: overlayRecording,
+                        isBusy: _overlayBusy,
+                        onPressed: _overlayBusy ? null : _toggleOverlayRecording,
                       ),
                     ),
                     AppGaps.horizontalX2,
@@ -350,65 +362,20 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
           ),
         if (PlatformCapabilities.overlaySupported) AppGaps.x2,
         AppSectionCard(
-          title: 'Nouvelle transcription',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: _rawController,
-                minLines: 2,
-                maxLines: 4,
-                decoration: const InputDecoration(labelText: 'Raw text'),
-              ),
-              AppGaps.x2,
-              TextField(
-                controller: _cleanedController,
-                minLines: 2,
-                maxLines: 4,
-                decoration: const InputDecoration(labelText: 'Cleaned text'),
-              ),
-              AppGaps.x2,
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _languageController,
-                      decoration: const InputDecoration(labelText: 'Language'),
-                    ),
-                  ),
-                  AppGaps.horizontalX2,
-                  Expanded(
-                    child: TextField(
-                      controller: _durationController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Duration (ms)',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              AppGaps.x2,
-              DropdownButtonFormField<String>(
-                initialValue: _source,
-                items: const [
-                  DropdownMenuItem(value: 'free', child: Text('free')),
-                  DropdownMenuItem(value: 'advanced', child: Text('advanced')),
-                  DropdownMenuItem(value: 'overlay', child: Text('overlay')),
-                  DropdownMenuItem(value: 'keyboard', child: Text('keyboard')),
-                ],
-                onChanged: _busy
-                    ? null
-                    : (value) => setState(() => _source = value ?? 'advanced'),
-                decoration: const InputDecoration(labelText: 'Source'),
-              ),
-              AppGaps.x3,
-              AppFormActions(
-                primaryLabel: 'Add transcription',
-                onPrimary: _busy ? null : _add,
-                onSecondary: _busy ? null : _load,
-              ),
-            ],
+          title: 'Capture automatique',
+          subtitle:
+              'Les transcriptions apparaissent ici après une dictée depuis le clavier, l’overlay ou le mode vocal.',
+          leading: Icon(
+            Icons.auto_awesome_outlined,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: _busy ? null : _load,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh history'),
+            ),
           ),
         ),
         if (_busy)
@@ -446,6 +413,194 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
             ],
           ),
       ],
+    );
+  }
+}
+
+class _RecordingMicAction extends StatefulWidget {
+  const _RecordingMicAction({
+    required this.isRecording,
+    required this.isBusy,
+    required this.onPressed,
+  });
+
+  final bool isRecording;
+  final bool isBusy;
+  final VoidCallback? onPressed;
+
+  @override
+  State<_RecordingMicAction> createState() => _RecordingMicActionState();
+}
+
+class _RecordingMicActionState extends State<_RecordingMicAction>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    );
+    _syncAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant _RecordingMicAction oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isRecording != widget.isRecording) {
+      _syncAnimation();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _syncAnimation() {
+    if (widget.isRecording) {
+      _controller.repeat();
+    } else {
+      _controller.stop();
+      _controller.value = 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final activeColor = widget.isRecording
+        ? AppColors.danger
+        : colorScheme.primary;
+    final foreground = widget.isRecording
+        ? Colors.white
+        : colorScheme.onPrimary;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final pulse = widget.isRecording
+            ? Curves.easeOut.transform(1 - _controller.value)
+            : 0.0;
+        final glowOpacity = 0.12 + (pulse * 0.22);
+        final scale = widget.isRecording ? 1 + (pulse * 0.035) : 1.0;
+
+        return Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            if (widget.isRecording)
+              Positioned.fill(
+                child: Transform.scale(
+                  scale: 1.06 + (pulse * 0.16),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: activeColor.withValues(alpha: glowOpacity),
+                          blurRadius: 22 + (pulse * 16),
+                          spreadRadius: 2 + (pulse * 8),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            Transform.scale(
+              scale: scale,
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: activeColor,
+                  foregroundColor: foreground,
+                  disabledBackgroundColor: colorScheme.surfaceContainerHighest,
+                  disabledForegroundColor: colorScheme.onSurfaceVariant,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.x4,
+                    vertical: AppSpacing.x3,
+                  ),
+                ),
+                onPressed: widget.onPressed,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 180),
+                      child: widget.isBusy
+                          ? SizedBox(
+                              key: const ValueKey('busy'),
+                              width: AppIconMetrics.sm,
+                              height: AppIconMetrics.sm,
+                              child: CircularProgressIndicator(
+                                strokeWidth: AppIconMetrics.progressStroke,
+                                color: foreground,
+                              ),
+                            )
+                          : Icon(
+                              widget.isRecording
+                                  ? Icons.mic
+                                  : Icons.mic_none,
+                              key: ValueKey(widget.isRecording),
+                            ),
+                    ),
+                    AppGaps.horizontalX2,
+                    Flexible(
+                      child: Text(
+                        widget.isRecording ? 'Stop rec' : 'Start',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (widget.isRecording) ...[
+                      AppGaps.horizontalX2,
+                      _RecordingBars(
+                        progress: _controller.value,
+                        color: foreground,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _RecordingBars extends StatelessWidget {
+  const _RecordingBars({required this.progress, required this.color});
+
+  final double progress;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 22,
+      height: 18,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: List.generate(4, (index) {
+          final wave = (progress + (index * 0.18)) % 1;
+          final height = 6 + (Curves.easeInOut.transform(wave) * 10);
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 90),
+            width: 3,
+            height: height,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.72),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          );
+        }),
+      ),
     );
   }
 }

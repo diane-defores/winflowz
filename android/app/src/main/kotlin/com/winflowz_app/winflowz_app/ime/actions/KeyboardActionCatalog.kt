@@ -210,6 +210,26 @@ class KeyboardActionCatalog private constructor(
                     )
                 }
 
+            val voiceProvider =
+                KeyboardActionRowProvider {
+                    listOf(
+                        KeyboardActionRowSpec(
+                            rowId = "action-row-voice",
+                            dedupeKey = "voice",
+                            visiblePageKeyCount = 10,
+                            pagedHorizontal = true,
+                            items =
+                                listOf(
+                                    actionRowKey("voice-row-toggle", "Rec", KeyboardKeyAction.Voice),
+                                    actionRowKey("voice-row-pause", "Pause", KeyboardKeyAction.VoicePause, weight = 1.15f),
+                                    actionRowKey("voice-row-resume", "Repr.", KeyboardKeyAction.VoiceResume, weight = 1.15f),
+                                    actionRowKey("voice-row-restart", "Début", KeyboardKeyAction.VoiceRestart, weight = 1.15f),
+                                    actionRowKey("voice-row-cancel", "Annul.", KeyboardKeyAction.VoiceCancel, weight = 1.15f),
+                                ),
+                        ),
+                    )
+                }
+
             val snippetsProvider =
                 KeyboardActionRowProvider { context ->
                     val snippetItems =
@@ -291,6 +311,7 @@ class KeyboardActionCatalog private constructor(
                         KeyboardKeyAction.Voice,
                         availabilityPolicy = KeyboardActionAvailabilityPolicy.VoiceAllowed,
                         sensitiveInPrivate = true,
+                        rowProvider = voiceProvider,
                     ),
                 )
 

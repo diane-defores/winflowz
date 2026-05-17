@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../../core/widgets/local_mode_notice.dart';
+import '../../settings/application/settings_store_provider.dart';
 import '../application/clipboard_store_provider.dart';
 import '../domain/clipboard_capture_event.dart';
 import '../domain/clipboard_normalizer.dart';
@@ -157,6 +158,10 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
   }
 
   Future<void> _remove(String id) async {
+    final settings = await ref.read(settingsStoreProvider).load();
+    if (!mounted) {
+      return;
+    }
     final confirmed = await showConfirmActionDialog(
       context: context,
       title: 'Delete clipboard item?',
@@ -164,6 +169,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
           'This removes the item from WinFlowz clipboard history. This action cannot be undone from this screen.',
       confirmLabel: 'Delete',
       destructive: true,
+      confirmationEnabled: settings.confirmDestructiveActions,
     );
     if (!mounted || !confirmed) {
       return;
@@ -217,24 +223,12 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
                     child: Text('manual'),
                   ),
                   DropdownMenuItem(
-                    value: ClipboardCanonicalSource.voice,
-                    child: Text('voice'),
-                  ),
-                  DropdownMenuItem(
-                    value: ClipboardCanonicalSource.overlay,
-                    child: Text('overlay'),
-                  ),
-                  DropdownMenuItem(
                     value: ClipboardCanonicalSource.system,
                     child: Text('system'),
                   ),
                   DropdownMenuItem(
                     value: ClipboardCanonicalSource.keyboard,
                     child: Text('keyboard'),
-                  ),
-                  DropdownMenuItem(
-                    value: ClipboardCanonicalSource.keyboardVoice,
-                    child: Text('keyboard voice'),
                   ),
                   DropdownMenuItem(
                     value: ClipboardCanonicalSource.keyboardClipboard,

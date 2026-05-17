@@ -61,6 +61,8 @@ void _installAndroidBridgeMocks() {
         };
       case 'drainKeyboardClipboardEvents':
         return <Object?>[];
+      case 'drainKeyboardVoiceEvents':
+        return <Object?>[];
       case 'setKeyboardSnippetRules':
       case 'setKeyboardDictionaryRules':
         return true;
@@ -274,6 +276,25 @@ void main() {
     expect(event?.sourceMetadata, isNot(contains('ignored')));
   });
 
+  test('android keyboard voice event parses native bridge maps', () {
+    final event = AndroidKeyboardVoiceEvent.fromMap({
+      'rawText': ' hello voice ',
+      'cleanedText': 'hello voice',
+      'language': 'en-US',
+      'source': 'keyboard',
+      'durationMs': 1200,
+      'capturedAtEpochMillis': 1778263200000,
+    });
+
+    expect(event, isNotNull);
+    expect(event?.rawText, 'hello voice');
+    expect(event?.cleanedText, 'hello voice');
+    expect(event?.language, 'en-US');
+    expect(event?.source, 'keyboard');
+    expect(event?.durationMs, 1200);
+    expect(event?.capturedAtUtc.isUtc, isTrue);
+  });
+
   test('android overlay event parses native bridge maps', () {
     final event = AndroidOverlayEvent.fromMap({
       'type': 'serviceError',
@@ -380,7 +401,7 @@ void main() {
     expect(find.text('Start here'), findsNothing);
     expect(find.textContaining('Missing Supabase config'), findsNothing);
     expect(find.textContaining('Cloud sync is disabled'), findsNothing);
-    expect(find.text('Raw text'), findsOneWidget);
+    expect(find.text('Capture automatique'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await _pumpNavigationFrame(tester);
@@ -405,7 +426,7 @@ void main() {
       await tester.pumpWidget(_appShellTestWidget());
       await _pumpNavigationFrame(tester);
 
-      expect(find.text('Raw text'), findsOneWidget);
+      expect(find.text('Capture automatique'), findsOneWidget);
       expect(find.text('Configuration WinFlowz'), findsOneWidget);
       await tester.tap(find.widgetWithText(TextButton, 'Plus tard').last);
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
@@ -521,8 +542,8 @@ void main() {
     }
 
     expect(find.text('WinFlowz • Voice'), findsOneWidget);
-    expect(find.text('Raw text'), findsOneWidget);
-    expect(find.text('Duration (ms)'), findsOneWidget);
+    expect(find.text('Capture automatique'), findsOneWidget);
+    expect(find.text('Refresh history'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.content_paste_outlined).last);
     await _pumpNavigationFrame(tester);

@@ -25,6 +25,7 @@ import android.view.View.MeasureSpec
 import android.view.animation.OvershootInterpolator
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarController
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardAttachedActionRowState
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionCatalog
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionEnvironment
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressBehavior
@@ -97,6 +98,10 @@ class WinFlowzKeyboardView(
         fun onDeleteWordAfter(): Boolean
         fun onEnter(): Boolean
         fun onVoice()
+        fun onVoicePause()
+        fun onVoiceResume()
+        fun onVoiceRestart()
+        fun onVoiceCancel()
         fun onCopySelection()
         fun onCutSelection(): Boolean
         fun onPasteClipboard(): Boolean
@@ -109,6 +114,7 @@ class WinFlowzKeyboardView(
         fun onSnippets()
         fun onSettings()
         fun onThemeSettings()
+        fun onThemePresetSelected(presetId: String)
         fun onKeyboardPicker()
         fun onMediaPlayPause()
         fun onMediaPrevious()
@@ -236,7 +242,8 @@ class WinFlowzKeyboardView(
     private val pressEffects = KeyboardPressEffects(density) { SystemClock.uptimeMillis() }
     private val outerPadding = dp(8f)
     private val keyRadius = dp(8f)
-    private val statusHeight = dp(30f)
+    private val minStatusHeight = dp(30f)
+    private val maxStatusLines = 4
     private val actionRowHeight = dp(40f)
     private val textRowHeight = dp(46f)
     private val controlRowHeight = dp(48f)
@@ -570,14 +577,46 @@ class WinFlowzKeyboardView(
         }
     }
 
+    fun showVoiceActionBar() {
+        val voiceRow = KeyboardAttachedActionRowState(
+            providerActionId = "voice",
+            rowId = "action-row-voice",
+            dedupeKey = "voice",
+        )
+        val nextRows =
+            (actionBarState.attachedRows.filterNot { it.dedupeKey == "voice" } + voiceRow)
+        setActionBarState(
+            actionBarState.copy(
+                pinnedActionIds = actionBarState.pinnedActionIds + "voice",
+                attachedRows = nextRows,
+                rowPageById = actionBarState.rowPageById + ("action-row-voice" to 0),
+            ),
+        )
+        reconcileActionBarState()
+        refreshLayout()
+    }
+
+    fun hideVoiceActionBar() {
+        setActionBarState(
+            actionBarState.copy(
+                pinnedActionIds = actionBarState.pinnedActionIds - "voice",
+                attachedRows = actionBarState.attachedRows.filterNot { it.dedupeKey == "voice" },
+                rowPageById = actionBarState.rowPageById - "action-row-voice",
+            ),
+        )
+        reconcileActionBarState()
+        refreshLayout()
+    }
+
     fun setStatus(message: String) {
         statusText = message
+        requestLayout()
         invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        val desiredHeight = desiredKeyboardHeight()
+        val desiredHeight = desiredKeyboardHeight(width)
         val height =
             when (MeasureSpec.getMode(heightMeasureSpec)) {
                 MeasureSpec.AT_MOST -> minOf(desiredHeight, MeasureSpec.getSize(heightMeasureSpec))
@@ -638,7 +677,9 @@ class WinFlowzKeyboardView(
         val right = width - outerPadding
         var y = outerPadding
 
-        drawStatus(canvas, y, right - left)
+        val contentWidth = right - left
+        val statusHeight = statusHeightFor(contentWidth)
+        drawStatus(canvas, y, contentWidth, statusHeight)
         y += statusHeight + rowGap()
 
         layoutSnapshot.rows.forEachIndexed { index, row ->
@@ -1149,10 +1190,87 @@ class WinFlowzKeyboardView(
         return runCatching { BitmapFactory.decodeFile(source) }.getOrNull()
     }
 
-    private fun drawStatus(canvas: Canvas, top: Float, contentWidth: Float) {
+    private fun drawStatus(
+        canvas: Canvas,
+        top: Float,
+        contentWidth: Float,
+        height: Float,
+    ) {
         statusPaint.textSize = sp(13f)
-        val baseline = top + statusHeight / 2f - (statusPaint.descent() + statusPaint.ascent()) / 2f
-        canvas.drawText(statusText, outerPadding + contentWidth / 2f, baseline, statusPaint)
+        val lines = statusLines(contentWidth)
+        val lineHeight = statusLineHeight()
+        val totalTextHeight = lineHeight * lines.size
+        var baseline =
+            top + (height - totalTextHeight) / 2f - statusPaint.ascent()
+        lines.forEach { line ->
+            canvas.drawText(line, outerPadding + contentWidth / 2f, baseline, statusPaint)
+            baseline += lineHeight
+        }
+    }
+
+    private fun statusHeightFor(contentWidth: Float): Float {
+        statusPaint.textSize = sp(13f)
+        val lineCount = statusLines(contentWidth).size.coerceAtLeast(1)
+        return max(minStatusHeight, lineCount * statusLineHeight() + dp(10f))
+    }
+
+    private fun statusLineHeight(): Float {
+        return statusPaint.descent() - statusPaint.ascent() + dp(2f)
+    }
+
+    private fun statusLines(contentWidth: Float): List<String> {
+        val normalized = statusText.replace(Regex("\\s+"), " ").trim()
+        if (normalized.isEmpty()) {
+            return listOf("")
+        }
+        val maxWidth = contentWidth.coerceAtLeast(dp(48f))
+        val lines = mutableListOf<String>()
+        var current = ""
+
+        fun addCurrent() {
+            if (current.isNotEmpty()) {
+                lines.add(current)
+                current = ""
+            }
+        }
+
+        normalized.split(" ").forEach { word ->
+            val candidate = if (current.isEmpty()) word else "$current $word"
+            if (statusPaint.measureText(candidate) <= maxWidth) {
+                current = candidate
+                return@forEach
+            }
+            addCurrent()
+            if (statusPaint.measureText(word) <= maxWidth) {
+                current = word
+            } else {
+                var chunk = ""
+                word.forEach { char ->
+                    val next = "$chunk$char"
+                    if (statusPaint.measureText(next) <= maxWidth) {
+                        chunk = next
+                    } else {
+                        if (chunk.isNotEmpty()) {
+                            lines.add(chunk)
+                        }
+                        chunk = char.toString()
+                    }
+                }
+                current = chunk
+            }
+        }
+        addCurrent()
+
+        if (lines.size <= maxStatusLines) {
+            return lines
+        }
+        val visible = lines.take(maxStatusLines).toMutableList()
+        var last = visible.last().trimEnd()
+        while (last.isNotEmpty() && statusPaint.measureText("$last…") > maxWidth) {
+            last = last.dropLast(1).trimEnd()
+        }
+        visible[visible.lastIndex] = if (last.isEmpty()) "…" else "$last…"
+        return visible
     }
 
     private fun drawRow(
@@ -1804,7 +1922,16 @@ class WinFlowzKeyboardView(
             }
             KeyboardKeyAction.OpenWinFlowzSnippets -> callbacks.onSnippets()
             KeyboardKeyAction.OpenWinFlowzSettings -> callbacks.onSettings()
-            KeyboardKeyAction.OpenThemeSettings -> callbacks.onThemeSettings()
+            KeyboardKeyAction.OpenThemeSettings -> togglePanel(KeyboardPanelMode.ThemeSettings)
+            KeyboardKeyAction.SelectThemePreset -> {
+                val presetId = commandKey.suggestion
+                if (presetId.isNullOrBlank()) {
+                    setStatus("Theme unavailable")
+                } else {
+                    callbacks.onThemePresetSelected(presetId)
+                    panelMode = KeyboardPanelMode.Settings
+                }
+            }
             KeyboardKeyAction.ShowKeyboardPicker -> callbacks.onKeyboardPicker()
             KeyboardKeyAction.ToggleCornerMode -> {
                 cornerModeEnabled = !cornerModeEnabled
@@ -1935,6 +2062,10 @@ class WinFlowzKeyboardView(
             }
             KeyboardKeyAction.ClosePanel -> panelMode = KeyboardPanelMode.None
             KeyboardKeyAction.Voice -> callbacks.onVoice()
+            KeyboardKeyAction.VoicePause -> callbacks.onVoicePause()
+            KeyboardKeyAction.VoiceResume -> callbacks.onVoiceResume()
+            KeyboardKeyAction.VoiceRestart -> callbacks.onVoiceRestart()
+            KeyboardKeyAction.VoiceCancel -> callbacks.onVoiceCancel()
         }
         if (previousMode != layoutMode || previousPanel != panelMode) {
             clearHorizontalRowScrollState()
@@ -2135,6 +2266,7 @@ class WinFlowzKeyboardView(
                 actionBarState = actionBarState,
                 mediaNowPlayingLabel = mediaNowPlayingLabel,
                 cornerConfig = cornerConfig,
+                themePresetId = themeConfig.presetId,
                 fieldPolicy = fieldPolicy,
             ),
         )
@@ -2198,8 +2330,9 @@ class WinFlowzKeyboardView(
         }
     }
 
-    private fun desiredKeyboardHeight(): Int {
+    private fun desiredKeyboardHeight(viewWidth: Int): Int {
         val rowCount = layoutSnapshot.rows.size
+        val contentWidth = (viewWidth.toFloat() - outerPadding * 2).coerceAtLeast(dp(48f))
         val rowsHeight =
             if (usesVerticalPanelScroll()) {
                 actionRowHeight + visiblePanelHeight()
@@ -2209,7 +2342,9 @@ class WinFlowzKeyboardView(
                 }.toFloat()
         }
         val effectiveRowCount = if (usesVerticalPanelScroll()) 2 else rowCount
-        val baseHeight = outerPadding * 2 + statusHeight + rowsHeight + rowGap() * effectiveRowCount
+        val baseHeight =
+            outerPadding * 2 + statusHeightFor(contentWidth) + rowsHeight +
+                rowGap() * effectiveRowCount
         return (baseHeight * keyboardHeightScale).toInt()
     }
 

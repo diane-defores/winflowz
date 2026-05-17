@@ -45,18 +45,16 @@ class WinFlowzInputMethodService :
                         showStatus("Dictation result ignored: no active field")
                         return@KeyboardVoiceController
                     }
-                    val committed = editor.commitText(text)
+                    val dictatedText = "${text.trim()} "
+                    val committed = editor.commitText(dictatedText)
                     if (!committed.reportFailure("Dictation text rejected by field")) {
                         return@KeyboardVoiceController
                     }
-                    if (stateStore.clipboardSyncDesired && fieldPolicy.clipboardAllowed) {
-                        KeyboardClipboardEventQueue.enqueue(
-                            context = this,
-                            content = text,
-                            source = "keyboard_voice",
-                            action = "voice_result",
-                        )
-                    }
+                    KeyboardVoiceEventQueue.enqueue(
+                        rawText = text,
+                        cleanedText = text,
+                        language = java.util.Locale.getDefault().toLanguageTag(),
+                    )
                 },
             )
     }
@@ -168,7 +166,6 @@ class WinFlowzInputMethodService :
     }
 
     override fun onFinishInput() {
-        voiceController.cancel()
         selectionState = KeyboardSelectionState.Unavailable
         super.onFinishInput()
     }
@@ -292,6 +289,10 @@ class WinFlowzInputMethodService :
     }
 
     override fun onEnter(): Boolean {
+        if (voiceController.isListening()) {
+            voiceController.stop()
+            return true
+        }
         val editor = editor()
         if (!editor.hasActiveConnection()) {
             showStatus("Enter unavailable: no active field")
@@ -318,6 +319,38 @@ class WinFlowzInputMethodService :
             return
         }
         voiceController.start()
+    }
+
+    override fun onVoicePause() {
+        voiceController.pause()
+    }
+
+    override fun onVoiceResume() {
+        if (!stateStore.voiceEnabled) {
+            showStatus("Dictation disabled in WinFlowz settings")
+            return
+        }
+        if (!fieldPolicy.voiceAllowed) {
+            showStatus("Dictation disabled for private field")
+            return
+        }
+        voiceController.resume()
+    }
+
+    override fun onVoiceRestart() {
+        if (!stateStore.voiceEnabled) {
+            showStatus("Dictation disabled in WinFlowz settings")
+            return
+        }
+        if (!fieldPolicy.voiceAllowed) {
+            showStatus("Dictation disabled for private field")
+            return
+        }
+        voiceController.restart()
+    }
+
+    override fun onVoiceCancel() {
+        voiceController.cancel()
     }
 
     override fun onCopySelection() {
@@ -488,6 +521,14 @@ class WinFlowzInputMethodService :
                 }
             startActivity(intent)
             showStatus("Open WinFlowz Keyboard Theme Studio")
+        }
+    }
+
+    override fun onThemePresetSelected(presetId: String) {
+        runServiceSafely("setThemePreset") {
+            val config = stateStore.setThemePreset(presetId)
+            applyRuntimePreferencesToView()
+            showStatus("Theme ${KeyboardThemePresets.labelFor(config.presetId)}")
         }
     }
 

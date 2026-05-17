@@ -9,6 +9,7 @@ class UserSettingsSnapshot {
     required this.retentionPolicy,
     required this.clipboardAutoSync,
     required this.transcriptionSync,
+    this.confirmDestructiveActions = true,
     required this.syncStatus,
     this.onboardingCompleted = false,
     this.onboardingCurrentStep = 0,
@@ -27,6 +28,7 @@ class UserSettingsSnapshot {
       retentionPolicy = UserRetentionPolicy.sevenDays,
       clipboardAutoSync = true,
       transcriptionSync = true,
+      confirmDestructiveActions = true,
       syncStatus = const SyncStatus.localOnly(),
       onboardingCompleted = false,
       onboardingCurrentStep = 0,
@@ -43,6 +45,7 @@ class UserSettingsSnapshot {
   final UserRetentionPolicy retentionPolicy;
   final bool clipboardAutoSync;
   final bool transcriptionSync;
+  final bool confirmDestructiveActions;
   final SyncStatus syncStatus;
   final bool onboardingCompleted;
   final int onboardingCurrentStep;
@@ -60,6 +63,7 @@ class UserSettingsSnapshot {
     UserRetentionPolicy? retentionPolicy,
     bool? clipboardAutoSync,
     bool? transcriptionSync,
+    bool? confirmDestructiveActions,
     SyncStatus? syncStatus,
     bool? onboardingCompleted,
     int? onboardingCurrentStep,
@@ -77,6 +81,8 @@ class UserSettingsSnapshot {
       retentionPolicy: retentionPolicy ?? this.retentionPolicy,
       clipboardAutoSync: clipboardAutoSync ?? this.clipboardAutoSync,
       transcriptionSync: transcriptionSync ?? this.transcriptionSync,
+      confirmDestructiveActions:
+          confirmDestructiveActions ?? this.confirmDestructiveActions,
       syncStatus: syncStatus ?? this.syncStatus,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       onboardingCurrentStep:

@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../../core/widgets/local_mode_notice.dart';
+import '../../settings/application/settings_store_provider.dart';
 import '../application/snippet_store_provider.dart';
 import '../domain/snippet_store.dart';
 
@@ -172,6 +173,10 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   }
 
   Future<void> _remove(String id) async {
+    final settings = await ref.read(settingsStoreProvider).load();
+    if (!mounted) {
+      return;
+    }
     final confirmed = await showConfirmActionDialog(
       context: context,
       title: 'Delete snippet?',
@@ -179,6 +184,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
           'This removes the snippet from your reusable text list. This action cannot be undone from this screen.',
       confirmLabel: 'Delete',
       destructive: true,
+      confirmationEnabled: settings.confirmDestructiveActions,
     );
     if (!mounted || !confirmed) {
       return;

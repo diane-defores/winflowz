@@ -3,16 +3,20 @@ part of "settings_screen.dart";
 class _AppearanceSection extends StatelessWidget {
   const _AppearanceSection({
     required this.themeMode,
+    required this.confirmDestructiveActions,
     required this.syncStateLabel,
     required this.syncStateDetail,
     required this.onOpenKeyboardThemeStudio,
+    required this.onConfirmDestructiveActionsChanged,
     required this.onChanged,
   });
 
   final AppThemeMode themeMode;
+  final bool confirmDestructiveActions;
   final String syncStateLabel;
   final String syncStateDetail;
   final VoidCallback onOpenKeyboardThemeStudio;
+  final ValueChanged<bool> onConfirmDestructiveActionsChanged;
   final ValueChanged<AppThemeMode> onChanged;
 
   @override
@@ -48,6 +52,17 @@ class _AppearanceSection extends StatelessWidget {
           ),
           AppGaps.x2,
           Text(syncStateDetail, style: Theme.of(context).textTheme.bodySmall),
+          AppGaps.x2,
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            secondary: const Icon(Icons.delete_outline),
+            value: confirmDestructiveActions,
+            onChanged: onConfirmDestructiveActionsChanged,
+            title: const Text('Confirm before deleting'),
+            subtitle: const Text(
+              'Ask before deleting history items, snippets and dictionary terms.',
+            ),
+          ),
           AppGaps.x2,
           Align(
             alignment: Alignment.centerLeft,

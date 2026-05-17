@@ -14,6 +14,8 @@ class LocalSettingsStore implements SettingsStore {
   static const _retentionPolicyKey = 'settings_retention_policy';
   static const _clipboardAutoSyncKey = 'settings_clipboard_auto_sync';
   static const _transcriptionSyncKey = 'settings_transcription_sync';
+  static const _confirmDestructiveActionsKey =
+      'settings_confirm_destructive_actions';
   static const _onboardingCompletedKey = 'settings_onboarding_completed';
   static const _onboardingCurrentStepKey = 'settings_onboarding_current_step';
   static const _onboardingLastSeenAtKey = 'settings_onboarding_last_seen_at';
@@ -45,6 +47,10 @@ class LocalSettingsStore implements SettingsStore {
     );
     final transcriptionSync = _boolFromValue(
       await _read(_transcriptionSyncKey),
+      fallback: true,
+    );
+    final confirmDestructiveActions = _boolFromValue(
+      await _read(_confirmDestructiveActionsKey),
       fallback: true,
     );
     final onboardingCompleted = _boolFromValue(
@@ -88,6 +94,7 @@ class LocalSettingsStore implements SettingsStore {
       retentionPolicy: retentionPolicy,
       clipboardAutoSync: clipboardAutoSync,
       transcriptionSync: transcriptionSync,
+      confirmDestructiveActions: confirmDestructiveActions,
       onboardingCompleted: onboardingCompleted,
       onboardingCurrentStep: onboardingCurrentStep,
       onboardingLastSeenAt: onboardingLastSeenAt,
@@ -106,6 +113,10 @@ class LocalSettingsStore implements SettingsStore {
     await _write(_retentionPolicyKey, settings.retentionPolicy.value);
     await _write(_clipboardAutoSyncKey, settings.clipboardAutoSync.toString());
     await _write(_transcriptionSyncKey, settings.transcriptionSync.toString());
+    await _write(
+      _confirmDestructiveActionsKey,
+      settings.confirmDestructiveActions.toString(),
+    );
     await _write(
       _onboardingCompletedKey,
       settings.onboardingCompleted.toString(),

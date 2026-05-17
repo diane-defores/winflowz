@@ -7,7 +7,11 @@ Future<bool> showConfirmActionDialog({
   required String confirmLabel,
   String cancelLabel = 'Cancel',
   bool destructive = false,
+  bool confirmationEnabled = true,
 }) async {
+  if (!confirmationEnabled) {
+    return true;
+  }
   final result = await showDialog<bool>(
     context: context,
     builder: (context) {
