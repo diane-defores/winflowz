@@ -45,6 +45,9 @@ before editing. It is not public product documentation.
   and emulator commands, and GitHub/Blacksmith secret list.
 - `docs/technical/firebase-oidc-ci-playbook.md`: step-by-step CI runbook for
   GitHub OIDC/WIF Firestore deploy, including troubleshooting from real failures.
+- `docs/technical/suite-authentication.md`: pointer to the canonical WinFlowz
+  suite auth decision; this app keeps Firebase Auth for Android while the suite
+  identity target is Clerk plus a Firebase bridge.
 
 ## Maintenance Rule
 

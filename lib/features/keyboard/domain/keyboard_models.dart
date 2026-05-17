@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 enum KeyboardPrivacyMode {
   auto,
   strict,
@@ -82,6 +84,7 @@ class KeyboardThemePresetCatalog {
   const KeyboardThemePresetCatalog._();
 
   static const system = 'system';
+  static const winflowz = 'winflowz';
   static const winflowzLight = 'winflowz_light';
   static const winflowzDark = 'winflowz_dark';
   static const neonTerminal = 'neon_terminal';
@@ -99,14 +102,9 @@ class KeyboardThemePresetCatalog {
       description: 'Follows the current app and Android theme.',
     ),
     KeyboardThemePreset(
-      id: winflowzLight,
-      name: 'WinFlowz Light',
-      description: 'Clean light keyboard with green action keys.',
-    ),
-    KeyboardThemePreset(
-      id: winflowzDark,
-      name: 'WinFlowz Dark',
-      description: 'Dark low-glare WinFlowz palette.',
+      id: winflowz,
+      name: 'WinFlowz',
+      description: 'Clean WinFlowz keyboard controlled by light or dark mode.',
     ),
     KeyboardThemePreset(
       id: neonTerminal,
@@ -145,29 +143,26 @@ class KeyboardThemePresetCatalog {
     ),
   ];
 
-  static KeyboardThemeConfig configFor(String presetId) {
+  static KeyboardThemeConfig configFor(
+    String presetId, {
+    Brightness brightness = Brightness.light,
+  }) {
+    final normalizedPresetId = switch (presetId) {
+      winflowzLight || winflowzDark => winflowz,
+      _ => presetId,
+    };
     final base = KeyboardThemeConfig.defaults().copyWith(
-      presetId: presetId,
+      presetId: normalizedPresetId,
       useImage: false,
       backgroundImagePath: null,
       pressEffect: KeyboardThemePressEffect.none,
     );
-    return switch (presetId) {
+    if (brightness == Brightness.dark) {
+      return _darkConfigFor(normalizedPresetId, base);
+    }
+    return switch (normalizedPresetId) {
       system => KeyboardThemeConfig.defaults(),
-      winflowzLight => base,
-      winflowzDark => base.copyWith(
-        backgroundStartColor: 0xFF121815,
-        backgroundEndColor: 0xFF121815,
-        keyColor: 0xFF232B27,
-        specialKeyColor: 0xFF2E3833,
-        activeKeyColor: 0xFF36B384,
-        pressedKeyColor: 0xFF43524B,
-        textColor: 0xFFEBF2EE,
-        cornerTextColor: 0xFFB7C8BF,
-        statusTextColor: 0xFFCCD9D2,
-        borderColor: 0xFF516158,
-        shadowColor: 0x66000000,
-      ),
+      winflowz => base,
       neonTerminal => base.copyWith(
         backgroundStartColor: 0xFF07120F,
         backgroundEndColor: 0xFF12241E,
@@ -269,6 +264,108 @@ class KeyboardThemePresetCatalog {
         pressedKeyColor: 0xFFCFCFCF,
         textColor: 0xFF000000,
         cornerTextColor: 0xFF303030,
+        statusTextColor: 0xFFFFFFFF,
+        borderColor: 0xFFFFFFFF,
+        borderWidth: 1,
+        shadowBlur: 0,
+      ),
+      _ => KeyboardThemeConfig.defaults(),
+    };
+  }
+
+  static KeyboardThemeConfig _darkConfigFor(
+    String presetId,
+    KeyboardThemeConfig base,
+  ) {
+    return switch (presetId) {
+      system => KeyboardThemeConfig.defaults(),
+      winflowz => base.copyWith(
+        backgroundStartColor: 0xFF121815,
+        backgroundEndColor: 0xFF121815,
+        keyColor: 0xFF232B27,
+        specialKeyColor: 0xFF2E3833,
+        activeKeyColor: 0xFF36B384,
+        pressedKeyColor: 0xFF43524B,
+        textColor: 0xFFEBF2EE,
+        cornerTextColor: 0xFFB7C8BF,
+        statusTextColor: 0xFFCCD9D2,
+        borderColor: 0xFF516158,
+        shadowColor: 0x66000000,
+      ),
+      neonTerminal => configFor(neonTerminal),
+      glassMint => base.copyWith(
+        backgroundStartColor: 0xFF10251F,
+        backgroundEndColor: 0xFF1E4A3C,
+        useGradient: true,
+        keyColor: 0xCC1A2E28,
+        specialKeyColor: 0xCC24463B,
+        activeKeyColor: 0xFF7FF0C8,
+        pressedKeyColor: 0xFF315F51,
+        textColor: 0xFFE8FFF7,
+        cornerTextColor: 0xFFA7D8C8,
+        statusTextColor: 0xFFC8F5E6,
+        borderColor: 0x6635E0AC,
+        keyRadius: 14,
+        shadowColor: 0x66000000,
+        shadowBlur: 9,
+      ),
+      sunsetGradient => base.copyWith(
+        backgroundStartColor: 0xFF351422,
+        backgroundEndColor: 0xFF7A2636,
+        useGradient: true,
+        keyColor: 0xFF2C1B22,
+        specialKeyColor: 0xFF4A2630,
+        activeKeyColor: 0xFFFFB36E,
+        pressedKeyColor: 0xFF6A3542,
+        textColor: 0xFFFFF1E6,
+        cornerTextColor: 0xFFFFC9B5,
+        statusTextColor: 0xFFFFE0D2,
+        borderColor: 0x44FFFFFF,
+        shadowColor: 0x66000000,
+        pressEffect: KeyboardThemePressEffect.pulse,
+      ),
+      midnightAurora => configFor(midnightAurora),
+      paperInk => base.copyWith(
+        backgroundStartColor: 0xFF181512,
+        backgroundEndColor: 0xFF241F1A,
+        keyColor: 0xFF2C2721,
+        specialKeyColor: 0xFF3A332A,
+        activeKeyColor: 0xFFE9D7B8,
+        pressedKeyColor: 0xFF4A4034,
+        textColor: 0xFFF7EFE3,
+        cornerTextColor: 0xFFC9B99F,
+        statusTextColor: 0xFFE6D8C1,
+        borderColor: 0xFF756850,
+        shadowColor: 0x66000000,
+        shadowBlur: 3,
+      ),
+      pixelCandy => base.copyWith(
+        backgroundStartColor: 0xFF27172A,
+        backgroundEndColor: 0xFF102840,
+        useGradient: true,
+        keyColor: 0xFF23172F,
+        specialKeyColor: 0xFF472047,
+        activeKeyColor: 0xFF66D9FF,
+        pressedKeyColor: 0xFF7A4B12,
+        textColor: 0xFFFFF4FF,
+        cornerTextColor: 0xFFFFBFE2,
+        statusTextColor: 0xFFD4F1FF,
+        borderColor: 0xFFFFBFE2,
+        borderWidth: 1.5,
+        keyRadius: 5,
+        shadowColor: 0x66000000,
+        shadowBlur: 1,
+        pressEffect: KeyboardThemePressEffect.confettiLite,
+      ),
+      minimalContrast => base.copyWith(
+        backgroundStartColor: 0xFF000000,
+        backgroundEndColor: 0xFF000000,
+        keyColor: 0xFF111111,
+        specialKeyColor: 0xFF222222,
+        activeKeyColor: 0xFFFFFF00,
+        pressedKeyColor: 0xFF333333,
+        textColor: 0xFFFFFFFF,
+        cornerTextColor: 0xFFE0E0E0,
         statusTextColor: 0xFFFFFFFF,
         borderColor: 0xFFFFFFFF,
         borderWidth: 1,
@@ -389,9 +486,15 @@ class KeyboardThemeConfig {
     }
 
     final defaults = KeyboardThemeConfig.defaults();
+    final rawPresetId = map['presetId'] as String? ?? defaults.presetId;
+    final presetId = switch (rawPresetId) {
+      KeyboardThemePresetCatalog.winflowzLight ||
+      KeyboardThemePresetCatalog.winflowzDark => KeyboardThemePresetCatalog.winflowz,
+      _ => rawPresetId,
+    };
     return KeyboardThemeConfig(
       version: (map['version'] as num?)?.toInt() ?? 1,
-      presetId: map['presetId'] as String? ?? defaults.presetId,
+      presetId: presetId,
       backgroundStartColor: asColor(
         map['backgroundStartColor'],
         defaults.backgroundStartColor,
@@ -1352,6 +1455,8 @@ class AndroidKeyboardStatus {
     required this.voiceEnabled,
     required this.clipboardSyncDesired,
     required this.mediaControlsEnabled,
+    required this.mediaVolumeStepPercent,
+    required this.mediaBrightnessStepPercent,
     required this.mediaSessionAccessGranted,
     required this.systemSettingsWriteGranted,
     required this.themeMode,
@@ -1373,6 +1478,7 @@ class AndroidKeyboardStatus {
     required this.doubleSpacePeriodEnabled,
     required this.punctuationAutoSpacingEnabled,
     required this.keyboardHeightScale,
+    required this.actionRowHeightScale,
     required this.compactModeEnabled,
     required this.privacyMode,
     required this.lastKeyboardError,
@@ -1386,6 +1492,8 @@ class AndroidKeyboardStatus {
   final bool voiceEnabled;
   final bool clipboardSyncDesired;
   final bool mediaControlsEnabled;
+  final int mediaVolumeStepPercent;
+  final int mediaBrightnessStepPercent;
   final bool mediaSessionAccessGranted;
   final bool systemSettingsWriteGranted;
   final String themeMode;
@@ -1407,6 +1515,7 @@ class AndroidKeyboardStatus {
   final bool doubleSpacePeriodEnabled;
   final bool punctuationAutoSpacingEnabled;
   final double keyboardHeightScale;
+  final double actionRowHeightScale;
   final bool compactModeEnabled;
   final KeyboardPrivacyMode privacyMode;
   final String? lastKeyboardError;
@@ -1421,6 +1530,8 @@ class AndroidKeyboardStatus {
       voiceEnabled: false,
       clipboardSyncDesired: false,
       mediaControlsEnabled: false,
+      mediaVolumeStepPercent: 5,
+      mediaBrightnessStepPercent: 10,
       mediaSessionAccessGranted: false,
       systemSettingsWriteGranted: false,
       themeMode: 'system',
@@ -1442,6 +1553,7 @@ class AndroidKeyboardStatus {
       doubleSpacePeriodEnabled: true,
       punctuationAutoSpacingEnabled: false,
       keyboardHeightScale: 1,
+      actionRowHeightScale: 1,
       compactModeEnabled: false,
       privacyMode: KeyboardPrivacyMode.auto,
       lastKeyboardError: null,
@@ -1458,6 +1570,15 @@ class AndroidKeyboardStatus {
       voiceEnabled: map['voiceEnabled'] as bool? ?? true,
       clipboardSyncDesired: map['clipboardSyncDesired'] as bool? ?? false,
       mediaControlsEnabled: map['mediaControlsEnabled'] as bool? ?? true,
+      mediaVolumeStepPercent:
+          ((map['mediaVolumeStepPercent'] as num?)?.toInt() ?? 5)
+              .clamp(5, 30)
+              .toInt(),
+      mediaBrightnessStepPercent:
+          ((map['mediaBrightnessStepPercent'] as num?)?.toInt() ?? 10).clamp(
+            5,
+            30,
+          ).toInt(),
       mediaSessionAccessGranted:
           map['mediaSessionAccessGranted'] as bool? ?? false,
       systemSettingsWriteGranted:
@@ -1494,6 +1615,9 @@ class AndroidKeyboardStatus {
             0.85,
             1.2,
           ),
+      actionRowHeightScale: _normalizeActionRowHeightScale(
+        (map['actionRowHeightScale'] as num?)?.toDouble() ?? 1,
+      ),
       compactModeEnabled: map['compactModeEnabled'] as bool? ?? false,
       privacyMode: KeyboardPrivacyMode.fromName(
         map['privacyMode'] as String? ?? KeyboardPrivacyMode.auto.name,
@@ -1514,6 +1638,8 @@ class AndroidKeyboardStatus {
     bool? voiceEnabled,
     bool? clipboardSyncDesired,
     bool? mediaControlsEnabled,
+    int? mediaVolumeStepPercent,
+    int? mediaBrightnessStepPercent,
     String? themeMode,
     KeyboardLayoutProfile? layoutProfile,
     bool? cornerModeEnabled,
@@ -1526,12 +1652,17 @@ class AndroidKeyboardStatus {
     bool? englishLanguageEnabled,
     bool? doubleSpacePeriodEnabled,
     bool? punctuationAutoSpacingEnabled,
+    double? actionRowHeightScale,
     KeyboardPrivacyMode? privacyMode,
   }) {
     return {
       'voiceEnabled': voiceEnabled ?? this.voiceEnabled,
       'clipboardSyncDesired': clipboardSyncDesired ?? this.clipboardSyncDesired,
       'mediaControlsEnabled': mediaControlsEnabled ?? this.mediaControlsEnabled,
+      'mediaVolumeStepPercent':
+          mediaVolumeStepPercent ?? this.mediaVolumeStepPercent,
+      'mediaBrightnessStepPercent':
+          mediaBrightnessStepPercent ?? this.mediaBrightnessStepPercent,
       'themeMode': themeMode ?? this.themeMode,
       'layoutProfile': (layoutProfile ?? this.layoutProfile).name,
       'cornerModeEnabled': cornerModeEnabled ?? this.cornerModeEnabled,
@@ -1551,7 +1682,18 @@ class AndroidKeyboardStatus {
           doubleSpacePeriodEnabled ?? this.doubleSpacePeriodEnabled,
       'punctuationAutoSpacingEnabled':
           punctuationAutoSpacingEnabled ?? this.punctuationAutoSpacingEnabled,
+      'actionRowHeightScale': actionRowHeightScale ?? this.actionRowHeightScale,
       'privacyMode': (privacyMode ?? this.privacyMode).name,
     };
+  }
+
+  static double _normalizeActionRowHeightScale(double value) {
+    if (value < 0.45) {
+      return 0.30;
+    }
+    if (value < 0.80) {
+      return 0.60;
+    }
+    return 1;
   }
 }

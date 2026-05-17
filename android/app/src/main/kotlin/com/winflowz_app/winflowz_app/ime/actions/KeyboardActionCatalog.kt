@@ -205,6 +205,7 @@ class KeyboardActionCatalog private constructor(
                                     actionRowKey("media-row-brightness-up", "Bri+", KeyboardKeyAction.BrightnessUp),
                                     actionRowKey("media-row-shuffle", "Shuffle", KeyboardKeyAction.MediaShuffle, weight = 1.25f),
                                     actionRowKey("media-row-loop", "Loop", KeyboardKeyAction.MediaLoop),
+                                    actionRowKey("media-row-diagnostics", "Diag", KeyboardKeyAction.MediaDiagnostics),
                                 ),
                         ),
                     )

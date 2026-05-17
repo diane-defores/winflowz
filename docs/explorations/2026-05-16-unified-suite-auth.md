@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "WinFlowz"
 created: "2026-05-16"
-updated: "2026-05-16"
+updated: "2026-05-17"
 status: draft
 source_skill: sf-explore
 scope: "unified-suite-authentication"
@@ -153,6 +153,57 @@ existing products are already split across Clerk/Convex and Firebase.
 
 Do not model products as auth tenants by default. Model products as applications
 and entitlements under a global identity.
+
+## Provider Recommendation Addendum: 2026-05-17
+
+Recommended default for the first production slice: **Clerk as the suite identity
+provider for web-first products, with a bounded Firebase bridge for the
+WinFlowz Android app until the native/mobile path is proven.**
+
+Reasoning:
+
+- WinFlowz Formation already has Clerk/Convex/Polar traces and production work.
+- TubeFlow has Clerk/Convex/YouTube OAuth traces, so Clerk minimizes web-side
+  migration.
+- Clerk now documents OIDC/OAuth IdP behavior and a first-party Convex
+  integration, which fits the current web/backend footprint.
+- Clerk Flutter exists but was announced as beta, so the Android app should not
+  be forced onto it before device smoke proves it. Keep the WinFlowz app's
+  Firebase Auth adapter behind the backend-agnostic contract while mapping to a
+  `global_user_id`.
+- Auth0 remains the strongest enterprise CIAM fallback if SSO/MFA/orgs/audit
+  requirements outgrow Clerk or if the team wants the most standard
+  cross-platform OIDC posture despite higher cost and migration complexity.
+- Firebase/Google Identity Platform remains strongest for the Flutter/Android
+  app, but using it as the whole suite IdP would require more migration from the
+  current web stack.
+
+Decision shape:
+
+```text
+First slice
+  Suite identity owner: Clerk
+  Web products: Clerk session -> Convex/backend -> entitlement checks
+  WinFlowz app: Firebase Auth remains local app auth adapter
+  Bridge: Firebase uid + Clerk/global_user_id mapping, no silent email merge
+
+Future simplification gate
+  Either migrate app auth to Clerk when mobile proof is mature,
+  or promote Firebase/Identity Platform only if web stack migration becomes worth it.
+```
+
+Sources checked:
+
+- Clerk as OAuth/OIDC IdP docs, accessed 2026-05-17:
+  https://clerk.com/docs/guides/configure/auth-strategies/oauth/single-sign-on
+- Clerk + Convex integration docs, accessed 2026-05-17:
+  https://clerk.com/docs/guides/development/integrations/databases/convex
+- Clerk Flutter SDK beta changelog, accessed 2026-05-17:
+  https://clerk.com/changelog/2025-03-26-flutter-sdk-beta
+- Auth0 B2B authentication docs, accessed 2026-05-17:
+  https://auth0.com/docs/get-started/architecture-scenarios/business-to-business/authentication
+- Firebase Auth custom claims docs, accessed 2026-05-17:
+  https://firebase.google.com/docs/auth/admin/custom-claims
 
 Suggested canonical model:
 

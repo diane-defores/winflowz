@@ -32,6 +32,7 @@ class SettingsKeyboardController {
       'theme_fallback=${status.themeFallbackStatus}',
       'compact=${status.compactModeEnabled}',
       'height=${status.keyboardHeightScale}',
+      'action_height=${status.actionRowHeightScale}',
       'recoveries=${status.keyboardRecoveryCount}',
       'last_error_at=${status.lastKeyboardErrorAt ?? 'none'}',
       'last_error=${SensitiveRedactor.redact(status.lastKeyboardError ?? 'none')}',
@@ -43,6 +44,8 @@ class SettingsKeyboardController {
     bool? voiceEnabled,
     bool? clipboardSyncDesired,
     bool? mediaControlsEnabled,
+    int? mediaVolumeStepPercent,
+    int? mediaBrightnessStepPercent,
     String? themeMode,
     KeyboardLayoutProfile? layoutProfile,
     bool? cornerModeEnabled,
@@ -56,6 +59,7 @@ class SettingsKeyboardController {
     bool? doubleSpacePeriodEnabled,
     bool? punctuationAutoSpacingEnabled,
     double? keyboardHeightScale,
+    double? actionRowHeightScale,
     bool? compactModeEnabled,
     KeyboardPrivacyMode? privacyMode,
   }) {
@@ -65,6 +69,10 @@ class SettingsKeyboardController {
           clipboardSyncDesired ?? current.clipboardSyncDesired,
       mediaControlsEnabled:
           mediaControlsEnabled ?? current.mediaControlsEnabled,
+      mediaVolumeStepPercent:
+          mediaVolumeStepPercent ?? current.mediaVolumeStepPercent,
+      mediaBrightnessStepPercent:
+          mediaBrightnessStepPercent ?? current.mediaBrightnessStepPercent,
       themeMode: themeMode ?? current.themeMode,
       layoutProfile: layoutProfile ?? current.layoutProfile,
       cornerModeEnabled: cornerModeEnabled ?? current.cornerModeEnabled,
@@ -86,6 +94,8 @@ class SettingsKeyboardController {
           punctuationAutoSpacingEnabled ??
           current.punctuationAutoSpacingEnabled,
       keyboardHeightScale: keyboardHeightScale ?? current.keyboardHeightScale,
+      actionRowHeightScale:
+          actionRowHeightScale ?? current.actionRowHeightScale,
       compactModeEnabled: compactModeEnabled ?? current.compactModeEnabled,
       privacyMode: privacyMode ?? current.privacyMode,
     );

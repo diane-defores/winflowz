@@ -253,9 +253,11 @@ class _KeyboardThemeStudioScreenState extends State<KeyboardThemeStudioScreen> {
                         .toList(growable: false),
                     onChanged: (value) {
                       if (value == null) return;
+                      final brightness = Theme.of(context).brightness;
                       setState(
                         () => _draft = KeyboardThemePresetCatalog.configFor(
                           value,
+                          brightness: brightness,
                         ),
                       );
                     },
@@ -1253,6 +1255,9 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
         : (pressed
               ? theme.pressedKeyColor
               : (special ? theme.specialKeyColor : theme.keyColor));
+    final labelColor = active
+        ? _contrastTextColor(Color(bg))
+        : Color(theme.textColor);
     final double animatedScale = switch (theme.pressEffect) {
       KeyboardThemePressEffect.scale =>
         pressed ? 1 + 0.16 * theme.effectIntensity.clamp(0.25, 1) : 1,
@@ -1330,7 +1335,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
                     child: Text(
                       label,
                       style: TextStyle(
-                        color: Color(theme.textColor),
+                        color: labelColor,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -1352,6 +1357,10 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
       ),
     );
   }
+}
+
+Color _contrastTextColor(Color background) {
+  return _relativeLuminance(background) > .45 ? Colors.black : Colors.white;
 }
 
 class _ThemePinnedBadge extends StatelessWidget {

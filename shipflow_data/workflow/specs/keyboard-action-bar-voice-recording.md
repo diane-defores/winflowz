@@ -152,3 +152,10 @@ Diagnostic output should make these cases distinguishable:
 - Keyboard voice capture does not dismiss the keyboard.
 - The copied backend diagnostic identifies keyboard-originated voice actions.
 - Sensitive/private fields do not receive direct injected text when policy forbids it.
+
+## Skill Run History
+
+| Date UTC | Skill | Model | Action | Result | Next step |
+|----------|-------|-------|--------|--------|-----------|
+| 2026-05-17 08:33:46 UTC | sf-test | unknown | Manual Android QA for keyboard voice dictation insertion and history separation. | Failed: Enter finalization returned `no speech detected`, inserted no text, and did not add Voice history; Clipboard exclusion passed. | /sf-fix BUG-2026-05-17-001 |
+| 2026-05-17 08:40:17 UTC | sf-fix | Codex | Fixed keyboard voice Enter finalization. | Removed artificial 10-minute minimum speech input and added latest-partial fallback for manual stop; local Flutter checks passed. | /sf-test --retest BUG-2026-05-17-001 |

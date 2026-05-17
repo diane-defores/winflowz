@@ -10,6 +10,7 @@ data class KeyboardThemePreset(
 
 object KeyboardThemePresets {
     const val SYSTEM = "system"
+    const val WINFLOWZ = "winflowz"
     const val WINFLOWZ_LIGHT = "winflowz_light"
     const val WINFLOWZ_DARK = "winflowz_dark"
     const val NEON_TERMINAL = "neon_terminal"
@@ -23,8 +24,7 @@ object KeyboardThemePresets {
     val all =
         listOf(
             KeyboardThemePreset(SYSTEM, "System"),
-            KeyboardThemePreset(WINFLOWZ_LIGHT, "Light"),
-            KeyboardThemePreset(WINFLOWZ_DARK, "Dark"),
+            KeyboardThemePreset(WINFLOWZ, "WinFlowz"),
             KeyboardThemePreset(NEON_TERMINAL, "Neon"),
             KeyboardThemePreset(GLASS_MINT, "Glass"),
             KeyboardThemePreset(SUNSET_GRADIENT, "Sunset"),
@@ -37,25 +37,19 @@ object KeyboardThemePresets {
     fun labelFor(presetId: String): String =
         all.firstOrNull { it.id == presetId }?.name ?: "Theme"
 
-    fun configFor(presetId: String): KeyboardThemeConfig {
-        val base = KeyboardThemeConfig(presetId = presetId, useImage = false, backgroundImagePath = null)
-        return when (presetId) {
+    fun configFor(presetId: String, dark: Boolean = false): KeyboardThemeConfig {
+        val normalizedPresetId =
+            when (presetId) {
+                WINFLOWZ_LIGHT, WINFLOWZ_DARK -> WINFLOWZ
+                else -> presetId
+            }
+        val base = KeyboardThemeConfig(presetId = normalizedPresetId, useImage = false, backgroundImagePath = null)
+        if (dark) {
+            return darkConfigFor(normalizedPresetId, base)
+        }
+        return when (normalizedPresetId) {
             SYSTEM -> KeyboardThemeConfig()
-            WINFLOWZ_LIGHT -> base
-            WINFLOWZ_DARK ->
-                base.copy(
-                    backgroundStartColor = Color.parseColor("#121815"),
-                    backgroundEndColor = Color.parseColor("#121815"),
-                    keyColor = Color.parseColor("#232B27"),
-                    specialKeyColor = Color.parseColor("#2E3833"),
-                    activeKeyColor = Color.parseColor("#36B384"),
-                    pressedKeyColor = Color.parseColor("#43524B"),
-                    textColor = Color.parseColor("#EBF2EE"),
-                    cornerTextColor = Color.parseColor("#B7C8BF"),
-                    statusTextColor = Color.parseColor("#CCD9D2"),
-                    borderColor = Color.parseColor("#516158"),
-                    shadowColor = 0x66000000,
-                )
+            WINFLOWZ -> base
             NEON_TERMINAL ->
                 base.copy(
                     backgroundStartColor = Color.parseColor("#07120F"),
@@ -172,6 +166,113 @@ object KeyboardThemePresets {
             else -> KeyboardThemeConfig()
         }
     }
+
+    private fun darkConfigFor(
+        presetId: String,
+        base: KeyboardThemeConfig,
+    ): KeyboardThemeConfig =
+        when (presetId) {
+            SYSTEM -> KeyboardThemeConfig()
+            WINFLOWZ ->
+                base.copy(
+                    backgroundStartColor = Color.parseColor("#121815"),
+                    backgroundEndColor = Color.parseColor("#121815"),
+                    keyColor = Color.parseColor("#232B27"),
+                    specialKeyColor = Color.parseColor("#2E3833"),
+                    activeKeyColor = Color.parseColor("#36B384"),
+                    pressedKeyColor = Color.parseColor("#43524B"),
+                    textColor = Color.parseColor("#EBF2EE"),
+                    cornerTextColor = Color.parseColor("#B7C8BF"),
+                    statusTextColor = Color.parseColor("#CCD9D2"),
+                    borderColor = Color.parseColor("#516158"),
+                    shadowColor = 0x66000000,
+                )
+            NEON_TERMINAL -> configFor(NEON_TERMINAL)
+            GLASS_MINT ->
+                base.copy(
+                    backgroundStartColor = Color.parseColor("#10251F"),
+                    backgroundEndColor = Color.parseColor("#1E4A3C"),
+                    useGradient = true,
+                    keyColor = 0xCC1A2E28.toInt(),
+                    specialKeyColor = 0xCC24463B.toInt(),
+                    activeKeyColor = Color.parseColor("#7FF0C8"),
+                    pressedKeyColor = Color.parseColor("#315F51"),
+                    textColor = Color.parseColor("#E8FFF7"),
+                    cornerTextColor = Color.parseColor("#A7D8C8"),
+                    statusTextColor = Color.parseColor("#C8F5E6"),
+                    borderColor = 0x6635E0AC,
+                    keyRadius = 14f,
+                    shadowColor = 0x66000000,
+                    shadowBlur = 9f,
+                )
+            SUNSET_GRADIENT ->
+                base.copy(
+                    backgroundStartColor = Color.parseColor("#351422"),
+                    backgroundEndColor = Color.parseColor("#7A2636"),
+                    useGradient = true,
+                    keyColor = Color.parseColor("#2C1B22"),
+                    specialKeyColor = Color.parseColor("#4A2630"),
+                    activeKeyColor = Color.parseColor("#FFB36E"),
+                    pressedKeyColor = Color.parseColor("#6A3542"),
+                    textColor = Color.parseColor("#FFF1E6"),
+                    cornerTextColor = Color.parseColor("#FFC9B5"),
+                    statusTextColor = Color.parseColor("#FFE0D2"),
+                    borderColor = 0x44FFFFFF,
+                    shadowColor = 0x66000000,
+                    pressEffect = "pulse",
+                )
+            MIDNIGHT_AURORA -> configFor(MIDNIGHT_AURORA)
+            PAPER_INK ->
+                base.copy(
+                    backgroundStartColor = Color.parseColor("#181512"),
+                    backgroundEndColor = Color.parseColor("#241F1A"),
+                    keyColor = Color.parseColor("#2C2721"),
+                    specialKeyColor = Color.parseColor("#3A332A"),
+                    activeKeyColor = Color.parseColor("#E9D7B8"),
+                    pressedKeyColor = Color.parseColor("#4A4034"),
+                    textColor = Color.parseColor("#F7EFE3"),
+                    cornerTextColor = Color.parseColor("#C9B99F"),
+                    statusTextColor = Color.parseColor("#E6D8C1"),
+                    borderColor = Color.parseColor("#756850"),
+                    shadowColor = 0x66000000,
+                    shadowBlur = 3f,
+                )
+            PIXEL_CANDY ->
+                base.copy(
+                    backgroundStartColor = Color.parseColor("#27172A"),
+                    backgroundEndColor = Color.parseColor("#102840"),
+                    useGradient = true,
+                    keyColor = Color.parseColor("#23172F"),
+                    specialKeyColor = Color.parseColor("#472047"),
+                    activeKeyColor = Color.parseColor("#66D9FF"),
+                    pressedKeyColor = Color.parseColor("#7A4B12"),
+                    textColor = Color.parseColor("#FFF4FF"),
+                    cornerTextColor = Color.parseColor("#FFBFE2"),
+                    statusTextColor = Color.parseColor("#D4F1FF"),
+                    borderColor = Color.parseColor("#FFBFE2"),
+                    borderWidth = 1.5f,
+                    keyRadius = 5f,
+                    shadowColor = 0x66000000,
+                    shadowBlur = 1f,
+                    pressEffect = "confettiLite",
+                )
+            MINIMAL_CONTRAST ->
+                base.copy(
+                    backgroundStartColor = Color.BLACK,
+                    backgroundEndColor = Color.BLACK,
+                    keyColor = Color.parseColor("#111111"),
+                    specialKeyColor = Color.parseColor("#222222"),
+                    activeKeyColor = Color.YELLOW,
+                    pressedKeyColor = Color.parseColor("#333333"),
+                    textColor = Color.WHITE,
+                    cornerTextColor = Color.parseColor("#E0E0E0"),
+                    statusTextColor = Color.WHITE,
+                    borderColor = Color.WHITE,
+                    borderWidth = 1f,
+                    shadowBlur = 0f,
+                )
+            else -> KeyboardThemeConfig()
+        }
 }
 
 data class KeyboardThemeConfig(
@@ -241,8 +342,14 @@ data class KeyboardThemeConfig(
 
     fun validated(): KeyboardThemeConfig {
         val normalizedPath = backgroundImagePath?.trim().orEmpty().ifBlank { null }
+        val normalizedPresetId =
+            when (presetId) {
+                KeyboardThemePresets.WINFLOWZ_LIGHT, KeyboardThemePresets.WINFLOWZ_DARK -> KeyboardThemePresets.WINFLOWZ
+                else -> presetId
+            }
         return copy(
             version = version.coerceAtLeast(1),
+            presetId = normalizedPresetId,
             gradientStyle = if (gradientStyle in allowedGradientStyles) gradientStyle else "linear",
             borderWidth = borderWidth.coerceIn(0f, 4f),
             keyRadius = keyRadius.coerceIn(0f, 24f),

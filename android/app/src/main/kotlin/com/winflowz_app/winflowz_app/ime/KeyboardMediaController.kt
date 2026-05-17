@@ -46,9 +46,9 @@ class KeyboardMediaController(context: Context) {
         return "Stop sent"
     }
 
-    fun volumeDown(): String = adjustMusicVolume(AudioManager.ADJUST_LOWER)
+    fun volumeDown(stepPercent: Int): String = adjustMusicVolume(AudioManager.ADJUST_LOWER, stepPercent)
 
-    fun volumeUp(): String = adjustMusicVolume(AudioManager.ADJUST_RAISE)
+    fun volumeUp(stepPercent: Int): String = adjustMusicVolume(AudioManager.ADJUST_RAISE, stepPercent)
 
     fun shuffle(): String = sendCustomMediaAction(
         actionName = "Shuffle",
@@ -59,6 +59,41 @@ class KeyboardMediaController(context: Context) {
         actionName = "Loop",
         keywords = listOf("repeat", "loop", "répéter", "repeter"),
     )
+
+    fun diagnostics(): String {
+        if (!KeyboardStateStore(appContext).isMediaSessionAccessGranted()) {
+            return MEDIA_ACCESS_REQUIRED
+        }
+        val controller =
+            try {
+                activeController()
+            } catch (_: SecurityException) {
+                return MEDIA_ACCESS_REQUIRED
+            } ?: return "Media diag: no active media"
+        val state = controller.playbackState
+        val customActions =
+            state
+                ?.customActions
+                .orEmpty()
+                .map { action ->
+                    val name = action.name?.toString()?.trim().orEmpty()
+                    val id = action.action.trim()
+                    when {
+                        name.isNotBlank() && id.isNotBlank() -> "$name=$id"
+                        name.isNotBlank() -> name
+                        else -> id
+                    }
+                }
+                .filter { it.isNotBlank() }
+        val actionsLabel =
+            if (customActions.isEmpty()) {
+                "custom=none"
+            } else {
+                "custom=${customActions.joinToString("; ").take(MAX_DIAGNOSTIC_CHARS)}"
+            }
+        val supported = supportedTransportActions(state)
+        return "Media diag ${controller.packageName}: $supported; $actionsLabel"
+    }
 
     fun nowPlayingLabel(): String {
         if (!KeyboardStateStore(appContext).isMediaSessionAccessGranted()) {
@@ -125,11 +160,18 @@ class KeyboardMediaController(context: Context) {
         }
     }
 
-    private fun adjustMusicVolume(direction: Int): String {
+    private fun adjustMusicVolume(
+        direction: Int,
+        stepPercent: Int,
+    ): String {
         return try {
-            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, direction, AudioManager.FLAG_SHOW_UI)
-            val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
             val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).coerceAtLeast(1)
+            val steps = (max * stepPercent.coerceIn(5, 30) / 100f).toInt().coerceAtLeast(1)
+            repeat(steps) { index ->
+                val flags = if (index == steps - 1) AudioManager.FLAG_SHOW_UI else 0
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, direction, flags)
+            }
+            val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
             "Volume ${current * 100 / max}%"
         } catch (_: RuntimeException) {
             "Volume unavailable"
@@ -168,6 +210,24 @@ class KeyboardMediaController(context: Context) {
 
     private fun PlaybackState.supports(action: Long): Boolean {
         return actions and action == action
+    }
+
+    private fun supportedTransportActions(state: PlaybackState?): String {
+        if (state == null) {
+            return "transport=unknown"
+        }
+        val labels =
+            listOf(
+                PlaybackState.ACTION_PLAY to "play",
+                PlaybackState.ACTION_PAUSE to "pause",
+                PlaybackState.ACTION_PLAY_PAUSE to "playpause",
+                PlaybackState.ACTION_SKIP_TO_PREVIOUS to "prev",
+                PlaybackState.ACTION_SKIP_TO_NEXT to "next",
+                PlaybackState.ACTION_STOP to "stop",
+                PlaybackState.ACTION_SEEK_TO to "seek",
+            ).filter { (action, _) -> state.supports(action) }
+                .map { (_, label) -> label }
+        return if (labels.isEmpty()) "transport=none" else "transport=${labels.joinToString(",")}"
     }
 
     private fun activeController(): MediaController? {
@@ -217,5 +277,6 @@ class KeyboardMediaController(context: Context) {
         private const val MIN_BRIGHTNESS = 1
         private const val MAX_BRIGHTNESS = 255
         private const val DEFAULT_BRIGHTNESS = 128
+        private const val MAX_DIAGNOSTIC_CHARS = 180
     }
 }

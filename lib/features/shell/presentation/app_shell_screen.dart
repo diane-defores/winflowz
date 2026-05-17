@@ -279,6 +279,8 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
           voiceEnabled: status.voiceEnabled,
           clipboardSyncDesired: true,
           mediaControlsEnabled: status.mediaControlsEnabled,
+          mediaVolumeStepPercent: status.mediaVolumeStepPercent,
+          mediaBrightnessStepPercent: status.mediaBrightnessStepPercent,
           themeMode: status.themeMode,
           layoutProfile: status.layoutProfile,
           cornerModeEnabled: status.cornerModeEnabled,
@@ -292,6 +294,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
           doubleSpacePeriodEnabled: status.doubleSpacePeriodEnabled,
           punctuationAutoSpacingEnabled: status.punctuationAutoSpacingEnabled,
           keyboardHeightScale: status.keyboardHeightScale,
+          actionRowHeightScale: status.actionRowHeightScale,
           compactModeEnabled: status.compactModeEnabled,
           privacyMode: status.privacyMode,
         );

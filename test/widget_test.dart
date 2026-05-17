@@ -203,6 +203,9 @@ void main() {
       'voiceEnabled': false,
       'clipboardSyncDesired': true,
       'mediaControlsEnabled': true,
+      'mediaVolumeStepPercent': 25,
+      'mediaBrightnessStepPercent': 15,
+      'actionRowHeightScale': 0.3,
       'privacyMode': 'strict',
       'cornerPresetId': 'developer_symbols',
     });
@@ -212,6 +215,9 @@ void main() {
     expect(status.active, isFalse);
     expect(status.voiceEnabled, isFalse);
     expect(status.clipboardSyncDesired, isTrue);
+    expect(status.mediaVolumeStepPercent, 25);
+    expect(status.mediaBrightnessStepPercent, 15);
+    expect(status.actionRowHeightScale, 0.3);
     expect(status.privacyMode, KeyboardPrivacyMode.strict);
     expect(status.cornerPresetId, 'developer_symbols');
     expect(

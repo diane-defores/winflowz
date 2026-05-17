@@ -628,20 +628,28 @@ class WinFlowzInputMethodService :
         runMediaAction { mediaController.loop() }
     }
 
+    override fun onMediaDiagnostics() {
+        runMediaAction { mediaController.diagnostics() }
+    }
+
     override fun onVolumeDown() {
-        runMediaAction { mediaController.volumeDown() }
+        runMediaAction { mediaController.volumeDown(stateStore.mediaVolumeStepPercent) }
     }
 
     override fun onVolumeUp() {
-        runMediaAction { mediaController.volumeUp() }
+        runMediaAction { mediaController.volumeUp(stateStore.mediaVolumeStepPercent) }
     }
 
     override fun onBrightnessDown() {
-        adjustBrightness(delta = -26)
+        adjustBrightness(delta = -brightnessStepDelta())
     }
 
     override fun onBrightnessUp() {
-        adjustBrightness(delta = 26)
+        adjustBrightness(delta = brightnessStepDelta())
+    }
+
+    private fun brightnessStepDelta(): Int {
+        return (255 * stateStore.mediaBrightnessStepPercent / 100f).toInt().coerceAtLeast(1)
     }
 
     private fun adjustBrightness(delta: Int) {
@@ -826,6 +834,7 @@ class WinFlowzInputMethodService :
                 doubleSpacePeriod = stateStore.doubleSpacePeriodEnabled,
                 punctuationAutoSpacing = stateStore.punctuationAutoSpacingEnabled,
                 keyboardHeightScale = stateStore.keyboardHeightScale,
+                actionRowHeightScale = stateStore.actionRowHeightScale,
                 compactMode = stateStore.compactModeEnabled,
                 themeMode = stateStore.themeMode,
                 themeConfig = stateStore.themeConfig(),

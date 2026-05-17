@@ -1,13 +1,16 @@
+import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:winflowz_app/features/keyboard/domain/keyboard_models.dart';
 import 'package:winflowz_app/features/keyboard/domain/keyboard_theme_validation.dart';
 
 void main() {
   test('ships the full v1 preset catalog', () {
-    expect(KeyboardThemePresetCatalog.presets, hasLength(10));
+    expect(KeyboardThemePresetCatalog.presets, hasLength(9));
     expect(
       KeyboardThemePresetCatalog.presets.map((preset) => preset.name),
       containsAll([
+        'WinFlowz',
         'Glass Mint',
         'Midnight Aurora',
         'Paper Ink',
@@ -15,6 +18,41 @@ void main() {
         'Minimal Contrast',
       ]),
     );
+  });
+
+  test('resolves preset colors from brightness without changing preset choice', () {
+    final light = KeyboardThemePresetCatalog.configFor(
+      KeyboardThemePresetCatalog.pixelCandy,
+      brightness: Brightness.light,
+    );
+    final dark = KeyboardThemePresetCatalog.configFor(
+      KeyboardThemePresetCatalog.pixelCandy,
+      brightness: Brightness.dark,
+    );
+
+    expect(light.presetId, KeyboardThemePresetCatalog.pixelCandy);
+    expect(dark.presetId, KeyboardThemePresetCatalog.pixelCandy);
+    expect(light.backgroundStartColor, isNot(dark.backgroundStartColor));
+    expect(dark.textColor, 0xFFFFF4FF);
+  });
+
+  test('all preset light and dark variants pass theme contrast validation', () {
+    for (final preset in KeyboardThemePresetCatalog.presets) {
+      for (final brightness in Brightness.values) {
+        final result = KeyboardThemeValidator.validate(
+          KeyboardThemePresetCatalog.configFor(
+            preset.id,
+            brightness: brightness,
+          ),
+        );
+
+        expect(
+          result.errors,
+          isEmpty,
+          reason: '${preset.name} ${brightness.name}',
+        );
+      }
+    }
   });
 
   test('round-trips advanced theme fields', () {

@@ -33,6 +33,8 @@ void main() {
         'voiceEnabled': true,
         'clipboardSyncDesired': false,
         'mediaControlsEnabled': true,
+        'mediaVolumeStepPercent': 15,
+        'mediaBrightnessStepPercent': 20,
         'layoutProfile': 'qwerty',
         'cornerModeEnabled': false,
         'debugTouchOverlayEnabled': false,
@@ -44,6 +46,7 @@ void main() {
         'englishLanguageEnabled': true,
         'doubleSpacePeriodEnabled': true,
         'punctuationAutoSpacingEnabled': false,
+        'actionRowHeightScale': 0.6,
         'privacyMode': 'auto',
         'lastKeyboardError': 'token=[REDACTED_SECRET]',
         'lastKeyboardErrorAt': '2026-05-16T08:00:00Z',
@@ -59,6 +62,9 @@ void main() {
 
       expect(status.layoutProfile, KeyboardLayoutProfile.azerty);
       expect(status.clipboardSyncDesired, isTrue);
+      expect(status.mediaVolumeStepPercent, 15);
+      expect(status.mediaBrightnessStepPercent, 20);
+      expect(status.actionRowHeightScale, 0.6);
       expect(status.privacyMode, KeyboardPrivacyMode.strict);
       expect(status.voiceEnabled, isTrue);
       expect(calls.single.method, 'setKeyboardPreferences');
@@ -68,6 +74,15 @@ void main() {
         containsPair('clipboardSyncDesired', true),
       );
       expect(calls.single.arguments, containsPair('voiceEnabled', true));
+      expect(
+        calls.single.arguments,
+        containsPair('mediaVolumeStepPercent', 15),
+      );
+      expect(
+        calls.single.arguments,
+        containsPair('mediaBrightnessStepPercent', 20),
+      );
+      expect(calls.single.arguments, containsPair('actionRowHeightScale', 0.6));
     },
   );
 

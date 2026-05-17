@@ -19,6 +19,8 @@ class KeyboardVoiceController(
     private var recognizer: SpeechRecognizer? = null
     private var listening = false
     private var pauseRequested = false
+    private var manualStopRequested = false
+    private var latestPartialResult: String = ""
 
     fun isListening(): Boolean = listening
 
@@ -32,6 +34,8 @@ class KeyboardVoiceController(
             return
         }
         pauseRequested = false
+        manualStopRequested = false
+        latestPartialResult = ""
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
             onState("Speech recognition unavailable")
             return
@@ -55,20 +59,34 @@ class KeyboardVoiceController(
             }
 
             override fun onError(error: Int) {
+                val fallback = latestPartialResult.trim()
+                val wasManualStop = manualStopRequested
+                val wasPaused = pauseRequested
                 listening = false
                 pauseRequested = false
+                manualStopRequested = false
                 destroy()
-                onState("Dictation failed")
+                if (wasManualStop && !wasPaused && fallback.isNotEmpty()) {
+                    onResult(fallback)
+                    onState("Inserted dictation")
+                } else if (wasPaused) {
+                    onState("Dictation paused")
+                } else {
+                    onState("Dictation failed")
+                }
             }
 
             override fun onResults(results: Bundle?) {
                 listening = false
                 val wasPaused = pauseRequested
                 pauseRequested = false
+                manualStopRequested = false
                 val matches =
                     results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         .orEmpty()
-                val best = matches.firstOrNull()?.trim().orEmpty()
+                val best = matches.firstOrNull()?.trim().orEmpty().ifEmpty {
+                    latestPartialResult.trim()
+                }
                 destroy()
                 if (best.isNotEmpty()) {
                     onResult(best)
@@ -86,6 +104,7 @@ class KeyboardVoiceController(
                         .orEmpty()
                 val best = matches.firstOrNull()?.trim().orEmpty()
                 if (best.isNotEmpty()) {
+                    latestPartialResult = best
                     onState(best)
                 }
             }
@@ -102,13 +121,13 @@ class KeyboardVoiceController(
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
                 putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 600000)
                 putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 600000)
-                putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 600000)
             },
         )
     }
 
     fun stop() {
         pauseRequested = false
+        manualStopRequested = true
         recognizer?.stopListening()
         listening = false
         onState("Processing")
@@ -120,6 +139,7 @@ class KeyboardVoiceController(
             return
         }
         pauseRequested = true
+        manualStopRequested = true
         recognizer?.stopListening()
         listening = false
         onState("Dictation paused")
@@ -140,6 +160,8 @@ class KeyboardVoiceController(
 
     fun cancel() {
         pauseRequested = false
+        manualStopRequested = false
+        latestPartialResult = ""
         recognizer?.cancel()
         listening = false
         destroy()

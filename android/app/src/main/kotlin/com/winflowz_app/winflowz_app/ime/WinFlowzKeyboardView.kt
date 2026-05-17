@@ -124,6 +124,7 @@ class WinFlowzKeyboardView(
         fun onMediaStop()
         fun onMediaShuffle()
         fun onMediaLoop()
+        fun onMediaDiagnostics()
         fun onVolumeDown()
         fun onVolumeUp()
         fun onBrightnessDown()
@@ -192,6 +193,7 @@ class WinFlowzKeyboardView(
     private var doubleSpacePeriodEnabled = true
     private var punctuationAutoSpacingEnabled = true
     private var keyboardHeightScale = KeyboardStateStore.KEYBOARD_HEIGHT_DEFAULT
+    private var actionRowHeightScale = KeyboardStateStore.ACTION_ROW_HEIGHT_DEFAULT
     private var compactModeEnabled = false
     private var emojiCategory = KeyboardEmojiCategory.Recents
     private var recentEmojis = emptyList<String>()
@@ -413,6 +415,7 @@ class WinFlowzKeyboardView(
         doubleSpacePeriod: Boolean,
         punctuationAutoSpacing: Boolean,
         keyboardHeightScale: Float,
+        actionRowHeightScale: Float,
         compactMode: Boolean,
         themeMode: String,
         themeConfig: KeyboardThemeConfig,
@@ -439,6 +442,7 @@ class WinFlowzKeyboardView(
             KeyboardStateStore.KEYBOARD_HEIGHT_MIN,
             KeyboardStateStore.KEYBOARD_HEIGHT_MAX,
         )
+        this.actionRowHeightScale = KeyboardStateStore.normalizeActionRowHeightScale(actionRowHeightScale)
         compactModeEnabled = compactMode
         this.themeConfig = themeConfig
         if (themeImagePath != themeConfig.backgroundImagePath) {
@@ -476,40 +480,59 @@ class WinFlowzKeyboardView(
             } else {
                 KeyboardStateStore.THEME_SYSTEM
             }
-        nativeColors =
-            if (themeMode == KeyboardStateStore.THEME_DARK ||
+        val darkMode =
+            themeMode == KeyboardStateStore.THEME_DARK ||
                 (themeMode == KeyboardStateStore.THEME_SYSTEM && isSystemDark())
-            ) {
+        nativeColors =
+            if (darkMode) {
                 NativeKeyboardColors.Dark
             } else {
                 NativeKeyboardColors.Light
             }
+        val resolvedThemeConfig = resolvedThemeConfigForMode(themeConfig, darkMode)
+        themeConfig = resolvedThemeConfig
         val defaultBackground =
-            if (themeConfig.presetId == "system") {
+            if (resolvedThemeConfig.presetId == "system") {
                 nativeColors.background
             } else {
-                themeConfig.backgroundStartColor
+                resolvedThemeConfig.backgroundStartColor
             }
         backgroundPaint.shader = null
         backgroundPaint.color = defaultBackground
         privateBackgroundPaint.color = nativeColors.privateBackground
-        keyPaint.color = if (themeConfig.presetId == "system") nativeColors.key else themeConfig.keyColor
-        specialKeyPaint.color = if (themeConfig.presetId == "system") nativeColors.specialKey else themeConfig.specialKeyColor
-        activeKeyPaint.color = if (themeConfig.presetId == "system") nativeColors.activeKey else themeConfig.activeKeyColor
-        pressedKeyPaint.color = if (themeConfig.presetId == "system") nativeColors.pressedKey else themeConfig.pressedKeyColor
+        keyPaint.color = if (resolvedThemeConfig.presetId == "system") nativeColors.key else resolvedThemeConfig.keyColor
+        specialKeyPaint.color = if (resolvedThemeConfig.presetId == "system") nativeColors.specialKey else resolvedThemeConfig.specialKeyColor
+        activeKeyPaint.color = if (resolvedThemeConfig.presetId == "system") nativeColors.activeKey else resolvedThemeConfig.activeKeyColor
+        pressedKeyPaint.color = if (resolvedThemeConfig.presetId == "system") nativeColors.pressedKey else resolvedThemeConfig.pressedKeyColor
         disabledKeyPaint.color = nativeColors.disabledKey
-        resolvedTextColor = if (themeConfig.presetId == "system") nativeColors.text else themeConfig.textColor
+        resolvedTextColor = if (resolvedThemeConfig.presetId == "system") nativeColors.text else resolvedThemeConfig.textColor
         resolvedCornerTextColor =
-            if (themeConfig.presetId == "system") nativeColors.secondaryText else themeConfig.cornerTextColor
+            if (resolvedThemeConfig.presetId == "system") nativeColors.secondaryText else resolvedThemeConfig.cornerTextColor
         resolvedStatusTextColor =
-            if (themeConfig.presetId == "system") nativeColors.statusText else themeConfig.statusTextColor
-        resolvedKeyRadius = if (themeConfig.presetId == "system") keyRadius else dp(themeConfig.keyRadius)
-        keyBorderPaint.color = if (themeConfig.presetId == "system") Color.TRANSPARENT else themeConfig.borderColor
-        keyBorderPaint.strokeWidth = if (themeConfig.presetId == "system") 0f else dp(themeConfig.borderWidth)
-        keyShadowPaint.color = if (themeConfig.presetId == "system") Color.TRANSPARENT else themeConfig.shadowColor
+            if (resolvedThemeConfig.presetId == "system") nativeColors.statusText else resolvedThemeConfig.statusTextColor
+        resolvedKeyRadius = if (resolvedThemeConfig.presetId == "system") keyRadius else dp(resolvedThemeConfig.keyRadius)
+        keyBorderPaint.color = if (resolvedThemeConfig.presetId == "system") Color.TRANSPARENT else resolvedThemeConfig.borderColor
+        keyBorderPaint.strokeWidth = if (resolvedThemeConfig.presetId == "system") 0f else dp(resolvedThemeConfig.borderWidth)
+        keyShadowPaint.color = if (resolvedThemeConfig.presetId == "system") Color.TRANSPARENT else resolvedThemeConfig.shadowColor
         textPaint.color = resolvedTextColor
         secondaryTextPaint.color = resolvedCornerTextColor
         statusPaint.color = resolvedStatusTextColor
+    }
+
+    private fun resolvedThemeConfigForMode(
+        config: KeyboardThemeConfig,
+        darkMode: Boolean,
+    ): KeyboardThemeConfig {
+        if (config.presetId == "system" || config.useImage) {
+            return config
+        }
+        val lightPreset = KeyboardThemePresets.configFor(config.presetId, dark = false)
+        val darkPreset = KeyboardThemePresets.configFor(config.presetId, dark = true)
+        return if (config == lightPreset || config == darkPreset) {
+            if (darkMode) darkPreset else lightPreset
+        } else {
+            config
+        }
     }
 
     private fun isSystemDark(): Boolean {
@@ -1488,7 +1511,11 @@ class WinFlowzKeyboardView(
 
         textPaint.color =
             if (key.active || isActiveModifierKey(key)) {
-                nativeColors.activeText
+                if (themeConfig.presetId == "system") {
+                    nativeColors.activeText
+                } else {
+                    contrastTextColor(paint.color)
+                }
             } else if (key.enabled) {
                 resolvedTextColor
             } else {
@@ -1606,6 +1633,10 @@ class WinFlowzKeyboardView(
 
     private fun contrastBadgeAccentColor(keyColor: Int): Int {
         return if (relativeLuminance(keyColor) > 0.55f) Color.WHITE else Color.BLACK
+    }
+
+    private fun contrastTextColor(backgroundColor: Int): Int {
+        return if (relativeLuminance(backgroundColor) > 0.45f) Color.BLACK else Color.WHITE
     }
 
     private fun relativeLuminance(color: Int): Float {
@@ -1906,6 +1937,7 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.MediaStop -> callbacks.onMediaStop()
             KeyboardKeyAction.MediaShuffle -> callbacks.onMediaShuffle()
             KeyboardKeyAction.MediaLoop -> callbacks.onMediaLoop()
+            KeyboardKeyAction.MediaDiagnostics -> callbacks.onMediaDiagnostics()
             KeyboardKeyAction.VolumeDown -> callbacks.onVolumeDown()
             KeyboardKeyAction.VolumeUp -> callbacks.onVolumeUp()
             KeyboardKeyAction.BrightnessDown -> callbacks.onBrightnessDown()
@@ -2307,6 +2339,8 @@ class WinFlowzKeyboardView(
 
     private fun keyTextSize(key: KeyboardKeySpec): Float {
         return when {
+            key.actionSurface && actionRowHeightScale <= 0.35f -> sp(7f)
+            key.actionSurface && actionRowHeightScale <= 0.65f -> sp(9f)
             key.label.length <= 1 -> sp(19f)
             key.id == "media-now-playing-label" -> sp(10f)
             key.weight >= 3f -> sp(15f)
@@ -2322,7 +2356,7 @@ class WinFlowzKeyboardView(
     private fun rowHeightFor(index: Int): Float {
         val firstPanelIndex = 1 + layoutSnapshot.suggestionRowCount
         return when {
-            index == 0 -> actionRowHeight
+            isActionRow(index) -> scaledActionRowHeight()
             layoutSnapshot.suggestionRowCount > 0 && index in 1..layoutSnapshot.suggestionRowCount -> panelRowHeight
             layoutSnapshot.panelRowCount > 0 && index in firstPanelIndex until firstPanelIndex + layoutSnapshot.panelRowCount -> panelRowHeight
             index == layoutSnapshot.rows.lastIndex -> controlRowHeight
@@ -2330,12 +2364,20 @@ class WinFlowzKeyboardView(
         }
     }
 
+    private fun isActionRow(index: Int): Boolean {
+        return layoutSnapshot.rows.getOrNull(index)?.rowId?.startsWith("action-row-") == true
+    }
+
+    private fun scaledActionRowHeight(): Float {
+        return actionRowHeight * actionRowHeightScale
+    }
+
     private fun desiredKeyboardHeight(viewWidth: Int): Int {
         val rowCount = layoutSnapshot.rows.size
         val contentWidth = (viewWidth.toFloat() - outerPadding * 2).coerceAtLeast(dp(48f))
         val rowsHeight =
             if (usesVerticalPanelScroll()) {
-                actionRowHeight + visiblePanelHeight()
+                scaledActionRowHeight() + visiblePanelHeight()
             } else {
                 layoutSnapshot.rows.indices.sumOf { index ->
                     rowHeightFor(index).toDouble()

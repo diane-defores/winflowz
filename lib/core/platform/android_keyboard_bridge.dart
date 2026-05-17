@@ -136,6 +136,8 @@ class AndroidKeyboardBridge {
     required bool voiceEnabled,
     required bool clipboardSyncDesired,
     required bool mediaControlsEnabled,
+    required int mediaVolumeStepPercent,
+    required int mediaBrightnessStepPercent,
     String? themeMode,
     required KeyboardLayoutProfile layoutProfile,
     required bool cornerModeEnabled,
@@ -149,6 +151,7 @@ class AndroidKeyboardBridge {
     required bool doubleSpacePeriodEnabled,
     required bool punctuationAutoSpacingEnabled,
     required double keyboardHeightScale,
+    required double actionRowHeightScale,
     required bool compactModeEnabled,
     required KeyboardPrivacyMode privacyMode,
   }) async {
@@ -162,6 +165,10 @@ class AndroidKeyboardBridge {
       'voiceEnabled': voiceEnabled,
       'clipboardSyncDesired': clipboardSyncDesired,
       'mediaControlsEnabled': mediaControlsEnabled,
+      'mediaVolumeStepPercent': mediaVolumeStepPercent.clamp(5, 30).toInt(),
+      'mediaBrightnessStepPercent': mediaBrightnessStepPercent
+          .clamp(5, 30)
+          .toInt(),
       'themeMode': themeMode,
       'layoutProfile': layoutProfile.name,
       'cornerModeEnabled': cornerModeEnabled,
@@ -175,10 +182,23 @@ class AndroidKeyboardBridge {
       'doubleSpacePeriodEnabled': doubleSpacePeriodEnabled,
       'punctuationAutoSpacingEnabled': punctuationAutoSpacingEnabled,
       'keyboardHeightScale': keyboardHeightScale,
+      'actionRowHeightScale': _normalizeActionRowHeightScale(
+        actionRowHeightScale,
+      ),
       'compactModeEnabled': compactModeEnabled,
       'privacyMode': privacyMode.name,
     });
     return AndroidKeyboardStatus.fromMap(raw ?? const {});
+  }
+
+  static double _normalizeActionRowHeightScale(double value) {
+    if (value < 0.45) {
+      return 0.30;
+    }
+    if (value < 0.80) {
+      return 0.60;
+    }
+    return 1;
   }
 
   static Future<AndroidKeyboardStatus> setThemeMode(String themeMode) async {

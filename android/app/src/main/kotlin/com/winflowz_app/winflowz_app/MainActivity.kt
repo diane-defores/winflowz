@@ -336,6 +336,12 @@ class MainActivity : FlutterActivity() {
                         call.argument<Boolean>("mediaControlsEnabled")?.let {
                             keyboardState.mediaControlsEnabled = it
                         }
+                        call.argument<Int>("mediaVolumeStepPercent")?.let {
+                            keyboardState.mediaVolumeStepPercent = it
+                        }
+                        call.argument<Int>("mediaBrightnessStepPercent")?.let {
+                            keyboardState.mediaBrightnessStepPercent = it
+                        }
                         call.argument<String>("themeMode")?.let {
                             keyboardState.themeMode = it
                         }
@@ -374,6 +380,9 @@ class MainActivity : FlutterActivity() {
                         }
                         call.argument<Double>("keyboardHeightScale")?.let {
                             keyboardState.keyboardHeightScale = it.toFloat()
+                        }
+                        call.argument<Double>("actionRowHeightScale")?.let {
+                            keyboardState.actionRowHeightScale = it.toFloat()
                         }
                         call.argument<Boolean>("compactModeEnabled")?.let {
                             keyboardState.compactModeEnabled = it

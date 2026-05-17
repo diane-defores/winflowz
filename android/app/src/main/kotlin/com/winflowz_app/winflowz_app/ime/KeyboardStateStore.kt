@@ -32,6 +32,16 @@ class KeyboardStateStore(private val context: Context) {
         get() = preferences.getBoolean(KEY_MEDIA_CONTROLS_ENABLED, true)
         set(value) = preferences.edit().putBoolean(KEY_MEDIA_CONTROLS_ENABLED, value).apply()
 
+    var mediaVolumeStepPercent: Int
+        get() = preferences.getInt(KEY_MEDIA_VOLUME_STEP_PERCENT, MEDIA_VOLUME_STEP_PERCENT_DEFAULT)
+            .coerceIn(MEDIA_STEP_PERCENT_MIN, MEDIA_STEP_PERCENT_MAX)
+        set(value) = preferences.edit().putInt(KEY_MEDIA_VOLUME_STEP_PERCENT, value.coerceIn(MEDIA_STEP_PERCENT_MIN, MEDIA_STEP_PERCENT_MAX)).apply()
+
+    var mediaBrightnessStepPercent: Int
+        get() = preferences.getInt(KEY_MEDIA_BRIGHTNESS_STEP_PERCENT, MEDIA_BRIGHTNESS_STEP_PERCENT_DEFAULT)
+            .coerceIn(MEDIA_STEP_PERCENT_MIN, MEDIA_STEP_PERCENT_MAX)
+        set(value) = preferences.edit().putInt(KEY_MEDIA_BRIGHTNESS_STEP_PERCENT, value.coerceIn(MEDIA_STEP_PERCENT_MIN, MEDIA_STEP_PERCENT_MAX)).apply()
+
     var themeMode: String
         get() = preferences.getString(KEY_THEME_MODE, THEME_SYSTEM) ?: THEME_SYSTEM
         set(value) {
@@ -102,6 +112,11 @@ class KeyboardStateStore(private val context: Context) {
             preferences.edit().putFloat(KEY_KEYBOARD_HEIGHT_SCALE, normalized).apply()
         }
 
+    var actionRowHeightScale: Float
+        get() = preferences.getFloat(KEY_ACTION_ROW_HEIGHT_SCALE, ACTION_ROW_HEIGHT_DEFAULT)
+            .coerceIn(ACTION_ROW_HEIGHT_MIN, ACTION_ROW_HEIGHT_MAX)
+        set(value) = preferences.edit().putFloat(KEY_ACTION_ROW_HEIGHT_SCALE, normalizeActionRowHeightScale(value)).apply()
+
     var compactModeEnabled: Boolean
         get() = preferences.getBoolean(KEY_COMPACT_MODE_ENABLED, false)
         set(value) = preferences.edit().putBoolean(KEY_COMPACT_MODE_ENABLED, value).apply()
@@ -171,6 +186,8 @@ class KeyboardStateStore(private val context: Context) {
             "voiceEnabled" to voiceEnabled,
             "clipboardSyncDesired" to clipboardSyncDesired,
             "mediaControlsEnabled" to mediaControlsEnabled,
+            "mediaVolumeStepPercent" to mediaVolumeStepPercent,
+            "mediaBrightnessStepPercent" to mediaBrightnessStepPercent,
             "mediaSessionAccessGranted" to isMediaSessionAccessGranted(),
             "systemSettingsWriteGranted" to canWriteSystemSettings(),
             "themeMode" to themeMode,
@@ -192,6 +209,7 @@ class KeyboardStateStore(private val context: Context) {
             "doubleSpacePeriodEnabled" to doubleSpacePeriodEnabled,
             "punctuationAutoSpacingEnabled" to punctuationAutoSpacingEnabled,
             "keyboardHeightScale" to keyboardHeightScale,
+            "actionRowHeightScale" to actionRowHeightScale,
             "compactModeEnabled" to compactModeEnabled,
             "actionBarLongPressBehavior" to actionBarLongPressBehavior.wireValue,
             "privacyMode" to privacyMode,
@@ -619,6 +637,8 @@ class KeyboardStateStore(private val context: Context) {
         const val KEY_VOICE_ENABLED = "voice_enabled"
         const val KEY_CLIPBOARD_SYNC_DESIRED = "clipboard_sync_desired"
         const val KEY_MEDIA_CONTROLS_ENABLED = "media_controls_enabled"
+        const val KEY_MEDIA_VOLUME_STEP_PERCENT = "media_volume_step_percent"
+        const val KEY_MEDIA_BRIGHTNESS_STEP_PERCENT = "media_brightness_step_percent"
         const val KEY_THEME_MODE = "theme_mode"
         const val KEY_LAYOUT_PROFILE = "layout_profile"
         const val KEY_CORNER_MODE_ENABLED = "corner_mode_enabled"
@@ -632,6 +652,7 @@ class KeyboardStateStore(private val context: Context) {
         const val KEY_DOUBLE_SPACE_PERIOD_ENABLED = "double_space_period_enabled"
         const val KEY_PUNCTUATION_AUTO_SPACING_ENABLED = "punctuation_auto_spacing_enabled"
         const val KEY_KEYBOARD_HEIGHT_SCALE = "keyboard_height_scale"
+        const val KEY_ACTION_ROW_HEIGHT_SCALE = "action_row_height_scale"
         const val KEY_COMPACT_MODE_ENABLED = "compact_mode_enabled"
         const val KEY_ACTION_BAR_STATE = "action_bar_state"
         const val KEY_ACTION_BAR_LONG_PRESS_BEHAVIOR = "action_bar_long_press_behavior"
@@ -659,6 +680,21 @@ class KeyboardStateStore(private val context: Context) {
         const val KEYBOARD_HEIGHT_MIN = 0.85f
         const val KEYBOARD_HEIGHT_MAX = 1.20f
         const val KEYBOARD_HEIGHT_DEFAULT = 1.0f
+        const val ACTION_ROW_HEIGHT_MIN = 0.30f
+        const val ACTION_ROW_HEIGHT_MAX = 1.0f
+        const val ACTION_ROW_HEIGHT_DEFAULT = 1.0f
+        const val MEDIA_STEP_PERCENT_MIN = 5
+        const val MEDIA_STEP_PERCENT_MAX = 30
+        const val MEDIA_VOLUME_STEP_PERCENT_DEFAULT = 5
+        const val MEDIA_BRIGHTNESS_STEP_PERCENT_DEFAULT = 10
         const val DEFAULT_ACTION_BAR_LONG_PRESS_BEHAVIOR = "attach_context_row"
+
+        fun normalizeActionRowHeightScale(value: Float): Float {
+            return when {
+                value < 0.45f -> 0.30f
+                value < 0.80f -> 0.60f
+                else -> 1.0f
+            }
+        }
     }
 }

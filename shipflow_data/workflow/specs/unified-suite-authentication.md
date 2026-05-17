@@ -6,7 +6,7 @@ project: "WinFlowz Suite"
 created: "2026-05-17"
 created_at: "2026-05-17 08:05:27 UTC"
 updated: "2026-05-17"
-updated_at: "2026-05-17 08:05:27 UTC"
+updated_at: "2026-05-17 09:20:15 UTC"
 status: draft
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -57,7 +57,8 @@ evidence:
   - "shipflow_data/technical/architecture.md requires user ownership from backend auth context, not client-provided ids."
   - "firestore.rules currently scopes WinFlowz app data under users/{uid} and denies cross-user access."
   - "Official Firebase, Google Identity Platform, Auth0, and Clerk docs checked 2026-05-17 for shared app resources, custom claims limits, tenant boundaries, SSO, and cross-origin session token behavior."
-next_step: "/sf-ready shipflow_data/workflow/specs/unified-suite-authentication.md"
+  - "Canonical decision documented 2026-05-17 in /home/claude/shipflow_data/projects/winflowz/docs/technical/suite-authentication.md: Clerk central identity, Firebase Android bridge, server-owned entitlements."
+next_step: "/sf-spec unified-suite-authentication provider decision"
 ---
 
 # Title
@@ -214,6 +215,7 @@ L'implémentation doit être progressive. La première tranche ne migre pas tous
 - `firestore.rules`: isolation actuelle sous `users/{uid}` pour l'app WinFlowz.
 - `/home/claude/shipflow_data/specs/master-auth-playbook.md`: standard transverse d'un propriétaire de session par runtime.
 - `/home/claude/shipflow_data/projects/VoiceFlowz/TASKS.md`: trace historique "Configure Clerk for auth (shared with WinFlowz)".
+- `/home/claude/shipflow_data/projects/winflowz/docs/technical/suite-authentication.md`: décision canonique du projet principal WinFlowz.
 
 ## Fresh External Docs Checked
 
@@ -224,7 +226,7 @@ L'implémentation doit être progressive. La première tranche ne migre pas tous
 - Auth0 B2B auth guidance, checked 2026-05-17: with more than one application, best practice is a centralized authentication location; native apps should use system browser/OIDC-style flows. Source: https://auth0.com/docs/get-started/architecture-scenarios/business-to-business/authentication
 - Clerk authenticated requests docs, checked 2026-05-17: same-origin requests can include session automatically; cross-origin requests require bearer token forwarding. Source: https://clerk.com/docs/guides/development/making-requests
 
-Fresh-docs verdict: `fresh-docs checked`. The docs support the architecture direction, but provider-specific implementation remains gated by Task 1.
+Fresh-docs verdict: `fresh-docs checked`. The docs support the architecture direction, and the provider direction is now documented canonically as Clerk central identity plus a Firebase Android bridge. The spec still needs a lifecycle update before it can pass `/sf-ready`.
 
 # Invariants
 
@@ -456,14 +458,16 @@ Update or create:
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
 | 2026-05-17 08:05:27 UTC | sf-spec | GPT-5 Codex | Created unified suite authentication chantier spec from user request, local exploration, project docs, and fresh official auth docs | Draft spec created; provider gate explicitly blocks ready implementation | `/sf-ready shipflow_data/workflow/specs/unified-suite-authentication.md` after Task 1 decision context is accepted |
+| 2026-05-17 08:14:57 UTC | sf-ready | GPT-5 Codex | Evaluated Definition of Ready, adversarial risks, security posture, language doctrine, and fresh-docs evidence | Not ready: provider gate, first proof pair, and product ID canon remain open and materially change architecture/security execution | `/sf-spec unified-suite-authentication provider decision` |
+| 2026-05-17 09:20:15 UTC | sf-docs | GPT-5 Codex | Documented the canonical suite auth decision in the main WinFlowz project and added short project pointers | Decision captured: Clerk central identity, Firebase Android bridge, server-owned entitlements; spec still needs lifecycle update for readiness | `/sf-spec unified-suite-authentication provider decision` |
 
 # Current Chantier Flow
 
 - sf-spec: done, draft spec created.
-- sf-ready: blocked until provider gate and first proof pair are decided or accepted as Task 1/Task 10 scope.
+- sf-ready: not ready; canonical provider decision is documented, but the spec still needs lifecycle update for first proof pair and product ID canon.
 - sf-start: not started.
 - sf-verify: not started.
 - sf-end: not started.
 - sf-ship: not started.
 
-Next command: `/sf-ready shipflow_data/workflow/specs/unified-suite-authentication.md` after reviewing the provider gate, or `/sf-spec unified-suite-authentication provider decision` if you want the spec to choose Firebase/Clerk/Auth0 before readiness.
+Next command: `/sf-spec unified-suite-authentication provider decision`.

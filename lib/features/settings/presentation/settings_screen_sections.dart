@@ -320,6 +320,8 @@ class _KeyboardSettingsSection extends StatelessWidget {
     required this.onShowPicker,
     required this.onOpenCornerShortcuts,
     required this.onOpenKeyboardThemeStudio,
+    required this.onThemeModeChanged,
+    required this.onThemePresetChanged,
     required this.onPreferenceChanged,
   });
 
@@ -330,6 +332,8 @@ class _KeyboardSettingsSection extends StatelessWidget {
   final VoidCallback onShowPicker;
   final VoidCallback onOpenCornerShortcuts;
   final VoidCallback onOpenKeyboardThemeStudio;
+  final ValueChanged<String> onThemeModeChanged;
+  final ValueChanged<String> onThemePresetChanged;
   final _KeyboardPreferenceChanged onPreferenceChanged;
 
   String get _enabledLanguages {
@@ -345,6 +349,17 @@ class _KeyboardSettingsSection extends StatelessWidget {
       return 'en';
     }
     return 'none';
+  }
+
+  double get _actionRowHeightScale {
+    final value = status?.actionRowHeightScale ?? 1;
+    if (value < 0.45) {
+      return 0.30;
+    }
+    if (value < 0.80) {
+      return 0.60;
+    }
+    return 1;
   }
 
   @override
@@ -442,6 +457,15 @@ class _KeyboardSettingsSection extends StatelessWidget {
               ),
             ),
           ),
+          Padding(
+            padding: AppInsets.keyboardControls,
+            child: _KeyboardThemeQuickPicker(
+              status: status,
+              busy: busy,
+              onThemeModeChanged: onThemeModeChanged,
+              onThemePresetChanged: onThemePresetChanged,
+            ),
+          ),
           SwitchListTile(
             value: status?.voiceEnabled ?? true,
             onChanged: busy
@@ -470,6 +494,51 @@ class _KeyboardSettingsSection extends StatelessWidget {
             title: const Text('Keyboard media play/pause'),
             subtitle: const Text(
               'Sends a generic Android media key without reading media metadata.',
+            ),
+          ),
+          Padding(
+            padding: AppInsets.keyboardPrivacy,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Expanded(child: Text('Volume step')),
+                    Text('${status?.mediaVolumeStepPercent ?? 5}%'),
+                  ],
+                ),
+                Slider(
+                  value: (status?.mediaVolumeStepPercent ?? 5).toDouble(),
+                  min: 5,
+                  max: 30,
+                  divisions: 5,
+                  semanticFormatterCallback: (value) =>
+                      'Volume step ${value.round()} percent',
+                  onChanged: busy
+                      ? null
+                      : (value) => onPreferenceChanged(
+                          mediaVolumeStepPercent: value.round(),
+                        ),
+                ),
+                Row(
+                  children: [
+                    const Expanded(child: Text('Brightness step')),
+                    Text('${status?.mediaBrightnessStepPercent ?? 10}%'),
+                  ],
+                ),
+                Slider(
+                  value: (status?.mediaBrightnessStepPercent ?? 10).toDouble(),
+                  min: 5,
+                  max: 30,
+                  divisions: 5,
+                  semanticFormatterCallback: (value) =>
+                      'Brightness step ${value.round()} percent',
+                  onChanged: busy
+                      ? null
+                      : (value) => onPreferenceChanged(
+                          mediaBrightnessStepPercent: value.round(),
+                        ),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -570,6 +639,41 @@ class _KeyboardSettingsSection extends StatelessWidget {
                       ? null
                       : (value) =>
                             onPreferenceChanged(keyboardHeightScale: value),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: AppInsets.keyboardPrivacy,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Action row height'),
+                AppGaps.x1,
+                SegmentedButton<double>(
+                  segments: const [
+                    ButtonSegment(
+                      value: 1,
+                      icon: Icon(Icons.crop_16_9_outlined),
+                      label: Text('Full'),
+                    ),
+                    ButtonSegment(
+                      value: .60,
+                      icon: Icon(Icons.crop_square_outlined),
+                      label: Text('Square'),
+                    ),
+                    ButtonSegment(
+                      value: .30,
+                      icon: Icon(Icons.density_small_outlined),
+                      label: Text('Mini'),
+                    ),
+                  ],
+                  selected: {_actionRowHeightScale},
+                  onSelectionChanged: busy
+                      ? null
+                      : (selection) => onPreferenceChanged(
+                          actionRowHeightScale: selection.single,
+                        ),
                 ),
               ],
             ),
@@ -676,6 +780,236 @@ class _KeyboardSettingsSection extends StatelessWidget {
       ),
     );
   }
+}
+
+class _KeyboardThemeQuickPicker extends StatelessWidget {
+  const _KeyboardThemeQuickPicker({
+    required this.status,
+    required this.busy,
+    required this.onThemeModeChanged,
+    required this.onThemePresetChanged,
+  });
+
+  final AndroidKeyboardStatus? status;
+  final bool busy;
+  final ValueChanged<String> onThemeModeChanged;
+  final ValueChanged<String> onThemePresetChanged;
+
+  String get _selectedMode {
+    final mode = status?.themeMode ?? 'system';
+    return switch (mode) {
+      'light' || 'dark' => mode,
+      _ => 'system',
+    };
+  }
+
+  Brightness _previewBrightness(BuildContext context) {
+    return switch (_selectedMode) {
+      'dark' => Brightness.dark,
+      'light' => Brightness.light,
+      _ => Theme.of(context).brightness,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedPresetId = _normalizedPresetId(
+      status?.themePresetId ?? KeyboardThemePresetCatalog.system,
+    );
+    final brightness = _previewBrightness(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Keyboard theme', style: Theme.of(context).textTheme.titleSmall),
+        AppGaps.x2,
+        SegmentedButton<String>(
+          segments: const [
+            ButtonSegment(
+              value: 'system',
+              icon: Icon(Icons.brightness_auto_outlined),
+              label: Text('System'),
+            ),
+            ButtonSegment(
+              value: 'light',
+              icon: Icon(Icons.light_mode_outlined),
+              label: Text('Light'),
+            ),
+            ButtonSegment(
+              value: 'dark',
+              icon: Icon(Icons.dark_mode_outlined),
+              label: Text('Dark'),
+            ),
+          ],
+          selected: {_selectedMode},
+          onSelectionChanged: busy
+              ? null
+              : (selection) => onThemeModeChanged(selection.single),
+        ),
+        AppGaps.x2,
+        Wrap(
+          spacing: AppSpacing.x2,
+          runSpacing: AppSpacing.x2,
+          children: [
+            for (final preset in KeyboardThemePresetCatalog.presets)
+              _KeyboardThemePresetChip(
+                preset: preset,
+                brightness: brightness,
+                selected: selectedPresetId == preset.id,
+                enabled: !busy,
+                onPressed: () => onThemePresetChanged(preset.id),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _KeyboardThemePresetChip extends StatelessWidget {
+  const _KeyboardThemePresetChip({
+    required this.preset,
+    required this.brightness,
+    required this.selected,
+    required this.enabled,
+    required this.onPressed,
+  });
+
+  final KeyboardThemePreset preset;
+  final Brightness brightness;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final config = KeyboardThemePresetCatalog.configFor(
+      preset.id,
+      brightness: brightness,
+    );
+    final labelColor = _themePreviewTextColor(config.keyColor);
+    final borderColor = selected
+        ? Color(config.activeKeyColor)
+        : Theme.of(context).colorScheme.outlineVariant;
+    return SizedBox(
+      width: 150,
+      child: OutlinedButton(
+        onPressed: enabled ? onPressed : null,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(AppSpacing.x2),
+          foregroundColor: labelColor,
+          backgroundColor: Color(config.keyColor),
+          side: BorderSide(color: borderColor, width: selected ? 2 : 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.x2),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _KeyboardThemeSwatch(config: config),
+            AppGaps.x1,
+            Text(
+              preset.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: labelColor,
+                fontWeight: selected
+                    ? AppFontWeights.bold
+                    : AppFontWeights.semiBold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _KeyboardThemeSwatch extends StatelessWidget {
+  const _KeyboardThemeSwatch({required this.config});
+
+  final KeyboardThemeConfig config;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppSpacing.x1),
+      child: SizedBox(
+        height: 34,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Color(config.backgroundStartColor),
+                gradient: config.useGradient
+                    ? LinearGradient(
+                        colors: [
+                          Color(config.backgroundStartColor),
+                          Color(config.backgroundEndColor),
+                        ],
+                      )
+                    : null,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                children: [
+                  _KeyboardThemeMiniKey(color: Color(config.keyColor)),
+                  const SizedBox(width: AppSpacing.x1),
+                  _KeyboardThemeMiniKey(color: Color(config.specialKeyColor)),
+                  const SizedBox(width: AppSpacing.x1),
+                  Expanded(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Color(config.activeKeyColor),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _KeyboardThemeMiniKey extends StatelessWidget {
+  const _KeyboardThemeMiniKey({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(5),
+        ),
+      ),
+    );
+  }
+}
+
+String _normalizedPresetId(String presetId) {
+  return switch (presetId) {
+    KeyboardThemePresetCatalog.winflowzLight ||
+    KeyboardThemePresetCatalog.winflowzDark => KeyboardThemePresetCatalog.winflowz,
+    _ => presetId,
+  };
+}
+
+Color _themePreviewTextColor(int backgroundColor) {
+  final color = Color(backgroundColor);
+  return color.computeLuminance() > .45 ? Colors.black : Colors.white;
 }
 
 class _OverlaySettingsSection extends StatelessWidget {
