@@ -172,6 +172,7 @@ class KeyboardActionCatalog private constructor(
                                 pagedHorizontal = true,
                                 items =
                                     listOf(
+                                        actionRowKey("clip-select-all", "All", KeyboardKeyAction.SelectAll),
                                         actionRowKey("clip-cut", "Cut", KeyboardKeyAction.CutSelection),
                                         actionRowKey("clip-copy", "Copy", KeyboardKeyAction.CopySelection),
                                         actionRowKey("clip-paste", "Paste", KeyboardKeyAction.PasteClipboard),

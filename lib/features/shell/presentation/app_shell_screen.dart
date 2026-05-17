@@ -10,7 +10,6 @@ import '../../../core/widgets/app_components.dart';
 import '../../clipboard/presentation/clipboard_screen.dart';
 import '../../dictionary/presentation/dictionary_screen.dart';
 import '../../keyboard/domain/keyboard_models.dart';
-import '../../keyboard/presentation/keyboard_preview_screen.dart';
 import '../../settings/application/settings_store_provider.dart';
 import '../../settings/domain/onboarding_permission_contract.dart';
 import '../../settings/domain/settings_store.dart';
@@ -64,14 +63,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     if (value == _index) {
       return;
     }
-    const titles = [
-      'Voice',
-      'Clipboard',
-      'Keyboard',
-      'Snippets',
-      'Dictionary',
-      'Settings',
-    ];
+    const titles = ['Voice', 'Clipboard', 'Snippets', 'Dictionary', 'Settings'];
     AppDiagnostics.record(
       'tab_select',
       '${titles[_index]} -> ${titles[value]}',
@@ -96,7 +88,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   @override
   void initState() {
     super.initState();
-    _index = widget.initialIndex.clamp(0, 5);
+    _index = widget.initialIndex.clamp(0, 4);
     _tabHistory
       ..clear()
       ..add(_index);
@@ -503,7 +495,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     if (!mounted) {
       return;
     }
-    _selectTab(5);
+    _selectTab(4);
   }
 
   void _showOnboardingDeferPrompt() {
@@ -519,7 +511,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       _showOnboardingResumeHint = true;
       _onboardingDeferPromptVisible = false;
     });
-    _selectTab(5);
+    _selectTab(4);
     Future<void>.delayed(const Duration(milliseconds: 2200), () {
       if (mounted) {
         setState(() => _showOnboardingResumeHint = false);
@@ -532,7 +524,6 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
     final pages = [
       VoiceScreen(),
       ClipboardScreen(),
-      const KeyboardPreviewScreen(),
       SnippetsScreen(),
       DictionaryScreen(),
       SettingsScreen(
@@ -548,14 +539,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         },
       ),
     ];
-    const titles = [
-      'Voice',
-      'Clipboard',
-      'Keyboard',
-      'Snippets',
-      'Dictionary',
-      'Settings',
-    ];
+    const titles = ['Voice', 'Clipboard', 'Snippets', 'Dictionary', 'Settings'];
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -602,10 +586,6 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                           NavigationRailDestination(
                             icon: Icon(Icons.content_paste_outlined),
                             label: Text('Clipboard'),
-                          ),
-                          NavigationRailDestination(
-                            icon: Icon(Icons.keyboard_outlined),
-                            label: Text('Keyboard'),
                           ),
                           NavigationRailDestination(
                             icon: Icon(Icons.text_snippet_outlined),
@@ -700,10 +680,6 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                       NavigationDestination(
                         icon: Icon(Icons.content_paste_outlined),
                         label: 'Clipboard',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.keyboard_outlined),
-                        label: 'Keyboard',
                       ),
                       NavigationDestination(
                         icon: Icon(Icons.text_snippet_outlined),

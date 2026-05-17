@@ -203,9 +203,12 @@ class KeyboardActionBarController(
     ): List<KeyboardActionDescriptor> {
         val ordered = catalog.orderedDescriptors(order)
         val visible = ordered.filter { isVisible(it, environment) }
-        val pinned = visible.filter { it.id in state.pinnedActionIds }
+        val fixedModeIds = setOf("letters", "numbers", "symbols")
+        val fixedModes = visible.filter { it.id in fixedModeIds }
+        val movable = visible.filterNot { it.id in fixedModeIds }
+        val pinned = movable.filter { it.id in state.pinnedActionIds }
         val unpinned =
-            visible
+            movable
                 .filterNot { it.id in state.pinnedActionIds }
                 .sortedWith(
                     compareByDescending<KeyboardActionDescriptor> {
@@ -216,7 +219,7 @@ class KeyboardActionBarController(
                         }
                     }.thenBy { catalog.defaultOrder.indexOf(it.id) },
                 )
-        return pinned + unpinned
+        return fixedModes + pinned + unpinned
     }
 
     private data class BuiltAttachedRow(

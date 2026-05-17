@@ -419,6 +419,7 @@ class KeyboardLayoutBuilderTest {
                     clipboardEntries =
                         listOf(
                             KeyboardClipboardEntry("Latest copied text"),
+                            KeyboardClipboardEntry("  latest   copied text  ", pinned = true),
                             KeyboardClipboardEntry("Pinned account id", pinned = true),
                         ),
                     voiceAllowed = true,
@@ -432,9 +433,12 @@ class KeyboardLayoutBuilderTest {
         val actions = panelRow.keys.map { it.action }
 
         assertTrue(panelRow.horizontalScrollable)
-        assertTrue(labels.contains("Latest copied text"))
+        assertTrue(labels.contains("All"))
+        assertTrue(actions.contains(KeyboardKeyAction.SelectAll))
+        assertTrue(labels.contains("Pin Latest copied text"))
         assertTrue(labels.contains("Pin Pinned account id"))
-        assertTrue(actions.all { it == KeyboardKeyAction.InsertClipboardEntry })
+        assertEquals(1, labels.count { it.contains("Latest copied text") })
+        assertTrue(actions.drop(1).all { it == KeyboardKeyAction.InsertClipboardEntry })
         assertTrue(snapshot.rows.drop(1 + snapshot.panelRowCount).any { row ->
             row.keys.any { it.action == KeyboardKeyAction.Text || it.action == KeyboardKeyAction.KeyValue }
         })

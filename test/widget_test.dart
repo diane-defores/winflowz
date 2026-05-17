@@ -530,12 +530,6 @@ void main() {
     expect(find.text('Clipboard content'), findsOneWidget);
     expect(find.text('Add clipboard item'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.keyboard_outlined).last);
-    await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowz • Keyboard'), findsOneWidget);
-    expect(find.text('Keyboard preview'), findsOneWidget);
-    expect(find.text('Profile'), findsOneWidget);
-
     await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await _pumpNavigationFrame(tester);
     expect(find.text('WinFlowz • Snippets'), findsOneWidget);

@@ -10,7 +10,6 @@ import 'package:winflowz_app/features/auth/domain/auth_session_store.dart';
 const _productRoutes = {
   '/voice': 'WinFlowz • Voice',
   '/clipboard': 'WinFlowz • Clipboard',
-  '/keyboard': 'WinFlowz • Keyboard',
   '/snippets': 'WinFlowz • Snippets',
   '/dictionary': 'WinFlowz • Dictionary',
   '/settings': 'WinFlowz • Settings',

@@ -799,10 +799,31 @@ class WinFlowzInputMethodService :
     }
 
     private fun clipboardEntriesForKeyboard(): List<KeyboardClipboardEntry> {
-        val primary = clipboardController.primaryText()?.let { KeyboardClipboardEntry(it) }
+        val primary = clipboardController.primaryText()
+            ?.replace(Regex("\\s+"), " ")
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { KeyboardClipboardEntry(it) }
         return (listOfNotNull(primary) + stateStore.clipboardEntries())
-            .distinctBy { it.content }
+            .dedupeClipboardEntriesForKeyboard()
             .take(60)
+    }
+
+    private fun List<KeyboardClipboardEntry>.dedupeClipboardEntriesForKeyboard(): List<KeyboardClipboardEntry> {
+        val byKey = linkedMapOf<String, KeyboardClipboardEntry>()
+        forEach { entry ->
+            val normalized = entry.content.replace(Regex("\\s+"), " ").trim()
+            if (normalized.isBlank()) {
+                return@forEach
+            }
+            val key = normalized.lowercase()
+            val existing = byKey[key]
+            byKey[key] = KeyboardClipboardEntry(
+                content = existing?.content ?: normalized,
+                pinned = entry.pinned || existing?.pinned == true,
+            )
+        }
+        return byKey.values.toList()
     }
 
     private fun shouldSuppressAutoCorrections(): Boolean {

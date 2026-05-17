@@ -550,16 +550,20 @@ object KeyboardLayoutBuilder {
     }
 
     private fun clipboardPanelRow(request: KeyboardLayoutRequest): KeyboardRowSpec {
+        val entries = dedupeClipboardEntries(request.clipboardEntries).take(12)
         return KeyboardRowSpec(
             rowId = "panel-clipboard",
-            keys = clipboardEntryKeys(request.clipboardEntries.take(12), request.clipboardAllowed),
+            keys =
+                listOf(KeyboardKeySpec("clip-select-all", "All", KeyboardKeyAction.SelectAll)) +
+                    clipboardEntryKeys(entries, request.clipboardAllowed),
             horizontalScrollable = true,
         )
     }
 
     private fun clipboardFullPanelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
-        val pinned = request.clipboardEntries.filter { it.pinned }
-        val normal = request.clipboardEntries.filterNot { it.pinned }
+        val deduped = dedupeClipboardEntries(request.clipboardEntries)
+        val pinned = deduped.filter { it.pinned }
+        val normal = deduped.filterNot { it.pinned }
         val entries = (pinned + normal).take(12)
         if (entries.isEmpty()) {
             return listOf(KeyboardRowSpec(keys = clipboardEntryKeys(emptyList(), request.clipboardAllowed)))
@@ -601,6 +605,23 @@ object KeyboardLayoutBuilder {
         val normalized = entry.content.replace(Regex("\\s+"), " ").trim()
         val label = if (normalized.length <= 24) normalized else normalized.take(23) + "..."
         return if (entry.pinned) "Pin $label" else label
+    }
+
+    private fun dedupeClipboardEntries(entries: List<KeyboardClipboardEntry>): List<KeyboardClipboardEntry> {
+        val byKey = linkedMapOf<String, KeyboardClipboardEntry>()
+        entries.forEach { entry ->
+            val normalized = entry.content.replace(Regex("\\s+"), " ").trim()
+            if (normalized.isBlank()) {
+                return@forEach
+            }
+            val key = normalized.lowercase()
+            val existing = byKey[key]
+            byKey[key] = KeyboardClipboardEntry(
+                content = existing?.content ?: normalized,
+                pinned = entry.pinned || existing?.pinned == true,
+            )
+        }
+        return byKey.values.toList()
     }
 
     private fun mediaPanelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {

@@ -43,14 +43,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => AppShellScreen(
-          initialIndex: 5,
+          initialIndex: 4,
           initialOnboardingStep: state.uri.queryParameters['onboarding'],
         ),
-      ),
-      GoRoute(
-        path: '/keyboard',
-        name: 'keyboard',
-        builder: (context, state) => const AppShellScreen(initialIndex: 2),
       ),
       GoRoute(
         path: '/keyboard/theme',
@@ -60,12 +55,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/snippets',
         name: 'snippets',
-        builder: (context, state) => const AppShellScreen(initialIndex: 3),
+        builder: (context, state) => const AppShellScreen(initialIndex: 2),
       ),
       GoRoute(
         path: '/dictionary',
         name: 'dictionary',
-        builder: (context, state) => const AppShellScreen(initialIndex: 4),
+        builder: (context, state) => const AppShellScreen(initialIndex: 3),
       ),
     ],
   );

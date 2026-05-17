@@ -439,15 +439,16 @@ class KeyboardStateStore(private val context: Context) {
         content: String,
         pinned: Boolean = false,
     ) {
-        val normalized = content.trim()
+        val normalized = content.replace(Regex("\\s+"), " ").trim()
         if (normalized.isEmpty()) {
             return
         }
         val existing = clipboardEntries()
-        val existingPinned = existing.firstOrNull { it.content == normalized }?.pinned == true
+        val dedupeKey = clipboardDedupeKey(normalized)
+        val existingPinned = existing.firstOrNull { clipboardDedupeKey(it.content) == dedupeKey }?.pinned == true
         val next =
             (listOf(KeyboardClipboardEntry(normalized, pinned || existingPinned)) + existing)
-                .distinctBy { it.content }
+                .dedupeClipboardEntries()
                 .take(MAX_CLIPBOARD_ENTRIES)
         preferences.edit().putString(KEY_CLIPBOARD_ENTRIES, encodeClipboardEntries(next)).apply()
     }
@@ -560,7 +561,7 @@ class KeyboardStateStore(private val context: Context) {
             buildList {
                 for (index in 0 until array.length()) {
                     val item = array.optJSONObject(index) ?: continue
-                    val content = item.optString("content").trim()
+                    val content = item.optString("content").replace(Regex("\\s+"), " ").trim()
                     if (content.isNotEmpty()) {
                         add(
                             KeyboardClipboardEntry(
@@ -570,7 +571,7 @@ class KeyboardStateStore(private val context: Context) {
                         )
                     }
                 }
-            }
+            }.dedupeClipboardEntries()
         }.getOrDefault(emptyList())
     }
 
@@ -578,6 +579,7 @@ class KeyboardStateStore(private val context: Context) {
         val array = JSONArray()
         entries
             .filter { it.content.isNotBlank() }
+            .dedupeClipboardEntries()
             .take(MAX_CLIPBOARD_ENTRIES)
             .forEach { entry ->
                 array.put(
@@ -588,6 +590,25 @@ class KeyboardStateStore(private val context: Context) {
             }
         return array.toString()
     }
+
+    private fun List<KeyboardClipboardEntry>.dedupeClipboardEntries(): List<KeyboardClipboardEntry> {
+        val byKey = linkedMapOf<String, KeyboardClipboardEntry>()
+        forEach { entry ->
+            val normalized = entry.content.replace(Regex("\\s+"), " ").trim()
+            if (normalized.isBlank()) {
+                return@forEach
+            }
+            val key = clipboardDedupeKey(normalized)
+            val existing = byKey[key]
+            byKey[key] = KeyboardClipboardEntry(
+                content = existing?.content ?: normalized,
+                pinned = entry.pinned || existing?.pinned == true,
+            )
+        }
+        return byKey.values.toList()
+    }
+
+    private fun clipboardDedupeKey(content: String): String = content.replace(Regex("\\s+"), " ").trim().lowercase()
 
     companion object {
         const val PREFERENCES_NAME = "winflowz_app_keyboard_prefs"

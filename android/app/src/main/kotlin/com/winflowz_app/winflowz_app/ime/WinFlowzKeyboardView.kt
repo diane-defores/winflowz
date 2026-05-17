@@ -276,6 +276,14 @@ class WinFlowzKeyboardView(
         color = Color.TRANSPARENT
         style = Paint.Style.FILL
     }
+    private val verticalScrollbarTrackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(70, 0, 0, 0)
+        style = Paint.Style.FILL
+    }
+    private val verticalScrollbarThumbPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(180, 255, 255, 255)
+        style = Paint.Style.FILL
+    }
     private val pinnedBadgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.rgb(255, 255, 255)
         style = Paint.Style.FILL
@@ -1251,6 +1259,35 @@ class WinFlowzKeyboardView(
         canvas.restoreToCount(clipSave)
     }
 
+    private fun drawVerticalPanelScrollbar(
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        width: Float,
+        height: Float,
+        contentHeight: Float,
+    ) {
+        if (verticalPanelMaxScrollOffset <= 0f || contentHeight <= height) {
+            return
+        }
+        val trackWidth = dp(3f)
+        val trackRight = left + width - dp(3f)
+        val trackLeft = trackRight - trackWidth
+        val trackTop = top + dp(2f)
+        val trackBottom = top + height - dp(2f)
+        val trackHeight = trackBottom - trackTop
+        val thumbHeight = max(dp(18f), trackHeight * (height / contentHeight))
+        val maxThumbTop = trackBottom - thumbHeight
+        val thumbTop = if (verticalPanelMaxScrollOffset == 0f) {
+            trackTop
+        } else {
+            trackTop + (maxThumbTop - trackTop) * (verticalPanelScrollOffset / verticalPanelMaxScrollOffset)
+        }
+        val radius = trackWidth / 2f
+        canvas.drawRoundRect(RectF(trackLeft, trackTop, trackRight, trackBottom), radius, radius, verticalScrollbarTrackPaint)
+        canvas.drawRoundRect(RectF(trackLeft, thumbTop, trackRight, thumbTop + thumbHeight), radius, radius, verticalScrollbarThumbPaint)
+    }
+
     private fun drawVerticalPanelRows(
         canvas: Canvas,
         left: Float,
@@ -1274,6 +1311,7 @@ class WinFlowzKeyboardView(
             y += panelRowHeight + rowGap()
         }
         canvas.restoreToCount(clipSave)
+        drawVerticalPanelScrollbar(canvas, left, top, width, height, contentHeight)
     }
 
     private fun drawPanelScrollRow(

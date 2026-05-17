@@ -67,6 +67,21 @@ class KeyboardActionBarControllerTest {
     }
 
     @Test
+    fun `mode actions stay grouped before pinned action buttons`() {
+        val snapshot =
+            controller.buildRenderSnapshot(
+                state =
+                    KeyboardActionBarState(
+                        pinnedActionIds = setOf("media", "emoji", "navigation"),
+                        adaptiveUsageScoreById = mapOf("media" to 99L, "emoji" to 98L),
+                    ),
+                environment = environment(),
+            )
+
+        assertEquals(listOf("ABC", "123", "#+="), snapshot.mainRow.items.take(3).map { it.label })
+    }
+
+    @Test
     fun `media pinned row keeps controls after stop`() {
         val snapshot =
             controller.buildRenderSnapshot(
