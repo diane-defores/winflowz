@@ -135,7 +135,7 @@ class KeyboardActionBarController(
     ): KeyboardActionLongPressResult {
         val provider = descriptor.rowProvider
             ?: return KeyboardActionLongPressResult(state, consumed = true, status = "No context row")
-        val rows = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy, snippets = environment.snippets))
+        val rows = provider.buildRows(providerContext(descriptor, environment))
         if (rows.isEmpty()) {
             return KeyboardActionLongPressResult(state, consumed = true, status = "No context row")
         }
@@ -210,15 +210,6 @@ class KeyboardActionBarController(
         val unpinned =
             movable
                 .filterNot { it.id in state.pinnedActionIds }
-                .sortedWith(
-                    compareByDescending<KeyboardActionDescriptor> {
-                        if (it.adaptiveEligible) {
-                            state.adaptiveUsageScoreById[it.id] ?: 0L
-                        } else {
-                            Long.MIN_VALUE
-                        }
-                    }.thenBy { catalog.defaultOrder.indexOf(it.id) },
-                )
         return fixedModes + pinned + unpinned
     }
 
@@ -237,7 +228,7 @@ class KeyboardActionBarController(
             state.pinnedActionIds.mapNotNull { actionId ->
                 val descriptor = catalog.descriptor(actionId) ?: return@mapNotNull null
                 val provider = descriptor.rowProvider ?: return@mapNotNull null
-                val row = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy, snippets = environment.snippets)).firstOrNull()
+                val row = provider.buildRows(providerContext(descriptor, environment)).firstOrNull()
                     ?: return@mapNotNull null
                 KeyboardAttachedActionRowState(descriptor.id, row.rowId, row.dedupeKey)
             }
@@ -248,7 +239,7 @@ class KeyboardActionBarController(
                 return@forEach
             }
             val provider = descriptor.rowProvider ?: return@forEach
-            val provided = provider.buildRows(KeyboardActionProviderContext(descriptor = descriptor, fieldPolicy = environment.fieldPolicy, snippets = environment.snippets))
+            val provided = provider.buildRows(providerContext(descriptor, environment))
             val matched = provided.firstOrNull { it.dedupeKey == attached.dedupeKey } ?: return@forEach
             rows.add(
                 BuiltAttachedRow(
@@ -260,6 +251,20 @@ class KeyboardActionBarController(
             )
         }
         return rows.distinctBy { it.dedupeKey }
+    }
+
+    private fun providerContext(
+        descriptor: KeyboardActionDescriptor,
+        environment: KeyboardActionEnvironment,
+    ): KeyboardActionProviderContext {
+        return KeyboardActionProviderContext(
+            descriptor = descriptor,
+            fieldPolicy = environment.fieldPolicy,
+            recentEmojis = environment.recentEmojis,
+            recentSymbols = environment.recentSymbols,
+            clipboardEntries = environment.clipboardEntries,
+            snippets = environment.snippets,
+        )
     }
 
     private fun isVisible(

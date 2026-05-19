@@ -17,6 +17,7 @@ class KeyboardVoiceController(
     private val context: Context,
     private val stateStore: KeyboardStateStore,
     private val onState: (String) -> Unit,
+    private val onActiveChanged: (Boolean) -> Unit,
     private val onResult: (String) -> Unit,
 ) {
     companion object {
@@ -59,8 +60,10 @@ class KeyboardVoiceController(
     private var manualStopRequested = false
     private var activeAndroidFallbackReason: String? = null
     private var latestPartialResult: String = ""
+    private var active = false
 
     fun isListening(): Boolean = listening
+    fun isActive(): Boolean = active || localRuntimeActive || listening
 
     fun start() {
         if (listening) {
@@ -72,6 +75,7 @@ class KeyboardVoiceController(
             return
         }
         if (!hasAudioPermission()) {
+            setActive(false)
             recordUnavailable("permission_denied")
             onState("Microphone permission required")
             return
@@ -110,6 +114,7 @@ class KeyboardVoiceController(
         manualStopRequested = true
         recognizer?.stopListening()
         listening = false
+        setActive(false)
         onState("Processing")
     }
 
@@ -128,6 +133,7 @@ class KeyboardVoiceController(
         manualStopRequested = true
         recognizer?.stopListening()
         listening = false
+        setActive(false)
         onState("Dictation paused")
     }
 
@@ -158,6 +164,7 @@ class KeyboardVoiceController(
         latestPartialResult = ""
         recognizer?.cancel()
         listening = false
+        setActive(false)
         destroy()
         onState("Canceled")
     }
@@ -192,6 +199,7 @@ class KeyboardVoiceController(
             object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
                     listening = true
+                    setActive(true)
                     onState(androidFallbackStatus("listening", activeAndroidFallbackReason))
                 }
 
@@ -212,6 +220,7 @@ class KeyboardVoiceController(
                     val didTimeout = localRuntimeStartupTimeoutFired
                     val fallbackReason = activeAndroidFallbackReason
                     listening = false
+                    setActive(false)
                     pauseRequested = false
                     manualStopRequested = false
                     localRuntimeStartupTimeoutFired = false
@@ -235,6 +244,7 @@ class KeyboardVoiceController(
 
                 override fun onResults(results: Bundle?) {
                     listening = false
+                    setActive(false)
                     val wasPaused = pauseRequested
                     val fallbackReason = activeAndroidFallbackReason
                     pauseRequested = false
@@ -458,6 +468,7 @@ class KeyboardVoiceController(
         clearLocalRuntimeStartupTimeout()
         localVoiceEngine = localEngine
         localRuntimeActive = true
+        setActive(true)
         listening = false
         stateStore.updateVoiceRuntimeStatus(
             runtimeMode = "local",
@@ -501,6 +512,7 @@ class KeyboardVoiceController(
         localVoiceEngine?.stop()
         localVoiceEngine = null
         localRuntimeActive = false
+        setActive(false)
         stateStore.updateVoiceRuntimeStatus(
             runtimeMode = "unavailable",
             languageTag = Locale.getDefault().toLanguageTag(),
@@ -521,6 +533,7 @@ class KeyboardVoiceController(
             localRuntimeStartupInProgress = false
             localRuntimeStartupTimeoutFired = true
             localRuntimeActive = false
+            setActive(false)
             emitLocalRuntimeTimeoutEvent()
             startAndroidFallback(
                 lastErrorCode = "local_runtime_timeout",
@@ -555,6 +568,7 @@ class KeyboardVoiceController(
                 return@Runnable
             }
             localRuntimeStartupTimeoutFired = true
+            setActive(false)
             onState("Dictation timeout")
             recognizer?.stopListening()
         }
@@ -563,5 +577,13 @@ class KeyboardVoiceController(
             timeoutTask,
             LOCAL_RUNTIME_STARTUP_TIMEOUT_MS,
         )
+    }
+
+    private fun setActive(value: Boolean) {
+        if (active == value) {
+            return
+        }
+        active = value
+        onActiveChanged(value)
     }
 }

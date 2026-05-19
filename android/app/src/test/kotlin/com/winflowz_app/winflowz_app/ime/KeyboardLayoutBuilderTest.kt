@@ -265,6 +265,102 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
+    fun `navigation and settings panels are real modes not action surfaces`() {
+        val navigation =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.Navigation,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+        val settings =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.Settings,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val navigationPanelKeys = navigation.rows.drop(1).take(navigation.panelRowCount).flatMap { it.keys }
+        val settingsPanelKeys = settings.rows.drop(1).take(settings.panelRowCount).flatMap { it.keys }
+
+        assertTrue(navigationPanelKeys.isNotEmpty())
+        assertTrue(settingsPanelKeys.isNotEmpty())
+        assertTrue(navigationPanelKeys.none { it.actionSurface })
+        assertTrue(settingsPanelKeys.none { it.actionSurface })
+    }
+
+    @Test
+    fun `special tool panels use action surfaces for compact action sizing`() {
+        val panels =
+            listOf(
+                KeyboardPanelMode.Accents,
+                KeyboardPanelMode.Emoji,
+                KeyboardPanelMode.Clipboard,
+                KeyboardPanelMode.ClipboardFull,
+                KeyboardPanelMode.Snippets,
+            )
+
+        panels.forEach { panel ->
+            val snapshot =
+                KeyboardLayoutBuilder.build(
+                    KeyboardLayoutRequest(
+                        mode = KeyboardLayoutMode.Letters,
+                        panel = panel,
+                        shifted = false,
+                        fieldContext = KeyboardFieldContextMode.Text,
+                        layoutProfile = KeyboardLayoutProfile.QWERTY,
+                        cornerModeEnabled = false,
+                        debugTouchOverlayEnabled = false,
+                        doubleSpacePeriodEnabled = true,
+                        punctuationAutoSpacingEnabled = true,
+                        emojiCategory = KeyboardEmojiCategory.Recents,
+                        recentEmojis = emptyList(),
+                        enterLabel = "Enter",
+                        clipboardAllowed = true,
+                        clipboardEntries = listOf(KeyboardClipboardEntry("Pinned clip", pinned = true)),
+                        voiceAllowed = true,
+                        snippetsAllowed = true,
+                        snippets = listOf(KeyboardTextRule("ja", "j'arrive", caseSensitive = false)),
+                        suggestions = emptyList(),
+                    ),
+                )
+            val panelKeys = snapshot.rows.drop(1).take(snapshot.panelRowCount).flatMap { it.keys }
+
+            assertTrue(panel.name, panelKeys.isNotEmpty())
+            assertTrue(panel.name, panelKeys.all { it.actionSurface })
+        }
+    }
+
+    @Test
     fun `symbol mode puts delete on symbol row instead of control row`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
@@ -328,6 +424,60 @@ class KeyboardLayoutBuilderTest {
         assertTrue(snapshot.rows.any { row ->
             row.keys.any { it.label == "Esc" && it.action == KeyboardKeyAction.Escape }
         })
+    }
+
+    @Test
+    fun `symbol mode supports additional shifted character pages`() {
+        val secondPage =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Symbols,
+                    panel = KeyboardPanelMode.None,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    symbolPage = 1,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+        val thirdPage =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Symbols,
+                    panel = KeyboardPanelMode.None,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    symbolPage = 2,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val secondPageLabels = secondPage.rows.drop(1).take(3).flatMap { row -> row.keys.map { it.label } }
+        val thirdPageLabels = thirdPage.rows.drop(1).take(3).flatMap { row -> row.keys.map { it.label } }
+
+        assertTrue(secondPageLabels.containsAll(listOf("(", ")", "©", "®", "™", "…", "¿", "‰")))
+        assertTrue(thirdPageLabels.containsAll(listOf("←", "→", "✓", "✕", "≤", "≥", "π", "Ω")))
     }
 
     @Test
@@ -399,7 +549,38 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
-    fun `clipboard panel exposes recent entries in a horizontal row`() {
+    fun `emoji recents ignore polluted plain text entries`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.Emoji,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = false,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = listOf("🔥", "E", "P", "S", "T", "M", "L"),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                ),
+            )
+
+        val emojiLabels = snapshot.rows[2].keys.map { it.label }
+
+        assertEquals("🔥", emojiLabels.first())
+        assertFalse(emojiLabels.any { it in listOf("E", "P", "S", "T", "M", "L") })
+        assertTrue(emojiLabels.contains("😀"))
+    }
+
+    @Test
+    fun `clipboard panel exposes actions and recent entries without all button`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
                 KeyboardLayoutRequest(
@@ -428,17 +609,21 @@ class KeyboardLayoutBuilderTest {
                 ),
             )
 
-        val panelRow = snapshot.rows[1]
-        val labels = panelRow.keys.map { it.label }
-        val actions = panelRow.keys.map { it.action }
+        val actionRow = snapshot.rows[1]
+        val historyRows = snapshot.rows.drop(2).take(snapshot.panelRowCount - 1)
+        val labels = historyRows.flatMap { row -> row.keys.map { it.label } }
+        val actions = actionRow.keys.map { it.action }
 
-        assertTrue(panelRow.horizontalScrollable)
-        assertTrue(labels.contains("All"))
-        assertTrue(actions.contains(KeyboardKeyAction.SelectAll))
+        assertEquals(3, snapshot.panelRowCount)
+        assertFalse(actionRow.horizontalScrollable)
+        assertTrue(actions.containsAll(listOf(KeyboardKeyAction.CutSelection, KeyboardKeyAction.CopySelection, KeyboardKeyAction.PasteClipboard, KeyboardKeyAction.PastePlainClipboard)))
+        assertFalse(actions.contains(KeyboardKeyAction.ToggleClipboardPanel))
+        assertFalse(actionRow.keys.any { it.label == "All" || it.action == KeyboardKeyAction.SelectAll })
+        assertFalse(actionRow.keys.any { it.label == "History" })
         assertTrue(labels.contains("Pin Latest copied text"))
         assertTrue(labels.contains("Pin Pinned account id"))
         assertEquals(1, labels.count { it.contains("Latest copied text") })
-        assertTrue(actions.drop(1).all { it == KeyboardKeyAction.InsertClipboardEntry })
+        assertTrue(historyRows.flatMap { row -> row.keys }.all { it.action == KeyboardKeyAction.InsertClipboardEntry })
         assertTrue(snapshot.rows.drop(1 + snapshot.panelRowCount).any { row ->
             row.keys.any { it.action == KeyboardKeyAction.Text || it.action == KeyboardKeyAction.KeyValue }
         })

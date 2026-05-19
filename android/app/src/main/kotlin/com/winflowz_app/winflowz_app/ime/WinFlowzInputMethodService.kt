@@ -41,6 +41,7 @@ class WinFlowzInputMethodService :
                 context = this,
                 stateStore = stateStore,
                 onState = { message -> keyboardView?.setStatus(message) },
+                onActiveChanged = { active -> keyboardView?.setVoiceRecordingActive(active) },
                 onResult = { text ->
                     val editor = editor()
                     if (!editor.hasActiveConnection()) {
@@ -197,6 +198,11 @@ class WinFlowzInputMethodService :
         applyRuntimePreferencesToView()
     }
 
+    override fun onSymbolInserted(symbol: String) {
+        stateStore.pushSymbolRecent(symbol, privateMode = fieldPolicy.privateMode)
+        applyRuntimePreferencesToView()
+    }
+
     override fun onBackspace(): Boolean {
         val editor = editor()
         if (!editor.hasActiveConnection()) {
@@ -318,6 +324,10 @@ class WinFlowzInputMethodService :
         }
         if (!fieldPolicy.voiceAllowed) {
             showStatus("Dictation disabled for private field")
+            return
+        }
+        if (voiceController.isActive()) {
+            voiceController.stop()
             return
         }
         voiceController.start()
@@ -820,6 +830,12 @@ class WinFlowzInputMethodService :
                 } else {
                     stateStore.emojiRecents()
                 }
+            val symbolRecents =
+                if (fieldPolicy.privateMode) {
+                    emptyList()
+                } else {
+                    stateStore.symbolRecents()
+                }
             keyboardView?.applyRuntimePreferences(
                 profile = stateStore.layoutProfile,
                 cornersEnabled = stateStore.cornerModeEnabled,
@@ -840,6 +856,7 @@ class WinFlowzInputMethodService :
                 themeMode = stateStore.themeMode,
                 themeConfig = stateStore.themeConfig(),
                 recents = emojiRecents,
+                symbolRecents = symbolRecents,
                 clipboardEntries = clipboardEntriesForKeyboard(),
                 snippets = stateStore.snippetRules(),
                 cornerConfig = stateStore.cornerConfig(),

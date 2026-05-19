@@ -426,7 +426,7 @@ class KeyboardStateStore(private val context: Context) {
             .orEmpty()
             .split(EMOJI_RECENT_SEPARATOR)
             .map { it.trim() }
-            .filter { it.isNotBlank() }
+            .filter { isEmojiRecentCandidate(it) }
             .take(limit)
     }
 
@@ -435,7 +435,7 @@ class KeyboardStateStore(private val context: Context) {
             return
         }
         val normalized = emoji.trim()
-        if (normalized.isEmpty()) {
+        if (!isEmojiRecentCandidate(normalized)) {
             return
         }
         val next =
@@ -444,6 +444,49 @@ class KeyboardStateStore(private val context: Context) {
                 .take(16)
                 .joinToString(separator = EMOJI_RECENT_SEPARATOR)
         preferences.edit().putString(KEY_EMOJI_RECENTS, next).apply()
+    }
+
+    fun symbolRecents(limit: Int = 32): List<String> {
+        return preferences
+            .getString(KEY_SYMBOL_RECENTS, "")
+            .orEmpty()
+            .split(SYMBOL_RECENT_SEPARATOR)
+            .map { it.trim() }
+            .filter { isSymbolRecentCandidate(it) }
+            .take(limit)
+    }
+
+    fun pushSymbolRecent(symbol: String, privateMode: Boolean) {
+        if (privateMode) {
+            return
+        }
+        val normalized = symbol.trim()
+        if (!isSymbolRecentCandidate(normalized)) {
+            return
+        }
+        val next =
+            (listOf(normalized) + symbolRecents())
+                .distinct()
+                .take(32)
+                .joinToString(separator = SYMBOL_RECENT_SEPARATOR)
+        preferences.edit().putString(KEY_SYMBOL_RECENTS, next).apply()
+    }
+
+    private fun isEmojiRecentCandidate(value: String): Boolean {
+        if (value.isBlank()) {
+            return false
+        }
+        val codePoints = value.codePoints().toArray()
+        return codePoints.any { codePoint ->
+            codePoint == 0x200D ||
+                codePoint == 0xFE0F ||
+                codePoint in 0x1F000..0x1FAFF ||
+                codePoint in 0x2600..0x27BF
+        }
+    }
+
+    private fun isSymbolRecentCandidate(value: String): Boolean {
+        return value.isNotBlank() && value.codePointCount(0, value.length) <= 2
     }
 
     fun textRules(): List<KeyboardTextRule> {
@@ -902,6 +945,7 @@ class KeyboardStateStore(private val context: Context) {
         const val KEY_ACTION_BAR_STATE = "action_bar_state"
         const val KEY_ACTION_BAR_LONG_PRESS_BEHAVIOR = "action_bar_long_press_behavior"
         const val KEY_EMOJI_RECENTS = "emoji_recents"
+        const val KEY_SYMBOL_RECENTS = "symbol_recents"
         const val KEY_PRIVACY_MODE = "privacy_mode"
         const val KEY_TEXT_EXPANSION_SNIPPETS = "text_expansion_snippets"
         const val KEY_TEXT_EXPANSION_DICTIONARY = "text_expansion_dictionary"
@@ -927,6 +971,7 @@ class KeyboardStateStore(private val context: Context) {
         const val VOICE_RUNTIME_CLOUD_FALLBACK = "cloud_fallback"
         const val VOICE_RUNTIME_UNAVAILABLE = "unavailable"
         const val EMOJI_RECENT_SEPARATOR = "|"
+        const val SYMBOL_RECENT_SEPARATOR = "\u001E"
         const val MAX_TEXT_RULES = 300
         const val MAX_CLIPBOARD_ENTRIES = 60
         const val MAX_CORNER_CONFIG_JSON_LENGTH = 24000

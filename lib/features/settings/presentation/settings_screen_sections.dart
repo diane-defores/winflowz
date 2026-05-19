@@ -858,9 +858,13 @@ class _KeyboardThemeQuickPicker extends StatelessWidget {
               : (selection) => onThemeModeChanged(selection.single),
         ),
         AppGaps.x2,
-        Wrap(
-          spacing: AppSpacing.x2,
-          runSpacing: AppSpacing.x2,
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: AppSpacing.x1,
+          crossAxisSpacing: AppSpacing.x1,
+          childAspectRatio: 1.95,
           children: [
             for (final preset in KeyboardThemePresetCatalog.presets)
               _KeyboardThemePresetChip(
@@ -902,39 +906,40 @@ class _KeyboardThemePresetChip extends StatelessWidget {
     final borderColor = selected
         ? Color(config.activeKeyColor)
         : Theme.of(context).colorScheme.outlineVariant;
-    return SizedBox(
-      width: 150,
-      child: OutlinedButton(
-        onPressed: enabled ? onPressed : null,
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(AppSpacing.x2),
-          foregroundColor: labelColor,
-          backgroundColor: Color(config.keyColor),
-          side: BorderSide(color: borderColor, width: selected ? 2 : 1),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.x2),
-          ),
+    return OutlinedButton(
+      onPressed: enabled ? onPressed : null,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.all(AppSpacing.x1),
+        foregroundColor: labelColor,
+        backgroundColor: Color(config.keyColor),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+        side: BorderSide(color: borderColor, width: selected ? 2 : 1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.x1),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _KeyboardThemeSwatch(config: config),
-            AppGaps.x1,
-            Text(
-              preset.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: labelColor,
-                fontWeight: selected
-                    ? AppFontWeights.bold
-                    : AppFontWeights.semiBold,
-              ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _KeyboardThemeSwatch(config: config),
+          const SizedBox(height: 3),
+          Text(
+            preset.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: labelColor,
+              fontSize: 11,
+              fontWeight: selected
+                  ? AppFontWeights.bold
+                  : AppFontWeights.semiBold,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -950,7 +955,7 @@ class _KeyboardThemeSwatch extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppSpacing.x1),
       child: SizedBox(
-        height: 34,
+        height: 22,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -968,18 +973,18 @@ class _KeyboardThemeSwatch extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.all(3),
               child: Row(
                 children: [
                   _KeyboardThemeMiniKey(color: Color(config.keyColor)),
-                  const SizedBox(width: AppSpacing.x1),
+                  const SizedBox(width: 3),
                   _KeyboardThemeMiniKey(color: Color(config.specialKeyColor)),
-                  const SizedBox(width: AppSpacing.x1),
+                  const SizedBox(width: 3),
                   Expanded(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Color(config.activeKeyColor),
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                   ),
@@ -1004,7 +1009,7 @@ class _KeyboardThemeMiniKey extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(4),
         ),
       ),
     );

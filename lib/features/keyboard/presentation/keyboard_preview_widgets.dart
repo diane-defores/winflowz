@@ -451,17 +451,80 @@ class _PinnedBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 5,
-      right: 5,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: .92),
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.keyboardKeyForeground, width: 1),
+      top: 3,
+      right: 3,
+      child: CustomPaint(
+        size: const Size(12, 12),
+        painter: _PreviewPinnedBadgePainter(
+          baseColor: AppColors.white.withValues(alpha: .92),
+          accentColor: AppColors.keyboardKeyForeground,
         ),
-        child: const SizedBox(width: 8, height: 8),
       ),
     );
+  }
+}
+
+class _PreviewPinnedBadgePainter extends CustomPainter {
+  const _PreviewPinnedBadgePainter({
+    required this.baseColor,
+    required this.accentColor,
+  });
+
+  final Color baseColor;
+  final Color accentColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..isAntiAlias = true;
+    final center = Offset(size.width * .55, size.height * .45);
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(-math.pi / 4);
+    paint
+      ..style = PaintingStyle.fill
+      ..color = baseColor;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset.zero,
+          width: size.width * .45,
+          height: size.height * .42,
+        ),
+        const Radius.circular(2),
+      ),
+      paint,
+    );
+    paint.color = accentColor;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(0, -size.height * .25),
+          width: size.width * .3,
+          height: size.height * .16,
+        ),
+        const Radius.circular(1),
+      ),
+      paint,
+    );
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset.zero, Offset(0, size.height * .42), paint);
+    paint.style = PaintingStyle.fill;
+    final tip = Path()
+      ..moveTo(0, size.height * .55)
+      ..lineTo(-size.width * .1, size.height * .38)
+      ..lineTo(size.width * .1, size.height * .38)
+      ..close();
+    canvas.drawPath(tip, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _PreviewPinnedBadgePainter oldDelegate) {
+    return oldDelegate.baseColor != baseColor ||
+        oldDelegate.accentColor != accentColor;
   }
 }
 

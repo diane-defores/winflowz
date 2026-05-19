@@ -92,6 +92,7 @@ class WinFlowzKeyboardView(
     interface Callbacks {
         fun onText(text: String): Boolean
         fun onEmojiInserted(emoji: String)
+        fun onSymbolInserted(symbol: String)
         fun onBackspace(): Boolean
         fun onForwardDelete(): Boolean
         fun onDeleteWordBefore(): Boolean
@@ -176,6 +177,7 @@ class WinFlowzKeyboardView(
     private var resolvedStatusTextColor = NativeKeyboardColors.Light.statusText
     private var resolvedKeyRadius = resources.displayMetrics.density * 8f
     private var layoutMode = KeyboardLayoutMode.Letters
+    private var symbolPage = 0
     private var panelMode = KeyboardPanelMode.None
     private var layoutProfile = KeyboardLayoutProfile.QWERTY
     private var cornerModeEnabled = false
@@ -195,6 +197,8 @@ class WinFlowzKeyboardView(
     private var autoCloseModesEnabled = true
     private var emojiCategory = KeyboardEmojiCategory.Recents
     private var recentEmojis = emptyList<String>()
+    private var recentSymbols = emptyList<String>()
+    private var voiceRecordingActive = false
     private var fieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var fieldContext = KeyboardFieldContextMode.Text
     private var enterLabel = "Enter"
@@ -278,6 +282,9 @@ class WinFlowzKeyboardView(
     private val specialKeyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = NativeKeyboardColors.Light.specialKey
     }
+    private val themePreviewKeyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = NativeKeyboardColors.Light.specialKey
+    }
     private val activeKeyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = NativeKeyboardColors.Light.activeKey
     }
@@ -308,6 +315,14 @@ class WinFlowzKeyboardView(
     private val pinnedBadgeAccentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.rgb(23, 121, 93)
         style = Paint.Style.FILL
+    }
+    private val voicePulsePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.TRANSPARENT
+        style = Paint.Style.FILL
+    }
+    private val voiceRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.TRANSPARENT
+        style = Paint.Style.STROKE
     }
     private val disabledKeyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = NativeKeyboardColors.Light.disabledKey
@@ -430,6 +445,7 @@ class WinFlowzKeyboardView(
         themeMode: String,
         themeConfig: KeyboardThemeConfig,
         recents: List<String>,
+        symbolRecents: List<String>,
         clipboardEntries: List<KeyboardClipboardEntry>,
         snippets: List<KeyboardTextRule>,
         cornerConfig: KeyboardCornerConfig,
@@ -479,6 +495,7 @@ class WinFlowzKeyboardView(
         )
         reconcileActionBarState()
         recentEmojis = if (fieldPolicy.privateMode) emptyList() else recents
+        recentSymbols = if (fieldPolicy.privateMode) emptyList() else symbolRecents
         if (fieldPolicy.privateMode && emojiCategory == KeyboardEmojiCategory.Recents) {
             emojiCategory = KeyboardEmojiCategory.Smileys
         }
@@ -590,9 +607,12 @@ class WinFlowzKeyboardView(
             layoutMode = mode,
             panelMode = panel,
             clipboardAllowed = fieldPolicy.clipboardAllowed,
+            clipboardEntries = clipboardEntries,
             voiceAllowed = fieldPolicy.voiceAllowed,
             snippetsAllowed = fieldPolicy.snippetsAllowed,
             mediaControlsEnabled = mediaControlsEnabled,
+            recentEmojis = recentEmojis,
+            recentSymbols = recentSymbols,
             snippets = snippets,
         )
     }
@@ -655,6 +675,14 @@ class WinFlowzKeyboardView(
         transientStatusText = message
         statusText = message
         requestLayout()
+        invalidate()
+    }
+
+    fun setVoiceRecordingActive(active: Boolean) {
+        if (voiceRecordingActive == active) {
+            return
+        }
+        voiceRecordingActive = active
         invalidate()
     }
 
@@ -806,6 +834,9 @@ class WinFlowzKeyboardView(
         }
 
         if (pressEffects.draw(canvas, resolvedKeyRadius, activeKeyPaint.color)) {
+            postInvalidateOnAnimation()
+        }
+        if (voiceRecordingActive) {
             postInvalidateOnAnimation()
         }
 
@@ -1020,9 +1051,13 @@ class WinFlowzKeyboardView(
             refreshLayout()
         } else if (key.action == KeyboardKeyAction.Shift) {
             longPressTriggered = true
-            shiftLocked = true
-            shifted = true
-            setStatus("Shift locked")
+            if (layoutMode == KeyboardLayoutMode.Symbols) {
+                cycleSymbolPage()
+            } else {
+                shiftLocked = true
+                shifted = true
+                setStatus("Shift locked")
+            }
             refreshLayout()
         } else if (dispatchLongPressShortcut(key)) {
             longPressTriggered = true
@@ -1288,6 +1323,27 @@ class WinFlowzKeyboardView(
     private fun isSpaceKey(key: KeyboardKeySpec): Boolean {
         return key.action == KeyboardKeyAction.Text &&
             (key.glyph?.primary == " " || key.keyValue?.text == " ")
+    }
+
+    private fun shouldTrackSymbolRecent(key: KeyboardKeySpec): Boolean {
+        if (key.action != KeyboardKeyAction.Text || key.id == "space") {
+            return false
+        }
+        return layoutMode == KeyboardLayoutMode.Symbols ||
+            layoutMode == KeyboardLayoutMode.Accents ||
+            panelMode == KeyboardPanelMode.Accents ||
+            key.id.startsWith("action-symbol-") ||
+            key.id.startsWith("action-accent-")
+    }
+
+    private fun isEmojiRecentCandidate(value: String): Boolean {
+        val codePoints = value.trim().codePoints().toArray()
+        return codePoints.any { codePoint ->
+            codePoint == 0x200D ||
+                codePoint == 0xFE0F ||
+                codePoint in 0x1F000..0x1FAFF ||
+                codePoint in 0x2600..0x27BF
+        }
     }
 
     private fun decodeThemeBitmap(path: String?): Bitmap? {
@@ -1577,6 +1633,10 @@ class WinFlowzKeyboardView(
         key: KeyboardKeySpec,
         rect: RectF,
     ) {
+        key.themePreviewConfig?.let { previewConfig ->
+            drawThemePreviewKey(canvas, key, rect, previewConfig)
+            return
+        }
         val paint = when {
             !key.enabled -> disabledKeyPaint
             key.id == activeKeyId -> pressedKeyPaint
@@ -1595,6 +1655,10 @@ class WinFlowzKeyboardView(
         canvas.drawRoundRect(rect, resolvedKeyRadius, resolvedKeyRadius, paint)
         if (!fieldPolicy.privateMode && keyBorderPaint.strokeWidth > 0f && Color.alpha(keyBorderPaint.color) > 0) {
             canvas.drawRoundRect(rect, resolvedKeyRadius, resolvedKeyRadius, keyBorderPaint)
+        }
+
+        if (voiceRecordingActive && key.action == KeyboardKeyAction.Voice) {
+            drawVoiceRecordingIndicator(canvas, rect)
         }
 
         textPaint.color =
@@ -1617,9 +1681,80 @@ class WinFlowzKeyboardView(
             renderCornerGlyphs(canvas, rect, key.cornerAssignments)
         }
 
-        if (key.pinned && key.actionDescriptorPrimary) {
+        if (key.pinned) {
             drawPinnedBadge(canvas, rect, paint.color)
         }
+    }
+
+    private fun drawThemePreviewKey(
+        canvas: Canvas,
+        key: KeyboardKeySpec,
+        rect: RectF,
+        previewConfig: KeyboardThemeConfig,
+    ) {
+        val isPressed = key.id == activeKeyId
+        val backgroundColor = if (isPressed) previewConfig.pressedKeyColor else previewConfig.backgroundStartColor
+        themePreviewKeyPaint.shader = if (previewConfig.useGradient && !isPressed) {
+            LinearGradient(
+                rect.left,
+                rect.top,
+                rect.right,
+                rect.bottom,
+                previewConfig.backgroundStartColor,
+                previewConfig.backgroundEndColor,
+                Shader.TileMode.CLAMP,
+            )
+        } else {
+            null
+        }
+        themePreviewKeyPaint.color = backgroundColor
+        canvas.drawRoundRect(rect, resolvedKeyRadius, resolvedKeyRadius, themePreviewKeyPaint)
+        themePreviewKeyPaint.shader = null
+
+        val inset = dp(4f)
+        val stripTop = rect.bottom - dp(9f)
+        val stripRect = RectF(rect.left + inset, stripTop, rect.right - inset, rect.bottom - dp(4f))
+        val stripWidth = stripRect.width() / 3f
+        themePreviewKeyPaint.color = previewConfig.keyColor
+        canvas.drawRoundRect(
+            RectF(stripRect.left, stripRect.top, stripRect.left + stripWidth - dp(1f), stripRect.bottom),
+            dp(2f),
+            dp(2f),
+            themePreviewKeyPaint,
+        )
+        themePreviewKeyPaint.color = previewConfig.specialKeyColor
+        canvas.drawRoundRect(
+            RectF(stripRect.left + stripWidth, stripRect.top, stripRect.left + (stripWidth * 2f) - dp(1f), stripRect.bottom),
+            dp(2f),
+            dp(2f),
+            themePreviewKeyPaint,
+        )
+        themePreviewKeyPaint.color = previewConfig.activeKeyColor
+        canvas.drawRoundRect(
+            RectF(stripRect.left + (stripWidth * 2f), stripRect.top, stripRect.right, stripRect.bottom),
+            dp(2f),
+            dp(2f),
+            themePreviewKeyPaint,
+        )
+
+        if (key.active) {
+            keyBorderPaint.color = previewConfig.activeKeyColor
+            keyBorderPaint.strokeWidth = dp(2f)
+            canvas.drawRoundRect(rect, resolvedKeyRadius, resolvedKeyRadius, keyBorderPaint)
+            keyBorderPaint.color = if (themeConfig.presetId == "system") Color.TRANSPARENT else themeConfig.borderColor
+            keyBorderPaint.strokeWidth = if (themeConfig.presetId == "system") 0f else dp(themeConfig.borderWidth)
+        } else if (previewConfig.borderWidth > 0f && Color.alpha(previewConfig.borderColor) > 0) {
+            keyBorderPaint.color = previewConfig.borderColor
+            keyBorderPaint.strokeWidth = dp(previewConfig.borderWidth)
+            canvas.drawRoundRect(rect, resolvedKeyRadius, resolvedKeyRadius, keyBorderPaint)
+            keyBorderPaint.color = if (themeConfig.presetId == "system") Color.TRANSPARENT else themeConfig.borderColor
+            keyBorderPaint.strokeWidth = if (themeConfig.presetId == "system") 0f else dp(themeConfig.borderWidth)
+        }
+
+        textPaint.color = contrastTextColor(backgroundColor)
+        textPaint.textSize = keyTextSize(key)
+        val baseline = rect.centerY() - dp(3f) - (textPaint.descent() + textPaint.ascent()) / 2f
+        canvas.drawText(displayLabel(key), rect.centerX(), baseline, textPaint)
     }
 
     private fun drawPinnedBadge(
@@ -1627,15 +1762,80 @@ class WinFlowzKeyboardView(
         rect: RectF,
         keyColor: Int,
     ) {
-        val cx = rect.right - dp(8f)
-        val cy = rect.top + dp(8f)
-        when (themeConfig.presetId) {
-            "pixel_candy" -> drawCandyPinnedBadge(canvas, cx, cy, keyColor)
-            "sunset_gradient" -> drawCloudPinnedBadge(canvas, cx, cy, keyColor)
-            "glass_mint" -> drawDropPinnedBadge(canvas, cx, cy, contrastBadgeAccentColor(keyColor))
-            "midnight_aurora" -> drawStarPinnedBadge(canvas, cx, cy, contrastBadgeAccentColor(keyColor))
-            else -> drawLedPinnedBadge(canvas, cx, cy, contrastBadgeAccentColor(keyColor), contrastBadgeBaseColor(keyColor))
+        drawAngledPinnedBadge(
+            canvas = canvas,
+            cx = rect.right - dp(8f),
+            cy = rect.top + dp(8f),
+            accentColor = contrastBadgeAccentColor(keyColor),
+            baseColor = contrastBadgeBaseColor(keyColor),
+        )
+    }
+
+    private fun drawVoiceRecordingIndicator(
+        canvas: Canvas,
+        rect: RectF,
+    ) {
+        val phase = (SystemClock.uptimeMillis() % 1100L).toFloat() / 1100f
+        val red = Color.rgb(235, 47, 64)
+        val centerRadius = min(rect.width(), rect.height()) * (0.24f + 0.08f * phase)
+        voicePulsePaint.style = Paint.Style.FILL
+        voicePulsePaint.color = Color.argb((82 * (1f - phase)).toInt().coerceIn(0, 82), Color.red(red), Color.green(red), Color.blue(red))
+        canvas.drawCircle(rect.centerX(), rect.centerY(), centerRadius, voicePulsePaint)
+
+        voiceRingPaint.style = Paint.Style.STROKE
+        voiceRingPaint.strokeWidth = dp(1.6f)
+        voiceRingPaint.color = Color.argb((210 * (1f - phase)).toInt().coerceIn(0, 210), Color.red(red), Color.green(red), Color.blue(red))
+        canvas.drawCircle(rect.centerX(), rect.centerY(), centerRadius + dp(3f), voiceRingPaint)
+
+        val dotRadius = min(rect.width(), rect.height()) * 0.085f
+        val dotCx = rect.right - max(dp(8f), rect.width() * 0.16f)
+        val dotCy = rect.top + max(dp(8f), rect.height() * 0.18f)
+        voicePulsePaint.color = Color.argb(235, Color.red(red), Color.green(red), Color.blue(red))
+        canvas.drawCircle(dotCx, dotCy, dotRadius, voicePulsePaint)
+        voiceRingPaint.color = Color.WHITE
+        voiceRingPaint.strokeWidth = dp(1.2f)
+        canvas.drawCircle(dotCx, dotCy, dotRadius + dp(1f), voiceRingPaint)
+    }
+
+    private fun drawAngledPinnedBadge(
+        canvas: Canvas,
+        cx: Float,
+        cy: Float,
+        accentColor: Int,
+        baseColor: Int,
+    ) {
+        val save = canvas.save()
+        canvas.rotate(-45f, cx, cy)
+        pinnedBadgePaint.style = Paint.Style.FILL
+        pinnedBadgePaint.color = baseColor
+        pinnedBadgeAccentPaint.style = Paint.Style.FILL
+        pinnedBadgeAccentPaint.color = accentColor
+        canvas.drawRoundRect(
+            RectF(cx - dp(3.8f), cy - dp(6.2f), cx + dp(3.8f), cy - dp(0.8f)),
+            dp(1.8f),
+            dp(1.8f),
+            pinnedBadgePaint,
+        )
+        canvas.drawRoundRect(
+            RectF(cx - dp(2.3f), cy - dp(7.2f), cx + dp(2.3f), cy - dp(5.2f)),
+            dp(1f),
+            dp(1f),
+            pinnedBadgeAccentPaint,
+        )
+        pinnedBadgeAccentPaint.style = Paint.Style.STROKE
+        pinnedBadgeAccentPaint.strokeWidth = dp(1.7f)
+        pinnedBadgeAccentPaint.strokeCap = Paint.Cap.ROUND
+        canvas.drawLine(cx, cy - dp(0.7f), cx, cy + dp(6.6f), pinnedBadgeAccentPaint)
+        pinnedBadgeAccentPaint.style = Paint.Style.FILL
+        pinnedBadgeAccentPaint.strokeCap = Paint.Cap.BUTT
+        val tip = Path().apply {
+            moveTo(cx, cy + dp(8.5f))
+            lineTo(cx - dp(1.5f), cy + dp(5.9f))
+            lineTo(cx + dp(1.5f), cy + dp(5.9f))
+            close()
         }
+        canvas.drawPath(tip, pinnedBadgeAccentPaint)
+        canvas.restoreToCount(save)
     }
 
     private fun drawCandyPinnedBadge(
@@ -1867,9 +2067,14 @@ class WinFlowzKeyboardView(
                     setStatus("Text input unavailable")
                     return
                 }
-                if (panelMode == KeyboardPanelMode.Emoji) {
-                    val output = keyValue.text ?: return
+                val output = keyValue.text ?: return
+                if (panelMode == KeyboardPanelMode.Emoji ||
+                    commandKey.id.startsWith("action-emoji-") ||
+                    (isEmojiRecentCandidate(output) && !shouldTrackSymbolRecent(commandKey))
+                ) {
                     callbacks.onEmojiInserted(output)
+                } else if (shouldTrackSymbolRecent(commandKey)) {
+                    callbacks.onSymbolInserted(output)
                 }
                 autoCloseModeAfterTextInput(keyValue.text != null)
             }
@@ -1909,7 +2114,9 @@ class WinFlowzKeyboardView(
                 }
             }
             KeyboardKeyAction.Shift -> {
-                if (shiftLocked) {
+                if (layoutMode == KeyboardLayoutMode.Symbols) {
+                    cycleSymbolPage()
+                } else if (shiftLocked) {
                     shiftLocked = false
                     shifted = false
                 } else {
@@ -1918,6 +2125,7 @@ class WinFlowzKeyboardView(
             }
             KeyboardKeyAction.ModeLetters -> {
                 layoutMode = KeyboardLayoutMode.Letters
+                symbolPage = 0
                 panelMode = KeyboardPanelMode.None
             }
             KeyboardKeyAction.ModeNumbers -> {
@@ -1936,6 +2144,7 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.ModeSymbols -> {
                 layoutMode =
                     if (layoutMode == KeyboardLayoutMode.Symbols) {
+                        symbolPage = 0
                         KeyboardLayoutMode.Letters
                     } else {
                         KeyboardLayoutMode.Symbols
@@ -2293,7 +2502,9 @@ class WinFlowzKeyboardView(
     private fun toggleSystemModifier(modifier: KeyboardSystemModifier) {
         when (modifier) {
             KeyboardSystemModifier.Shift -> {
-                if (shiftLocked) {
+                if (layoutMode == KeyboardLayoutMode.Symbols) {
+                    cycleSymbolPage()
+                } else if (shiftLocked) {
                     shiftLocked = false
                     shifted = false
                 } else {
@@ -2313,6 +2524,11 @@ class WinFlowzKeyboardView(
                 setStatus("${modifier.name} $state")
             }
         }
+    }
+
+    private fun cycleSymbolPage() {
+        symbolPage = (symbolPage + 1) % SYMBOL_PAGE_COUNT
+        setStatus("Symbols page ${symbolPage + 1}/$SYMBOL_PAGE_COUNT")
     }
 
     private fun clearTransientModifiers() {
@@ -2399,8 +2615,10 @@ class WinFlowzKeyboardView(
                 punctuationAutoSpacingEnabled = punctuationAutoSpacingEnabled,
                 keyboardHeightScale = keyboardHeightScale,
                 compactModeEnabled = compactModeEnabled,
+                symbolPage = symbolPage,
                 emojiCategory = emojiCategory,
                 recentEmojis = recentEmojis,
+                recentSymbols = recentSymbols,
                 enterLabel = enterLabel,
                 clipboardAllowed = fieldPolicy.clipboardAllowed,
                 clipboardEntries = clipboardEntries,
@@ -2471,6 +2689,7 @@ class WinFlowzKeyboardView(
         val firstPanelIndex = 1 + layoutSnapshot.suggestionRowCount
         return when {
             isActionRow(index) -> scaledActionRowHeight()
+            isActionSurfaceRow(index) -> scaledActionRowHeight()
             layoutSnapshot.suggestionRowCount > 0 && index in 1..layoutSnapshot.suggestionRowCount -> panelRowHeight
             layoutSnapshot.panelRowCount > 0 && index in firstPanelIndex until firstPanelIndex + layoutSnapshot.panelRowCount -> panelRowHeight
             index == layoutSnapshot.rows.lastIndex -> controlRowHeight
@@ -2480,6 +2699,11 @@ class WinFlowzKeyboardView(
 
     private fun isActionRow(index: Int): Boolean {
         return layoutSnapshot.rows.getOrNull(index)?.rowId?.startsWith("action-row-") == true
+    }
+
+    private fun isActionSurfaceRow(index: Int): Boolean {
+        val row = layoutSnapshot.rows.getOrNull(index) ?: return false
+        return row.keys.isNotEmpty() && row.keys.all { it.actionSurface }
     }
 
     private fun scaledActionRowHeight(): Float {
@@ -2645,6 +2869,7 @@ class WinFlowzKeyboardView(
                 error = error,
             )
             layoutMode = KeyboardLayoutMode.Letters
+            symbolPage = 0
             panelMode = KeyboardPanelMode.None
             layoutSnapshot = KeyboardLayoutBuilder.safeFallback()
             themeConfig = KeyboardThemeConfig()
@@ -2674,4 +2899,8 @@ class WinFlowzKeyboardView(
     private fun dp(value: Float): Float = value * density
 
     private fun sp(value: Float): Float = value * resources.displayMetrics.scaledDensity
+
+    private companion object {
+        const val SYMBOL_PAGE_COUNT = 3
+    }
 }

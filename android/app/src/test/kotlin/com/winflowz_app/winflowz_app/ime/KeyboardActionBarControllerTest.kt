@@ -82,7 +82,14 @@ class KeyboardActionBarControllerTest {
         assertEquals(1, state.attachedRows.count { it.dedupeKey == "clipboard" })
         assertEquals(0, state.rowPageById["action-row-clipboard"])
         val clipboardRow = snapshot.attachedRows.single { it.dedupeKey == "clipboard" }
+        assertTrue(clipboardRow.items.any { it.label == "All" && it.action == KeyboardKeyAction.SelectAll })
+        assertTrue(clipboardRow.items.any { it.action == KeyboardKeyAction.CutSelection })
+        assertTrue(clipboardRow.items.any { it.action == KeyboardKeyAction.CopySelection })
         assertTrue(clipboardRow.items.any { it.action == KeyboardKeyAction.PasteClipboard })
+        assertTrue(clipboardRow.items.any { it.action == KeyboardKeyAction.PastePlainClipboard })
+        assertTrue(clipboardRow.items.none { it.action == KeyboardKeyAction.ToggleClipboardPanel })
+        assertEquals(10, clipboardRow.items.size)
+        assertEquals(5, clipboardRow.items.count { it.action == KeyboardKeyAction.InsertClipboardEntry })
     }
 
     @Test
@@ -98,6 +105,29 @@ class KeyboardActionBarControllerTest {
             )
 
         assertEquals(listOf("ABC", "123", "#+="), snapshot.mainRow.items.take(3).map { it.label })
+    }
+
+    @Test
+    fun `action buttons keep catalog order instead of adaptive usage ranking`() {
+        val snapshot =
+            controller.buildRenderSnapshot(
+                state =
+                    KeyboardActionBarState(
+                        adaptiveUsageScoreById =
+                            mapOf(
+                                "voice" to 500L,
+                                "media" to 400L,
+                                "clipboard" to 300L,
+                                "emoji" to 200L,
+                            ),
+                    ),
+                environment = environment(),
+            )
+
+        assertEquals(
+            listOf("ABC", "123", "#+=", "Acc", "Nav", "Emoji", "Clip", "Snip", "Media", "Prefs", "Mic"),
+            snapshot.mainRow.items.map { it.label },
+        )
     }
 
     @Test
@@ -210,6 +240,15 @@ class KeyboardActionBarControllerTest {
             voiceAllowed = true,
             snippetsAllowed = true,
             mediaControlsEnabled = true,
+            clipboardEntries =
+                listOf(
+                    KeyboardClipboardEntry("First clip"),
+                    KeyboardClipboardEntry("Second clip"),
+                    KeyboardClipboardEntry("Third clip"),
+                    KeyboardClipboardEntry("Fourth clip"),
+                    KeyboardClipboardEntry("Fifth clip"),
+                    KeyboardClipboardEntry("Sixth clip"),
+                ),
         )
     }
 }

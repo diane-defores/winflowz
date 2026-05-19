@@ -116,7 +116,7 @@ class KeyboardActionCatalog private constructor(
                 }
 
             val symbolsProvider =
-                KeyboardActionRowProvider {
+                KeyboardActionRowProvider { context ->
                     listOf(
                         KeyboardActionRowSpec(
                             rowId = "action-row-symbols",
@@ -124,14 +124,24 @@ class KeyboardActionCatalog private constructor(
                             visiblePageKeyCount = 10,
                             pagedHorizontal = true,
                             items =
-                                listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "=", "_", "\\", "|", "~", "<", ">", "$", "€", "£", "¥")
-                                    .map { textActionKey(it) },
+                                rankedTextValues(listOf(
+                                    "[", "]", "{", "}", "#", "%", "^", "*", "+", "=",
+                                    "_", "\\", "|", "~", "<", ">", "$", "€", "£", "¥",
+                                    ".", ",", "?", "!", "'", "`", "•",
+                                    "(", ")", "«", "»", "\"", ":", ";", "&", "@", "§",
+                                    "©", "®", "™", "°", "×", "÷", "±", "≠", "≈", "∞",
+                                    "…", "–", "—", "·", "¡", "¿", "‰",
+                                    "←", "→", "↑", "↓", "↔", "↕", "↩", "↪", "⌫", "⌦",
+                                    "✓", "✕", "★", "☆", "◆", "◇", "○", "●", "□", "■",
+                                    "≤", "≥", "∑", "√", "π", "µ", "Ω",
+                                ), context.recentSymbols)
+                                    .map { textActionKey(it, idPrefix = "action-symbol") },
                         ),
                     )
                 }
 
             val accentsProvider =
-                KeyboardActionRowProvider {
+                KeyboardActionRowProvider { context ->
                     listOf(
                         KeyboardActionRowSpec(
                             rowId = "action-row-accents",
@@ -139,14 +149,17 @@ class KeyboardActionCatalog private constructor(
                             visiblePageKeyCount = 10,
                             pagedHorizontal = true,
                             items =
-                                listOf("é", "è", "ê", "ë", "à", "â", "ç", "ù", "û", "ü", "î", "ï", "ô", "œ", "æ", "É", "À", "Ç")
-                                    .map { textActionKey(it) },
+                                rankedTextValues(
+                                    listOf("é", "è", "ê", "ë", "à", "â", "ç", "ù", "û", "ü", "î", "ï", "ô", "œ", "æ", "É", "À", "Ç"),
+                                    context.recentSymbols,
+                                )
+                                    .map { textActionKey(it, idPrefix = "action-accent") },
                         ),
                     )
                 }
 
             val emojiProvider =
-                KeyboardActionRowProvider {
+                KeyboardActionRowProvider { context ->
                     listOf(
                         KeyboardActionRowSpec(
                             rowId = "action-row-emoji",
@@ -154,8 +167,11 @@ class KeyboardActionCatalog private constructor(
                             visiblePageKeyCount = 10,
                             pagedHorizontal = true,
                             items =
-                                listOf("😀", "😂", "😊", "😍", "🔥", "✨", "👏", "❤️", "👍", "🙏", "✅", "💡", "🎯", "🌿", "🍔", "💻")
-                                    .map { textActionKey(it) },
+                                rankedTextValues(
+                                    listOf("😀", "😂", "😊", "😍", "🔥", "✨", "👏", "❤️", "👍", "🙏", "✅", "💡", "🎯", "🌿", "🍔", "💻"),
+                                    context.recentEmojis,
+                                )
+                                    .map { textActionKey(it, idPrefix = "action-emoji") },
                         ),
                     )
                 }
@@ -172,13 +188,12 @@ class KeyboardActionCatalog private constructor(
                                 visiblePageKeyCount = 10,
                                 pagedHorizontal = true,
                                 items =
-                                    listOf(
-                                        actionRowKey("clip-select-all", "All", KeyboardKeyAction.SelectAll),
-                                        actionRowKey("clip-cut", "Cut", KeyboardKeyAction.CutSelection),
-                                        actionRowKey("clip-copy", "Copy", KeyboardKeyAction.CopySelection),
-                                        actionRowKey("clip-paste", "Paste", KeyboardKeyAction.PasteClipboard),
-                                        actionRowKey("clip-history", "History", KeyboardKeyAction.ToggleClipboardPanel, weight = 1.3f),
-                                    ),
+                                    clipboardActionKeys("clip-row") +
+                                        context.clipboardEntries
+                                            .filter { it.content.isNotBlank() }
+                                            .distinctBy { it.content.replace(Regex("\\s+"), " ").trim().lowercase() }
+                                            .take(5)
+                                            .mapIndexed { index, entry -> clipboardEntryKey(index, entry.content) },
                             ),
                         )
                     }
@@ -332,9 +347,10 @@ class KeyboardActionCatalog private constructor(
             label: String,
             output: String = label,
             weight: Float = 1f,
+            idPrefix: String = "action-text",
         ): KeyboardKeySpec {
             return KeyboardKeySpec(
-                id = "action-text-${output.codePoints().toArray().joinToString("-")}",
+                id = "$idPrefix-${output.codePoints().toArray().joinToString("-")}",
                 label = label,
                 action = KeyboardKeyAction.Text,
                 glyph = com.winflowz_app.winflowz_app.ime.KeyboardKeyGlyph(primary = output),
@@ -354,6 +370,43 @@ class KeyboardActionCatalog private constructor(
                 label = label,
                 action = action,
                 weight = weight,
+            )
+        }
+
+        private fun clipboardActionKeys(idPrefix: String): List<KeyboardKeySpec> {
+            return listOf(
+                actionRowKey("$idPrefix-all", "All", KeyboardKeyAction.SelectAll),
+                actionRowKey("$idPrefix-cut", "Cut", KeyboardKeyAction.CutSelection),
+                actionRowKey("$idPrefix-copy", "Copy", KeyboardKeyAction.CopySelection),
+                actionRowKey("$idPrefix-paste", "Paste", KeyboardKeyAction.PasteClipboard),
+                actionRowKey("$idPrefix-plain", "Plain", KeyboardKeyAction.PastePlainClipboard),
+            )
+        }
+
+        private fun rankedTextValues(
+            values: List<String>,
+            recents: List<String>,
+        ): List<String> {
+            val scoreByValue =
+                recents
+                    .distinct()
+                    .mapIndexed { index, value -> value to (recents.size - index).toLong() }
+                    .toMap()
+            return KeyboardAdaptiveUsageRanker.rankByUsage(values, scoreByValue, idOf = { it })
+        }
+
+        private fun clipboardEntryKey(
+            index: Int,
+            content: String,
+        ): KeyboardKeySpec {
+            val normalized = content.replace(Regex("\\s+"), " ").trim()
+            val label = if (normalized.length <= 18) normalized else normalized.take(17) + "..."
+            return KeyboardKeySpec(
+                id = "clip-row-entry-$index",
+                label = label,
+                action = KeyboardKeyAction.InsertClipboardEntry,
+                suggestion = normalized,
+                weight = 1.5f,
             )
         }
     }

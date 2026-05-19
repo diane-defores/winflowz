@@ -2,6 +2,7 @@ package com.winflowz_app.winflowz_app.ime
 
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarController
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardAdaptiveUsageRanker
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionCatalog
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionEnvironment
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionRenderer
@@ -174,6 +175,7 @@ data class KeyboardKeySpec(
     val actionDescriptorPrimary: Boolean = false,
     val suggestion: String? = null,
     val cornerAssignments: KeyboardCornerAssignments = KeyboardCornerAssignments.Empty,
+    val themePreviewConfig: KeyboardThemeConfig? = null,
 )
 
 data class KeyboardRowSpec(
@@ -212,8 +214,10 @@ data class KeyboardLayoutRequest(
     val punctuationAutoSpacingEnabled: Boolean,
     val keyboardHeightScale: Float = KeyboardStateStore.KEYBOARD_HEIGHT_DEFAULT,
     val compactModeEnabled: Boolean = false,
+    val symbolPage: Int = 0,
     val emojiCategory: KeyboardEmojiCategory,
     val recentEmojis: List<String>,
+    val recentSymbols: List<String> = emptyList(),
     val enterLabel: String,
     val clipboardAllowed: Boolean,
     val clipboardEntries: List<KeyboardClipboardEntry> = emptyList(),
@@ -255,9 +259,12 @@ object KeyboardLayoutBuilder {
                 layoutMode = effectiveMode,
                 panelMode = request.panel,
                 clipboardAllowed = request.clipboardAllowed,
+                clipboardEntries = request.clipboardEntries,
                 voiceAllowed = request.voiceAllowed,
                 snippetsAllowed = request.snippetsAllowed,
                 mediaControlsEnabled = request.mediaControlsEnabled,
+                recentEmojis = request.recentEmojis,
+                recentSymbols = request.recentSymbols,
                 snippets = request.snippets,
             )
         val renderedActionRows =
@@ -399,15 +406,15 @@ object KeyboardLayoutBuilder {
     private fun panelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         return when (request.panel) {
             KeyboardPanelMode.None -> emptyList()
-            KeyboardPanelMode.Navigation -> navigationPanelRows(request.compactModeEnabled).asActionSurfaceRows()
+            KeyboardPanelMode.Navigation -> navigationPanelRows(request.compactModeEnabled)
             KeyboardPanelMode.Accents -> accentPanelRows(request.compactModeEnabled).asActionSurfaceRows()
             KeyboardPanelMode.Emoji -> emojiPanelRows(request).asActionSurfaceRows()
-            KeyboardPanelMode.Clipboard -> listOf(clipboardPanelRow(request)).asActionSurfaceRows()
+            KeyboardPanelMode.Clipboard -> clipboardPanelRows(request).asActionSurfaceRows()
             KeyboardPanelMode.ClipboardFull -> clipboardFullPanelRows(request).asActionSurfaceRows()
             KeyboardPanelMode.Media -> mediaPanelRows(request).asActionSurfaceRows()
             KeyboardPanelMode.Snippets -> listOf(snippetsPanelRow(request)).asActionSurfaceRows()
-            KeyboardPanelMode.Settings -> settingsPanelRows(request).asActionSurfaceRows()
-            KeyboardPanelMode.ThemeSettings -> themePanelRows(request).asActionSurfaceRows()
+            KeyboardPanelMode.Settings -> settingsPanelRows(request)
+            KeyboardPanelMode.ThemeSettings -> themePanelRows(request)
         }
     }
 
@@ -594,8 +601,8 @@ object KeyboardLayoutBuilder {
         val food = listOf("🍔", "🍕", "🍟", "🌮", "🍣", "🍜", "🍩", "🍪", "🍫", "☕", "🍺", "🍎", "🍌", "🍓", "🥑", "🥐")
         val objects = listOf("💡", "📌", "📎", "✏️", "📱", "💻", "⌚", "🎧", "📷", "🔑", "🔒", "🧲", "🧰", "⚙️", "🛠️", "🧪")
         val activities = listOf("⚽", "🏀", "🏈", "🎾", "🏆", "🎮", "🎲", "🎸", "🎧", "🎬", "🎨", "🎤", "🚗", "✈️", "🚀", "🎉")
-        val recents = (request.recentEmojis.filter { it.isNotBlank() } + smileys).distinct().take(16)
-        val selected =
+        val recents = (request.recentEmojis.filter { isEmojiCandidate(it) } + smileys).distinct().take(16)
+        val selectedRaw =
             when (request.emojiCategory) {
                 KeyboardEmojiCategory.Recents -> recents
                 KeyboardEmojiCategory.Smileys -> smileys
@@ -605,6 +612,12 @@ object KeyboardLayoutBuilder {
                 KeyboardEmojiCategory.Food -> food
                 KeyboardEmojiCategory.Objects -> objects
                 KeyboardEmojiCategory.Activities -> activities
+            }
+        val selected =
+            if (request.emojiCategory == KeyboardEmojiCategory.Recents) {
+                selectedRaw
+            } else {
+                rankTextValues(selectedRaw, request.recentEmojis)
             }
 
         val emojiChunkSize = 8
@@ -619,15 +632,21 @@ object KeyboardLayoutBuilder {
         return listOf(categoryRow) + emojiRows
     }
 
-    private fun clipboardPanelRow(request: KeyboardLayoutRequest): KeyboardRowSpec {
+    private fun clipboardPanelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
         val entries = dedupeClipboardEntries(request.clipboardEntries).take(12)
-        return KeyboardRowSpec(
-            rowId = "panel-clipboard",
-            keys =
-                listOf(KeyboardKeySpec("clip-select-all", "All", KeyboardKeyAction.SelectAll)) +
-                    clipboardEntryKeys(entries, request.clipboardAllowed),
-            horizontalScrollable = true,
-        )
+        val entryRows = clipboardEntryKeys(entries, request.clipboardAllowed).chunked(6)
+        return listOf(
+            KeyboardRowSpec(
+                rowId = "panel-clipboard-actions",
+                keys = clipboardActionKeys("panel-clip"),
+            ),
+        ) +
+            entryRows.mapIndexed { index, keys ->
+                KeyboardRowSpec(
+                    rowId = "panel-clipboard-history-$index",
+                    keys = keys,
+                )
+            }
     }
 
     private fun clipboardFullPanelRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
@@ -665,6 +684,7 @@ object KeyboardLayoutBuilder {
                 action = KeyboardKeyAction.InsertClipboardEntry,
                 enabled = clipboardAllowed,
                 active = entry.pinned,
+                pinned = entry.pinned,
                 suggestion = entry.content,
                 weight = 1.8f,
             )
@@ -675,6 +695,15 @@ object KeyboardLayoutBuilder {
         val normalized = entry.content.replace(Regex("\\s+"), " ").trim()
         val label = if (normalized.length <= 24) normalized else normalized.take(23) + "..."
         return if (entry.pinned) "Pin $label" else label
+    }
+
+    private fun clipboardActionKeys(idPrefix: String): List<KeyboardKeySpec> {
+        return listOf(
+            KeyboardKeySpec("$idPrefix-cut", "Cut", KeyboardKeyAction.CutSelection),
+            KeyboardKeySpec("$idPrefix-copy", "Copy", KeyboardKeyAction.CopySelection),
+            KeyboardKeySpec("$idPrefix-paste", "Paste", KeyboardKeyAction.PasteClipboard),
+            KeyboardKeySpec("$idPrefix-plain", "Plain", KeyboardKeyAction.PastePlainClipboard),
+        )
     }
 
     private fun dedupeClipboardEntries(entries: List<KeyboardClipboardEntry>): List<KeyboardClipboardEntry> {
@@ -941,6 +970,7 @@ object KeyboardLayoutBuilder {
                 KeyboardRowSpec(
                     keys =
                         presets.map { preset ->
+                            val previewConfig = KeyboardThemePresets.configFor(preset.id)
                             KeyboardKeySpec(
                                 id = "theme-${preset.id}",
                                 label = preset.name,
@@ -948,6 +978,7 @@ object KeyboardLayoutBuilder {
                                 suggestion = preset.id,
                                 active = preset.id == request.themePresetId,
                                 weight = if (preset.id == KeyboardThemePresets.MINIMAL_CONTRAST) 1.25f else 1f,
+                                themePreviewConfig = previewConfig,
                             )
                         },
                     rowId = "theme-row-$rowIndex",
@@ -977,7 +1008,7 @@ object KeyboardLayoutBuilder {
             KeyboardLayoutMode.Letters -> letterRowsForProfile(request)
             KeyboardLayoutMode.Numbers -> numberRows()
             KeyboardLayoutMode.Accents -> accentRows()
-            KeyboardLayoutMode.Symbols -> symbolRows()
+            KeyboardLayoutMode.Symbols -> symbolRows(request.symbolPage)
             KeyboardLayoutMode.Navigation -> navigationModeRows()
         }
     }
@@ -1050,19 +1081,20 @@ object KeyboardLayoutBuilder {
     }
 
     private fun compactSymbolRows(request: KeyboardLayoutRequest): List<KeyboardRowSpec> {
+        val page = symbolPageRows(request.symbolPage)
         return listOf(
-            KeyboardRowSpec(listOf("[", "]", "{", "}", "#", "%", "^", "*", "+").map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace)),
-            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£").map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter)),
+            KeyboardRowSpec(page[0].map { textKey(it) } + KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace)),
+            KeyboardRowSpec(page[1].map { textKey(it) } + KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter)),
             KeyboardRowSpec(
                 listOf(
                     modeKey("ABC", KeyboardKeyAction.ModeLetters, false),
+                    shiftKey("Shift", active = false),
                     KeyboardKeySpec("esc-symbols", "Esc", KeyboardKeyAction.Escape),
                     modifierKey("Ctrl", KeyboardSystemModifier.Ctrl),
                     modifierKey("Fn", KeyboardSystemModifier.Fn),
-                    textKey("."),
-                    textKey(","),
-                    textKey("?"),
-                    textKey("!"),
+                    textKey(page[2][0]),
+                    textKey(page[2][1]),
+                    textKey(page[2][2]),
                     textKey("Espace", " "),
                 ),
             ),
@@ -1155,17 +1187,66 @@ object KeyboardLayoutBuilder {
         )
     }
 
-    private fun symbolRows(): List<KeyboardRowSpec> {
+    private fun symbolRows(symbolPage: Int): List<KeyboardRowSpec> {
+        val page = symbolPageRows(symbolPage)
         return listOf(
-            KeyboardRowSpec(listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "=").map { textKey(it) }),
-            KeyboardRowSpec(listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£", "¥").map { textKey(it) }),
+            KeyboardRowSpec(page[0].map { textKey(it) }),
+            KeyboardRowSpec(page[1].map { textKey(it) }),
             KeyboardRowSpec(
                 listOf(KeyboardKeySpec("esc-symbols", "Esc", KeyboardKeyAction.Escape)) +
-                    listOf(".", ",", "?", "!", "'", "`", "•").map { textKey(it) } +
+                    page[2].map { textKey(it) } +
                     KeyboardKeySpec("del-symbol-row", "Del", KeyboardKeyAction.Backspace, weight = 1.2f),
                 leadingWeight = 0.5f,
             ),
         )
+    }
+
+    private fun symbolPageRows(symbolPage: Int): List<List<String>> {
+        val pages =
+            listOf(
+                listOf(
+                    listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "="),
+                    listOf("_", "\\", "|", "~", "<", ">", "$", "€", "£", "¥"),
+                    listOf(".", ",", "?", "!", "'", "`", "•"),
+                ),
+                listOf(
+                    listOf("(", ")", "«", "»", "\"", ":", ";", "&", "@", "§"),
+                    listOf("©", "®", "™", "°", "×", "÷", "±", "≠", "≈", "∞"),
+                    listOf("…", "–", "—", "·", "¡", "¿", "‰"),
+                ),
+                listOf(
+                    listOf("←", "→", "↑", "↓", "↔", "↕", "↩", "↪", "⌫", "⌦"),
+                    listOf("✓", "✕", "★", "☆", "◆", "◇", "○", "●", "□", "■"),
+                    listOf("≤", "≥", "∑", "√", "π", "µ", "Ω"),
+                ),
+            )
+        return pages[symbolPage.floorMod(pages.size)]
+    }
+
+    private fun rankTextValues(
+        values: List<String>,
+        recents: List<String>,
+    ): List<String> {
+        val scoreByValue =
+            recents
+                .distinct()
+                .mapIndexed { index, value -> value to (recents.size - index).toLong() }
+                .toMap()
+        return KeyboardAdaptiveUsageRanker.rankByUsage(values, scoreByValue, idOf = { it })
+    }
+
+    private fun Int.floorMod(modulus: Int): Int {
+        return ((this % modulus) + modulus) % modulus
+    }
+
+    private fun isEmojiCandidate(value: String): Boolean {
+        val codePoints = value.trim().codePoints().toArray()
+        return codePoints.any { codePoint ->
+            codePoint == 0x200D ||
+                codePoint == 0xFE0F ||
+                codePoint in 0x1F000..0x1FAFF ||
+                codePoint in 0x2600..0x27BF
+        }
     }
 
     private fun controlRow(

@@ -1164,15 +1164,23 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
       key: const Key('keyboard-theme-studio-preview'),
       decoration: background,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
+            _previewActionRow(theme),
+            SizedBox(height: theme.rowVerticalGap.clamp(3, 8).toDouble()),
             _previewRow(theme, const ['Q', 'W', 'E', 'R', 'T']),
-            SizedBox(height: theme.rowVerticalGap),
-            _previewRow(theme, const ['A', 'S', 'D', 'F', 'G'], pinnedLabel: 'D'),
-            SizedBox(height: theme.rowVerticalGap),
+            SizedBox(height: theme.rowVerticalGap.clamp(3, 8).toDouble()),
+            _previewRow(theme, const [
+              'A',
+              'S',
+              'D',
+              'F',
+              'G',
+            ], pinnedLabel: 'D'),
+            SizedBox(height: theme.rowVerticalGap.clamp(3, 8).toDouble()),
             _previewRow(theme, const ['Shift', 'Z', 'X', 'C', '⌫']),
-            SizedBox(height: theme.rowVerticalGap),
+            SizedBox(height: theme.rowVerticalGap.clamp(3, 8).toDouble()),
             Row(
               children: [
                 Expanded(
@@ -1198,19 +1206,6 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
                 ),
               ],
             ),
-            if (theme.pressEffect != KeyboardThemePressEffect.none) ...[
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${_effectLabel(theme.pressEffect)} preview',
-                  style: TextStyle(
-                    color: Color(theme.statusTextColor),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -1242,12 +1237,37 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
     );
   }
 
+  Widget _previewActionRow(KeyboardThemeConfig theme) {
+    const labels = ['Prefs', 'Theme', 'Clip', 'Voice', 'Media'];
+    return Row(
+      children: [
+        for (var i = 0; i < labels.length; i++) ...[
+          Expanded(
+            child: FractionallySizedBox(
+              widthFactor: theme.keyWidthScale,
+              child: _previewKey(
+                theme,
+                labels[i],
+                special: true,
+                pinned: labels[i] == 'Theme',
+                compact: true,
+              ),
+            ),
+          ),
+          if (i != labels.length - 1)
+            SizedBox(width: theme.keyHorizontalGap.clamp(3, 8).toDouble()),
+        ],
+      ],
+    );
+  }
+
   Widget _previewKey(
     KeyboardThemeConfig theme,
     String label, {
     bool special = false,
     bool active = false,
     bool pinned = false,
+    bool compact = false,
   }) {
     final pressed = _pressedKeys.contains(label);
     final bg = active
@@ -1330,12 +1350,13 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
                             : null),
                 ),
                 child: SizedBox(
-                  height: 30,
+                  height: compact ? 24 : 28,
                   child: Center(
                     child: Text(
                       label,
                       style: TextStyle(
                         color: labelColor,
+                        fontSize: compact ? 11 : null,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -1350,6 +1371,12 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
                     ),
                   ),
                 ),
+              if (theme.presetId == KeyboardThemePresetCatalog.minimalContrast)
+                const Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(painter: _HazardBorderPainter()),
+                  ),
+                ),
               if (pinned) _ThemePinnedBadge(keyColor: Color(bg)),
             ],
           ),
@@ -1357,6 +1384,41 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
       ),
     );
   }
+}
+
+class _HazardBorderPainter extends CustomPainter {
+  const _HazardBorderPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final clip = RRect.fromRectAndRadius(
+      Offset.zero & size,
+      const Radius.circular(4),
+    );
+    canvas.save();
+    canvas.clipRRect(clip);
+    final paint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..color = const Color(0xFFFFD400);
+    canvas.drawRRect(clip.deflate(1.5), paint);
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..color = Colors.black;
+    for (var x = -size.height; x < size.width + size.height; x += 14) {
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        paint,
+      );
+    }
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _HazardBorderPainter oldDelegate) => false;
 }
 
 Color _contrastTextColor(Color background) {
@@ -1377,17 +1439,80 @@ class _ThemePinnedBadge extends StatelessWidget {
         ? Colors.white
         : Colors.black;
     return Positioned(
-      top: 5,
-      right: 5,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: baseColor,
-          shape: BoxShape.circle,
-          border: Border.all(color: borderColor, width: 1),
+      top: 3,
+      right: 3,
+      child: CustomPaint(
+        size: const Size(12, 12),
+        painter: _PinnedBadgePainter(
+          baseColor: baseColor,
+          accentColor: borderColor,
         ),
-        child: const SizedBox(width: 8, height: 8),
       ),
     );
+  }
+}
+
+class _PinnedBadgePainter extends CustomPainter {
+  const _PinnedBadgePainter({
+    required this.baseColor,
+    required this.accentColor,
+  });
+
+  final Color baseColor;
+  final Color accentColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..isAntiAlias = true;
+    final center = Offset(size.width * .55, size.height * .45);
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(-math.pi / 4);
+    paint
+      ..style = PaintingStyle.fill
+      ..color = baseColor;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset.zero,
+          width: size.width * .45,
+          height: size.height * .42,
+        ),
+        const Radius.circular(2),
+      ),
+      paint,
+    );
+    paint.color = accentColor;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(0, -size.height * .25),
+          width: size.width * .3,
+          height: size.height * .16,
+        ),
+        const Radius.circular(1),
+      ),
+      paint,
+    );
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset.zero, Offset(0, size.height * .42), paint);
+    paint.style = PaintingStyle.fill;
+    final tip = Path()
+      ..moveTo(0, size.height * .55)
+      ..lineTo(-size.width * .1, size.height * .38)
+      ..lineTo(size.width * .1, size.height * .38)
+      ..close();
+    canvas.drawPath(tip, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _PinnedBadgePainter oldDelegate) {
+    return oldDelegate.baseColor != baseColor ||
+        oldDelegate.accentColor != accentColor;
   }
 }
 

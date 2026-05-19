@@ -5,6 +5,7 @@ import com.winflowz_app.winflowz_app.ime.KeyboardKeyAction
 import com.winflowz_app.winflowz_app.ime.KeyboardKeySpec
 import com.winflowz_app.winflowz_app.ime.KeyboardLayoutMode
 import com.winflowz_app.winflowz_app.ime.KeyboardPanelMode
+import com.winflowz_app.winflowz_app.ime.KeyboardClipboardEntry
 import com.winflowz_app.winflowz_app.ime.KeyboardTextRule
 
 enum class KeyboardActionLongPressBehavior(
@@ -59,6 +60,9 @@ data class KeyboardActionRowSpec(
 data class KeyboardActionProviderContext(
     val descriptor: KeyboardActionDescriptor,
     val fieldPolicy: KeyboardFieldPolicy,
+    val recentEmojis: List<String> = emptyList(),
+    val recentSymbols: List<String> = emptyList(),
+    val clipboardEntries: List<KeyboardClipboardEntry> = emptyList(),
     val snippets: List<KeyboardTextRule> = emptyList(),
 )
 
@@ -118,6 +122,9 @@ data class KeyboardActionEnvironment(
     val voiceAllowed: Boolean,
     val snippetsAllowed: Boolean,
     val mediaControlsEnabled: Boolean,
+    val recentEmojis: List<String> = emptyList(),
+    val recentSymbols: List<String> = emptyList(),
+    val clipboardEntries: List<KeyboardClipboardEntry> = emptyList(),
     val snippets: List<KeyboardTextRule> = emptyList(),
 )
 
