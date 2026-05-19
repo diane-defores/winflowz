@@ -19,8 +19,20 @@ class KeyboardVoiceController(
     private val onState: (String) -> Unit,
     private val onResult: (String) -> Unit,
 ) {
-    private companion object {
+    companion object {
         const val LOCAL_RUNTIME_STARTUP_TIMEOUT_MS = 10_000L
+
+        fun androidFallbackStatus(
+            phase: String,
+            fallbackReason: String?,
+        ): String {
+            val reason =
+                fallbackReason
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() && it != "none" }
+                    ?: "missing_pack"
+            return "Android speech fallback: $phase ($reason)"
+        }
     }
 
     private enum class LocalRuntimeStartResult {
@@ -81,7 +93,7 @@ class KeyboardVoiceController(
             localStartDecision.lastErrorCode,
             localStartDecision.fallbackReason,
         )
-        onState("Using Android speech fallback")
+        onState(androidFallbackStatus("starting", localStartDecision.fallbackReason))
         startAndroidFallback(
             localStartDecision.lastErrorCode,
             localStartDecision.fallbackReason,
@@ -173,18 +185,18 @@ class KeyboardVoiceController(
                 ?.trim()
                 ?.ifBlank { null }
                 ?: if (lastErrorCode == "none") "missing_pack" else lastErrorCode
-        onState("Using Android speech fallback")
+        onState(androidFallbackStatus("starting", activeAndroidFallbackReason))
         val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
         recognizer = speechRecognizer
         speechRecognizer.setRecognitionListener(
             object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
                     listening = true
-                    onState("Listening")
+                    onState(androidFallbackStatus("listening", activeAndroidFallbackReason))
                 }
 
                 override fun onBeginningOfSpeech() {
-                    onState("Recording")
+                    onState(androidFallbackStatus("recording", activeAndroidFallbackReason))
                 }
 
                 override fun onRmsChanged(rmsdB: Float) = Unit
@@ -207,17 +219,17 @@ class KeyboardVoiceController(
                     destroy()
                     if (didTimeout) {
                         recordAndroidFallback("runtime_timeout", "runtime_timeout")
-                        onState("Dictation timeout")
+                        onState(androidFallbackStatus("timeout", "runtime_timeout"))
                     } else if (wasManualStop && !wasPaused && fallback.isNotEmpty()) {
                         recordAndroidFallback("none", fallbackReason)
                         onResult(fallback)
-                        onState("Inserted dictation")
+                        onState(androidFallbackStatus("inserted", fallbackReason))
                     } else if (wasPaused) {
                         recordAndroidFallback("none")
-                        onState("Dictation paused")
+                        onState(androidFallbackStatus("paused", fallbackReason))
                     } else {
                         recordAndroidFallback("runtime_load_failed")
-                        onState("Dictation failed")
+                        onState(androidFallbackStatus("failed", "runtime_load_failed"))
                     }
                 }
 
@@ -239,17 +251,22 @@ class KeyboardVoiceController(
                     destroy()
                     if (didTimeout) {
                         recordAndroidFallback("runtime_timeout", "runtime_timeout")
-                        onState("Dictation timeout")
+                        onState(androidFallbackStatus("timeout", "runtime_timeout"))
                     } else if (best.isNotEmpty()) {
                         recordAndroidFallback("none", fallbackReason)
                         onResult(best)
-                        onState(if (wasPaused) "Dictation paused" else "Inserted dictation")
+                        onState(
+                            androidFallbackStatus(
+                                if (wasPaused) "paused" else "inserted",
+                                fallbackReason,
+                            ),
+                        )
                     } else if (wasPaused) {
                         recordAndroidFallback("none")
-                        onState("Dictation paused")
+                        onState(androidFallbackStatus("paused", fallbackReason))
                     } else {
                         recordAndroidFallback("missing_pack")
-                        onState("No speech detected")
+                        onState(androidFallbackStatus("no speech detected", "missing_pack"))
                     }
                 }
 

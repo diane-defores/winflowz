@@ -573,7 +573,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(() {
         _overlayStatus = status;
-        _message = 'Overlay recording started.';
+        _message = status.running
+            ? 'Overlay recording started.'
+            : 'Overlay start requested, but the native service is not running yet '
+                  '(state=${status.serviceState}). Copy diagnostics if it stays blocked.';
       });
       AppDiagnostics.record(
         'overlay_start_result',

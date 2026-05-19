@@ -1128,6 +1128,15 @@ class _LanguagePackTile extends StatelessWidget {
       'installed=${entry.installedSizeMb}MB',
       'state=${installed.installState.wireName}',
     ].join(' | ');
+    final canRemove =
+        installed.installState != InstalledLanguagePackState.notInstalled &&
+        installed.installState != InstalledLanguagePackState.removed;
+    final removeLabel =
+        installed.installState == InstalledLanguagePackState.removed
+        ? 'Removed'
+        : installed.installState == InstalledLanguagePackState.notInstalled
+        ? 'Not installed'
+        : 'Remove';
     return DecoratedBox(
       decoration: BoxDecoration(
         border: Border.all(color: theme.colorScheme.outlineVariant),
@@ -1261,9 +1270,9 @@ class _LanguagePackTile extends StatelessWidget {
                   label: const Text('Mark corrupted'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: onRemove,
+                  onPressed: canRemove ? onRemove : null,
                   icon: const Icon(Icons.delete_outline),
-                  label: const Text('Remove'),
+                  label: Text(removeLabel),
                 ),
               ],
             ),

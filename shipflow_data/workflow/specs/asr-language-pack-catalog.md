@@ -5,8 +5,8 @@ artifact_version: "0.1.0"
 project: "winflowz_app"
 created: "2026-05-14"
 created_at: "2026-05-14 22:30:00 UTC"
-updated: "2026-05-18"
-updated_at: "2026-05-18 18:43:18 UTC"
+updated: "2026-05-19"
+updated_at: "2026-05-19 12:49:42 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -50,7 +50,7 @@ evidence:
   - "User decision 2026-05-14: do not bundle all models in the APK; downloading after install is preferred."
   - "Current code already includes Android IME voice capture through KeyboardVoiceController using Android SpeechRecognizer, proving a fallback path exists but not a local-model catalog."
   - "Current code already exposes Settings and diagnostics surfaces for keyboard and overlay status, which can host pack-management state."
-next_step: "/sf-ci-build Android APK for ASR Language Pack Catalog"
+next_step: "/sf-prod Android APK build for ASR catalogue QA fixes"
 ---
 
 # Title
@@ -411,14 +411,18 @@ None.
 | 2026-05-18 17:44:00 UTC | sf-start | GPT-5 Codex | Continued first-spec implementation by adding a native local voice engine contract (`KeyboardLocalVoiceEngine`), wiring it into `KeyboardVoiceController`, preserving fallback reasons after Android fallback success, and refusing unsupported local engines with stable diagnostics instead of exposing fake local success. Checked current `sherpa-onnx` official docs for Android/Kotlin integration constraints. | Partial: local engine selection now has an explicit runtime adapter boundary and safe failure behavior, but the actual Sherpa JNI/audio-recognition implementation still needs Android CI/device work. | /sf-start ASR Language Pack Catalog |
 | 2026-05-18 18:02:43 UTC | sf-start | GPT-5 Codex | Reconciled the first-spec scope against the implemented code and local proof: catalogue/domain contract, provider state machine, install preflight/storage policy, explicit cloud opt-in, first-micro no-pack prompt, Settings section, diagnostics, native bridge/runtime status propagation, timeout/fallback mapping, and benchmark matrix are implemented. Confirmed that real ASR engine inference is explicitly out of scope for this catalogue spec and belongs to `asr-local-runtime-engine-integration.md`. Re-ran targeted Flutter tests and analyzer. | Implemented for this spec scope: local catalogue and runtime-selection contract are in place; remaining real Sherpa/audio inference work is a separate runtime-engine chantier, while Android device/CI proof remains for `sf-verify`. | /sf-verify shipflow_data/workflow/specs/asr-language-pack-catalog.md |
 | 2026-05-18 18:43:18 UTC | sf-verify | GPT-5 Codex | Verified the first-spec scope after reconciliation: checked contract boundaries, code surfaces, bug files, docs coherence, targeted Flutter tests, analyzer, and whitespace hygiene. Did not run Android/Gradle locally because project guardrails require Blacksmith/GitHub Actions plus physical-device QA for APK/IME behavior. | Partial: `sf-start` remains implemented for the catalogue spec scope and local proof is green, but ship-readiness is not fully verified until Android CI/device evidence covers IME first-micro, install/fallback, timeout diagnostics, and no silent cloud fallback on a real APK. | /sf-ci-build Android APK for ASR Language Pack Catalog |
+| 2026-05-19 10:35:36 UTC | sf-prod | GPT-5 Codex | Verified GitHub Actions/Blacksmith run `26091472372` for SHA `37116dd1e4dbd8596d6e3937187c678c6fe57472`: detect changes, Flutter Analyze, Flutter Test, Firestore deploy, and Build Debug APK all completed successfully. Confirmed artifact `winflowz_app-debug-apk` ID `7081068119`, size `92581652` bytes, uploaded digest `0458d7160c905466aa496ffba9ee3ae9d52d69bb6a79fc4bc2eb78fcfd8f50d5`, and web health `200` for `https://winflowz-app.vercel.app/`. | Verified CI/APK production evidence: Android debug APK build exists from Blacksmith; remaining proof is physical-device IME QA for first-micro prompt, install/fallback behavior, timeout diagnostics, and no silent cloud fallback. | /sf-test Android ASR catalogue APK on physical device |
+| 2026-05-19 11:29:41 UTC | sf-test | GPT-5 Codex | Logged Android physical-device QA from APK sha `37116dd` run `26091472372`: Settings catalogue visible with French/Hindi/English; diagnostic confirms cloud fallback disabled and Android SpeechRecognizer fallback metadata; action-bar mic dictation works but fallback mode is not visible enough; Hindi remove action appears no-op; overlay still blocks the interface. | Failed QA with actionable bugs: opened `BUG-2026-05-19-001` for keyboard mic fallback explanation, opened `BUG-2026-05-19-002` for Hindi remove no-op, and reopened `BUG-2026-05-11-001` for overlay behavior. | /sf-fix Android ASR catalogue physical-device QA failures |
+| 2026-05-19 12:31:35 UTC | sf-fix | GPT-5 Codex | Fixed Android ASR catalogue physical-device QA failures that could be handled directly: persistent IME Android-fallback status copy, no misleading remove action for absent/removed packs, and overlay non-focusable/touch-modal flags plus honest Settings start copy. | Fix attempted: Flutter analyzer and targeted tests pass; local Android Gradle unit command is blocked by local AAPT2 runner incompatibility, so Android proof must come from Blacksmith APK and physical-device retest. | /sf-ship Android ASR catalogue physical-device QA fixes |
+| 2026-05-19 12:49:42 UTC | sf-ship | GPT-5 Codex | Quick-shipped ASR catalogue physical-device QA fixes for CI/APK iteration after local checks. | Shipped for iteration: commit/push will trigger Blacksmith Android build; linked bugs remain `fix-attempted` and require APK retest before closure. | /sf-prod Android APK build for ASR catalogue QA fixes |
 
 # Current Chantier Flow
 
 - `sf-spec`: done - latest draft captured the current product direction, deterministic storage policy, data contract, cloud fallback trust boundary, and language doctrine note.
 - `sf-ready`: ready - readiness gate passed after data contract and cloud fallback trust-boundary corrections.
 - `sf-start`: implemented - catalogue/domain contract, local-first provider, durable pack state, deterministic SDK/ABI/RAM/storage preflight, install/retry/update/corruption state transitions, explicit cloud fallback consent, Settings "On-device Speech" management, first-micro no-pack prompt, native bridge/runtime status propagation, timeout/fallback diagnostics, runtime adapter boundary, and benchmark MVP matrix are in place. Real ASR engine inference is intentionally outside this catalogue spec and is tracked by `shipflow_data/workflow/specs/asr-local-runtime-engine-integration.md`.
-- `sf-verify`: partial - local Flutter checks pass for the catalogue/runtime-selection contract and `git diff --check` is clean, but Android CI/device proof is still missing for APK/IME behavior. The separate runtime-engine spec is draft and remains out of scope for this catalogue verification.
-- `sf-end`: not launched - closeout depends on Android CI/device proof or an explicit decision to close with that proof gap documented.
-- `sf-ship`: not launched - shipping is blocked on Android APK/IME proof and benchmark-backed language claims.
+- `sf-verify`: partial - local Flutter checks pass and Android CI/Blacksmith produced a debug APK artifact; physical-device QA failures now have fix attempts, but Android CI/APK proof and real-device retest are still required before closure. The separate runtime-engine spec is draft and remains out of scope for this catalogue verification.
+- `sf-end`: not launched - closeout depends on CI/APK proof and physical-device retest for the QA fixes.
+- `sf-ship`: quick-shipped - QA fixes pushed for CI/APK iteration only; not a final product-complete ship because linked bugs remain pending physical-device retest.
 
-Next command: `/sf-ci-build Android APK for ASR Language Pack Catalog`
+Next command: `/sf-prod Android APK build for ASR catalogue QA fixes`

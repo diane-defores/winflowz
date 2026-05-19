@@ -5,6 +5,18 @@ import org.junit.Test
 
 class KeyboardVoiceRuntimeStatusTest {
     @Test
+    fun `android fallback status keeps mode and reason visible`() {
+        assertEquals(
+            "Android speech fallback: listening (missing_pack)",
+            KeyboardVoiceController.androidFallbackStatus("listening", "missing_pack"),
+        )
+        assertEquals(
+            "Android speech fallback: recording (missing_pack)",
+            KeyboardVoiceController.androidFallbackStatus("recording", "none"),
+        )
+    }
+
+    @Test
     fun `voice runtime status exposes explicit diagnostic map`() {
         val status =
             KeyboardVoiceRuntimeStatus.normalized(

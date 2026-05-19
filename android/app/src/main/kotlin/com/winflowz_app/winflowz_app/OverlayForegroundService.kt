@@ -261,7 +261,8 @@ class OverlayForegroundService : Service() {
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             type,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT,
         ).apply {
@@ -389,12 +390,9 @@ class OverlayForegroundService : Service() {
     private fun setWindowStateForOverlay(state: String) {
         val params = layoutParams ?: return
         params.flags =
-            if (state == "collapsed") {
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            } else {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            }
         params.alpha = overlayOpacity
         try {
             windowManager?.updateViewLayout(overlayView, params)

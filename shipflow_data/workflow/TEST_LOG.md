@@ -135,3 +135,32 @@ Environment: Android APK on real phone.
 - `git diff --check`: PASS.
 - `cd android && ./gradlew :app:compileDebugKotlin -x :app:processDebugResources`: PASS.
 - Manual Android APK verification: pending.
+
+## 2026-05-19 - Android ASR catalogue APK physical-device QA
+
+- Scope: spec shipflow_data/workflow/specs/asr-language-pack-catalog.md
+- Environment: android-physical-device, debug APK sha=37116dd run=26091472372 ref=master
+- Tester: user
+- Source: sf-test
+- Status: fail
+- Confidence: high
+- Result summary: On-device Speech catalogue is visible with French, Hindi, and English entries and diagnostics confirm cloud fallback disabled; keyboard action-bar mic launches Android SpeechRecognizer successfully but without enough user-visible fallback/mode explanation, Hindi pack remove appears no-op, and overlay start still blocks the interface without visible recording result.
+- Bug pointer: BUG-2026-05-19-001 -> shipflow_data/workflow/bugs/BUG-2026-05-19-001.md; BUG-2026-05-19-002 -> shipflow_data/workflow/bugs/BUG-2026-05-19-002.md; BUG-2026-05-11-001 -> shipflow_data/workflow/bugs/BUG-2026-05-11-001.md
+- Evidence pointer: user report and redacted diagnostic copied in chat, generated_at_utc=2026-05-19T11:29:02.175437Z
+- Follow-up: /sf-fix Android ASR catalogue physical-device QA failures
+
+## 2026-05-19 - Android ASR catalogue QA fix attempt
+
+- Scope: spec shipflow_data/workflow/specs/asr-language-pack-catalog.md
+- Source: sf-fix
+- Status: fix-attempted; Android APK retest pending
+- Fixes applied:
+  - Keyboard mic fallback status now stays explicit during Android SpeechRecognizer start/listen/record/result states.
+  - Removed/not-installed language packs no longer expose an active misleading Remove action; provider no-ops repeated removal.
+  - Overlay window keeps non-focusable/non-touch-modal flags across states and Settings no longer claims started when returned status is running=false.
+- Local validation:
+  - flutter analyze: PASS
+  - flutter test test/language_pack_catalog_test.dart test/settings_platform_controllers_test.dart test/widget_test.dart: PASS
+  - git diff --check: PASS
+  - ./gradlew :app:testDebugUnitTest --tests '*KeyboardVoiceRuntimeStatusTest': BLOCKED locally by AAPT2 runner incompatibility before unit test execution; CI/Blacksmith required for Android proof.
+- Follow-up: /sf-ship Android ASR catalogue physical-device QA fixes, then /sf-test Android ASR catalogue APK physical-device retest

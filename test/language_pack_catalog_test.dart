@@ -491,6 +491,36 @@ void main() {
     );
   });
 
+  test('remove is a no-op for packs already absent or removed', () async {
+    final container = _newContainer();
+    addTearDown(container.dispose);
+
+    final notifier = container.read(languagePackCatalogProvider.notifier);
+    final entry = _firstInstallableEntry(container);
+
+    expect(notifier.remove(entry), isFalse);
+
+    await notifier.installPackWithPreflight(
+      entry: entry,
+      device: const LanguagePackDeviceProfile(
+        androidSdk: 35,
+        primaryAbi: 'arm64-v8a',
+        totalCapacityMb: 65536,
+        freeSpaceMb: 8192,
+        ramMb: 6144,
+      ),
+    );
+    expect(notifier.remove(entry), isTrue);
+    expect(
+      container
+          .read(languagePackCatalogProvider)
+          .installedStateFor(entry)
+          .installState,
+      InstalledLanguagePackState.removed,
+    );
+    expect(notifier.remove(entry), isFalse);
+  });
+
   test('native runtime status event updates installed pack runtime', () async {
     final container = _newContainer();
     addTearDown(container.dispose);

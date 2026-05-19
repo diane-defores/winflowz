@@ -557,7 +557,12 @@ class LanguagePackCatalogNotifier extends Notifier<LanguagePackCatalogState> {
     );
   }
 
-  void remove(LanguagePackCatalogEntry entry) {
+  bool remove(LanguagePackCatalogEntry entry) {
+    final current = _stateFor(entry);
+    if (current.installState == InstalledLanguagePackState.notInstalled ||
+        current.installState == InstalledLanguagePackState.removed) {
+      return false;
+    }
     final retries = Map<String, int>.of(state.retryCounts)
       ..remove(entry.packId);
     state = state.copyWith(
@@ -574,6 +579,7 @@ class LanguagePackCatalogNotifier extends Notifier<LanguagePackCatalogState> {
       },
     );
     _persistState();
+    return true;
   }
 
   bool setModelArtifactPath(
