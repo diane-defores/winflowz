@@ -1377,7 +1377,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
                     child: CustomPaint(painter: _HazardBorderPainter()),
                   ),
                 ),
-              if (pinned) _ThemePinnedBadge(keyColor: Color(bg)),
+              if (pinned) _ThemePinnedBadge(theme: theme, keyColor: Color(bg)),
             ],
           ),
         ),
@@ -1426,8 +1426,9 @@ Color _contrastTextColor(Color background) {
 }
 
 class _ThemePinnedBadge extends StatelessWidget {
-  const _ThemePinnedBadge({required this.keyColor});
+  const _ThemePinnedBadge({required this.theme, required this.keyColor});
 
+  final KeyboardThemeConfig theme;
   final Color keyColor;
 
   @override
@@ -1444,6 +1445,7 @@ class _ThemePinnedBadge extends StatelessWidget {
       child: CustomPaint(
         size: const Size(12, 12),
         painter: _PinnedBadgePainter(
+          presetId: theme.presetId,
           baseColor: baseColor,
           accentColor: borderColor,
         ),
@@ -1454,10 +1456,12 @@ class _ThemePinnedBadge extends StatelessWidget {
 
 class _PinnedBadgePainter extends CustomPainter {
   const _PinnedBadgePainter({
+    required this.presetId,
     required this.baseColor,
     required this.accentColor,
   });
 
+  final String presetId;
   final Color baseColor;
   final Color accentColor;
 
@@ -1468,50 +1472,140 @@ class _PinnedBadgePainter extends CustomPainter {
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.rotate(-math.pi / 4);
+    switch (presetId) {
+      case KeyboardThemePresetCatalog.pixelCandy:
+        _drawCandy(canvas, paint, size);
+      case KeyboardThemePresetCatalog.sunsetGradient:
+        _drawCloud(canvas, paint, size);
+      case KeyboardThemePresetCatalog.glassMint:
+        _drawDrop(canvas, paint, size);
+      case KeyboardThemePresetCatalog.midnightAurora:
+        _drawStar(canvas, paint, size);
+      default:
+        _drawLed(canvas, paint, size);
+    }
+    canvas.restore();
+  }
+
+  void _drawCandy(Canvas canvas, Paint paint, Size size) {
     paint
       ..style = PaintingStyle.fill
-      ..color = baseColor;
+      ..color = accentColor;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
           center: Offset.zero,
-          width: size.width * .45,
-          height: size.height * .42,
+          width: size.width * .72,
+          height: size.height * .46,
         ),
         const Radius.circular(2),
       ),
       paint,
     );
-    paint.color = accentColor;
+    paint.color = baseColor;
+    canvas.drawCircle(Offset.zero, size.width * .17, paint);
+    final left = Path()
+      ..moveTo(-size.width * .36, 0)
+      ..lineTo(-size.width * .67, -size.height * .25)
+      ..lineTo(-size.width * .67, size.height * .25)
+      ..close();
+    final right = Path()
+      ..moveTo(size.width * .36, 0)
+      ..lineTo(size.width * .67, -size.height * .25)
+      ..lineTo(size.width * .67, size.height * .25)
+      ..close();
+    canvas.drawPath(left, paint);
+    canvas.drawPath(right, paint);
+  }
+
+  void _drawCloud(Canvas canvas, Paint paint, Size size) {
+    paint
+      ..style = PaintingStyle.fill
+      ..color = baseColor;
+    canvas.drawCircle(
+      Offset(-size.width * .25, size.height * .08),
+      size.width * .27,
+      paint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * .08, -size.height * .08),
+      size.width * .34,
+      paint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * .42, size.height * .1),
+      size.width * .25,
+      paint,
+    );
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
-          center: Offset(0, -size.height * .25),
-          width: size.width * .3,
-          height: size.height * .16,
+          center: Offset(size.width * .08, size.height * .2),
+          width: size.width * 1.12,
+          height: size.height * .38,
         ),
-        const Radius.circular(1),
+        const Radius.circular(2),
       ),
       paint,
     );
+  }
+
+  void _drawLed(Canvas canvas, Paint paint, Size size) {
     paint
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(Offset.zero, Offset(0, size.height * .42), paint);
-    paint.style = PaintingStyle.fill;
-    final tip = Path()
-      ..moveTo(0, size.height * .55)
-      ..lineTo(-size.width * .1, size.height * .38)
-      ..lineTo(size.width * .1, size.height * .38)
+      ..style = PaintingStyle.fill
+      ..color = baseColor;
+    canvas.drawCircle(Offset.zero, size.width * .52, paint);
+    paint.color = accentColor;
+    canvas.drawCircle(Offset.zero, size.width * .28, paint);
+  }
+
+  void _drawDrop(Canvas canvas, Paint paint, Size size) {
+    paint
+      ..style = PaintingStyle.fill
+      ..color = accentColor;
+    final drop = Path()
+      ..moveTo(0, -size.height * .5)
+      ..cubicTo(
+        size.width * .42,
+        -size.height * .08,
+        size.width * .33,
+        size.height * .42,
+        0,
+        size.height * .42,
+      )
+      ..cubicTo(
+        -size.width * .33,
+        size.height * .42,
+        -size.width * .42,
+        -size.height * .08,
+        0,
+        -size.height * .5,
+      )
       ..close();
-    canvas.drawPath(tip, paint);
-    canvas.restore();
+    canvas.drawPath(drop, paint);
+  }
+
+  void _drawStar(Canvas canvas, Paint paint, Size size) {
+    paint
+      ..style = PaintingStyle.fill
+      ..color = accentColor;
+    final star = Path()
+      ..moveTo(0, -size.height * .5)
+      ..lineTo(size.width * .15, -size.height * .15)
+      ..lineTo(size.width * .5, 0)
+      ..lineTo(size.width * .15, size.height * .15)
+      ..lineTo(0, size.height * .5)
+      ..lineTo(-size.width * .15, size.height * .15)
+      ..lineTo(-size.width * .5, 0)
+      ..lineTo(-size.width * .15, -size.height * .15)
+      ..close();
+    canvas.drawPath(star, paint);
   }
 
   @override
   bool shouldRepaint(covariant _PinnedBadgePainter oldDelegate) {
-    return oldDelegate.baseColor != baseColor ||
+    return oldDelegate.presetId != presetId ||
+        oldDelegate.baseColor != baseColor ||
         oldDelegate.accentColor != accentColor;
   }
 }

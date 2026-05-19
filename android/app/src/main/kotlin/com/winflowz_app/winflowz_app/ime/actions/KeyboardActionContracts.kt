@@ -85,35 +85,6 @@ data class KeyboardActionBarState(
     val longPressBehavior: KeyboardActionLongPressBehavior = KeyboardActionLongPressBehavior.AttachContextRow,
 )
 
-fun KeyboardActionBarState.withAttachedClipboardActionRow(): KeyboardActionBarState {
-    val nextRows =
-        if (attachedRows.any { it.dedupeKey == CLIPBOARD_ACTION_ROW.dedupeKey }) {
-            attachedRows
-        } else {
-            attachedRows + CLIPBOARD_ACTION_ROW
-        }
-    val nextPages =
-        if (CLIPBOARD_ACTION_ROW.rowId in rowPageById) {
-            rowPageById
-        } else {
-            rowPageById + (CLIPBOARD_ACTION_ROW.rowId to 0)
-        }
-    if (nextRows == attachedRows && nextPages == rowPageById) {
-        return this
-    }
-    return copy(
-        attachedRows = nextRows,
-        rowPageById = nextPages,
-    )
-}
-
-private val CLIPBOARD_ACTION_ROW =
-    KeyboardAttachedActionRowState(
-        providerActionId = "clipboard",
-        rowId = "action-row-clipboard",
-        dedupeKey = "clipboard",
-    )
-
 data class KeyboardActionEnvironment(
     val fieldPolicy: KeyboardFieldPolicy,
     val layoutMode: KeyboardLayoutMode,

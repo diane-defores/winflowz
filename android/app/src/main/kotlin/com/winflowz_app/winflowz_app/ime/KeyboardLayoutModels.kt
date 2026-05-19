@@ -699,6 +699,7 @@ object KeyboardLayoutBuilder {
 
     private fun clipboardActionKeys(idPrefix: String): List<KeyboardKeySpec> {
         return listOf(
+            KeyboardKeySpec("$idPrefix-all", "All", KeyboardKeyAction.SelectAll),
             KeyboardKeySpec("$idPrefix-cut", "Cut", KeyboardKeyAction.CutSelection),
             KeyboardKeySpec("$idPrefix-copy", "Copy", KeyboardKeyAction.CopySelection),
             KeyboardKeySpec("$idPrefix-paste", "Paste", KeyboardKeyAction.PasteClipboard),
@@ -977,6 +978,7 @@ object KeyboardLayoutBuilder {
                                 action = KeyboardKeyAction.SelectThemePreset,
                                 suggestion = preset.id,
                                 active = preset.id == request.themePresetId,
+                                pinned = true,
                                 weight = if (preset.id == KeyboardThemePresets.MINIMAL_CONTRAST) 1.25f else 1f,
                                 themePreviewConfig = previewConfig,
                             )
@@ -1068,7 +1070,7 @@ object KeyboardLayoutBuilder {
         return listOf(
             KeyboardRowSpec(listOf(textKey("@"), textKey("+"), textKey("1"), textKey("2"), textKey("3"), textKey("-"), textKey("#"), KeyboardKeySpec("del", "Del", KeyboardKeyAction.Backspace))),
             KeyboardRowSpec(listOf(textKey("?"), textKey("*"), textKey("4"), textKey("5"), textKey("6"), textKey("/"), textKey("!"), KeyboardKeySpec("enter", request.enterLabel, KeyboardKeyAction.Enter))),
-            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("7"), textKey("8"), textKey("9"), textKey("."), textKey(","), textKey("Espace", " "))),
+            KeyboardRowSpec(listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false), modifierKey("Ctrl", KeyboardSystemModifier.Ctrl), textKey("7"), textKey("8"), textKey("9"), textKey("0"), textKey(","), textKey("Espace", " "))),
         )
     }
 
@@ -1172,7 +1174,7 @@ object KeyboardLayoutBuilder {
                     textKey("7", weight = 1.1f),
                     textKey("8", weight = 1.1f),
                     textKey("9", weight = 1.1f),
-                    textKey(",", weight = 0.9f),
+                    textKey("0", weight = 0.9f),
                     textKey(";", weight = 0.9f),
                 ),
             ),

@@ -205,7 +205,7 @@ class KeyboardLayoutBuilderTest {
 
         assertEquals(listOf("@", "+", "1", "2", "3", "-", "#"), numericRows[0])
         assertEquals(listOf("?", "*", "4", "5", "6", "/", "!"), numericRows[1])
-        assertEquals(listOf(":", ".", "7", "8", "9", ",", ";"), numericRows[2])
+        assertEquals(listOf(":", ".", "7", "8", "9", "0", ";"), numericRows[2])
     }
 
     @Test
@@ -580,7 +580,7 @@ class KeyboardLayoutBuilderTest {
     }
 
     @Test
-    fun `clipboard panel exposes actions and recent entries without all button`() {
+    fun `clipboard panel exposes select all beside cut and recent entries`() {
         val snapshot =
             KeyboardLayoutBuilder.build(
                 KeyboardLayoutRequest(
@@ -616,9 +616,12 @@ class KeyboardLayoutBuilderTest {
 
         assertEquals(3, snapshot.panelRowCount)
         assertFalse(actionRow.horizontalScrollable)
-        assertTrue(actions.containsAll(listOf(KeyboardKeyAction.CutSelection, KeyboardKeyAction.CopySelection, KeyboardKeyAction.PasteClipboard, KeyboardKeyAction.PastePlainClipboard)))
+        assertTrue(actions.containsAll(listOf(KeyboardKeyAction.SelectAll, KeyboardKeyAction.CutSelection, KeyboardKeyAction.CopySelection, KeyboardKeyAction.PasteClipboard, KeyboardKeyAction.PastePlainClipboard)))
         assertFalse(actions.contains(KeyboardKeyAction.ToggleClipboardPanel))
-        assertFalse(actionRow.keys.any { it.label == "All" || it.action == KeyboardKeyAction.SelectAll })
+        assertEquals("All", actionRow.keys[0].label)
+        assertEquals(KeyboardKeyAction.SelectAll, actionRow.keys[0].action)
+        assertEquals("Cut", actionRow.keys[1].label)
+        assertEquals(KeyboardKeyAction.CutSelection, actionRow.keys[1].action)
         assertFalse(actionRow.keys.any { it.label == "History" })
         assertTrue(labels.contains("Pin Latest copied text"))
         assertTrue(labels.contains("Pin Pinned account id"))
@@ -798,6 +801,44 @@ class KeyboardLayoutBuilderTest {
         assertTrue(snapshot.rows.drop(1 + snapshot.panelRowCount).none { row ->
             row.keys.any { it.action == KeyboardKeyAction.Text || it.action == KeyboardKeyAction.KeyValue }
         })
+    }
+
+    @Test
+    fun `theme panel previews expose the theme pin badge for each preset`() {
+        val snapshot =
+            KeyboardLayoutBuilder.build(
+                KeyboardLayoutRequest(
+                    mode = KeyboardLayoutMode.Letters,
+                    panel = KeyboardPanelMode.ThemeSettings,
+                    shifted = false,
+                    fieldContext = KeyboardFieldContextMode.Text,
+                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    cornerModeEnabled = true,
+                    debugTouchOverlayEnabled = false,
+                    doubleSpacePeriodEnabled = true,
+                    punctuationAutoSpacingEnabled = true,
+                    emojiCategory = KeyboardEmojiCategory.Recents,
+                    recentEmojis = emptyList(),
+                    enterLabel = "Enter",
+                    clipboardAllowed = true,
+                    voiceAllowed = true,
+                    snippetsAllowed = true,
+                    suggestions = emptyList(),
+                    themePresetId = KeyboardThemePresets.GLASS_MINT,
+                ),
+            )
+
+        val themeKeys =
+            snapshot.rows
+                .drop(1)
+                .take(snapshot.panelRowCount)
+                .flatMap { row -> row.keys }
+                .filter { it.action == KeyboardKeyAction.SelectThemePreset }
+
+        assertEquals(KeyboardThemePresets.all.size, themeKeys.size)
+        assertTrue(themeKeys.all { it.pinned })
+        assertTrue(themeKeys.all { it.themePreviewConfig?.presetId == it.suggestion })
+        assertTrue(themeKeys.single { it.suggestion == KeyboardThemePresets.GLASS_MINT }.active)
     }
 
     @Test

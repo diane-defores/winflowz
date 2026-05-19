@@ -1248,6 +1248,10 @@ class KeyboardPreviewSnapshot {
         return [
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightCompact,
+            keys: _clipboardActionKeys(),
+          ),
+          KeyboardPreviewRow(
+            height: AppKeyboardPreview.rowHeightCompact,
             keys: _clipboardPreviewKeys(take: 6),
             horizontalScrollable: true,
           ),
@@ -1511,7 +1515,7 @@ class KeyboardPreviewSnapshot {
               KeyboardPreviewKey(label: '7', weight: 1.1),
               KeyboardPreviewKey(label: '8', weight: 1.1),
               KeyboardPreviewKey(label: '9', weight: 1.1),
-              KeyboardPreviewKey(label: ',', special: true, weight: .9),
+              KeyboardPreviewKey(label: '0', weight: .9),
               KeyboardPreviewKey(label: ';', special: true, weight: .9),
             ],
           ),
@@ -1827,6 +1831,16 @@ class KeyboardPreviewSnapshot {
       );
     }
     return rows;
+  }
+
+  List<KeyboardPreviewKey> _clipboardActionKeys() {
+    return [
+      _unsupportedKey('All'),
+      _unsupportedKey('Cut'),
+      _unsupportedKey('Copy'),
+      _unsupportedKey('Paste'),
+      _unsupportedKey('Plain'),
+    ];
   }
 
   List<KeyboardPreviewKey> _clipboardPreviewKeys({required int take}) {

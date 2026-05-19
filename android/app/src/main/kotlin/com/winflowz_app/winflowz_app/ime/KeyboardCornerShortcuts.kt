@@ -261,8 +261,8 @@ object KeyboardCornerPresets {
 
     val all: List<KeyboardCornerPreset> =
         listOf(
-            KeyboardCornerPreset(FRENCH_ACCENTS, "French accents", frenchAccentShortcuts()),
-            KeyboardCornerPreset(PUNCTUATION, "Punctuation corners", punctuationShortcuts()),
+            KeyboardCornerPreset(FRENCH_ACCENTS, "Smart French", smartFrenchShortcuts()),
+            KeyboardCornerPreset(PUNCTUATION, "Punctuation + navigation", punctuationShortcuts()),
             KeyboardCornerPreset(FRENCH_PUNCTUATION, "French accents + punctuation", frenchAccentShortcuts() + punctuationShortcuts()),
             KeyboardCornerPreset(DEVELOPER_SYMBOLS, "Developer symbols", developerShortcuts()),
             KeyboardCornerPreset(NONE, "No corners", emptyList()),
@@ -278,12 +278,14 @@ object KeyboardCornerPresets {
         }
     }
 
+    private fun smartFrenchShortcuts(): List<KeyboardCornerShortcut> {
+        return frenchAccentShortcuts() + punctuationShortcuts()
+    }
+
     private fun frenchAccentShortcuts(): List<KeyboardCornerShortcut> {
         return listOf(
             shortcut("letter-a", KeyboardCornerSlot.TopLeft, "à"),
             shortcut("letter-a", KeyboardCornerSlot.TopRight, "â"),
-            shortcut("letter-a", KeyboardCornerSlot.BottomLeft, "ä"),
-            shortcut("letter-a", KeyboardCornerSlot.BottomRight, "æ"),
             shortcut("letter-e", KeyboardCornerSlot.TopLeft, "é"),
             shortcut("letter-e", KeyboardCornerSlot.TopRight, "è"),
             shortcut("letter-e", KeyboardCornerSlot.BottomLeft, "ê"),
@@ -291,13 +293,11 @@ object KeyboardCornerPresets {
             shortcut("letter-i", KeyboardCornerSlot.TopLeft, "î"),
             shortcut("letter-i", KeyboardCornerSlot.TopRight, "ï"),
             shortcut("letter-o", KeyboardCornerSlot.TopLeft, "ô"),
-            shortcut("letter-o", KeyboardCornerSlot.TopRight, "ö"),
+            shortcut("letter-o", KeyboardCornerSlot.TopRight, "œ"),
             shortcut("letter-u", KeyboardCornerSlot.TopLeft, "ù"),
             shortcut("letter-u", KeyboardCornerSlot.TopRight, "û"),
             shortcut("letter-u", KeyboardCornerSlot.BottomLeft, "ü"),
             shortcut("letter-c", KeyboardCornerSlot.TopLeft, "ç"),
-            shortcut("letter-n", KeyboardCornerSlot.TopLeft, "ñ"),
-            shortcut("letter-s", KeyboardCornerSlot.TopRight, "ß"),
         )
     }
 
@@ -313,8 +313,12 @@ object KeyboardCornerPresets {
             shortcut("letter-k", KeyboardCornerSlot.BottomRight, ")"),
             shortcut("letter-l", KeyboardCornerSlot.TopLeft, ":"),
             shortcut("letter-l", KeyboardCornerSlot.TopRight, ";"),
-            shortcut("letter-l", KeyboardCornerSlot.BottomLeft, "…"),
-            shortcut("letter-l", KeyboardCornerSlot.BottomRight, "—"),
+            shortcut("letter-l", KeyboardCornerSlot.BottomLeft, "\$"),
+            shortcut("letter-l", KeyboardCornerSlot.BottomRight, "€"),
+            shortcut("letter-h", KeyboardCornerSlot.TopLeft, "action:NavigateLineUp", label = "↑"),
+            shortcut("letter-h", KeyboardCornerSlot.TopRight, "action:NavigateCharRight", label = "→"),
+            shortcut("letter-h", KeyboardCornerSlot.BottomLeft, "action:NavigateCharLeft", label = "←"),
+            shortcut("letter-h", KeyboardCornerSlot.BottomRight, "action:NavigateLineDown", label = "↓"),
         )
     }
 

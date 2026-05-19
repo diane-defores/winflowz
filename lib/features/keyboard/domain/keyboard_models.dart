@@ -1385,7 +1385,7 @@ class AndroidKeyboardCornerPreset {
   factory AndroidKeyboardCornerPreset.fromMap(Map<Object?, Object?> map) {
     return AndroidKeyboardCornerPreset(
       id: map['id'] as String? ?? KeyboardCornerPresetCatalog.frenchAccents,
-      name: map['name'] as String? ?? 'French accents',
+      name: map['name'] as String? ?? 'Smart French',
     );
   }
 }
@@ -1470,8 +1470,11 @@ class KeyboardCornerPresetCatalog {
   static const none = 'none';
 
   static const presets = [
-    AndroidKeyboardCornerPreset(id: frenchAccents, name: 'French accents'),
-    AndroidKeyboardCornerPreset(id: punctuation, name: 'Punctuation corners'),
+    AndroidKeyboardCornerPreset(id: frenchAccents, name: 'Smart French'),
+    AndroidKeyboardCornerPreset(
+      id: punctuation,
+      name: 'Punctuation + navigation',
+    ),
     AndroidKeyboardCornerPreset(
       id: frenchPunctuation,
       name: 'French accents + punctuation',
@@ -1485,7 +1488,7 @@ class KeyboardCornerPresetCatalog {
 
   static List<AndroidKeyboardCornerShortcut> shortcutsFor(String presetId) {
     return switch (presetId) {
-      frenchAccents => _frenchAccentShortcuts,
+      frenchAccents => _smartFrenchShortcuts,
       punctuation => _punctuationShortcuts,
       frenchPunctuation => [
         ..._frenchAccentShortcuts,
@@ -1493,7 +1496,7 @@ class KeyboardCornerPresetCatalog {
       ],
       developerSymbols => _developerShortcuts,
       none => const [],
-      _ => _frenchAccentShortcuts,
+      _ => _smartFrenchShortcuts,
     };
   }
 
@@ -1562,8 +1565,6 @@ class KeyboardCornerPresetCatalog {
   static final _frenchAccentShortcuts = [
     _shortcut('letter-a', KeyboardCornerSlot.topLeft, 'à'),
     _shortcut('letter-a', KeyboardCornerSlot.topRight, 'â'),
-    _shortcut('letter-a', KeyboardCornerSlot.bottomLeft, 'ä'),
-    _shortcut('letter-a', KeyboardCornerSlot.bottomRight, 'æ'),
     _shortcut('letter-e', KeyboardCornerSlot.topLeft, 'é'),
     _shortcut('letter-e', KeyboardCornerSlot.topRight, 'è'),
     _shortcut('letter-e', KeyboardCornerSlot.bottomLeft, 'ê'),
@@ -1571,13 +1572,16 @@ class KeyboardCornerPresetCatalog {
     _shortcut('letter-i', KeyboardCornerSlot.topLeft, 'î'),
     _shortcut('letter-i', KeyboardCornerSlot.topRight, 'ï'),
     _shortcut('letter-o', KeyboardCornerSlot.topLeft, 'ô'),
-    _shortcut('letter-o', KeyboardCornerSlot.topRight, 'ö'),
+    _shortcut('letter-o', KeyboardCornerSlot.topRight, 'œ'),
     _shortcut('letter-u', KeyboardCornerSlot.topLeft, 'ù'),
     _shortcut('letter-u', KeyboardCornerSlot.topRight, 'û'),
     _shortcut('letter-u', KeyboardCornerSlot.bottomLeft, 'ü'),
     _shortcut('letter-c', KeyboardCornerSlot.topLeft, 'ç'),
-    _shortcut('letter-n', KeyboardCornerSlot.topLeft, 'ñ'),
-    _shortcut('letter-s', KeyboardCornerSlot.topRight, 'ß'),
+  ];
+
+  static final _smartFrenchShortcuts = [
+    ..._frenchAccentShortcuts,
+    ..._punctuationShortcuts,
   ];
 
   static final _punctuationShortcuts = [
@@ -1591,8 +1595,32 @@ class KeyboardCornerPresetCatalog {
     _shortcut('letter-k', KeyboardCornerSlot.bottomRight, ')'),
     _shortcut('letter-l', KeyboardCornerSlot.topLeft, ':'),
     _shortcut('letter-l', KeyboardCornerSlot.topRight, ';'),
-    _shortcut('letter-l', KeyboardCornerSlot.bottomLeft, '...'),
-    _shortcut('letter-l', KeyboardCornerSlot.bottomRight, '--'),
+    _shortcut('letter-l', KeyboardCornerSlot.bottomLeft, r'$'),
+    _shortcut('letter-l', KeyboardCornerSlot.bottomRight, '€'),
+    _shortcut(
+      'letter-h',
+      KeyboardCornerSlot.topLeft,
+      'action:NavigateLineUp',
+      label: '↑',
+    ),
+    _shortcut(
+      'letter-h',
+      KeyboardCornerSlot.topRight,
+      'action:NavigateCharRight',
+      label: '→',
+    ),
+    _shortcut(
+      'letter-h',
+      KeyboardCornerSlot.bottomLeft,
+      'action:NavigateCharLeft',
+      label: '←',
+    ),
+    _shortcut(
+      'letter-h',
+      KeyboardCornerSlot.bottomRight,
+      'action:NavigateLineDown',
+      label: '↓',
+    ),
   ];
 
   static final _developerShortcuts = [

@@ -1640,9 +1640,10 @@ class WinFlowzKeyboardView(
         val paint = when {
             !key.enabled -> disabledKeyPaint
             key.id == activeKeyId -> pressedKeyPaint
+            key.active && usesNeutralKeyboardSurface(key) -> pressedKeyPaint
             key.active || isActiveModifierKey(key) -> activeKeyPaint
             key.actionSurface -> specialKeyPaint
-            key.action == KeyboardKeyAction.Text -> keyPaint
+            key.action == KeyboardKeyAction.Text || usesNeutralKeyboardSurface(key) -> keyPaint
             else -> specialKeyPaint
         }
         if (!fieldPolicy.privateMode && themeConfig.presetId != "system" && themeConfig.shadowBlur > 0f) {
@@ -1683,6 +1684,17 @@ class WinFlowzKeyboardView(
 
         if (key.pinned) {
             drawPinnedBadge(canvas, rect, paint.color)
+        }
+    }
+
+    private fun usesNeutralKeyboardSurface(key: KeyboardKeySpec): Boolean {
+        return when (key.action) {
+            KeyboardKeyAction.ModeLetters,
+            KeyboardKeyAction.ModeNumbers,
+            KeyboardKeyAction.ModeAccents,
+            KeyboardKeyAction.ModeSymbols,
+            KeyboardKeyAction.ModeNavigation -> true
+            else -> layoutMode == KeyboardLayoutMode.Navigation && key.id.startsWith("nav-mode-")
         }
     }
 
@@ -1755,20 +1767,29 @@ class WinFlowzKeyboardView(
         textPaint.textSize = keyTextSize(key)
         val baseline = rect.centerY() - dp(3f) - (textPaint.descent() + textPaint.ascent()) / 2f
         canvas.drawText(displayLabel(key), rect.centerX(), baseline, textPaint)
+
+        if (key.pinned) {
+            drawPinnedBadge(canvas, rect, previewConfig.specialKeyColor, previewConfig.presetId)
+        }
     }
 
     private fun drawPinnedBadge(
         canvas: Canvas,
         rect: RectF,
         keyColor: Int,
+        presetId: String = themeConfig.presetId,
     ) {
-        drawAngledPinnedBadge(
-            canvas = canvas,
-            cx = rect.right - dp(8f),
-            cy = rect.top + dp(8f),
-            accentColor = contrastBadgeAccentColor(keyColor),
-            baseColor = contrastBadgeBaseColor(keyColor),
-        )
+        val cx = rect.right - dp(8f)
+        val cy = rect.top + dp(8f)
+        withAngledPinnedBadge(canvas, cx, cy) {
+            when (presetId) {
+                KeyboardThemePresets.PIXEL_CANDY -> drawCandyPinnedBadge(canvas, cx, cy, keyColor)
+                KeyboardThemePresets.SUNSET_GRADIENT -> drawCloudPinnedBadge(canvas, cx, cy, keyColor)
+                KeyboardThemePresets.GLASS_MINT -> drawDropPinnedBadge(canvas, cx, cy, contrastBadgeAccentColor(keyColor))
+                KeyboardThemePresets.MIDNIGHT_AURORA -> drawStarPinnedBadge(canvas, cx, cy, contrastBadgeAccentColor(keyColor))
+                else -> drawLedPinnedBadge(canvas, cx, cy, contrastBadgeAccentColor(keyColor), contrastBadgeBaseColor(keyColor))
+            }
+        }
     }
 
     private fun drawVoiceRecordingIndicator(
@@ -1797,45 +1818,19 @@ class WinFlowzKeyboardView(
         canvas.drawCircle(dotCx, dotCy, dotRadius + dp(1f), voiceRingPaint)
     }
 
-    private fun drawAngledPinnedBadge(
+    private fun withAngledPinnedBadge(
         canvas: Canvas,
         cx: Float,
         cy: Float,
-        accentColor: Int,
-        baseColor: Int,
+        draw: () -> Unit,
     ) {
         val save = canvas.save()
         canvas.rotate(-45f, cx, cy)
-        pinnedBadgePaint.style = Paint.Style.FILL
-        pinnedBadgePaint.color = baseColor
-        pinnedBadgeAccentPaint.style = Paint.Style.FILL
-        pinnedBadgeAccentPaint.color = accentColor
-        canvas.drawRoundRect(
-            RectF(cx - dp(3.8f), cy - dp(6.2f), cx + dp(3.8f), cy - dp(0.8f)),
-            dp(1.8f),
-            dp(1.8f),
-            pinnedBadgePaint,
-        )
-        canvas.drawRoundRect(
-            RectF(cx - dp(2.3f), cy - dp(7.2f), cx + dp(2.3f), cy - dp(5.2f)),
-            dp(1f),
-            dp(1f),
-            pinnedBadgeAccentPaint,
-        )
-        pinnedBadgeAccentPaint.style = Paint.Style.STROKE
-        pinnedBadgeAccentPaint.strokeWidth = dp(1.7f)
-        pinnedBadgeAccentPaint.strokeCap = Paint.Cap.ROUND
-        canvas.drawLine(cx, cy - dp(0.7f), cx, cy + dp(6.6f), pinnedBadgeAccentPaint)
-        pinnedBadgeAccentPaint.style = Paint.Style.FILL
-        pinnedBadgeAccentPaint.strokeCap = Paint.Cap.BUTT
-        val tip = Path().apply {
-            moveTo(cx, cy + dp(8.5f))
-            lineTo(cx - dp(1.5f), cy + dp(5.9f))
-            lineTo(cx + dp(1.5f), cy + dp(5.9f))
-            close()
+        try {
+            draw()
+        } finally {
+            canvas.restoreToCount(save)
         }
-        canvas.drawPath(tip, pinnedBadgeAccentPaint)
-        canvas.restoreToCount(save)
     }
 
     private fun drawCandyPinnedBadge(
@@ -1844,6 +1839,8 @@ class WinFlowzKeyboardView(
         cy: Float,
         keyColor: Int,
     ) {
+        pinnedBadgePaint.style = Paint.Style.FILL
+        pinnedBadgeAccentPaint.style = Paint.Style.FILL
         pinnedBadgePaint.color = contrastBadgeBaseColor(keyColor)
         pinnedBadgeAccentPaint.color = contrastBadgeAccentColor(keyColor)
         val body = RectF(cx - dp(4.5f), cy - dp(3f), cx + dp(4.5f), cy + dp(3f))
@@ -1871,6 +1868,7 @@ class WinFlowzKeyboardView(
         cy: Float,
         keyColor: Int,
     ) {
+        pinnedBadgePaint.style = Paint.Style.FILL
         pinnedBadgePaint.color = contrastBadgeBaseColor(keyColor)
         canvas.drawCircle(cx - dp(3f), cy + dp(1f), dp(3.3f), pinnedBadgePaint)
         canvas.drawCircle(cx + dp(1f), cy - dp(1f), dp(4.1f), pinnedBadgePaint)
@@ -1885,6 +1883,8 @@ class WinFlowzKeyboardView(
         color: Int,
         baseColor: Int = Color.argb(85, Color.red(color), Color.green(color), Color.blue(color)),
     ) {
+        pinnedBadgePaint.style = Paint.Style.FILL
+        pinnedBadgeAccentPaint.style = Paint.Style.FILL
         pinnedBadgePaint.color = baseColor
         pinnedBadgeAccentPaint.color = color
         canvas.drawCircle(cx, cy, dp(6.2f), pinnedBadgePaint)
@@ -1897,6 +1897,7 @@ class WinFlowzKeyboardView(
         cy: Float,
         color: Int,
     ) {
+        pinnedBadgeAccentPaint.style = Paint.Style.FILL
         pinnedBadgeAccentPaint.color = color
         val drop = Path().apply {
             moveTo(cx, cy - dp(6f))
@@ -1941,6 +1942,7 @@ class WinFlowzKeyboardView(
         cy: Float,
         color: Int,
     ) {
+        pinnedBadgeAccentPaint.style = Paint.Style.FILL
         pinnedBadgeAccentPaint.color = color
         val star = Path().apply {
             moveTo(cx, cy - dp(6f))

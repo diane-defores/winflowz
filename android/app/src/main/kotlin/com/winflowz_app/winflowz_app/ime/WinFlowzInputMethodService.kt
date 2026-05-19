@@ -13,7 +13,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.winflowz_app.winflowz_app.MainActivity
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
-import com.winflowz_app.winflowz_app.ime.actions.withAttachedClipboardActionRow
 
 class WinFlowzInputMethodService :
     InputMethodService(),
@@ -870,11 +869,7 @@ class WinFlowzInputMethodService :
     }
 
     private fun actionBarStateForCurrentField(): KeyboardActionBarState {
-        val stored = stateStore.actionBarState()
-        if (!fieldPolicy.inputAllowed || fieldPolicy.privateMode || !fieldPolicy.clipboardAllowed) {
-            return stored
-        }
-        return stored.withAttachedClipboardActionRow()
+        return stateStore.actionBarState()
     }
 
     private fun clipboardEntriesForKeyboard(): List<KeyboardClipboardEntry> {

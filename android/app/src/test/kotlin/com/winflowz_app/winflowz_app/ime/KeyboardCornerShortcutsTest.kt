@@ -7,14 +7,29 @@ import org.junit.Test
 
 class KeyboardCornerShortcutsTest {
     @Test
-    fun `french accents remain the default preset`() {
-        val key = keyById("letter-a")
+    fun `smart french corners are the default preset`() {
+        val aKey = keyById("letter-a")
+        val eKey = keyById("letter-e")
+        val hKey = keyById("letter-h")
+        val jKey = keyById("letter-j")
+        val lKey = keyById("letter-l")
 
-        assertEquals("à", key.cornerAssignments.topLeft?.label)
-        assertEquals("â", key.cornerAssignments.topRight?.label)
-        assertEquals("ä", key.cornerAssignments.bottomLeft?.label)
-        assertEquals("æ", key.cornerAssignments.bottomRight?.label)
-        assertEquals("à", key.cornerAssignments.topLeft?.value?.text)
+        assertEquals("à", aKey.cornerAssignments.topLeft?.label)
+        assertEquals("â", aKey.cornerAssignments.topRight?.label)
+        assertEquals("à", aKey.cornerAssignments.topLeft?.value?.text)
+        assertNull(aKey.cornerAssignments.bottomLeft)
+        assertEquals("é", eKey.cornerAssignments.topLeft?.label)
+        assertEquals("?", jKey.cornerAssignments.bottomLeft?.label)
+        assertEquals("!", jKey.cornerAssignments.bottomRight?.label)
+        assertEquals(":", lKey.cornerAssignments.topLeft?.label)
+        assertEquals(";", lKey.cornerAssignments.topRight?.label)
+        assertEquals("\$", lKey.cornerAssignments.bottomLeft?.label)
+        assertEquals("€", lKey.cornerAssignments.bottomRight?.label)
+        assertEquals("↑", hKey.cornerAssignments.topLeft?.label)
+        assertEquals("→", hKey.cornerAssignments.topRight?.label)
+        assertEquals("←", hKey.cornerAssignments.bottomLeft?.label)
+        assertEquals("↓", hKey.cornerAssignments.bottomRight?.label)
+        assertEquals(KeyboardKeyAction.NavigateLineUp, hKey.cornerAssignments.topLeft?.value?.action)
     }
 
     @Test
@@ -36,6 +51,15 @@ class KeyboardCornerShortcutsTest {
         assertEquals("A+", key.cornerAssignments.topLeft?.label)
         assertEquals("aa", key.cornerAssignments.topLeft?.value?.text)
         assertEquals("â", key.cornerAssignments.topRight?.label)
+    }
+
+    @Test
+    fun `smart french corners also resolve on azerty layout`() {
+        val aKey = keyById("letter-a", layoutProfile = KeyboardLayoutProfile.AZERTY)
+        val hKey = keyById("letter-h", layoutProfile = KeyboardLayoutProfile.AZERTY)
+
+        assertEquals("à", aKey.cornerAssignments.topLeft?.label)
+        assertEquals("↓", hKey.cornerAssignments.bottomRight?.label)
     }
 
     @Test
@@ -95,6 +119,7 @@ class KeyboardCornerShortcutsTest {
         config: KeyboardCornerConfig = KeyboardCornerConfig(),
         specialKeyCorners: Boolean = false,
         fieldPolicy: KeyboardFieldPolicy = publicPolicy(),
+        layoutProfile: KeyboardLayoutProfile = KeyboardLayoutProfile.QWERTY,
     ): KeyboardKeySpec {
         val snapshot =
             KeyboardLayoutBuilder.build(
@@ -103,7 +128,7 @@ class KeyboardCornerShortcutsTest {
                     panel = KeyboardPanelMode.None,
                     shifted = false,
                     fieldContext = KeyboardFieldContextMode.Text,
-                    layoutProfile = KeyboardLayoutProfile.QWERTY,
+                    layoutProfile = layoutProfile,
                     cornerModeEnabled = true,
                     debugTouchOverlayEnabled = false,
                     specialKeyCornersEnabled = specialKeyCorners,

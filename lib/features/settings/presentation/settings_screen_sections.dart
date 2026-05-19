@@ -858,23 +858,30 @@ class _KeyboardThemeQuickPicker extends StatelessWidget {
               : (selection) => onThemeModeChanged(selection.single),
         ),
         AppGaps.x2,
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: AppSpacing.x1,
-          crossAxisSpacing: AppSpacing.x1,
-          childAspectRatio: 1.95,
-          children: [
-            for (final preset in KeyboardThemePresetCatalog.presets)
-              _KeyboardThemePresetChip(
-                preset: preset,
-                brightness: brightness,
-                selected: selectedPresetId == preset.id,
-                enabled: !busy,
-                onPressed: () => onThemePresetChanged(preset.id),
-              ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const columns = 3;
+            const spacing = AppSpacing.x1;
+            final itemWidth =
+                (constraints.maxWidth - spacing * (columns - 1)) / columns;
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: [
+                for (final preset in KeyboardThemePresetCatalog.presets)
+                  SizedBox(
+                    width: itemWidth,
+                    child: _KeyboardThemePresetChip(
+                      preset: preset,
+                      brightness: brightness,
+                      selected: selectedPresetId == preset.id,
+                      enabled: !busy,
+                      onPressed: () => onThemePresetChanged(preset.id),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
       ],
     );

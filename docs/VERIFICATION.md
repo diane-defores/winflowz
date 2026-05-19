@@ -103,7 +103,7 @@ Run on at least one emulator or real Android device before closing the IME chant
 | Tap Ctrl/Alt/Fn then a text key | Modifier is visible as active, applies to the next key-value dispatch, then clears. |
 | Tap Fn then `h/j/k/l` | Built-in modmap sends left/down/up/right key events instead of inserting letters. |
 | Toggle QWERTY/AZERTY in Settings then reopen IME | Letter rows match selected layout profile and persist between sessions. |
-| Enable swipe-corner mode then swipe key corners | Default French accent corner shortcuts are visible and inserted; center-return gesture cancels insertion. |
+| Enable swipe-corner mode then swipe key corners | Default Smart French accent, punctuation, currency, and navigation corner shortcuts are visible and dispatch; center-return gesture cancels insertion. |
 | Open Settings > Keyboard > Corner shortcuts | Preset, key, corner slot, expression, label, sensitive flag, save, clear override, and reset defaults are available. |
 | Use the visual corner editor preview | Tapping a key selects it; tapping one of its four corner targets selects that corner without saving immediately. |
 | Search the action picker for an accent, punctuation mark, action, or snippet | Matching guided actions/snippets are shown; selecting one updates the draft preview and marks the state dirty. |
@@ -120,7 +120,7 @@ Run on at least one emulator or real Android device before closing the IME chant
 | Configure a special-key corner with special-key corners disabled | The label is hidden and the corner action is not dispatched. |
 | Enable special-key corners and configure Ctrl/Enter/Backspace corner | The configured corner dispatches unless a protected gesture or field policy blocks it. |
 | Use a configured corner in password/OTP/no-personalized-learning field | Normal text accents remain allowed; sensitive snippets/clipboard/voice/action shortcuts are suppressed. |
-| Corrupt or oversize stored corner JSON | Keyboard falls back to default French accents, keeps primary typing usable, and reset defaults recovers the state. |
+| Corrupt or oversize stored corner JSON | Keyboard falls back to the default Smart French corners, keeps primary typing usable, and reset defaults recovers the state. |
 | Swipe horizontally from space with a configured space corner | Cursor slider wins once the threshold is reached; no corner action fires. |
 | Scroll snippets or clipboard rows horizontally | Horizontal scroll wins; no item or corner shortcut is inserted accidentally. |
 | Disable swipe-corner mode | Same gestures fallback to primary tap behavior only. |

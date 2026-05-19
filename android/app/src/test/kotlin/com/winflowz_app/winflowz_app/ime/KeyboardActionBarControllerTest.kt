@@ -3,7 +3,7 @@ package com.winflowz_app.winflowz_app.ime
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarController
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionEnvironment
-import com.winflowz_app.winflowz_app.ime.actions.withAttachedClipboardActionRow
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardAttachedActionRowState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -68,19 +68,36 @@ class KeyboardActionBarControllerTest {
     }
 
     @Test
-    fun `field clipboard row attaches once and exposes paste`() {
-        val state =
-            KeyboardActionBarState()
-                .withAttachedClipboardActionRow()
-                .withAttachedClipboardActionRow()
+    fun `clipboard row is absent unless clip is pinned or panel is open`() {
         val snapshot =
             controller.buildRenderSnapshot(
-                state = state,
+                state =
+                    KeyboardActionBarState(
+                        attachedRows =
+                            listOf(
+                                KeyboardAttachedActionRowState("clipboard", "action-row-clipboard", "clipboard"),
+                            ),
+                    ),
                 environment = environment(),
             )
 
-        assertEquals(1, state.attachedRows.count { it.dedupeKey == "clipboard" })
-        assertEquals(0, state.rowPageById["action-row-clipboard"])
+        val clipKey = snapshot.mainRow.items.single { it.label == "Clip" }
+        assertFalse(clipKey.active)
+        assertFalse(clipKey.pinned)
+        assertTrue(snapshot.attachedRows.none { it.dedupeKey == "clipboard" })
+    }
+
+    @Test
+    fun `pinned clipboard row exposes paste actions`() {
+        val snapshot =
+            controller.buildRenderSnapshot(
+                state = KeyboardActionBarState(pinnedActionIds = setOf("clipboard")),
+                environment = environment(),
+            )
+
+        val clipKey = snapshot.mainRow.items.single { it.label == "Clip" }
+        assertTrue(clipKey.active)
+        assertTrue(clipKey.pinned)
         val clipboardRow = snapshot.attachedRows.single { it.dedupeKey == "clipboard" }
         assertTrue(clipboardRow.items.any { it.label == "All" && it.action == KeyboardKeyAction.SelectAll })
         assertTrue(clipboardRow.items.any { it.action == KeyboardKeyAction.CutSelection })
@@ -104,7 +121,7 @@ class KeyboardActionBarControllerTest {
                 environment = environment(),
             )
 
-        assertEquals(listOf("ABC", "123", "#+="), snapshot.mainRow.items.take(3).map { it.label })
+        assertEquals(listOf("ABC", "123", "#+=", "Nav"), snapshot.mainRow.items.take(4).map { it.label })
     }
 
     @Test
@@ -125,7 +142,7 @@ class KeyboardActionBarControllerTest {
             )
 
         assertEquals(
-            listOf("ABC", "123", "#+=", "Acc", "Nav", "Emoji", "Clip", "Snip", "Media", "Prefs", "Mic"),
+            listOf("ABC", "123", "#+=", "Nav", "Acc", "Emoji", "Clip", "Snip", "Media", "Mic", "Prefs"),
             snapshot.mainRow.items.map { it.label },
         )
     }

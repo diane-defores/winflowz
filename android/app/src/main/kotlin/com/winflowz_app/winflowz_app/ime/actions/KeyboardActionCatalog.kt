@@ -276,8 +276,8 @@ class KeyboardActionCatalog private constructor(
                 listOf(
                     KeyboardActionDescriptor("numbers", "123", "123", "Numbers keyboard", KeyboardKeyAction.ModeNumbers, rowProvider = numberProvider),
                     KeyboardActionDescriptor("symbols", "#+=", "#+=", "Symbols keyboard", KeyboardKeyAction.ModeSymbols, rowProvider = symbolsProvider),
-                    KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel, rowProvider = accentsProvider),
                     KeyboardActionDescriptor("navigation", "Nav", "Nav", "Navigation keyboard", KeyboardKeyAction.ModeNavigation, rowProvider = navigationProvider),
+                    KeyboardActionDescriptor("accents", "Acc", "Acc", "Accent panel", KeyboardKeyAction.ToggleAccentPanel, rowProvider = accentsProvider),
                     KeyboardActionDescriptor(
                         "emoji",
                         "Emoji",
@@ -316,7 +316,6 @@ class KeyboardActionCatalog private constructor(
                         availabilityPolicy = KeyboardActionAvailabilityPolicy.MediaControlsEnabled,
                         rowProvider = mediaProvider,
                     ),
-                    KeyboardActionDescriptor("prefs", "Prefs", "Prefs", "Keyboard settings", KeyboardKeyAction.ToggleSettingsPanel, pinnable = false, adaptiveEligible = false),
                     KeyboardActionDescriptor(
                         "voice",
                         "Mic",
@@ -327,6 +326,7 @@ class KeyboardActionCatalog private constructor(
                         sensitiveInPrivate = true,
                         rowProvider = voiceProvider,
                     ),
+                    KeyboardActionDescriptor("prefs", "Prefs", "Prefs", "Keyboard settings", KeyboardKeyAction.ToggleSettingsPanel, pinnable = false, adaptiveEligible = false),
                 )
 
             val ids = descriptors.map { it.id }

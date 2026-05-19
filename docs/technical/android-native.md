@@ -105,7 +105,7 @@ Keyboard clipboard action
 - `WinFlowzInputMethodService` wraps lifecycle preference refresh and system actions such as settings/theme launch and keyboard picker. Service-level failures are reported through the same redigé diagnostic store and shown as `Keyboard recovered`.
 - Flutter Settings can call `getKeyboardStatus` and `clearKeyboardDiagnostics` on `winflowz_app/keyboard`. `Clear logs` clears both `AppDiagnostics` and native keyboard diagnostics; `Copy diagnostic` includes the last native incident when present.
 - Sentry is expected to be initialized through `sentry_flutter` when a DSN is configured. This module does not add a standalone Android Sentry dependency; native keyboard diagnostics remain local and copyable when Sentry is absent, offline, or not initialized.
-- The built-in corner preset preserves the legacy French accents for `a/e/i/o/u/c/n/s`. Additional presets are punctuation, French accents plus punctuation, developer symbols, and no corners.
+- The built-in `Smart French` corner preset keeps useful French accents, common punctuation, `$`/`€`, and directional navigation corners while avoiding low-value defaults such as German `ß`, `ñ`, `ä`, and `ö`. Additional presets are punctuation + navigation, French accents plus punctuation, developer symbols, and no corners.
 - Corner shortcut values may dispatch text, key events, actions, modifiers, and macros. Private fields suppress sensitive actions such as clipboard, snippets, voice, and sensitive macros while keeping normal text accents available.
 - IME clipboard sync events must not call Supabase or any backend directly; Flutter drains them into the backend-agnostic clipboard API.
 - The native clipboard event queue is process-memory only until a durable local storage decision is made.
@@ -156,7 +156,7 @@ clipboard, dictation, media keys, and OEM behavior.
 - Clipboard controller changed -> recheck sensitive clipboard flags and no background clipboard capture.
 - Clipboard event queue changed -> recheck no provider credentials/imports in native code and that sensitive clips are not enqueued.
 - Media controller changed -> recheck no metadata permission is introduced silently.
-- `KeyboardCornerShortcuts.kt`, `KeyboardLayoutModels.kt`, `WinFlowzKeyboardView.kt`, or `KeyboardStateStore.kt` changed -> recheck default accents, override precedence, private-field suppression, special-key toggle, space slider priority, scroll row priority, and corrupt JSON fallback.
+- `KeyboardCornerShortcuts.kt`, `KeyboardLayoutModels.kt`, `WinFlowzKeyboardView.kt`, or `KeyboardStateStore.kt` changed -> recheck Smart French defaults, override precedence, private-field suppression, special-key toggle, space slider priority, scroll row priority, and corrupt JSON fallback.
 - `KeyboardPressEffects.kt` or theme validation changed -> recheck fast typing, private/password fields, system reduce-motion, and unreadable theme rejection.
 
 ## Maintenance Rule

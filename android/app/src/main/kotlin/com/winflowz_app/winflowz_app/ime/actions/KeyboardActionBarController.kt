@@ -6,6 +6,9 @@ import com.winflowz_app.winflowz_app.ime.KeyboardKeySpec
 class KeyboardActionBarController(
     private val catalog: KeyboardActionCatalog = KeyboardActionCatalog.default(),
 ) {
+    private val fixedModeIds = setOf("letters", "numbers", "symbols", "navigation")
+    private val trailingActionIds = listOf("emoji", "clipboard", "snippets", "media", "voice", "prefs")
+
     fun sanitizeState(
         state: KeyboardActionBarState,
         environment: KeyboardActionEnvironment,
@@ -15,10 +18,18 @@ class KeyboardActionBarController(
         val pinned = (state.pinnedActionIds intersect order.toSet() intersect pinnableIds)
             .ifEmpty { catalog.minimalPinnedActionIds }
         val withPinnedRecovery = pinned + (catalog.minimalPinnedActionIds intersect order.toSet())
-        val availableDescriptors = descriptorsForMainRow(order, environment, state.copy(pinnedActionIds = withPinnedRecovery))
+        val pinnedBackedAttachedRows =
+            state.attachedRows.filter { it.providerActionId in withPinnedRecovery }
+        val sanitizedInput =
+            state.copy(
+                orderedActionIds = order,
+                pinnedActionIds = withPinnedRecovery,
+                attachedRows = pinnedBackedAttachedRows,
+            )
+        val availableDescriptors = descriptorsForMainRow(order, environment, sanitizedInput)
         val availableIds = availableDescriptors.map { it.id }.toSet()
 
-        val attachedRows = buildAttachedRows(state.copy(orderedActionIds = order, pinnedActionIds = withPinnedRecovery), environment)
+        val attachedRows = buildAttachedRows(sanitizedInput, environment)
         val validRowIds = attachedRows.map { it.rowId }.toSet()
         val rowPageById =
             state.rowPageById
@@ -103,6 +114,7 @@ class KeyboardActionBarController(
                 rowId = "action-row-main",
                 dedupeKey = "main",
                 items = mainItems,
+                actionSurface = false,
             ),
             attachedRows = attached,
         )
@@ -183,7 +195,7 @@ class KeyboardActionBarController(
             enabled = isEnabled(descriptor, environment),
             active = catalog.isActionActive(descriptor, environment, state),
             pinned = descriptor.id in state.pinnedActionIds,
-            actionSurface = true,
+            actionSurface = descriptor.id !in fixedModeIds,
             actionDescriptorId = descriptor.id,
             actionDescriptorPrimary = true,
         )
@@ -203,14 +215,18 @@ class KeyboardActionBarController(
     ): List<KeyboardActionDescriptor> {
         val ordered = catalog.orderedDescriptors(order)
         val visible = ordered.filter { isVisible(it, environment) }
-        val fixedModeIds = setOf("letters", "numbers", "symbols")
         val fixedModes = visible.filter { it.id in fixedModeIds }
-        val movable = visible.filterNot { it.id in fixedModeIds }
+        val trailingActionSet = trailingActionIds.toSet()
+        val movable = visible.filterNot { it.id in fixedModeIds || it.id in trailingActionSet }
         val pinned = movable.filter { it.id in state.pinnedActionIds }
         val unpinned =
             movable
                 .filterNot { it.id in state.pinnedActionIds }
-        return fixedModes + pinned + unpinned
+        val trailing =
+            trailingActionIds.mapNotNull { actionId ->
+                visible.firstOrNull { it.id == actionId }
+            }
+        return fixedModes + pinned + unpinned + trailing
     }
 
     private data class BuiltAttachedRow(

@@ -265,6 +265,51 @@ void main() {
     expect(privateResolved[KeyboardCornerSlot.topLeft], isNull);
   });
 
+  test('smart french default corner preset favors french punctuation', () {
+    final config = AndroidKeyboardCornerConfig.defaults();
+    final aKey = KeyboardCornerPresetCatalog.resolvedForKey(
+      config: config,
+      keyId: 'letter-a',
+      cornersEnabled: true,
+      specialKeyCornersEnabled: false,
+      privateMode: false,
+    );
+    final hKey = KeyboardCornerPresetCatalog.resolvedForKey(
+      config: config,
+      keyId: 'letter-h',
+      cornersEnabled: true,
+      specialKeyCornersEnabled: false,
+      privateMode: false,
+    );
+    final lKey = KeyboardCornerPresetCatalog.resolvedForKey(
+      config: config,
+      keyId: 'letter-l',
+      cornersEnabled: true,
+      specialKeyCornersEnabled: false,
+      privateMode: false,
+    );
+    final sKey = KeyboardCornerPresetCatalog.resolvedForKey(
+      config: config,
+      keyId: 'letter-s',
+      cornersEnabled: true,
+      specialKeyCornersEnabled: false,
+      privateMode: false,
+    );
+
+    expect(aKey[KeyboardCornerSlot.topLeft]?.displayLabel, 'à');
+    expect(aKey[KeyboardCornerSlot.bottomLeft], isNull);
+    expect(lKey[KeyboardCornerSlot.topLeft]?.displayLabel, ':');
+    expect(lKey[KeyboardCornerSlot.topRight]?.displayLabel, ';');
+    expect(lKey[KeyboardCornerSlot.bottomLeft]?.displayLabel, r'$');
+    expect(lKey[KeyboardCornerSlot.bottomRight]?.displayLabel, '€');
+    expect(hKey[KeyboardCornerSlot.topLeft]?.displayLabel, '↑');
+    expect(
+      hKey[KeyboardCornerSlot.bottomRight]?.expression,
+      'action:NavigateLineDown',
+    );
+    expect(sKey, isEmpty);
+  });
+
   test('android keyboard clipboard event parses native bridge maps', () {
     final event = AndroidKeyboardClipboardEvent.fromMap({
       'content': ' copied text ',
@@ -717,12 +762,12 @@ void main() {
       expect(find.text('Undo'), findsOneWidget);
       expect(find.text('Redo'), findsOneWidget);
       expect(find.text('⏫'), findsOneWidget);
-      expect(find.text('↑'), findsOneWidget);
+      expect(find.text('↑'), findsWidgets);
       expect(find.text('Word←'), findsOneWidget);
       expect(find.text('⬅'), findsOneWidget);
       expect(find.text('➡'), findsOneWidget);
       expect(find.text('Word→'), findsOneWidget);
-      expect(find.text('↓'), findsOneWidget);
+      expect(find.text('↓'), findsWidgets);
       expect(find.text('⏬'), findsOneWidget);
       expect(find.text('Del←'), findsOneWidget);
       expect(find.text('DelW←'), findsOneWidget);
@@ -749,12 +794,12 @@ void main() {
 
       await _tapVisible(tester, find.text('Acc'));
 
-      expect(find.text('œ'), findsOneWidget);
+      expect(find.text('œ'), findsWidgets);
       expect(find.text('Shift'), findsOneWidget);
       expect(find.text('Ctrl'), findsOneWidget);
       expect(find.text('q'), findsOneWidget);
 
-      await _tapVisible(tester, find.text('œ'));
+      await _tapVisible(tester, find.text('œ').first);
       expect(_simulatedBufferText(tester), 'œ|');
     },
   );
@@ -780,7 +825,7 @@ void main() {
     await _selectDropdownOption(
       tester,
       const Key('keyboard-preview-corner-preset-dropdown'),
-      'Punctuation corners',
+      'Punctuation + navigation',
     );
 
     expect(find.text('?'), findsOneWidget);
@@ -846,8 +891,11 @@ void main() {
 
     await _tapVisible(tester, find.text('Clip'));
 
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Cut'), findsOneWidget);
+    expect(find.text('Copy'), findsOneWidget);
+    expect(find.text('Paste'), findsOneWidget);
     expect(find.text('Latest copied text'), findsOneWidget);
-    expect(find.text('Copy'), findsNothing);
 
     await _tapVisible(tester, find.text('Latest copied text'));
     expect(_simulatedBufferText(tester), contains('Latest copied text'));
@@ -910,16 +958,15 @@ void main() {
     expect(find.text('*'), findsOneWidget);
     expect(find.text('/'), findsOneWidget);
     expect(find.text('.'), findsOneWidget);
-    expect(find.text(','), findsOneWidget);
     expect(find.text('@'), findsOneWidget);
     expect(find.text('#'), findsOneWidget);
     expect(find.text('?'), findsOneWidget);
     expect(find.text('!'), findsOneWidget);
     expect(find.text(':'), findsOneWidget);
     expect(find.text(';'), findsOneWidget);
-    for (final digit in ['1', '2', '3', '4', '5', '6', '7', '8', '9']) {
+    for (final digit in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']) {
       expect(find.text(digit), findsOneWidget);
     }
-    expect(find.text('0'), findsNothing);
+    expect(find.text(','), findsNothing);
   });
 }
