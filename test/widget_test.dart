@@ -527,9 +527,25 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
       expect(find.text('Clavier'), findsOneWidget);
       expect(
-        find.text('Historique et synchronisation du clipboard clavier.'),
+        find.textContaining(
+          'Historique et synchronisation du clipboard clavier.',
+        ),
         findsNothing,
       );
+
+      final clipboardProgressDot = find.byKey(
+        const ValueKey('onboarding-progress-dot-keyboardClipboard'),
+      );
+      await tester.ensureVisible(clipboardProgressDot);
+      await tester.tap(clipboardProgressDot);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+      expect(
+        find.textContaining(
+          'Historique et synchronisation du clipboard clavier.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Clavier'), findsNothing);
 
       await tester.tap(find.widgetWithText(OutlinedButton, 'Paramètres'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));

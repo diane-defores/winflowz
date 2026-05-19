@@ -1026,6 +1026,8 @@ class _OnboardingOverviewContentState
           pages: _pages,
           readiness: widget.readiness,
           index: _pageIndex,
+          isBusy: widget.isBusy,
+          onSelect: (index) => setState(() => _pageIndex = index),
         ),
         AppGaps.x2,
         _OnboardingUseCaseCard(
@@ -1108,11 +1110,15 @@ class _OnboardingProgressDots extends StatelessWidget {
     required this.pages,
     required this.readiness,
     required this.index,
+    required this.isBusy,
+    required this.onSelect,
   });
 
   final List<_OnboardingUseCasePage> pages;
   final OnboardingReadiness readiness;
   final int index;
+  final bool isBusy;
+  final ValueChanged<int> onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -1120,36 +1126,71 @@ class _OnboardingProgressDots extends StatelessWidget {
     return Row(
       children: [
         for (var i = 0; i < pages.length; i++) ...[
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: _dotColor(
-                colorScheme: colorScheme,
-                stepId: pages[i].stepId,
-                isCurrent: i == index,
+          Semantics(
+            selected: i == index,
+            child: IconButton(
+              key: ValueKey('onboarding-progress-dot-${pages[i].stepId.name}'),
+              tooltip: _dotTooltip(pages[i]),
+              onPressed: isBusy ? null : () => onSelect(i),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+              style: IconButton.styleFrom(
+                fixedSize: const Size.square(28),
+                minimumSize: const Size.square(28),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                backgroundColor: _dotColor(
+                  colorScheme: colorScheme,
+                  stepId: pages[i].stepId,
+                  isCurrent: i == index,
+                ),
+                disabledBackgroundColor: _dotColor(
+                  colorScheme: colorScheme,
+                  stepId: pages[i].stepId,
+                  isCurrent: i == index,
+                ),
+                foregroundColor: _iconColor(
+                  colorScheme: colorScheme,
+                  stepId: pages[i].stepId,
+                  isCurrent: i == index,
+                ),
+                disabledForegroundColor: _iconColor(
+                  colorScheme: colorScheme,
+                  stepId: pages[i].stepId,
+                  isCurrent: i == index,
+                ),
+                side: BorderSide(
+                  color: i == index
+                      ? colorScheme.primary
+                      : colorScheme.outlineVariant,
+                ),
+                shape: const CircleBorder(),
               ),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(
-                color: i == index
-                    ? colorScheme.primary
-                    : colorScheme.outlineVariant,
-              ),
-            ),
-            child: Icon(
-              pages[i].icon,
-              size: 14,
-              color: _iconColor(
-                colorScheme: colorScheme,
-                stepId: pages[i].stepId,
-                isCurrent: i == index,
-              ),
+              icon: Icon(pages[i].icon, size: 14),
             ),
           ),
           if (i != pages.length - 1) const SizedBox(width: AppSpacing.x1),
         ],
       ],
     );
+  }
+
+  String _dotTooltip(_OnboardingUseCasePage page) {
+    return 'Ouvrir ${page.title} - ${_dotStatusLabel(page.stepId)}';
+  }
+
+  String _dotStatusLabel(OnboardingStepId stepId) {
+    for (final step in readiness.steps) {
+      if (step.definition.id == stepId) {
+        if (step.satisfied) {
+          return 'terminé';
+        }
+        if (step.skipped) {
+          return 'ignoré';
+        }
+        return 'à terminer';
+      }
+    }
+    return 'indisponible';
   }
 
   Color _dotColor({
@@ -1398,9 +1439,9 @@ class _OnboardingCompletionContent extends StatelessWidget {
       children: [
         AppBannerCard(
           icon: Icons.check_circle_outline,
-          title: allActive ? 'Moonflow est prêt' : 'Configuration terminée',
+          title: allActive ? 'WinFlowz est prêt' : 'Configuration terminée',
           message: allActive
-              ? 'Tu vas pouvoir profiter au maximum de Moonflow.'
+              ? 'Tu vas pouvoir profiter au maximum de WinFlowz.'
               : 'Les modules que tu as choisis sont prêts. Tu peux terminer maintenant ou revoir les réglages.',
           accentColor: AppColors.success,
         ),
