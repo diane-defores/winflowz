@@ -13,6 +13,7 @@ import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -46,6 +47,7 @@ class OverlayForegroundService : Service() {
         private const val keyOverlayOpacity = "overlay_opacity"
         private const val keyOverlayX = "overlay_x"
         private const val keyOverlayY = "overlay_y"
+        private const val dragLongPressDelayMs = 320L
 
         @Volatile
         private var running = false
@@ -72,6 +74,10 @@ class OverlayForegroundService : Service() {
     private var initialY = 0
     private var initialTouchX = 0f
     private var initialTouchY = 0f
+    private var latestTouchX = 0f
+    private var latestTouchY = 0f
+    private var isDragArmed = false
+    private var hasMovedPastTapSlop = false
     private var longPressRunnable: Runnable? = null
     private var pendingState = "collapsed"
     private var sizeScale = 1f
@@ -335,14 +341,22 @@ class OverlayForegroundService : Service() {
 
     private fun attachTouchListener() {
         val dragHandleTouchListener = View.OnTouchListener { _, event ->
-            handleDragTouch(event, triggerTapOnRelease = false)
+            handleDragTouch(
+                event,
+                triggerTapOnRelease = false,
+                requireLongPressToDrag = false,
+            )
         }
         overlayView?.setOnTouchListener { _, event ->
             val state = overlayView?.getCurrentState() ?: "collapsed"
             if (state != "collapsed") {
                 return@setOnTouchListener false
             }
-            handleDragTouch(event, triggerTapOnRelease = true)
+            handleDragTouch(
+                event,
+                triggerTapOnRelease = true,
+                requireLongPressToDrag = true,
+            )
         }
         overlayView?.setDragHandleTouchListener(dragHandleTouchListener)
     }
@@ -350,6 +364,7 @@ class OverlayForegroundService : Service() {
     private fun handleDragTouch(
         event: MotionEvent,
         triggerTapOnRelease: Boolean,
+        requireLongPressToDrag: Boolean,
     ): Boolean {
         return when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
@@ -358,16 +373,46 @@ class OverlayForegroundService : Service() {
                     initialY = params.y
                     initialTouchX = event.rawX
                     initialTouchY = event.rawY
+                    latestTouchX = event.rawX
+                    latestTouchY = event.rawY
                     isDragging = false
+                    isDragArmed = !requireLongPressToDrag
+                    hasMovedPastTapSlop = false
+                    if (requireLongPressToDrag) {
+                        longPressRunnable?.let { overlayView?.removeCallbacks(it) }
+                        longPressRunnable = Runnable {
+                            val currentParams = layoutParams ?: return@Runnable
+                            initialX = currentParams.x
+                            initialY = currentParams.y
+                            initialTouchX = latestTouchX
+                            initialTouchY = latestTouchY
+                            isDragArmed = true
+                            overlayView?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                            OverlayEventQueue.enqueue("overlayDragMode", mapOf("state" to "armed"))
+                        }
+                        overlayView?.postDelayed(longPressRunnable, dragLongPressDelayMs)
+                    } else {
+                        longPressRunnable = null
+                    }
                     overlayView?.parent?.requestDisallowInterceptTouchEvent(true)
                     true
                 } ?: false
             }
             MotionEvent.ACTION_MOVE -> {
                 val params = layoutParams ?: return false
+                latestTouchX = event.rawX
+                latestTouchY = event.rawY
+                val dragSlop = resources.displayMetrics.density * 8f
+                val totalDx = event.rawX - initialTouchX
+                val totalDy = event.rawY - initialTouchY
+                if (!hasMovedPastTapSlop && (abs(totalDx) > dragSlop || abs(totalDy) > dragSlop)) {
+                    hasMovedPastTapSlop = true
+                }
+                if (requireLongPressToDrag && !isDragArmed) {
+                    return true
+                }
                 val dx = event.rawX - initialTouchX
                 val dy = event.rawY - initialTouchY
-                val dragSlop = resources.displayMetrics.density * 8f
                 if (!isDragging && (abs(dx) > dragSlop || abs(dy) > dragSlop)) {
                     isDragging = true
                     longPressRunnable?.let { overlayView?.removeCallbacks(it) }
@@ -390,10 +435,18 @@ class OverlayForegroundService : Service() {
                 if (isDragging) {
                     clampToScreen()
                     savePositionPreference()
-                } else if (triggerTapOnRelease && event.actionMasked == MotionEvent.ACTION_UP) {
+                } else if (
+                    triggerTapOnRelease &&
+                    event.actionMasked == MotionEvent.ACTION_UP &&
+                    !isDragArmed &&
+                    !hasMovedPastTapSlop
+                ) {
                     overlayView?.performClick()
                 }
                 isDragging = false
+                isDragArmed = false
+                hasMovedPastTapSlop = false
+                longPressRunnable = null
                 overlayView?.parent?.requestDisallowInterceptTouchEvent(false)
                 true
             }

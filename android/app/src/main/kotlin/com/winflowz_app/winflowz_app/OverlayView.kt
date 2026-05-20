@@ -1,5 +1,6 @@
 package com.winflowz_app.winflowz_app
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -8,6 +9,7 @@ import android.graphics.RectF
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -31,13 +33,17 @@ class OverlayView(context: Context) : FrameLayout(context) {
     private val cornerRadius = dpToPx(26f)
 
     private val primaryColor = Color.parseColor("#2563eb")
+    private val recordingColor = Color.parseColor("#ef4444")
     private val dangerColor = Color.parseColor("#dc2626")
     private val successColor = Color.parseColor("#16a34a")
+    private val accentColor = Color.parseColor("#22d3ee")
+    private val processingColor = Color.parseColor("#818cf8")
     private val surfaceColor = Color.parseColor("#111827")
     private val surfaceStrokeColor = Color.parseColor("#334155")
     private val handleColor = Color.parseColor("#94a3b8")
 
     private val fabView: TextView
+    private val recordingChromeView: RecordingChromeView
     private val expandedContainer: LinearLayout
     private val dragHandle: DragHandleView
     private val cancelButton: TextView
@@ -54,11 +60,26 @@ class OverlayView(context: Context) : FrameLayout(context) {
             visibility = VISIBLE
             setPadding(0, 0, 0, 0)
             letterSpacing = 0.08f
-            contentDescription = "WinFlowz overlay. Double tap to start dictation. Drag to move."
+            contentDescription = "WinFlowz overlay. Tap to start dictation. Long press and drag to move."
             elevation = dpToPx(8f).toFloat()
         }
         fabView.background = BubbleDrawable(primaryColor, surfaceStrokeColor)
         addView(fabView)
+
+        recordingChromeView =
+            RecordingChromeView(
+                context = context,
+                surfaceColor = surfaceColor,
+                strokeColor = surfaceStrokeColor,
+                recordingColor = recordingColor,
+                accentColor = accentColor,
+                processingColor = processingColor,
+                radius = cornerRadius.toFloat(),
+            ).apply {
+                layoutParams = LayoutParams(expandedWidth, expandedHeight)
+                visibility = GONE
+            }
+        addView(recordingChromeView)
 
         expandedContainer = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -74,8 +95,6 @@ class OverlayView(context: Context) : FrameLayout(context) {
             elevation = dpToPx(12f).toFloat()
             contentDescription = "WinFlowz recording controls."
         }
-        expandedContainer.background =
-            RoundRectDrawable(surfaceColor, cornerRadius.toFloat(), surfaceStrokeColor)
 
         dragHandle = DragHandleView(context, handleColor).apply {
             layoutParams =
@@ -146,28 +165,38 @@ class OverlayView(context: Context) : FrameLayout(context) {
             "collapsed" -> {
                 fabView.visibility = VISIBLE
                 fabView.background = BubbleDrawable(primaryColor, surfaceStrokeColor)
+                recordingChromeView.visibility = GONE
+                recordingChromeView.stop()
+                waveformView.setRecording(false)
+                waveformView.setProcessing(false)
                 expandedContainer.visibility = GONE
                 layoutParams?.width = fabSize
                 layoutParams?.height = fabSize
             }
             "recording" -> {
                 fabView.visibility = GONE
+                recordingChromeView.visibility = VISIBLE
+                recordingChromeView.start(processing = false)
                 expandedContainer.visibility = VISIBLE
                 cancelButton.isEnabled = true
                 doneButton.isEnabled = true
                 cancelButton.alpha = 1f
                 doneButton.alpha = 1f
+                waveformView.setRecording(true)
                 waveformView.setProcessing(false)
                 layoutParams?.width = expandedWidth
                 layoutParams?.height = expandedHeight
             }
             "processing" -> {
                 fabView.visibility = GONE
+                recordingChromeView.visibility = VISIBLE
+                recordingChromeView.start(processing = true)
                 expandedContainer.visibility = VISIBLE
                 cancelButton.isEnabled = false
                 doneButton.isEnabled = false
                 cancelButton.alpha = 0.35f
                 doneButton.alpha = 0.35f
+                waveformView.setRecording(false)
                 waveformView.setProcessing(true)
                 layoutParams?.width = expandedWidth
                 layoutParams?.height = expandedHeight
@@ -175,6 +204,10 @@ class OverlayView(context: Context) : FrameLayout(context) {
             "result" -> {
                 fabView.visibility = VISIBLE
                 fabView.background = BubbleDrawable(successColor, surfaceStrokeColor)
+                recordingChromeView.visibility = GONE
+                recordingChromeView.stop()
+                waveformView.setRecording(false)
+                waveformView.setProcessing(false)
                 expandedContainer.visibility = GONE
                 layoutParams?.width = fabSize
                 layoutParams?.height = fabSize
@@ -207,6 +240,11 @@ class OverlayView(context: Context) : FrameLayout(context) {
 
     fun setDragHandleTouchListener(listener: View.OnTouchListener?) {
         dragHandle.setOnTouchListener(listener)
+    }
+
+    override fun onDetachedFromWindow() {
+        recordingChromeView.stop()
+        super.onDetachedFromWindow()
     }
 
     private fun normalizeState(state: String): String {
@@ -262,6 +300,101 @@ class OverlayView(context: Context) : FrameLayout(context) {
                 radius,
                 radius,
                 paint,
+            )
+        }
+    }
+
+    private class RecordingChromeView(
+        context: Context,
+        private val surfaceColor: Int,
+        private val strokeColor: Int,
+        private val recordingColor: Int,
+        private val accentColor: Int,
+        private val processingColor: Int,
+        private val radius: Float,
+    ) : View(context) {
+        private val fillPaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = surfaceColor
+                style = Paint.Style.FILL
+            }
+        private val strokePaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                style = Paint.Style.STROKE
+                strokeCap = Paint.Cap.ROUND
+            }
+        private val rect = RectF()
+        private var animator: ValueAnimator? = null
+        private var progress = 0f
+        private var processing = false
+
+        fun start(processing: Boolean) {
+            this.processing = processing
+            if (animator?.isStarted == true) {
+                invalidate()
+                return
+            }
+            animator =
+                ValueAnimator.ofFloat(0f, 1f).apply {
+                    duration = 1180L
+                    repeatCount = ValueAnimator.INFINITE
+                    interpolator = LinearInterpolator()
+                    addUpdateListener { animation ->
+                        progress = animation.animatedValue as Float
+                        invalidate()
+                    }
+                    start()
+                }
+        }
+
+        fun stop() {
+            animator?.cancel()
+            animator = null
+            progress = 0f
+            invalidate()
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            rect.set(0f, 0f, width.toFloat(), height.toFloat())
+            canvas.drawRoundRect(rect, radius, radius, fillPaint)
+
+            val activeColor = if (processing) processingColor else recordingColor
+            val pulse = if (progress <= 0.5f) progress * 2f else (1f - progress) * 2f
+            val secondaryPulse = (progress + 0.42f) % 1f
+
+            rect.inset(2f, 2f)
+            strokePaint.color = alphaColor(strokeColor, 235)
+            strokePaint.strokeWidth = 2f
+            canvas.drawRoundRect(rect, radius, radius, strokePaint)
+
+            val activeInset = 4f + (7f * secondaryPulse)
+            val activeRect = RectF(0f, 0f, width.toFloat(), height.toFloat()).apply {
+                inset(activeInset, activeInset)
+            }
+            strokePaint.color = alphaColor(activeColor, (125 * (1f - secondaryPulse)).toInt())
+            strokePaint.strokeWidth = 2.5f + 2.5f * (1f - secondaryPulse)
+            canvas.drawRoundRect(activeRect, radius, radius, strokePaint)
+
+            val glowRect = RectF(0f, 0f, width.toFloat(), height.toFloat()).apply {
+                inset(5f + 3f * pulse, 5f + 3f * pulse)
+            }
+            strokePaint.color = alphaColor(accentColor, 70 + (80 * pulse).toInt())
+            strokePaint.strokeWidth = 2f + 2f * pulse
+            canvas.drawRoundRect(glowRect, radius, radius, strokePaint)
+        }
+
+        override fun onDetachedFromWindow() {
+            stop()
+            super.onDetachedFromWindow()
+        }
+
+        private fun alphaColor(color: Int, alpha: Int): Int {
+            return Color.argb(
+                alpha.coerceIn(0, 255),
+                Color.red(color),
+                Color.green(color),
+                Color.blue(color),
             )
         }
     }

@@ -28,12 +28,26 @@ class WaveformView(context: Context) : View(context) {
         }
 
     private var meterLevel = 0f
+    private var isRecording = false
     private var isProcessing = false
     private var animationPhase = 0f
 
     fun setLevel(level: Float) {
         meterLevel = level.coerceIn(0f, 1f)
         invalidate()
+    }
+
+    fun setRecording(recording: Boolean) {
+        if (isRecording == recording) {
+            return
+        }
+        isRecording = recording
+        if (recording && !isProcessing) {
+            animateRecording()
+        } else if (!recording && !isProcessing) {
+            animationPhase = 0f
+            invalidate()
+        }
     }
 
     fun setProcessing(processing: Boolean) {
@@ -45,6 +59,15 @@ class WaveformView(context: Context) : View(context) {
             animationPhase = 0f
             invalidate()
         }
+    }
+
+    private fun animateRecording() {
+        if (!isRecording || isProcessing) {
+            return
+        }
+        animationPhase += 0.12f
+        invalidate()
+        postDelayed({ animateRecording() }, 48)
     }
 
     private fun animateProcessing() {
@@ -71,9 +94,10 @@ class WaveformView(context: Context) : View(context) {
                 val wave = (sin(phase.toDouble()) * 0.4f + 0.6f).toFloat()
                 minBarHeight + (maxBarHeight - minBarHeight) * wave * 0.5f
             } else {
-                val phase = (i.toFloat() / barCount) * Math.PI.toFloat() * 2f
-                val variation = (sin((phase + System.currentTimeMillis() / 200.0).toFloat()) * 0.3f + 0.7f)
-                minBarHeight + (maxBarHeight - minBarHeight) * meterLevel * variation
+                val baseLevel = if (isRecording) meterLevel.coerceAtLeast(0.32f) else meterLevel
+                val phase = (i.toFloat() / barCount) * Math.PI.toFloat() * 2f + animationPhase
+                val variation = (sin(phase.toDouble()) * 0.28f + 0.72f).toFloat()
+                minBarHeight + (maxBarHeight - minBarHeight) * baseLevel * variation
             }
 
             val top = centerY - barHeight / 2f
@@ -81,6 +105,12 @@ class WaveformView(context: Context) : View(context) {
 
             canvas.drawRoundRect(x, top, x + barWidth, bottom, cornerRadius, cornerRadius, paint)
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        isRecording = false
+        isProcessing = false
+        super.onDetachedFromWindow()
     }
 
     private fun dpToPx(dp: Float): Int {

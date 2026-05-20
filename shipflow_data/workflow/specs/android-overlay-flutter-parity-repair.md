@@ -308,12 +308,14 @@ Mettre a jour apres implementation:
 | 2026-05-10 11:39:12 | sf-prod | GPT-5 Codex | Pushed commit `0780a2f`, followed Blacksmith run `25627619426`, collected full GitHub/Blacksmith logs, and checked artifact upload. | Android CI passed: `Analyze, Test, Build APK` in 4m55s and `Supabase Migration Tests` in 1m10s. Separate Vercel status still fails on `vite build` for a `socialflow` deployment. | Android device QA for overlay behavior; decide whether Vercel should be disabled or configured for this Flutter repo. |
 | 2026-05-10 11:49:25 | sf-ship | GPT-5 Codex | Added Settings controls for the unique Android overlay bubble size/opacity and prepared full ship bookkeeping. | Pending ship: local Flutter checks pass; Android local compile still blocked by missing SDK; device QA remains required. | Commit and push iteration; follow with Android device QA. |
 | 2026-05-11 19:16:45 | sf-audit-code | GPT-5 Codex | Audited Flutter/Dart code against product, auth flow, security, and reliability criteria. | 1 high and 2 medium risks identified; no code fix applied in this run. | Track and decide if remediation requires dedicated `/sf-spec` (notably auth route guard consistency in local vs sync modes). |
+| 2026-05-20 10:05:48 | sf-build | GPT-5 Codex | Added long-press-to-drag behavior for the collapsed Android overlay mic button, persisted position on release, and updated accessibility copy. | Implemented locally: `flutter analyze` and `flutter test` pass; Android build/device validation remains external per repo guardrails. | Run Blacksmith Android build and Diane physical-device QA for the overlay drag gesture. |
+| 2026-05-20 15:28:35 | sf-build | GPT-5 Codex | Added native recording feedback for the Android overlay: animated recording chrome, pulsing active border, and autonomous waveform animation. | Implemented locally: `flutter analyze`, `flutter test`, and `git diff --check` pass; Android build/device validation remains external per repo guardrails. | Run Blacksmith Android build and Diane physical-device QA for tap-to-record plus recording animation. |
 
 # Current Chantier Flow
 
 sf-spec: done  
 sf-ready: accepted with implementation risk  
-sf-start: partial; CI compile fix attempted
-sf-verify: Android CI passed; device proof still pending
+sf-start: partial; CI compile fix attempted; long-press drag and recording animation iterations implemented locally
+sf-verify: local Flutter checks pass; Android CI/device proof still pending for overlay gesture/animation updates
 sf-end: partial; implementation iteration documented, Android device QA remains
 sf-ship: pending commit/push for partial iteration
