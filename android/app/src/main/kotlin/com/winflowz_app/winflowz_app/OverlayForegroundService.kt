@@ -14,7 +14,9 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
+import android.view.View
 import android.view.WindowManager
+import kotlin.math.abs
 
 class OverlayForegroundService : Service() {
     companion object {
@@ -37,8 +39,7 @@ class OverlayForegroundService : Service() {
         private const val notificationChannelName = "WinFlowz Overlay Recording"
         private const val TAG = "WinFlowzOverlay"
 
-        private const val maxXOffset = 16
-        private const val defaultCollapsedWidth = 44
+        private const val defaultCollapsedWidth = 50
         private const val initialRightInset = 72
         private const val preferencesName = "winflowz_app_overlay_prefs"
         private const val keyOverlaySizeScale = "overlay_size_scale"
@@ -314,6 +315,8 @@ class OverlayForegroundService : Service() {
             overlayView?.removeCallbacks(runnable)
             longPressRunnable = null
         }
+        overlayView?.setDragHandleTouchListener(null)
+        overlayView?.setOnTouchListener(null)
         try {
             windowManager?.removeView(overlayView)
         } catch (error: Exception) {
@@ -325,65 +328,76 @@ class OverlayForegroundService : Service() {
                 ),
             )
         }
-        overlayView?.post {
-            overlayView?.setOnTouchListener(null)
-        }
         overlayView = null
         layoutParams = null
         isShowing = false
     }
 
     private fun attachTouchListener() {
+        val dragHandleTouchListener = View.OnTouchListener { _, event ->
+            handleDragTouch(event, triggerTapOnRelease = false)
+        }
         overlayView?.setOnTouchListener { _, event ->
             val state = overlayView?.getCurrentState() ?: "collapsed"
             if (state != "collapsed") {
                 return@setOnTouchListener false
             }
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    layoutParams?.let { params ->
-                        initialX = params.x
-                        initialY = params.y
-                        initialTouchX = event.rawX
-                        initialTouchY = event.rawY
-                        isDragging = false
-                        true
-                    } ?: false
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val params = layoutParams ?: return@setOnTouchListener false
-                    val dx = event.rawX - initialTouchX
-                    val dy = event.rawY - initialTouchY
-                    if (!isDragging && (kotlin.math.abs(dx) > 10 || kotlin.math.abs(dy) > 10)) {
-                        isDragging = true
-                        longPressRunnable?.let { overlayView?.removeCallbacks(it) }
-                    }
-                    if (isDragging) {
-                        params.x = initialX + dx.toInt()
-                        params.y = initialY + dy.toInt()
-                        try {
-                            windowManager?.updateViewLayout(overlayView, params)
-                        } catch (_: Exception) {
-                            // keep touch handling stable if this fails once
-                        }
-                    }
-                    true
-                }
-                MotionEvent.ACTION_UP,
-                MotionEvent.ACTION_CANCEL -> {
-                    longPressRunnable?.let { overlayView?.removeCallbacks(it) }
+            handleDragTouch(event, triggerTapOnRelease = true)
+        }
+        overlayView?.setDragHandleTouchListener(dragHandleTouchListener)
+    }
 
-                    if (isDragging) {
-                        clampToScreen()
-                        savePositionPreference()
-                    } else {
-                        overlayView?.performClick()
-                    }
+    private fun handleDragTouch(
+        event: MotionEvent,
+        triggerTapOnRelease: Boolean,
+    ): Boolean {
+        return when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                layoutParams?.let { params ->
+                    initialX = params.x
+                    initialY = params.y
+                    initialTouchX = event.rawX
+                    initialTouchY = event.rawY
                     isDragging = false
+                    overlayView?.parent?.requestDisallowInterceptTouchEvent(true)
                     true
-                }
-                else -> false
+                } ?: false
             }
+            MotionEvent.ACTION_MOVE -> {
+                val params = layoutParams ?: return false
+                val dx = event.rawX - initialTouchX
+                val dy = event.rawY - initialTouchY
+                val dragSlop = resources.displayMetrics.density * 8f
+                if (!isDragging && (abs(dx) > dragSlop || abs(dy) > dragSlop)) {
+                    isDragging = true
+                    longPressRunnable?.let { overlayView?.removeCallbacks(it) }
+                }
+                if (isDragging) {
+                    params.x = initialX + dx.toInt()
+                    params.y = initialY + dy.toInt()
+                    try {
+                        windowManager?.updateViewLayout(overlayView, params)
+                    } catch (_: Exception) {
+                        // Keep touch handling stable if this transiently fails.
+                    }
+                }
+                true
+            }
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
+                longPressRunnable?.let { overlayView?.removeCallbacks(it) }
+
+                if (isDragging) {
+                    clampToScreen()
+                    savePositionPreference()
+                } else if (triggerTapOnRelease && event.actionMasked == MotionEvent.ACTION_UP) {
+                    overlayView?.performClick()
+                }
+                isDragging = false
+                overlayView?.parent?.requestDisallowInterceptTouchEvent(false)
+                true
+            }
+            else -> false
         }
     }
 
@@ -445,7 +459,7 @@ class OverlayForegroundService : Service() {
         if (!preferences.contains(keyOverlayX) || !preferences.contains(keyOverlayY)) {
             return null
         }
-        val x = preferences.getInt(keyOverlayX, maxXOffset)
+        val x = preferences.getInt(keyOverlayX, 0)
         val y = preferences.getInt(keyOverlayY, 0)
         return Pair(x, y)
     }
