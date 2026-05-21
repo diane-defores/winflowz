@@ -20,7 +20,9 @@ import '../../dictionary/application/dictionary_store_provider.dart';
 import '../../keyboard/domain/keyboard_models.dart';
 import '../../keyboard/presentation/keyboard_corner_shortcuts_screen.dart';
 import '../../keyboard/presentation/keyboard_theme_studio_screen.dart';
+import '../../auth/application/suite_identity_provider.dart';
 import '../../snippets/application/snippet_store_provider.dart';
+import '../../auth/domain/suite_identity.dart';
 import '../domain/onboarding_permission_contract.dart';
 import '../domain/settings_store.dart';
 import '../../voice/application/transcription_store_provider.dart';
@@ -697,7 +699,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _copyBackendDiagnostic() async {
-    await Clipboard.setData(ClipboardData(text: _backendDiagnosticText()));
+    final suiteIdentityAsync = ref.read(suiteIdentityProvider);
+    await Clipboard.setData(
+      ClipboardData(text: _backendDiagnosticText(suiteIdentityAsync)),
+    );
     if (!mounted) {
       return;
     }
@@ -728,9 +733,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     });
   }
 
-  String _backendDiagnosticText() {
+  String _backendDiagnosticText(
+    AsyncValue<SuiteIdentitySnapshot> suiteIdentityAsync,
+  ) {
     final authAsync = ref.read(authSessionProvider);
     final storageStatus = ref.read(_storageStatusProvider);
+    final suiteStatus = suiteIdentityAsync.when(
+      data: (snapshot) => snapshot.supportSummary,
+      loading: () => 'status=loading',
+      error: (error, _) =>
+          'status=unavailable; issue=${_sanitizeDiagnostic(error)}',
+    );
     final status = _backendStatus(authAsync);
     final lines = <String>[
       'WinFlowz backend diagnostic',
@@ -752,6 +765,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       'sentry_detail: ${_sanitizeDiagnostic(SentryBootstrap.initError ?? 'configured_or_not_required')}',
       'auth_store: ${ref.read(authSessionStoreProvider).runtimeType}',
       'auth_session: ${_authDiagnostic(authAsync)}',
+      'suite_identity: $suiteStatus',
       'settings_store: ${ref.read(settingsStoreProvider).runtimeType}',
       'transcription_store: ${ref.read(transcriptionStoreProvider).runtimeType}',
       'clipboard_store: ${ref.read(clipboardStoreProvider).runtimeType}',
@@ -826,6 +840,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           'Checking authentication session before confirming remote sync state.',
       error: (error, stackTrace) =>
           'Authentication session is unavailable, so appearance sync is currently local only.',
+    );
+  }
+
+  String _suiteIdentitySummary(
+    AsyncValue<SuiteIdentitySnapshot> suiteIdentityAsync,
+  ) {
+    return suiteIdentityAsync.when(
+      data: (identity) => identity.status.name,
+      loading: () => 'Checking suite identity state.',
+      error: (error, _) =>
+          'Suite identity unavailable: ${_sanitizeDiagnostic(error)}',
     );
   }
 
@@ -1081,6 +1106,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final keyboardStatus = _keyboardStatus;
     final themeMode = ref.watch(appThemeModeProvider);
     final authAsync = ref.watch(authSessionProvider);
+    final suiteIdentityAsync = ref.watch(suiteIdentityProvider);
     final voiceCatalogState = ref.watch(languagePackCatalogProvider);
     return _settingsList(
       sections: [
@@ -1114,8 +1140,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             summary: FirebaseBootstrap.isConfigured
                 ? 'Firebase is configured as the first backend adapter.'
                 : 'Remote sync is not configured. WinFlowz runs in local mode.',
-            detail: _appearanceSyncDetail(authAsync),
-            diagnosticText: _backendDiagnosticText(),
+            detail:
+                '${_appearanceSyncDetail(authAsync)}\nSuite account status: ${_suiteIdentitySummary(suiteIdentityAsync)}',
+            diagnosticText: _backendDiagnosticText(suiteIdentityAsync),
             onCopyDiagnostic: _copyBackendDiagnostic,
             onClearDiagnosticLogs: _clearDiagnosticLogs,
           ),

@@ -1,13 +1,13 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.2"
+artifact_version: "1.0.5"
 project: "WinFlowz Suite"
 created: "2026-05-17"
 created_at: "2026-05-17 08:05:27 UTC"
-updated: "2026-05-19"
-updated_at: "2026-05-19 18:56:43 UTC"
-status: ready
+updated: "2026-05-21"
+updated_at: "2026-05-21 14:19:33 UTC"
+status: active
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "unified-suite-authentication"
@@ -31,10 +31,10 @@ linked_systems:
   - "Google Play / App Store future purchases"
 depends_on:
   - artifact: "docs/explorations/2026-05-16-unified-suite-auth.md"
-    artifact_version: "1.0.1"
+    artifact_version: "1.0.2"
     required_status: "draft"
   - artifact: "docs/DECISIONS.md"
-    artifact_version: "1.0.1"
+    artifact_version: "1.0.3"
     required_status: "reviewed"
   - artifact: "shipflow_data/technical/architecture.md"
     artifact_version: "1.0.1"
@@ -49,7 +49,7 @@ depends_on:
     artifact_version: "0.1.0"
     required_status: "draft"
   - artifact: "/home/claude/shipflow_data/projects/winflowz/docs/technical/suite-authentication.md"
-    artifact_version: "1.0.1"
+    artifact_version: "1.0.4"
     required_status: "reviewed"
 supersedes: []
 evidence:
@@ -61,7 +61,7 @@ evidence:
   - "firestore.rules currently scopes WinFlowz app data under users/{uid} and denies cross-user access."
   - "Official Firebase, Google Identity Platform, Auth0, and Clerk docs checked 2026-05-17 for shared app resources, custom claims limits, tenant boundaries, SSO, and cross-origin session token behavior."
   - "Canonical decision documented 2026-05-17 in /home/claude/shipflow_data/projects/winflowz/docs/technical/suite-authentication.md: Clerk central identity, Firebase Android bridge, server-owned entitlements."
-next_step: "/sf-start unified-suite-authentication"
+next_step: "/sf-build unified-suite-authentication firestore-entitlement-enforcement"
 ---
 
 # Title
@@ -316,7 +316,7 @@ Update or create:
   - Validate with : contrat relu contre WinFlowz app et WinFlowz Formation; aucun champ `user_id`, `global_user_id`, `product_id` ou entitlement client-trusted.
   - Notes : les entitlements longs restent en DB; token claims seulement cache court ou flags non source de vérité.
 
-- [ ] Tâche 3 : Ajouter les contrats domaine côté app pour identité suite et entitlement
+- [x] Tâche 3 : Ajouter les contrats domaine côté app pour identité suite et entitlement
   - Fichiers : `lib/features/auth/domain/suite_identity.dart`, `lib/features/auth/domain/product_entitlement.dart`, `lib/features/auth/domain/suite_identity_store.dart`, tests associés sous `test/`
   - Action : créer des modèles typés pour `globalUserId`, provider accounts, `productId`, plan/status/source, et une interface de lecture d'identité suite sans exposer de provider SDK à l'UI.
   - User story link : permet à l'app d'afficher "compte reconnu, accès produit actif/non actif" sans confondre auth Firebase et droit produit.
@@ -339,14 +339,16 @@ Update or create:
   - Depends on : Tâche 2, Tâche 4.
   - Validate with : tests create/update/revoke/idempotency; cross-product deny; webhook replay deny.
   - Notes : les règles doivent refuser par défaut et ne jamais accorder depuis payload client.
+  - Progress 2026-05-21 : registre Convex initial implémenté pour Formation avec grant, refund/revoke, event log, idempotence, query d'accès et bridge Firebase -> suite identity protégé par Firebase Admin + `SUITE_BRIDGE_CONVEX_SECRET`; tests de payload webhook réels et smoke bridge avec vrai token restent à faire.
 
-- [ ] Tâche 6 : Adapter WinFlowz app au contrat suite sans casser Firebase local-first
+- [x] Tâche 6 : Adapter WinFlowz app au contrat suite sans casser Firebase local-first
   - Fichiers : `lib/features/auth/domain/auth_session_store.dart`, `lib/features/auth/application/auth_session_provider.dart`, `lib/features/auth/data/firebase_auth_session_store.dart`, `lib/features/settings/presentation/settings_screen.dart`, `firestore.rules`, nouveaux fichiers de la Tâche 3.
   - Action : exposer l'identité suite ou mapping bridge quand disponible, afficher accès `winflowz_app` selon entitlement, conserver fallback local explicite, et garder données app sous namespace protégé.
   - User story link : l'app WinFlowz participe au compte unique sans perdre sa sécurité Android/Firebase.
   - Depends on : Tâche 3, Tâche 5.
   - Validate with : `dart format --set-exit-if-changed .`, `flutter analyze`, `flutter test`, smoke Android auth + entitlement.
   - Notes : ne pas remplacer Firebase Auth dans cette première tranche; adapter derrière contrat backend-agnostic.
+  - Progress 2026-05-21 : app raccordée au bridge via `SUITE_IDENTITY_BRIDGE_URL`; URL absente, token absent, HTTP non-200, JSON invalide, schéma inattendu et produit inconnu restent fail-closed avec diagnostics redigés.
 
 - [ ] Tâche 7 : Adapter WinFlowz Formation checkout/account au contrat suite
   - Fichiers : `/home/claude/winflowz/src/pages/api/polar/checkout.ts`, `/home/claude/winflowz/src/pages/api/polar/webhook.ts`, `/home/claude/winflowz/src/pages/api/clerk/webhook.ts`, `/home/claude/winflowz/convex/http.ts`, `/home/claude/winflowz/convex/users.ts`, `/home/claude/winflowz/src/utils/courseGating.ts`, `/home/claude/winflowz/shipflow_data/technical/architecture.md`.
@@ -355,6 +357,8 @@ Update or create:
   - Depends on : Tâche 5.
   - Validate with : test public lesson -> login -> checkout -> webhook -> lesson privée; refund/revoke; duplicate email.
   - Notes : Polar webhook signature et idempotency obligatoires.
+  - Progress 2026-05-21 : checkout envoie le product id canonique et Clerk id; course gating préfère le ledger d'entitlements et garde un fallback legacy.
+  - Progress 2026-05-21 : endpoint serveur `POST /api/bridge/firebase` ajouté pour l'app; il vérifie le Firebase ID token côté serveur, refuse issuer/audience invalides, et n'écrit Convex qu'avec le secret bridge configuré.
 
 - [ ] Tâche 8 : Adapter TubeFlow sans confondre YouTube OAuth et suite identity
   - Fichiers : repo TubeFlow concerné; auth/session docs; YouTube OAuth routes.
@@ -489,14 +493,17 @@ Resolved decisions:
 | 2026-05-17 13:13:31 UTC | sf-ready | GPT-5 Codex | Re-evaluated readiness after provider and VoiceFlowz corrections | Not ready: WinFlowz Formation repo/backend path is unavailable locally, active app docs still conflict with Clerk suite identity, and dependency versions need refresh | `/sf-spec unified-suite-authentication readiness fixes` |
 | 2026-05-17 21:14:55 UTC | sf-backlog | GPT-5 Codex | Recorded OpenAuth as a future identity-provider review item | Deferred to 2028; current Clerk central identity + Firebase Android bridge decision remains unchanged | `/sf-spec unified-suite-authentication readiness fixes` |
 | 2026-05-19 18:56:43 UTC | sf-ready | GPT-5 Codex | Re-evaluated readiness after `/home/claude/winflowz` became available and app docs were reconciled | Ready: first proof pair paths exist, Clerk legacy wording is scoped to old app stack, and dependency versions are refreshed | `/sf-start unified-suite-authentication` |
+| 2026-05-20 16:05:55 UTC | sf-build | GPT-5 Codex + delegated agents | Started sequential implementation with read-only Formation/app exploration, then a bounded Formation backend worker and app-domain contracts | Partial: Formation has first Convex identity/entitlement/event registry; Polar checkout now sends canonical product/account metadata; app has suite identity/domain entitlement contracts and tests; full bridge/UX/rules/verification remain open | `/sf-build unified-suite-authentication continue` |
+| 2026-05-21 13:44:27 UTC | sf-build | GPT-5 Codex + delegated agents | Continued sequential implementation with Formation refund/revoke/gating worker and app suite identity provider worker | Partial: Formation now handles grant/refund/revoke idempotently and gates course access through the ledger; app exposes conservative suite identity diagnostics; bridge API, Firestore entitlement enforcement, real payload proof and support runbook remain open | `/sf-build unified-suite-authentication bridge-api` |
+| 2026-05-21 14:19:33 UTC | sf-build | GPT-5 Codex + delegated agents | Implemented bridge-api tranche with server Firebase Admin verification, Convex bridge-secret guard, Flutter bridge client, production-payload parser test, docs and validation | Partial: bridge code is implemented and fail-closed; real Firebase token smoke, Firestore entitlement enforcement, revoked-token policy and support runbook remain open before ship | `/sf-build unified-suite-authentication firestore-entitlement-enforcement` |
 
 # Current Chantier Flow
 
 - sf-spec: done, reviewed after provider-decision update.
 - sf-ready: ready.
-- sf-start: not started.
+- sf-start: partial via sf-build; bridge-api tranche implemented.
 - sf-verify: not started.
 - sf-end: not started.
 - sf-ship: not started.
 
-Next command: `/sf-start unified-suite-authentication`.
+Next command: `/sf-build unified-suite-authentication firestore-entitlement-enforcement`.
