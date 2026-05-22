@@ -148,7 +148,7 @@ The bridge also writes a server-owned Firestore mirror at `suiteAccess/{firebase
 ### Resend
 
 - `RESEND_API_KEY`
-- `RESEND_AUDIENCE_ID`
+- `RESEND_SEGMENT_ID`
 
 ## Scripts
 

@@ -5,6 +5,12 @@ import { SITE, getLocalizedSiteUrl } from '@/constants';
 type SignupSource = 'footer' | 'lead-magnet' | 'windows-mastery' | 'unknown';
 type SignupLang = 'fr' | 'en';
 
+type ResendError = {
+  name?: string;
+  statusCode?: number | null;
+  message?: string;
+};
+
 function normalizeLang(value: unknown): SignupLang {
   return value === 'fr' ? 'fr' : 'en';
 }
@@ -15,6 +21,26 @@ function normalizeSource(value: unknown): SignupSource {
   }
 
   return 'unknown';
+}
+
+function getNewsletterSegmentId(): string | null {
+  const segmentId = import.meta.env.RESEND_SEGMENT_ID?.trim();
+  return segmentId || null;
+}
+
+function isResendNotFound(error: ResendError | null | undefined) {
+  return error?.name === 'not_found' || error?.statusCode === 404;
+}
+
+function assertResendSuccess(
+  operation: string,
+  result: { error: ResendError | null }
+) {
+  if (!result.error) {
+    return;
+  }
+
+  throw new Error(`resend_${operation}_failed:${result.error.name ?? 'unknown'}`);
 }
 
 function buildWelcomeEmail(lang: SignupLang, source: SignupSource, email: string) {
@@ -92,6 +118,14 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
+  const segmentId = getNewsletterSegmentId();
+  if (!segmentId) {
+    return new Response(
+      JSON.stringify({ error: 'Newsletter segment not configured' }),
+      { status: 503, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   const resend = new Resend(resendKey);
 
   try {
@@ -107,28 +141,68 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Add contact to Resend audience
-    await resend.contacts.create({
+    const properties = {
+      signup_lang: lang,
+      signup_source: source,
+    };
+
+    const updateResult = await resend.contacts.update({
       email,
-      audienceId: import.meta.env.RESEND_AUDIENCE_ID || '',
       unsubscribed: false,
+      properties,
     });
+
+    if (updateResult.error) {
+      if (!isResendNotFound(updateResult.error)) {
+        assertResendSuccess('contact_update', updateResult);
+      }
+
+      const createResult = await resend.contacts.create({
+        email,
+        unsubscribed: false,
+        segments: [{ id: segmentId }],
+        properties,
+      });
+      assertResendSuccess('contact_create', createResult);
+    } else {
+      const segmentListResult = await resend.contacts.segments.list({
+        email,
+        limit: 100,
+      });
+      assertResendSuccess('contact_segments_list', segmentListResult);
+
+      const isAlreadyInNewsletterSegment = (segmentListResult.data?.data ?? []).some(
+        (segment) => segment.id === segmentId
+      );
+
+      if (!isAlreadyInNewsletterSegment) {
+        const segmentAddResult = await resend.contacts.segments.add({
+          email,
+          segmentId,
+        });
+        assertResendSuccess('contact_segment_add', segmentAddResult);
+      }
+    }
 
     const welcomeEmail = buildWelcomeEmail(lang, source, email);
 
-    await resend.emails.send({
+    const emailResult = await resend.emails.send({
       from: `${SITE.name} <${SITE.emails.newsletter}>`,
       to: email,
       subject: welcomeEmail.subject,
       html: welcomeEmail.html,
     });
+    assertResendSuccess('welcome_email_send', emailResult);
 
     return new Response(
       JSON.stringify({ success: true }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (err) {
-    console.error('Newsletter subscribe error:', err);
+    console.error(
+      'Newsletter subscribe error:',
+      err instanceof Error ? err.message : 'unknown'
+    );
     return new Response(
       JSON.stringify({ error: 'Failed to subscribe' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }

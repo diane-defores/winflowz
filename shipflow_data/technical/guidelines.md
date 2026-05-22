@@ -86,7 +86,7 @@ Define the active engineering and documentation rules that should stay stable ac
 - Astro API routes live in `src/pages/api/`.
 - Convex HTTP endpoints live in `convex/http.ts`.
 - Polar checkout depends on an authenticated Clerk user, valid `PUBLIC_CONVEX_URL`, and configured Polar product IDs.
-- Newsletter flows depend on Resend audience configuration.
+- Newsletter flows depend on Resend API key and segment configuration.
 
 ## Documentation Rules
 
@@ -118,4 +118,3 @@ python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py shipflow_data/tech
 ## Maintenance Rule
 
 Update this doc when stack versions, product rules, or documentation rules change materially.
-
