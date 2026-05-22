@@ -8,13 +8,15 @@ enum AndroidOverlayEventType {
   bubbleTap,
   recordStop,
   recordCancel,
+  recordPause,
+  recordResume,
   longPress,
   serviceError,
   permissionRevoked,
   unknown,
 }
 
-enum AndroidOverlayVisualState { collapsed, recording, processing, result }
+enum AndroidOverlayVisualState { collapsed, recording, paused, processing, result }
 
 class AndroidOverlayStatus {
   const AndroidOverlayStatus({
@@ -115,6 +117,8 @@ class AndroidOverlayEvent {
       'bubbleTap' => AndroidOverlayEventType.bubbleTap,
       'recordStop' => AndroidOverlayEventType.recordStop,
       'recordCancel' => AndroidOverlayEventType.recordCancel,
+      'recordPause' => AndroidOverlayEventType.recordPause,
+      'recordResume' => AndroidOverlayEventType.recordResume,
       'longPress' => AndroidOverlayEventType.longPress,
       'serviceError' => AndroidOverlayEventType.serviceError,
       'permissionRevoked' => AndroidOverlayEventType.permissionRevoked,
@@ -265,6 +269,16 @@ class AndroidOverlayBridge {
 
   static Future<AndroidOverlayStatus> cancelRecording() async {
     final raw = await _invoke<Map<Object?, Object?>>('cancelOverlayRecording');
+    return AndroidOverlayStatus.fromMap(raw ?? const {});
+  }
+
+  static Future<AndroidOverlayStatus> pauseRecording() async {
+    final raw = await _invoke<Map<Object?, Object?>>('pauseOverlayRecording');
+    return AndroidOverlayStatus.fromMap(raw ?? const {});
+  }
+
+  static Future<AndroidOverlayStatus> resumeRecording() async {
+    final raw = await _invoke<Map<Object?, Object?>>('resumeOverlayRecording');
     return AndroidOverlayStatus.fromMap(raw ?? const {});
   }
 

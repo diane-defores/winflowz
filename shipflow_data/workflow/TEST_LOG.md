@@ -182,3 +182,53 @@ Environment: Android APK on real phone.
   - flutter test test/language_pack_catalog_test.dart test/settings_platform_controllers_test.dart test/widget_test.dart: PASS
   - git diff --check: PASS
   - cd android && ./gradlew :app:compileDebugKotlin -x :app:processDebugResources: PASS
+
+## 2026-05-21 - Task 10 - WinFlowz suite authentication smoke readiness
+
+- Scope: spec shipflow_data/workflow/specs/unified-suite-authentication.md, Task 10
+- Environment: docs / proof planning only; no deployed Firebase / Convex / Firestore smoke evidence yet
+- Tester: Codex
+- Source: sf-start / docs tranche
+- Status: partial-blocked
+- Confidence: medium
+- Result summary: Redacted smoke-readiness note for the first inter-product proof pair. "Smoke" in this chantier means the minimum end-to-end proof that the suite wiring works in a real deployed environment, not exhaustive QA: a real account is recognized, product entitlement allow/deny behaves correctly, session restore and sign-out behave correctly, grant/revoke flips access, and backend data stays denied when entitlement is absent.
+- Plain French smoke definition: preuve minimale de bout en bout sur WinFlowz Formation + WinFlowz app; on vérifie le chemin critique et les refus attendus, pas toutes les combinaisons ni toute la QA produit.
+- Checklist - can be verified locally now:
+  - Redaction review: no tokens, secrets, raw payment payloads, or raw OAuth payloads in this log entry.
+  - Markdown structure: task, status, scope, summary, checklist, and manual-action sections are present.
+  - Docs alignment: this entry stays consistent with the canonical suite auth decision and the support runbook.
+- Checklist - requires deployed environment:
+  - WinFlowz Formation deployed with the current suite-auth bridge path enabled.
+  - WinFlowz app deployed against the intended Firebase project and Firestore rules.
+  - Deployed proof that `suiteAccess/{uid}` or the equivalent server-owned mirror flips allow/deny in the target environment.
+  - Deployed proof that backend reads stay denied when the entitlement is missing.
+  - Deployed proof that session restore and sign-out behave correctly on the real pair.
+- Checklist - requires Diane/manual action:
+  - Confirm the target deployment environment for the proof pair and keep local, preview, staging, and production separate.
+  - Set and verify the environment names only, not values, for `SUITE_BRIDGE_SYNC_URL`, `SUITE_BRIDGE_CONVEX_SECRET`, and `SUITE_IDENTITY_BRIDGE_URL`.
+  - Verify the Formation bridge runtime has the Firebase Admin service-account / project credentials it needs to validate Firebase ID tokens.
+  - Use a real test account flow in Formation / Clerk, then apply the entitlement grant and revoke in the source of truth for `winflowz_formation`.
+  - Re-run the sync path after the grant and after the revoke so the Firestore mirror is recomputed from Convex.
+  - Perform the real-device WinFlowz app smoke against the deployed environment and confirm the app stays local-only when `winflowz_app` entitlement is absent.
+  - Capture redacted evidence for the deployed smoke only after the environment proves grant, deny, restore, sign-out, and backend deny.
+- Manual actions needed from Diane:
+  - Deploy the Formation backend with the current bridge and sync configuration.
+  - Deploy the WinFlowz app to the proof environment with the matching Firebase / Firestore configuration.
+  - Run the grant/revoke path for a test user and confirm the server-owned entitlement ledger changes first.
+  - Confirm the Firestore mirror updates through the server path rather than any client-side edit.
+  - Record the final deployed proof once the real Firebase / Convex / Firestore evidence exists.
+- Current status: partial and blocked until deployed Firebase / Convex / Firestore smoke proof exists.
+- Follow-up: keep Task 10 open until the deployed proof pair is captured and redacted.
+
+## 2026-05-22 - WinFlowz suite auth deployed endpoint preflight
+
+- Scope: spec shipflow_data/workflow/specs/unified-suite-authentication.md, Task 10
+- Environment: production URLs, non-secret HTTP preflight only
+- Tester: Codex
+- Source: sf-test + sf-auth-debug
+- Status: blocked
+- Confidence: high
+- Result summary: `https://winflowz-app.vercel.app/` returned 200 and `https://www.winflowz.com/` returned 200, but `POST https://www.winflowz.com/api/bridge/firebase` and `POST https://www.winflowz.com/api/bridge/sync` returned 404. The deployed Formation site does not expose the bridge endpoints required for the real suite-auth smoke yet.
+- Bug pointer: none; current code changes appear not deployed, so this is a deployment/proof blocker rather than a confirmed runtime bug.
+- Evidence pointer: redacted command evidence from 2026-05-22 sf-test/sf-auth-debug run; no tokens, cookies, or secrets sent.
+- Follow-up: ship/deploy the bounded suite-auth bridge scope, run `/sf-prod winflowz`, then rerun `/sf-test unified-suite-authentication --prod`.

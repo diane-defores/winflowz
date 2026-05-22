@@ -362,6 +362,22 @@ void main() {
     expect(event?.payload, isNot(contains('ignored')));
   });
 
+  test('android overlay pause and resume events parse native bridge maps', () {
+    final pauseEvent = AndroidOverlayEvent.fromMap({
+      'type': 'recordPause',
+      'capturedAtEpochMillis': 1778263200000,
+      'payload': <String, Object?>{},
+    });
+    final resumeEvent = AndroidOverlayEvent.fromMap({
+      'type': 'recordResume',
+      'capturedAtEpochMillis': 1778263200001,
+      'payload': <String, Object?>{},
+    });
+
+    expect(pauseEvent?.type, AndroidOverlayEventType.recordPause);
+    expect(resumeEvent?.type, AndroidOverlayEventType.recordResume);
+  });
+
   test('android overlay delivery result parses native bridge maps', () {
     final result = AndroidOverlayDeliveryResult.fromMap({
       'injected': true,

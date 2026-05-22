@@ -24,6 +24,8 @@ class OverlayForegroundService : Service() {
         const val ACTION_START = "com.winflowz_app.winflowz_app.overlay.START"
         const val ACTION_STOP = "com.winflowz_app.winflowz_app.overlay.STOP"
         const val ACTION_CANCEL = "com.winflowz_app.winflowz_app.overlay.CANCEL"
+        const val ACTION_PAUSE = "com.winflowz_app.winflowz_app.overlay.PAUSE"
+        const val ACTION_RESUME = "com.winflowz_app.winflowz_app.overlay.RESUME"
         const val ACTION_SET_STATE = "com.winflowz_app.winflowz_app.overlay.SET_STATE"
         const val ACTION_UPDATE_METER = "com.winflowz_app.winflowz_app.overlay.UPDATE_METER"
         const val ACTION_SET_RESULT_TEXT = "com.winflowz_app.winflowz_app.overlay.SET_RESULT_TEXT"
@@ -110,6 +112,8 @@ class OverlayForegroundService : Service() {
             ACTION_START -> handleStart()
             ACTION_STOP -> handleStop()
             ACTION_CANCEL -> handleStop()
+            ACTION_PAUSE -> handlePause()
+            ACTION_RESUME -> handleResume()
             ACTION_SET_STATE -> handleSetState(intent.getStringExtra(EXTRA_STATE))
             ACTION_UPDATE_METER -> handleUpdateMeter(
                 intent.getFloatExtra(EXTRA_LEVEL, 0f),
@@ -195,6 +199,28 @@ class OverlayForegroundService : Service() {
         }
     }
 
+    private fun handlePause() {
+        synchronized(this) {
+            if (!running) {
+                OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "pause_ignored_not_running"))
+                return
+            }
+            OverlayEventQueue.enqueue("recordPause")
+            setOverlayStateInternal("paused")
+        }
+    }
+
+    private fun handleResume() {
+        synchronized(this) {
+            if (!running) {
+                OverlayEventQueue.enqueue("serviceLifecycle", mapOf("state" to "resume_ignored_not_running"))
+                return
+            }
+            OverlayEventQueue.enqueue("recordResume")
+            setOverlayStateInternal("recording")
+        }
+    }
+
     private fun handleUpdateMeter(level: Float) {
         overlayView?.post {
             overlayView?.updateMeter(level)
@@ -251,6 +277,14 @@ class OverlayForegroundService : Service() {
             onRecordCancel = {
                 OverlayEventQueue.enqueue("recordCancel")
                 setOverlayStateInternal("collapsed")
+            }
+            onRecordPause = {
+                OverlayEventQueue.enqueue("recordPause")
+                setOverlayStateInternal("paused")
+            }
+            onRecordResume = {
+                OverlayEventQueue.enqueue("recordResume")
+                setOverlayStateInternal("recording")
             }
             onBubbleLongPress = {
                 OverlayEventQueue.enqueue("longPress")
@@ -532,7 +566,7 @@ class OverlayForegroundService : Service() {
 
     private fun normalizeState(state: String): String {
         return when (state) {
-            "collapsed", "recording", "processing", "result" -> state
+            "collapsed", "recording", "paused", "processing", "result" -> state
             else -> "collapsed"
         }
     }

@@ -10,6 +10,12 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function hasWinFlowzAppAccess(userId) {
+      return isOwner(userId) &&
+          exists(/databases/$(database)/documents/suiteAccess/$(userId)) &&
+          get(/databases/$(database)/documents/suiteAccess/$(userId)).data.products.winflowz_app.active == true;
+    }
+
     function hasValidRetentionHours(payload) {
       return !('retentionHours' in payload) ||
           (payload.retentionHours is int &&
@@ -33,45 +39,49 @@ service cloud.firestore {
       allow read, write: if false;
 
       match /settings/{settingId} {
-        allow read: if isOwner(uid);
-        allow create, update: if isOwner(uid) &&
+        allow read: if hasWinFlowzAppAccess(uid);
+        allow create, update: if hasWinFlowzAppAccess(uid) &&
           hasValidThemeMode(request.resource.data) &&
           hasValidRetentionHours(request.resource.data) &&
           hasSafeClientEventMetadata(request.resource.data);
-        allow delete: if isOwner(uid);
+        allow delete: if hasWinFlowzAppAccess(uid);
       }
 
       match /clipboardItems/{itemId} {
-        allow read: if isOwner(uid);
-        allow create, update: if isOwner(uid) && hasValidRetentionHours(request.resource.data);
-        allow delete: if isOwner(uid);
+        allow read: if hasWinFlowzAppAccess(uid);
+        allow create, update: if hasWinFlowzAppAccess(uid) && hasValidRetentionHours(request.resource.data);
+        allow delete: if hasWinFlowzAppAccess(uid);
       }
 
       match /transcriptions/{transcriptionId} {
-        allow read: if isOwner(uid);
-        allow create, update: if isOwner(uid) && hasValidRetentionHours(request.resource.data);
-        allow delete: if isOwner(uid);
+        allow read: if hasWinFlowzAppAccess(uid);
+        allow create, update: if hasWinFlowzAppAccess(uid) && hasValidRetentionHours(request.resource.data);
+        allow delete: if hasWinFlowzAppAccess(uid);
       }
 
       match /snippets/{snippetId} {
-        allow read: if isOwner(uid);
-        allow create, update: if isOwner(uid) && hasValidRetentionHours(request.resource.data);
-        allow delete: if isOwner(uid);
+        allow read: if hasWinFlowzAppAccess(uid);
+        allow create, update: if hasWinFlowzAppAccess(uid) && hasValidRetentionHours(request.resource.data);
+        allow delete: if hasWinFlowzAppAccess(uid);
       }
 
       match /dictionaryTerms/{termId} {
-        allow read: if isOwner(uid);
-        allow create, update: if isOwner(uid) && hasValidRetentionHours(request.resource.data);
-        allow delete: if isOwner(uid);
+        allow read: if hasWinFlowzAppAccess(uid);
+        allow create, update: if hasWinFlowzAppAccess(uid) && hasValidRetentionHours(request.resource.data);
+        allow delete: if hasWinFlowzAppAccess(uid);
       }
 
       match /clientEvents/{eventId} {
-        allow read: if isOwner(uid);
-        allow create, update: if isOwner(uid) &&
+        allow read: if hasWinFlowzAppAccess(uid);
+        allow create, update: if hasWinFlowzAppAccess(uid) &&
           hasValidRetentionHours(request.resource.data) &&
           hasSafeClientEventMetadata(request.resource.data);
-        allow delete: if isOwner(uid);
+        allow delete: if hasWinFlowzAppAccess(uid);
       }
+    }
+
+    match /suiteAccess/{uid} {
+      allow read, write: if false;
     }
 
     match /{document=**} {

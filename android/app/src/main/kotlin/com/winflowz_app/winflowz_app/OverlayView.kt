@@ -20,13 +20,15 @@ class OverlayView(context: Context) : FrameLayout(context) {
     var onBubbleTap: (() -> Unit)? = null
     var onRecordStop: (() -> Unit)? = null
     var onRecordCancel: (() -> Unit)? = null
+    var onRecordPause: (() -> Unit)? = null
+    var onRecordResume: (() -> Unit)? = null
     var onBubbleLongPress: (() -> Unit)? = null
 
     private var currentState = "collapsed"
     private val handler = android.os.Handler(android.os.Looper.getMainLooper())
 
     private val fabSize = dpToPx(50f)
-    private val expandedWidth = dpToPx(244f)
+    private val expandedWidth = dpToPx(292f)
     private val expandedHeight = dpToPx(58f)
     private val buttonSize = dpToPx(30f)
     private val dragHandleWidth = dpToPx(20f)
@@ -34,6 +36,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
 
     private val primaryColor = Color.parseColor("#2563eb")
     private val recordingColor = Color.parseColor("#ef4444")
+    private val pausedColor = Color.parseColor("#f59e0b")
     private val dangerColor = Color.parseColor("#dc2626")
     private val successColor = Color.parseColor("#16a34a")
     private val accentColor = Color.parseColor("#22d3ee")
@@ -48,6 +51,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
     private val dragHandle: DragHandleView
     private val cancelButton: TextView
     private val waveformView: WaveformView
+    private val pauseButton: TextView
     private val doneButton: TextView
 
     init {
@@ -72,6 +76,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
                 surfaceColor = surfaceColor,
                 strokeColor = surfaceStrokeColor,
                 recordingColor = recordingColor,
+                pausedColor = pausedColor,
                 accentColor = accentColor,
                 processingColor = processingColor,
                 radius = cornerRadius.toFloat(),
@@ -129,6 +134,26 @@ class OverlayView(context: Context) : FrameLayout(context) {
         }
         expandedContainer.addView(waveformView)
 
+        pauseButton = TextView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize).apply {
+                setMargins(dpToPx(8f), 0, 0, 0)
+            }
+            text = "II"
+            textSize = 12f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            background = CircleDrawable(pausedColor)
+            contentDescription = "Pause recording"
+            setOnClickListener {
+                if (currentState == "paused") {
+                    onRecordResume?.invoke()
+                } else {
+                    onRecordPause?.invoke()
+                }
+            }
+        }
+        expandedContainer.addView(pauseButton)
+
         doneButton = TextView(context).apply {
             layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize).apply {
                 setMargins(dpToPx(8f), 0, 0, 0)
@@ -168,6 +193,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
                 recordingChromeView.visibility = GONE
                 recordingChromeView.stop()
                 waveformView.setRecording(false)
+                waveformView.setPaused(false)
                 waveformView.setProcessing(false)
                 expandedContainer.visibility = GONE
                 layoutParams?.width = fabSize
@@ -179,10 +205,36 @@ class OverlayView(context: Context) : FrameLayout(context) {
                 recordingChromeView.start(processing = false)
                 expandedContainer.visibility = VISIBLE
                 cancelButton.isEnabled = true
+                pauseButton.isEnabled = true
                 doneButton.isEnabled = true
                 cancelButton.alpha = 1f
+                pauseButton.alpha = 1f
                 doneButton.alpha = 1f
+                pauseButton.text = "II"
+                pauseButton.background = CircleDrawable(pausedColor)
+                pauseButton.contentDescription = "Pause recording"
                 waveformView.setRecording(true)
+                waveformView.setPaused(false)
+                waveformView.setProcessing(false)
+                layoutParams?.width = expandedWidth
+                layoutParams?.height = expandedHeight
+            }
+            "paused" -> {
+                fabView.visibility = GONE
+                recordingChromeView.visibility = VISIBLE
+                recordingChromeView.start(processing = false, paused = true)
+                expandedContainer.visibility = VISIBLE
+                cancelButton.isEnabled = true
+                pauseButton.isEnabled = true
+                doneButton.isEnabled = true
+                cancelButton.alpha = 1f
+                pauseButton.alpha = 1f
+                doneButton.alpha = 1f
+                pauseButton.text = ">"
+                pauseButton.background = CircleDrawable(successColor)
+                pauseButton.contentDescription = "Resume recording"
+                waveformView.setRecording(false)
+                waveformView.setPaused(true)
                 waveformView.setProcessing(false)
                 layoutParams?.width = expandedWidth
                 layoutParams?.height = expandedHeight
@@ -190,13 +242,16 @@ class OverlayView(context: Context) : FrameLayout(context) {
             "processing" -> {
                 fabView.visibility = GONE
                 recordingChromeView.visibility = VISIBLE
-                recordingChromeView.start(processing = true)
+                recordingChromeView.start(processing = true, paused = false)
                 expandedContainer.visibility = VISIBLE
                 cancelButton.isEnabled = false
+                pauseButton.isEnabled = false
                 doneButton.isEnabled = false
                 cancelButton.alpha = 0.35f
+                pauseButton.alpha = 0.35f
                 doneButton.alpha = 0.35f
                 waveformView.setRecording(false)
+                waveformView.setPaused(false)
                 waveformView.setProcessing(true)
                 layoutParams?.width = expandedWidth
                 layoutParams?.height = expandedHeight
@@ -207,6 +262,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
                 recordingChromeView.visibility = GONE
                 recordingChromeView.stop()
                 waveformView.setRecording(false)
+                waveformView.setPaused(false)
                 waveformView.setProcessing(false)
                 expandedContainer.visibility = GONE
                 layoutParams?.width = fabSize
@@ -248,7 +304,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
     }
 
     private fun normalizeState(state: String): String {
-        return if (state in setOf("collapsed", "recording", "processing", "result")) {
+        return if (state in setOf("collapsed", "recording", "paused", "processing", "result")) {
             state
         } else {
             "collapsed"
@@ -309,6 +365,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
         private val surfaceColor: Int,
         private val strokeColor: Int,
         private val recordingColor: Int,
+        private val pausedColor: Int,
         private val accentColor: Int,
         private val processingColor: Int,
         private val radius: Float,
@@ -327,9 +384,11 @@ class OverlayView(context: Context) : FrameLayout(context) {
         private var animator: ValueAnimator? = null
         private var progress = 0f
         private var processing = false
+        private var paused = false
 
-        fun start(processing: Boolean) {
+        fun start(processing: Boolean, paused: Boolean = false) {
             this.processing = processing
+            this.paused = paused
             if (animator?.isStarted == true) {
                 invalidate()
                 return
@@ -359,7 +418,11 @@ class OverlayView(context: Context) : FrameLayout(context) {
             rect.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawRoundRect(rect, radius, radius, fillPaint)
 
-            val activeColor = if (processing) processingColor else recordingColor
+            val activeColor = when {
+                processing -> processingColor
+                paused -> pausedColor
+                else -> recordingColor
+            }
             val pulse = if (progress <= 0.5f) progress * 2f else (1f - progress) * 2f
             val secondaryPulse = (progress + 0.42f) % 1f
 

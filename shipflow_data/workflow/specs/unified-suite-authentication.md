@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.5"
+artifact_version: "1.0.12"
 project: "WinFlowz Suite"
 created: "2026-05-17"
 created_at: "2026-05-17 08:05:27 UTC"
 updated: "2026-05-21"
-updated_at: "2026-05-21 14:19:33 UTC"
+updated_at: "2026-05-22 09:14:16 UTC"
 status: active
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -49,7 +49,7 @@ depends_on:
     artifact_version: "0.1.0"
     required_status: "draft"
   - artifact: "/home/claude/shipflow_data/projects/winflowz/docs/technical/suite-authentication.md"
-    artifact_version: "1.0.4"
+    artifact_version: "1.0.8"
     required_status: "reviewed"
 supersedes: []
 evidence:
@@ -61,7 +61,10 @@ evidence:
   - "firestore.rules currently scopes WinFlowz app data under users/{uid} and denies cross-user access."
   - "Official Firebase, Google Identity Platform, Auth0, and Clerk docs checked 2026-05-17 for shared app resources, custom claims limits, tenant boundaries, SSO, and cross-origin session token behavior."
   - "Canonical decision documented 2026-05-17 in /home/claude/shipflow_data/projects/winflowz/docs/technical/suite-authentication.md: Clerk central identity, Firebase Android bridge, server-owned entitlements."
-next_step: "/sf-build unified-suite-authentication firestore-entitlement-enforcement"
+  - "Canonical support runbook added 2026-05-21 in the main WinFlowz docs and linked from the app docs."
+  - "Task 10 smoke-readiness log added 2026-05-21 in shipflow_data/workflow/TEST_LOG.md; final proof remains blocked until deployed Firebase/Convex/Firestore evidence exists."
+  - "Production endpoint preflight 2026-05-22: winflowz-app and www.winflowz.com are reachable, but deployed Formation bridge endpoints `/api/bridge/firebase` and `/api/bridge/sync` return 404, so the real suite-auth smoke is blocked until deploy."
+next_step: "/sf-build unified-suite-authentication continue"
 ---
 
 # Title
@@ -70,7 +73,7 @@ Unified WinFlowz Suite Authentication
 
 # Status
 
-Ready for `/sf-start` after the 2026-05-19 readiness gate. The product direction and provider gate are explicit: Clerk is the long-term suite identity provider, Firebase Auth remains the WinFlowz Android app adapter for now, and a server-owned bridge maps Firebase users to `global_user_id`. The first proof pair is WinFlowz Formation plus the WinFlowz Android app. The WinFlowz Formation repository is available at `/home/claude/winflowz`, and active app docs now distinguish legacy direct app-stack Clerk from Clerk as suite identity provider.
+Ready for `/sf-start` after the 2026-05-19 readiness gate. The product direction and provider gate are explicit: Clerk is the long-term suite identity provider, Firebase Auth remains the WinFlowz Android app adapter for now, and a server-owned bridge maps Firebase users to `global_user_id`. The first proof pair is WinFlowz Formation plus the WinFlowz Android app. The bridge writes a server-owned Firestore `suiteAccess/{uid}` mirror for `winflowz_app`, app product stores require suite entitlement before using Firestore, Formation Polar grant/refund/revoke paths now call an internal sync endpoint that recomputes that mirror from Convex outside the login bridge path, and the Firebase bridge rejects revoked/disabled Firebase sessions through Firebase Admin revocation checks. The WinFlowz Formation repository is available at `/home/claude/winflowz`, and active app docs now distinguish legacy direct app-stack Clerk from Clerk as suite identity provider.
 
 # User Story
 
@@ -340,6 +343,7 @@ Update or create:
   - Validate with : tests create/update/revoke/idempotency; cross-product deny; webhook replay deny.
   - Notes : les règles doivent refuser par défaut et ne jamais accorder depuis payload client.
   - Progress 2026-05-21 : registre Convex initial implémenté pour Formation avec grant, refund/revoke, event log, idempotence, query d'accès et bridge Firebase -> suite identity protégé par Firebase Admin + `SUITE_BRIDGE_CONVEX_SECRET`; tests de payload webhook réels et smoke bridge avec vrai token restent à faire.
+  - Progress 2026-05-21 : snapshot Convex protégé par `globalUserId` ajouté pour recomposer les entitlements autorisés et les Firebase UIDs liés; le sync Firestore ne reçoit pas de payload d'entitlement client.
 
 - [x] Tâche 6 : Adapter WinFlowz app au contrat suite sans casser Firebase local-first
   - Fichiers : `lib/features/auth/domain/auth_session_store.dart`, `lib/features/auth/application/auth_session_provider.dart`, `lib/features/auth/data/firebase_auth_session_store.dart`, `lib/features/settings/presentation/settings_screen.dart`, `firestore.rules`, nouveaux fichiers de la Tâche 3.
@@ -349,6 +353,7 @@ Update or create:
   - Validate with : `dart format --set-exit-if-changed .`, `flutter analyze`, `flutter test`, smoke Android auth + entitlement.
   - Notes : ne pas remplacer Firebase Auth dans cette première tranche; adapter derrière contrat backend-agnostic.
   - Progress 2026-05-21 : app raccordée au bridge via `SUITE_IDENTITY_BRIDGE_URL`; URL absente, token absent, HTTP non-200, JSON invalide, schéma inattendu et produit inconnu restent fail-closed avec diagnostics redigés.
+  - Progress 2026-05-21 : Firestore rules exigent maintenant un miroir serveur `suiteAccess/{uid}` avec `products.winflowz_app.active == true` avant les lectures/écritures sous `users/{uid}`; les providers de stores Flutter restent locaux tant que `suiteIdentityProvider` ne voit pas d'entitlement `winflowz_app`.
 
 - [ ] Tâche 7 : Adapter WinFlowz Formation checkout/account au contrat suite
   - Fichiers : `/home/claude/winflowz/src/pages/api/polar/checkout.ts`, `/home/claude/winflowz/src/pages/api/polar/webhook.ts`, `/home/claude/winflowz/src/pages/api/clerk/webhook.ts`, `/home/claude/winflowz/convex/http.ts`, `/home/claude/winflowz/convex/users.ts`, `/home/claude/winflowz/src/utils/courseGating.ts`, `/home/claude/winflowz/shipflow_data/technical/architecture.md`.
@@ -359,6 +364,10 @@ Update or create:
   - Notes : Polar webhook signature et idempotency obligatoires.
   - Progress 2026-05-21 : checkout envoie le product id canonique et Clerk id; course gating préfère le ledger d'entitlements et garde un fallback legacy.
   - Progress 2026-05-21 : endpoint serveur `POST /api/bridge/firebase` ajouté pour l'app; il vérifie le Firebase ID token côté serveur, refuse issuer/audience invalides, et n'écrit Convex qu'avec le secret bridge configuré.
+  - Progress 2026-05-21 : `POST /api/bridge/firebase` vérifie maintenant les Firebase ID tokens avec contrôle de révocation activé (`checkRevoked=true`); les sessions Firebase révoquées ou désactivées sont refusées avant linking Convex ou écriture Firestore.
+  - Progress 2026-05-21 : le bridge écrit aussi le miroir Firestore `suiteAccess/{firebaseUid}` après lookup Convex; ce miroir reste server-owned et inaccessible au client selon les rules.
+  - Progress 2026-05-21 : endpoint interne `POST /api/bridge/sync` ajouté; il accepte seulement `{ globalUserId }` avec secret serveur, relit Convex, résout les Firebase UIDs liés et réécrit `suiteAccess/{firebaseUid}` avec Firebase Admin.
+  - Progress 2026-05-21 : les chemins Polar grant/refund/revoke appellent maintenant le sync après mutation d'entitlement; un échec de sync retourne une erreur retryable au webhook au lieu de laisser un miroir stale en silence.
 
 - [ ] Tâche 8 : Adapter TubeFlow sans confondre YouTube OAuth et suite identity
   - Fichiers : repo TubeFlow concerné; auth/session docs; YouTube OAuth routes.
@@ -383,6 +392,8 @@ Update or create:
   - Depends on : Tâches 6 et 7.
   - Validate with : logs de test redigés; aucune PII/token; checks automatisés passés.
   - Notes : sans ce proof, ne pas annoncer l'auth suite comme shipped.
+  - Progress 2026-05-21 : smoke-readiness log ajouté dans `shipflow_data/workflow/TEST_LOG.md`; le smoke est défini comme preuve minimale end-to-end WinFlowz Formation + WinFlowz app, et la checklist sépare preuves locales, environnement déployé et actions manuelles Diane.
+  - Progress 2026-05-22 : preflight production non-secret effectué; `winflowz-app.vercel.app` et `www.winflowz.com` répondent, mais les endpoints Formation `/api/bridge/firebase` et `/api/bridge/sync` retournent 404. Le smoke réel reste bloqué par déploiement.
 
 # Acceptance Criteria
 
@@ -496,14 +507,23 @@ Resolved decisions:
 | 2026-05-20 16:05:55 UTC | sf-build | GPT-5 Codex + delegated agents | Started sequential implementation with read-only Formation/app exploration, then a bounded Formation backend worker and app-domain contracts | Partial: Formation has first Convex identity/entitlement/event registry; Polar checkout now sends canonical product/account metadata; app has suite identity/domain entitlement contracts and tests; full bridge/UX/rules/verification remain open | `/sf-build unified-suite-authentication continue` |
 | 2026-05-21 13:44:27 UTC | sf-build | GPT-5 Codex + delegated agents | Continued sequential implementation with Formation refund/revoke/gating worker and app suite identity provider worker | Partial: Formation now handles grant/refund/revoke idempotently and gates course access through the ledger; app exposes conservative suite identity diagnostics; bridge API, Firestore entitlement enforcement, real payload proof and support runbook remain open | `/sf-build unified-suite-authentication bridge-api` |
 | 2026-05-21 14:19:33 UTC | sf-build | GPT-5 Codex + delegated agents | Implemented bridge-api tranche with server Firebase Admin verification, Convex bridge-secret guard, Flutter bridge client, production-payload parser test, docs and validation | Partial: bridge code is implemented and fail-closed; real Firebase token smoke, Firestore entitlement enforcement, revoked-token policy and support runbook remain open before ship | `/sf-build unified-suite-authentication firestore-entitlement-enforcement` |
+| 2026-05-21 14:31:23 UTC | sf-build | GPT-5 Codex + delegated agents | Implemented Firestore entitlement enforcement with server-owned `suiteAccess` mirror, Firestore rules gating, Flutter store-selection gate, docs and validation | Partial: Firestore no longer trusts account existence alone; remaining gaps are real Firebase/Convex smoke, entitlement revocation mirror sync outside login bridge path, revoked-token policy and support runbook | `/sf-build unified-suite-authentication revocation-mirror-sync` |
+| 2026-05-21 16:15:30 UTC | sf-build | GPT-5 Codex + delegated agents | Implemented revocation mirror sync with protected Convex snapshot query, internal Formation sync endpoint, Polar grant/refund/revoke sync triggers, docs and validation | Partial: entitlement changes can now refresh Firestore outside the login bridge path; remaining gaps are real Firebase/Convex/Firestore smoke, deployed sync env proof, revoked-token policy and support runbook | `/sf-build unified-suite-authentication revoked-token-policy` |
+| 2026-05-21 16:28:18 UTC | sf-build | GPT-5 Codex + delegated agent | Implemented revoked-token policy on the Formation Firebase bridge with Firebase Admin revocation checks, centralized Firebase claim validation, redacted token-verification logging, docs and validation | Partial: revoked or disabled Firebase sessions are now rejected before suite identity linking; remaining gaps are real Firebase/Convex/Firestore deployed smoke, deployed sync env proof and support runbook | `/sf-build unified-suite-authentication support-runbook` |
+| 2026-05-21 16:53:06 UTC | sf-build | GPT-5 Codex + delegated agent | Added the canonical support runbook, linked it from the main suite auth decision and app pointer, and kept the operator copy redacted. | Partial: support triage is documented; remaining gaps are real Firebase/Convex/Firestore deployed smoke, deployed sync env proof and final suite auth verification | `/sf-build unified-suite-authentication continue` |
+| 2026-05-21 19:30:41 UTC | sf-build | GPT-5 Codex + delegated agent | Added the redacted Task 10 smoke-readiness log and linked it from the app suite-auth pointer | Partial: local docs/proof checklist exists; final verification is blocked until deployed Firebase/Convex/Firestore smoke and manual redacted evidence exist | manual deployed smoke, then `/sf-build unified-suite-authentication continue` |
+| 2026-05-22 09:14:16 UTC | sf-test + sf-auth-debug | GPT-5 Codex | Ran non-secret deployed endpoint preflight for the first suite-auth smoke pair | Blocked: app and Formation roots respond, but deployed Formation bridge endpoints return 404, so real auth/session smoke cannot start until the bridge scope is shipped/deployed | `/sf-ship unified-suite-authentication bridge scope`, then `/sf-prod winflowz`, then `/sf-test unified-suite-authentication --prod` |
 
 # Current Chantier Flow
 
 - sf-spec: done, reviewed after provider-decision update.
 - sf-ready: ready.
-- sf-start: partial via sf-build; bridge-api tranche implemented.
+- sf-start: partial via sf-build; bridge-api, firestore-entitlement-enforcement, revocation-mirror-sync and revoked-token-policy tranches implemented.
 - sf-verify: not started.
 - sf-end: not started.
 - sf-ship: not started.
+- support-runbook: done via sf-build delegated docs worker; canonical operator guide added in the main project docs and surfaced from the app docs.
+- smoke-readiness: partial via sf-build delegated docs worker; Task 10 log exists, but real deployed proof is not captured yet.
+- sf-test/sf-auth-debug: blocked on 2026-05-22 because deployed Formation bridge endpoints return 404.
 
-Next command: `/sf-build unified-suite-authentication firestore-entitlement-enforcement`.
+Next command: `/sf-ship unified-suite-authentication bridge scope`, then `/sf-prod winflowz`, then `/sf-test unified-suite-authentication --prod`.

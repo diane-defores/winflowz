@@ -310,12 +310,13 @@ Mettre a jour apres implementation:
 | 2026-05-11 19:16:45 | sf-audit-code | GPT-5 Codex | Audited Flutter/Dart code against product, auth flow, security, and reliability criteria. | 1 high and 2 medium risks identified; no code fix applied in this run. | Track and decide if remediation requires dedicated `/sf-spec` (notably auth route guard consistency in local vs sync modes). |
 | 2026-05-20 10:05:48 | sf-build | GPT-5 Codex | Added long-press-to-drag behavior for the collapsed Android overlay mic button, persisted position on release, and updated accessibility copy. | Implemented locally: `flutter analyze` and `flutter test` pass; Android build/device validation remains external per repo guardrails. | Run Blacksmith Android build and Diane physical-device QA for the overlay drag gesture. |
 | 2026-05-20 15:28:35 | sf-build | GPT-5 Codex | Added native recording feedback for the Android overlay: animated recording chrome, pulsing active border, and autonomous waveform animation. | Implemented locally: `flutter analyze`, `flutter test`, and `git diff --check` pass; Android build/device validation remains external per repo guardrails. | Run Blacksmith Android build and Diane physical-device QA for tap-to-record plus recording animation. |
+| 2026-05-22 09:58:47 | sf-build | GPT-5 Codex | Added Android overlay pause/resume controls, native `paused` visual state, pause/resume MethodChannel commands, and Dart event parsing. | Implemented locally: `flutter analyze`, `flutter test`, and `git diff --check` pass; actual audio-size reduction depends on the recorder consuming `recordPause`/`recordResume`; Android build/device validation remains external per repo guardrails. | Run Blacksmith Android build and Diane physical-device QA for pause/resume overlay controls, then wire recorder pause semantics if the overlay recorder is enabled in Flutter. |
 
 # Current Chantier Flow
 
 sf-spec: done  
 sf-ready: accepted with implementation risk  
-sf-start: partial; CI compile fix attempted; long-press drag and recording animation iterations implemented locally
-sf-verify: local Flutter checks pass; Android CI/device proof still pending for overlay gesture/animation updates
+sf-start: partial; CI compile fix attempted; long-press drag, recording animation, and pause/resume overlay iterations implemented locally
+sf-verify: local Flutter checks pass; Android CI/device proof still pending for overlay gesture/animation/pause updates
 sf-end: partial; implementation iteration documented, Android device QA remains
 sf-ship: pending commit/push for partial iteration

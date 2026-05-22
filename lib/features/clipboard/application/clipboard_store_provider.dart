@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 import '../../../core/bootstrap/firebase_bootstrap.dart';
 import '../../auth/application/auth_session_provider.dart';
+import '../../auth/application/suite_identity_provider.dart';
+import '../../auth/domain/product_entitlement.dart';
 import '../data/firebase_clipboard_history_store.dart';
 import 'clipboard_history_api.dart';
 import 'keyboard_clipboard_event_importer.dart';
@@ -23,9 +25,16 @@ final clipboardStoreProvider = Provider<ClipboardHistoryStore>((ref) {
   );
   final hasRemoteSession =
       session != null && session.isSignedIn && !session.isLocalFallback;
+  final hasWinFlowzAppAccess = ref
+      .watch(suiteIdentityProvider)
+      .maybeWhen(
+        data: (identity) => identity.hasAccessTo(ProductId.winflowzApp),
+        orElse: () => false,
+      );
 
   if (FirebaseBootstrap.isConfigured &&
       hasRemoteSession &&
+      hasWinFlowzAppAccess &&
       firebase_auth.FirebaseAuth.instance.currentUser != null) {
     return FirebaseClipboardHistoryStore();
   }

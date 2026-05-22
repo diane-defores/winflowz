@@ -194,6 +194,22 @@ class MainActivity : FlutterActivity() {
                         sendOverlayCommand(OverlayForegroundService.ACTION_CANCEL)
                         result.success(buildStatusMap())
                     }
+                    "pauseOverlayRecording" -> {
+                        OverlayEventQueue.enqueue(
+                            "bridgeCall",
+                            mapOf("method" to "pauseOverlayRecording"),
+                        )
+                        sendOverlayCommand(OverlayForegroundService.ACTION_PAUSE)
+                        result.success(buildStatusMap())
+                    }
+                    "resumeOverlayRecording" -> {
+                        OverlayEventQueue.enqueue(
+                            "bridgeCall",
+                            mapOf("method" to "resumeOverlayRecording"),
+                        )
+                        sendOverlayCommand(OverlayForegroundService.ACTION_RESUME)
+                        result.success(buildStatusMap())
+                    }
                     "setOverlayState" -> {
                         val state = call.argument<String>("state") ?: "collapsed"
                         sendOverlayCommand(

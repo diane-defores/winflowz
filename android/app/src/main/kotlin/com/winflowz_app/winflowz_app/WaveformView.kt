@@ -19,6 +19,7 @@ class WaveformView(context: Context) : View(context) {
     private val cornerRadius = barWidth / 2f
 
     private val accentColor = Color.parseColor("#22d3ee")
+    private val pausedColor = Color.parseColor("#f59e0b")
     private val processingColor = Color.parseColor("#818cf8")
 
     private val paint =
@@ -29,6 +30,7 @@ class WaveformView(context: Context) : View(context) {
 
     private var meterLevel = 0f
     private var isRecording = false
+    private var isPaused = false
     private var isProcessing = false
     private var animationPhase = 0f
 
@@ -50,9 +52,25 @@ class WaveformView(context: Context) : View(context) {
         }
     }
 
+    fun setPaused(paused: Boolean) {
+        if (isPaused == paused) {
+            return
+        }
+        isPaused = paused
+        paint.color = if (paused) pausedColor else accentColor
+        if (paused) {
+            animationPhase = 0f
+        }
+        invalidate()
+    }
+
     fun setProcessing(processing: Boolean) {
         isProcessing = processing
-        paint.color = if (processing) processingColor else accentColor
+        paint.color = when {
+            processing -> processingColor
+            isPaused -> pausedColor
+            else -> accentColor
+        }
         if (processing) {
             animateProcessing()
         } else {
@@ -93,6 +111,10 @@ class WaveformView(context: Context) : View(context) {
                 val phase = (i.toFloat() / barCount) * Math.PI.toFloat() * 2f + animationPhase
                 val wave = (sin(phase.toDouble()) * 0.4f + 0.6f).toFloat()
                 minBarHeight + (maxBarHeight - minBarHeight) * wave * 0.5f
+            } else if (isPaused) {
+                val phase = (i.toFloat() / barCount) * Math.PI.toFloat() * 2f
+                val variation = (sin(phase.toDouble()) * 0.12f + 0.88f).toFloat()
+                minBarHeight + (maxBarHeight - minBarHeight) * 0.18f * variation
             } else {
                 val baseLevel = if (isRecording) meterLevel.coerceAtLeast(0.32f) else meterLevel
                 val phase = (i.toFloat() / barCount) * Math.PI.toFloat() * 2f + animationPhase
@@ -109,6 +131,7 @@ class WaveformView(context: Context) : View(context) {
 
     override fun onDetachedFromWindow() {
         isRecording = false
+        isPaused = false
         isProcessing = false
         super.onDetachedFromWindow()
     }
