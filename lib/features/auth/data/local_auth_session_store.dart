@@ -43,5 +43,12 @@ class LocalAuthSessionStore implements AuthSessionStore {
   }
 
   @override
+  Future<void> signInWithGoogleIdToken({required String? idToken}) async {
+    throw AuthFailure.unsupported(
+      UnsupportedError('Google Sign-In is not configured.'),
+    );
+  }
+
+  @override
   Future<void> signOut() async {}
 }

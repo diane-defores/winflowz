@@ -65,6 +65,14 @@ class _ThrowingAuthSessionStore implements AuthSessionStore {
   }
 
   @override
+  Future<void> signInWithGoogleIdToken({required String? idToken}) async {
+    final failure = googleFailure;
+    if (failure != null) {
+      throw failure;
+    }
+  }
+
+  @override
   Future<void> signOut() async {}
 }
 

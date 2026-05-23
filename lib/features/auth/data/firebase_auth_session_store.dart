@@ -94,17 +94,7 @@ class FirebaseAuthSessionStore implements AuthSessionStore {
         );
       }
       final auth = await _googleAuthClient.authenticate();
-      final idToken = auth.idToken?.trim();
-      if (idToken == null || idToken.isEmpty) {
-        throw AuthFailure.googleConfiguration(
-          code: 'missing-id-token',
-          detail: 'Google Sign-In returned no idToken for Firebase credential.',
-        );
-      }
-      final credential = firebase_auth.GoogleAuthProvider.credential(
-        idToken: idToken,
-      );
-      await _firebaseAuth.signInWithCredential(credential);
+      await signInWithGoogleIdToken(idToken: auth.idToken);
     } on AuthFailure {
       rethrow;
     } on firebase_auth.FirebaseAuthException catch (error) {
@@ -117,6 +107,33 @@ class FirebaseAuthSessionStore implements AuthSessionStore {
       throw AuthFailure.googleConfiguration(
         code: error.code.name,
         detail: error.description ?? error.toString(),
+      );
+    } catch (error) {
+      throw AuthFailure.unexpected(error);
+    }
+  }
+
+  @override
+  Future<void> signInWithGoogleIdToken({required String? idToken}) async {
+    try {
+      final normalizedIdToken = idToken?.trim();
+      if (normalizedIdToken == null || normalizedIdToken.isEmpty) {
+        throw AuthFailure.googleConfiguration(
+          code: 'missing-id-token',
+          detail: 'Google Sign-In returned no idToken for Firebase credential.',
+        );
+      }
+      final credential = firebase_auth.GoogleAuthProvider.credential(
+        idToken: normalizedIdToken,
+      );
+      await _firebaseAuth.signInWithCredential(credential);
+    } on AuthFailure {
+      rethrow;
+    } on firebase_auth.FirebaseAuthException catch (error) {
+      throw AuthFailure.firebase(
+        code: error.code,
+        message: error.message,
+        signup: false,
       );
     } catch (error) {
       throw AuthFailure.unexpected(error);

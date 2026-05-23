@@ -22,6 +22,12 @@ class _FakeGoogleAuthClient implements GoogleAuthClient {
   bool supportsAuthenticate() => supported;
 
   @override
+  bool requiresRenderedButton() => false;
+
+  @override
+  Stream<GoogleAuthResult> authenticationResults() => Stream.value(result);
+
+  @override
   Future<GoogleAuthResult> authenticate() async {
     return result;
   }

@@ -72,6 +72,10 @@ abstract class GoogleAuthClient {
 
   bool supportsAuthenticate();
 
+  bool requiresRenderedButton();
+
+  Stream<GoogleAuthResult> authenticationResults();
+
   Future<GoogleAuthResult> authenticate();
 }
 
@@ -101,6 +105,21 @@ class PluginGoogleAuthClient implements GoogleAuthClient {
 
   @override
   bool supportsAuthenticate() => _googleSignIn.supportsAuthenticate();
+
+  @override
+  bool requiresRenderedButton() => _config.isWeb && !supportsAuthenticate();
+
+  @override
+  Stream<GoogleAuthResult> authenticationResults() async* {
+    await for (final event in _googleSignIn.authenticationEvents) {
+      switch (event) {
+        case GoogleSignInAuthenticationEventSignIn(user: final user):
+          yield GoogleAuthResult(idToken: user.authentication.idToken);
+        case GoogleSignInAuthenticationEventSignOut():
+          break;
+      }
+    }
+  }
 
   @override
   Future<GoogleAuthResult> authenticate() async {

@@ -49,6 +49,11 @@ class SupabaseAuthSessionStore implements AuthSessionStore {
   }
 
   @override
+  Future<void> signInWithGoogleIdToken({required String? idToken}) async {
+    throw UnsupportedError('Google Sign-In waits for the Firebase adapter.');
+  }
+
+  @override
   Future<void> signOut() => _client.auth.signOut();
 
   static AuthSessionSnapshot _fromSession(Session? session) {

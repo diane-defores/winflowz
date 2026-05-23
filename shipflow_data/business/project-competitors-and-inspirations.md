@@ -91,3 +91,6 @@ Référence de positionnement pour la voix comme interface de productivité.
 
 - Quels produits doivent rester en benchmark prioritaire pour Q2 2026 (max 3) ?
 - Faut-il séparer explicitement les inspirations "mobile", "desktop" et "workflow éducatif" ?
+
+https://appsumo.com/products/amical
+

@@ -25,6 +25,29 @@ flutter pub get
 
 DART_DEFINES=()
 
+if [[ "${VERCEL_ENV:-}" == "production" || "${VERCEL_ENV:-}" == "preview" ]]; then
+  REQUIRED_WEB_AUTH_ENV=(
+    FIREBASE_PROJECT_ID
+    FIREBASE_DEV_API_KEY
+    FIREBASE_DEV_APP_ID
+    FIREBASE_DEV_MESSAGING_SENDER_ID
+    FIREBASE_DEV_AUTH_DOMAIN
+    FIREBASE_DEV_STORAGE_BUCKET
+    FIREBASE_WEB_CLIENT_ID
+    SUITE_IDENTITY_BRIDGE_URL
+  )
+  missing_web_auth_env=()
+  for name in "${REQUIRED_WEB_AUTH_ENV[@]}"; do
+    if [[ -z "${!name:-}" ]]; then
+      missing_web_auth_env+=("${name}")
+    fi
+  done
+  if [[ "${#missing_web_auth_env[@]}" -gt 0 ]]; then
+    echo "::error::Missing hosted web auth environment variables: ${missing_web_auth_env[*]}"
+    exit 1
+  fi
+fi
+
 add_dart_define() {
   local name="$1"
   local value="$2"

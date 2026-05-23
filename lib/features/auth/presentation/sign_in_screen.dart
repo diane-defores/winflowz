@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -9,6 +10,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../application/auth_session_provider.dart';
 import '../domain/auth_failure.dart';
+import 'google_web_sign_in_button.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -134,6 +136,26 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         ),
         stackTrace,
       );
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Future<void> _signInWithGoogleIdToken(String? idToken) async {
+    final store = ref.read(authSessionStoreProvider);
+    setState(() {
+      _busy = true;
+      _error = null;
+      _errorDetail = null;
+    });
+    try {
+      await store.signInWithGoogleIdToken(idToken: idToken);
+    } on AuthFailure catch (error, stackTrace) {
+      await _presentAuthFailure(error, stackTrace);
+    } catch (error, stackTrace) {
+      await _presentAuthFailure(AuthFailure.unexpected(error), stackTrace);
     } finally {
       if (mounted) {
         setState(() => _busy = false);
@@ -306,11 +328,18 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             child: const Text('Continuer en local'),
                           ),
                           AppGaps.x2,
-                          OutlinedButton.icon(
-                            onPressed: _busy ? null : _signInWithGoogle,
-                            icon: const Icon(Icons.login_outlined),
-                            label: const Text('Continuer avec Google'),
-                          ),
+                          if (kIsWeb)
+                            GoogleWebSignInButton(
+                              disabled: _busy,
+                              onAuthenticated: _signInWithGoogleIdToken,
+                              onFailure: _presentAuthFailure,
+                            )
+                          else
+                            OutlinedButton.icon(
+                              onPressed: _busy ? null : _signInWithGoogle,
+                              icon: const Icon(Icons.login_outlined),
+                              label: const Text('Continuer avec Google'),
+                            ),
                           if (_busy)
                             const Padding(
                               padding: AppInsets.progress,

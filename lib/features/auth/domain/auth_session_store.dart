@@ -53,5 +53,7 @@ abstract class AuthSessionStore {
 
   Future<void> signInWithGoogle();
 
+  Future<void> signInWithGoogleIdToken({required String? idToken});
+
   Future<void> signOut();
 }
