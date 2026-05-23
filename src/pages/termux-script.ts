@@ -17,16 +17,16 @@ repair_termux_curl() {
     return 0
   fi
 
-  printf '%s\\n' "curl is broken or missing; repairing Termux TLS packages..."
+  printf '%s\\n' "curl est cassé ou manquant; réparation des paquets Termux..."
 
   if ! command -v apt >/dev/null 2>&1; then
-    printf '%s\\n' "apt is not available, cannot repair curl automatically."
+    printf '%s\\n' "apt est indisponible, réparation automatique impossible."
     return 1
   fi
 
-  apt update </dev/null
-  apt full-upgrade -y </dev/null
-  apt install --reinstall curl openssl libngtcp2 -y </dev/null || apt install curl openssl libngtcp2 -y </dev/null
+  apt update </dev/null >/dev/null 2>&1
+  apt full-upgrade -y </dev/null >/dev/null 2>&1
+  apt install --reinstall curl openssl libngtcp2 -y </dev/null >/dev/null 2>&1 || apt install curl openssl libngtcp2 -y </dev/null >/dev/null 2>&1
 
   curl_works
 }
