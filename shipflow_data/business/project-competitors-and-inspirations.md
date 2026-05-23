@@ -1,3 +1,31 @@
+---
+artifact: competitor_inspiration_context
+metadata_schema_version: "1.0"
+artifact_version: "0.1.0"
+project: winflowz
+created: "2026-05-17"
+updated: "2026-05-23"
+status: draft
+source_skill: sf-docs
+scope: competitors-and-inspirations
+owner: "Diane"
+confidence: medium
+risk_level: medium
+security_impact: none
+docs_impact: yes
+linked_systems:
+  - shipflow_data/business/business.md
+  - shipflow_data/business/product.md
+  - shipflow_data/business/branding.md
+depends_on: []
+supersedes:
+  - INSPIRATION.md
+evidence:
+  - "Migrated from legacy root INSPIRATION.md"
+next_review: "2026-06-23"
+next_step: "/sf-docs update"
+---
+
 # Inspiration — WinFlowz
 
 
