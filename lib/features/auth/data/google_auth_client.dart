@@ -84,11 +84,16 @@ class PluginGoogleAuthClient implements GoogleAuthClient {
     GoogleSignIn? googleSignIn,
     GoogleAuthRuntimeConfig? config,
   }) : _googleSignIn = googleSignIn ?? GoogleSignIn.instance,
+       _usesSharedGoogleSignIn = googleSignIn == null,
        _config = config ?? GoogleAuthRuntimeConfig.fromEnvironment();
 
   final GoogleSignIn _googleSignIn;
+  final bool _usesSharedGoogleSignIn;
   final GoogleAuthRuntimeConfig _config;
   var _initialized = false;
+  static Future<void>? _sharedInitialization;
+  static String? _sharedClientId;
+  static String? _sharedServerClientId;
 
   @override
   Future<void> initialize() async {
@@ -96,11 +101,59 @@ class PluginGoogleAuthClient implements GoogleAuthClient {
       return;
     }
     _config.ensurePlatformConfiguration();
-    await _googleSignIn.initialize(
-      clientId: _config.clientId,
-      serverClientId: _config.serverClientId,
-    );
+    if (_usesSharedGoogleSignIn) {
+      await _initializeSharedGoogleSignIn();
+    } else {
+      await _initializePlugin();
+    }
     _initialized = true;
+  }
+
+  Future<void> _initializeSharedGoogleSignIn() async {
+    final clientId = _config.clientId;
+    final serverClientId = _config.serverClientId;
+    final existingInitialization = _sharedInitialization;
+    if (existingInitialization != null) {
+      if (_sharedClientId != clientId ||
+          _sharedServerClientId != serverClientId) {
+        throw AuthFailure.googleConfiguration(
+          code: 'google-sign-in-reinitialized',
+          detail:
+              'Google Sign-In was initialized with a different client configuration.',
+        );
+      }
+      await existingInitialization;
+      return;
+    }
+
+    _sharedClientId = clientId;
+    _sharedServerClientId = serverClientId;
+    final initialization = _initializePlugin();
+    _sharedInitialization = initialization;
+    try {
+      await initialization;
+    } catch (_) {
+      if (identical(_sharedInitialization, initialization)) {
+        _sharedInitialization = null;
+        _sharedClientId = null;
+        _sharedServerClientId = null;
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> _initializePlugin() async {
+    try {
+      await _googleSignIn.initialize(
+        clientId: _config.clientId,
+        serverClientId: _config.serverClientId,
+      );
+    } on StateError catch (error) {
+      if (error.message.contains('init() has already been called')) {
+        return;
+      }
+      rethrow;
+    }
   }
 
   @override

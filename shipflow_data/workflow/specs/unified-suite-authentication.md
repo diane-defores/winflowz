@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "1.0.21"
+artifact_version: "1.0.23"
 project: "WinFlowz Suite"
 created: "2026-05-17"
 created_at: "2026-05-17 08:05:27 UTC"
 updated: "2026-05-23"
-updated_at: "2026-05-23 10:31:17 UTC"
+updated_at: "2026-05-23 14:30:13 UTC"
 status: active
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -69,7 +69,10 @@ evidence:
   - "Android device auth debug 2026-05-23: Google Sign-In failed with `clientConfigurationError` because the APK did not receive a Google OAuth Web client ID as Android `serverClientId`."
   - "Android device auth debug 2026-05-23: email account creation failed with Firebase `CONFIGURATION_NOT_FOUND`; CLI evidence shows `identitytoolkit.googleapis.com` is enabled on `winflowz-dev` but not on prod project `winflowz`."
   - "Android device auth debug 2026-05-23: password manager detected the password field but not email; the sign-in form now groups autofill fields and exposes email as both `username` and `email`."
-next_step: "enable Firebase Authentication/sign-in providers on `winflowz`, set FIREBASE_WEB_CLIENT_ID in GitHub Actions, ship the Android auth config patch, rebuild the APK, then rerun Android physical-device suite-auth smoke"
+  - "Hosted Flutter web auth debug 2026-05-23: `app.winflowz.com` renders the official Google Identity Services button, but Google rejects the current origin for the configured OAuth client ID."
+  - "Firebase CI/rules migration 2026-05-23: GitHub Actions WIF, deploy service account, Firestore database, rules/index deploy, auth-config validation and debug APK build now pass against `winflowz-suite`."
+  - "Legacy Google Cloud project `winflowz` deletion requested 2026-05-23 after migration to `winflowz-suite`."
+next_step: "ship the Flutter web init/id-token error handling patch, redeploy `winflowz-app`, then rerun Google web and email/password auth smoke"
 ---
 
 # Title
@@ -533,6 +536,8 @@ Resolved decisions:
 | 2026-05-23 12:28:51 UTC | sf-prod + sf-auth-debug | GPT-5 Codex | Verified `winflowz-app` Vercel env completion, redeployed production, and ran hosted Flutter web auth smoke | Partial: production deployment `dpl_43qBcWKhhWJqzLstWDvML7CRum2j` is Ready and aliased to `app.winflowz.com`; Flutter web now initializes Firebase Auth/Firestore and shows the Firebase auth screen; email/password smoke reaches Firebase but provider is disabled, and Google web needs the official GIS rendered-button flow instead of app-owned `authenticate()` UI | enable Email/Password in Firebase Authentication, then patch Flutter web Google sign-in to use `google_sign_in_web` `renderButton` + authentication events |
 | 2026-05-23 13:07:16 UTC | sf-auth-debug | GPT-5 Codex | Patched Flutter web Google Sign-In after hosted `authenticate-unsupported` repro | Fixed locally: Flutter web now renders the official GIS button, listens to `google_sign_in_web` authentication events, and exchanges the returned Google ID token with Firebase Auth; Android keeps the native `authenticate()` path | push/redeploy `winflowz-app`, then retest Google web sign-in on `app.winflowz.com` |
 | 2026-05-23 13:09:13 UTC | sf-auth-debug | GPT-5 Codex | Retested hosted Flutter web email/password after Firebase provider activation | Passed preflight: `app.winflowz.com` now reaches Firebase Email/Password auth and returns controlled invalid-credential UX for a fake account instead of provider-disabled copy | push/redeploy `winflowz-app`, then retest Google web sign-in and a real email/password account smoke |
+| 2026-05-23 13:35:40 UTC | sf-auth-debug | GPT-5 Codex | Continued hosted Flutter web auth debug after deploy and Firebase Email/Password activation | Partial: live `app.winflowz.com` now renders the official GIS button, but Google returns `origin is not allowed for the given client ID`; local patch also prevents repeated Google Sign-In singleton init from masking email/password errors and maps Firebase REST invalid-login credentials to the proper UX | add `https://app.winflowz.com` to the Google OAuth Web client authorized JavaScript origins, push/redeploy `winflowz-app`, then rerun Google web and email/password smoke |
+| 2026-05-23 14:30:13 UTC | sf-auth-debug | GPT-5 Codex | Migrated Firebase CI/rules ownership from legacy `winflowz` project to `winflowz-suite` and retested GitHub Actions | Passed: created `winflowz-suite` WIF pool/provider, deploy service account, Firestore `(default)` in `nam5`, GitHub secrets/variable; workflow run `26335153138` passed auth config, Firestore rules/indexes deploy, analyze, tests and debug APK upload; legacy `winflowz` deletion requested | ship/redeploy local Flutter web auth patch, then rerun deployed Google web and email/password account smoke |
 
 # Current Chantier Flow
 
@@ -544,7 +549,7 @@ Resolved decisions:
 - sf-ship: partial quick ship prepared on 2026-05-22; hosted Vercel/GitHub Actions proof still pending.
 - support-runbook: done via sf-build delegated docs worker; canonical operator guide added in the main project docs and surfaced from the app docs.
 - smoke-readiness: partial via sf-build delegated docs worker; Task 10 log exists, but real deployed proof is not captured yet.
-- sf-test/sf-auth-debug: partial on 2026-05-23; `www.winflowz.com/signin` now loads the Clerk custom-domain sign-in UI, `app.winflowz.com` now loads Firebase auth UI, email/password provider activation is verified with controlled invalid-credential UX, and Google web GIS rendered-button auth is fixed locally pending deploy/retest.
-- sf-prod: partial on 2026-05-23; Android CI is green, WinFlowz Clerk DNS/TLS/CSP allow sign-in UI loading, and `winflowz-app` Vercel envs are now present with production redeployed.
+- sf-test/sf-auth-debug: partial on 2026-05-23; `www.winflowz.com/signin` now loads the Clerk custom-domain sign-in UI, `app.winflowz.com` now loads Firebase auth UI and the official Google GIS button, Email/Password reaches Firebase, Google web reaches the Google popup after authorized-origin fix, and a local Google singleton-init/error-mapping patch still needs ship/redeploy.
+- sf-prod: partial on 2026-05-23; Android CI is green against `winflowz-suite`, Firestore rules/indexes deploy to `winflowz-suite`, WinFlowz Clerk DNS/TLS/CSP allow sign-in UI loading, and `winflowz-app` Vercel envs are now present with production redeployed.
 
-Next command: push/redeploy `winflowz-app`, then retest Google web sign-in and a real email/password account smoke on `app.winflowz.com`.
+Next command: push/redeploy the local Flutter web auth patch, then retest Google web sign-in and a real email/password account smoke on `app.winflowz.com`.

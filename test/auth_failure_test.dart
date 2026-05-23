@@ -27,6 +27,17 @@ void main() {
     expect(failure.userMessage, 'Email ou mot de passe incorrect.');
   });
 
+  test('maps firebase rest invalid login credentials', () {
+    final failure = AuthFailure.firebase(
+      code: 'INVALID_LOGIN_CREDENTIALS',
+      message: 'INVALID_LOGIN_CREDENTIALS',
+      signup: false,
+    );
+
+    expect(failure.kind, AuthFailureKind.invalidCredentials);
+    expect(failure.userMessage, 'Email ou mot de passe incorrect.');
+  });
+
   test('maps firebase configuration not found as configuration failure', () {
     final failure = AuthFailure.firebase(
       code: 'unknown',

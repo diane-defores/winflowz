@@ -82,6 +82,7 @@ class AuthFailure implements Exception {
     required bool signup,
   }) {
     final normalizedMessage = message ?? '';
+    final normalizedCode = code.trim().toLowerCase().replaceAll('_', '-');
     if (_isFirebaseConfigurationMessage(normalizedMessage)) {
       return AuthFailure(
         kind: AuthFailureKind.firebaseConfiguration,
@@ -93,7 +94,7 @@ class AuthFailure implements Exception {
       );
     }
 
-    switch (code) {
+    switch (normalizedCode) {
       case 'invalid-email':
         return AuthFailure(
           kind: AuthFailureKind.invalidInput,
@@ -113,6 +114,7 @@ class AuthFailure implements Exception {
       case 'user-not-found':
       case 'wrong-password':
       case 'invalid-credential':
+      case 'invalid-login-credentials':
         return AuthFailure(
           kind: AuthFailureKind.invalidCredentials,
           userMessage: 'Email ou mot de passe incorrect.',
