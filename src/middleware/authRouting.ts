@@ -3,6 +3,10 @@ const CLERK_BYPASS_API_PATHS = new Set([
   "/api/polar/webhook",
 ]);
 
+const CLERK_BYPASS_PUBLIC_PATHS = new Set([
+  "/termux-script",
+]);
+
 const CLERK_BYPASS_API_PREFIXES = [
   "/api/bridge",
   "/api/newsletter",
@@ -24,6 +28,7 @@ export function shouldBypassClerkMiddleware(pathname: string): boolean {
   const normalizedPathname = normalizePathname(pathname);
 
   return (
+    CLERK_BYPASS_PUBLIC_PATHS.has(normalizedPathname) ||
     CLERK_BYPASS_API_PATHS.has(normalizedPathname) ||
     CLERK_BYPASS_API_PREFIXES.some((basePath) =>
       isPathOrChild(normalizedPathname, basePath)
