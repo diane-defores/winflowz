@@ -4,6 +4,7 @@ describe("auth routing middleware", () => {
   test("bypasses Clerk for server-owned API routes", () => {
     expect(shouldBypassClerkMiddleware("/api/bridge/firebase")).toBe(true);
     expect(shouldBypassClerkMiddleware("/api/bridge/sync")).toBe(true);
+    expect(shouldBypassClerkMiddleware("/api/bridge/entitlement")).toBe(true);
     expect(shouldBypassClerkMiddleware("/api/clerk/webhook")).toBe(true);
     expect(shouldBypassClerkMiddleware("/api/polar/webhook")).toBe(true);
     expect(shouldBypassClerkMiddleware("/api/newsletter/subscribe")).toBe(true);

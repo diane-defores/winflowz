@@ -1,8 +1,12 @@
 export const SUITE_PRODUCT_ALLOWLIST = [
   "winflowz_app",
   "winflowz_formation",
+  "replayglowz",
   "tubeflow",
 ] as const;
+
+export const REPLAYGLOWZ_PRODUCT_ID = "replayglowz";
+export const REPLAYGLOWZ_LEGACY_PRODUCT_IDS = ["tubeflow"] as const;
 
 const ACTIVE_ENTITLEMENT_STATUSES = new Set(["active", "trialing"]);
 const FIRESTORE_ENTITLEMENT_PRODUCTS = ["winflowz_app"] as const;
@@ -18,6 +22,20 @@ export type BridgeEntitlementSnapshot = {
   productId: string;
   plan: string;
   status: string;
+};
+
+export type ReplayGlowzEntitlementReasonCode =
+  | "active_entitlement"
+  | "legacy_alias_entitlement"
+  | "missing_product_entitlement"
+  | "account_not_found"
+  | "global_user_not_found";
+
+export type ReplayGlowzEntitlementSnapshot = {
+  hasAccess: boolean;
+  globalUserId: string | null;
+  matchedProductId: string | null;
+  reasonCode: ReplayGlowzEntitlementReasonCode;
 };
 
 export function isAllowedSuiteProduct(productId: string): boolean {
@@ -36,6 +54,61 @@ export function hasActiveEntitlement(
     (entry) =>
       entry.productId === productId && isActiveAccessStatus(entry.status)
   );
+}
+
+export function resolveReplayGlowzEntitlementSnapshot({
+  globalUserId,
+  entitlements,
+  accountExists = true,
+}: {
+  globalUserId: string | null;
+  entitlements: BridgeEntitlement[];
+  accountExists?: boolean;
+}): ReplayGlowzEntitlementSnapshot {
+  if (!globalUserId) {
+    return {
+      hasAccess: false,
+      globalUserId: null,
+      matchedProductId: null,
+      reasonCode: accountExists ? "global_user_not_found" : "account_not_found",
+    };
+  }
+
+  const canonical = entitlements.find(
+    (entry) =>
+      entry.productId === REPLAYGLOWZ_PRODUCT_ID &&
+      isActiveAccessStatus(entry.status)
+  );
+  if (canonical) {
+    return {
+      hasAccess: true,
+      globalUserId,
+      matchedProductId: REPLAYGLOWZ_PRODUCT_ID,
+      reasonCode: "active_entitlement",
+    };
+  }
+
+  const legacy = entitlements.find(
+    (entry) =>
+      (REPLAYGLOWZ_LEGACY_PRODUCT_IDS as readonly string[]).includes(
+        entry.productId
+      ) && isActiveAccessStatus(entry.status)
+  );
+  if (legacy) {
+    return {
+      hasAccess: true,
+      globalUserId,
+      matchedProductId: legacy.productId,
+      reasonCode: "legacy_alias_entitlement",
+    };
+  }
+
+  return {
+    hasAccess: false,
+    globalUserId,
+    matchedProductId: null,
+    reasonCode: "missing_product_entitlement",
+  };
 }
 
 export function buildFirestoreSuiteAccessMirror({
@@ -140,6 +213,12 @@ export function getConvexBridgeSecret(
   env: Record<string, string | undefined>
 ): string | null {
   return cleanSecret(env.SUITE_BRIDGE_CONVEX_SECRET);
+}
+
+export function getSuiteEntitlementVerifySecret(
+  env: Record<string, string | undefined>
+): string | null {
+  return cleanSecret(env.SUITE_ENTITLEMENT_VERIFY_SECRET);
 }
 
 export function isValidGlobalUserId(value: unknown): value is string {

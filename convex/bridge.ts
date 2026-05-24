@@ -4,9 +4,12 @@ import { v } from "convex/values";
 const SUITE_PRODUCT_ALLOWLIST = new Set([
   "winflowz_app",
   "winflowz_formation",
+  "replayglowz",
   "tubeflow",
 ]);
 const ACTIVE_ENTITLEMENT_STATUSES = new Set(["active", "trialing"]);
+const REPLAYGLOWZ_PRODUCT_ID = "replayglowz";
+const REPLAYGLOWZ_LEGACY_PRODUCT_IDS = ["tubeflow"];
 
 function createGlobalUserId() {
   return `gu_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -24,6 +27,56 @@ function isAllowedSuiteProduct(productId: string): boolean {
 
 function isActiveAccessStatus(status: string): boolean {
   return ACTIVE_ENTITLEMENT_STATUSES.has(status);
+}
+
+function resolveReplayGlowzAccess(args: {
+  globalUserId: string | null;
+  entitlements: { productId: string; status: string }[];
+  accountExists: boolean;
+}) {
+  if (!args.globalUserId) {
+    return {
+      hasAccess: false,
+      globalUserId: null,
+      matchedProductId: null,
+      reasonCode: args.accountExists ? "global_user_not_found" : "account_not_found",
+    };
+  }
+
+  const canonical = args.entitlements.find(
+    (entry) =>
+      entry.productId === REPLAYGLOWZ_PRODUCT_ID &&
+      isActiveAccessStatus(entry.status)
+  );
+  if (canonical) {
+    return {
+      hasAccess: true,
+      globalUserId: args.globalUserId,
+      matchedProductId: REPLAYGLOWZ_PRODUCT_ID,
+      reasonCode: "active_entitlement",
+    };
+  }
+
+  const legacy = args.entitlements.find(
+    (entry) =>
+      REPLAYGLOWZ_LEGACY_PRODUCT_IDS.includes(entry.productId) &&
+      isActiveAccessStatus(entry.status)
+  );
+  if (legacy) {
+    return {
+      hasAccess: true,
+      globalUserId: args.globalUserId,
+      matchedProductId: legacy.productId,
+      reasonCode: "legacy_alias_entitlement",
+    };
+  }
+
+  return {
+    hasAccess: false,
+    globalUserId: args.globalUserId,
+    matchedProductId: null,
+    reasonCode: "missing_product_entitlement",
+  };
 }
 
 function maskProviderAccountId(value: string): string {
@@ -211,5 +264,63 @@ export const getEntitlementSnapshotByGlobalUser = query({
       firebaseUids,
       entitlements,
     };
+  },
+});
+
+export const getReplayGlowzEntitlementSnapshotByClerkId = query({
+  args: {
+    clerkId: v.string(),
+    bridgeSecret: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const configuredSecret = process.env.SUITE_BRIDGE_CONVEX_SECRET;
+    if (!configuredSecret) {
+      throw new Error("bridge_secret_not_configured");
+    }
+
+    if (args.bridgeSecret !== configuredSecret) {
+      throw new Error("bridge_secret_mismatch");
+    }
+
+    const identity = await ctx.db
+      .query("identityAccounts")
+      .withIndex("by_providerAccount", (q) =>
+        q.eq("provider", "clerk").eq("providerAccountId", args.clerkId)
+      )
+      .first();
+
+    const compatibilityUser = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .first();
+
+    const globalUserDocId = identity?.globalUserId ?? compatibilityUser?.globalUserId;
+    if (!globalUserDocId) {
+      return resolveReplayGlowzAccess({
+        globalUserId: null,
+        entitlements: [],
+        accountExists: Boolean(identity || compatibilityUser),
+      });
+    }
+
+    const globalUser = await ctx.db.get(globalUserDocId);
+    if (!globalUser) {
+      return resolveReplayGlowzAccess({
+        globalUserId: null,
+        entitlements: [],
+        accountExists: true,
+      });
+    }
+
+    const rawEntitlements = await ctx.db
+      .query("productEntitlements")
+      .withIndex("by_globalUserId", (q) => q.eq("globalUserId", globalUserDocId))
+      .collect();
+
+    return resolveReplayGlowzAccess({
+      globalUserId: globalUser.globalUserId,
+      entitlements: rawEntitlements,
+      accountExists: true,
+    });
   },
 });
