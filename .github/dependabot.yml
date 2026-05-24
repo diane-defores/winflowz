@@ -6,9 +6,12 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
-      site-npm:
+      site-npm-non-major:
         patterns:
           - "*"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
 
   - package-ecosystem: pub
     directory: /winflowz_app
@@ -16,9 +19,12 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
-      flutter-pub:
+      flutter-pub-non-major:
         patterns:
           - "*"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
 
   - package-ecosystem: github-actions
     directory: /
