@@ -76,8 +76,19 @@ supabase db push
 - deployment_provider: vercel for web; GitHub Actions/Blacksmith for Android builds
 - preview_source: https://winflowz-app.vercel.app/
 - production_url: https://winflowz-app.vercel.app/
-- notes: Agents can access and validate the Flutter web app on Vercel at `https://winflowz-app.vercel.app/`. Android keyboard/overlay/APK behavior must be validated manually by Diane on a physical phone; agents should provide clear QA steps and use copied diagnostics/logs from the device as evidence.
-- last_reviewed: 2026-05-16
+- notes: Agents can access and validate the Flutter web app on Vercel at `https://winflowz-app.vercel.app/`. Pure Flutter surfaces are considered shared across web and Android for QA purposes: onboarding UI, Settings UI, clipboard manual CRUD, snippets, dictionary, dialogs, form validation, navigation, and other widget-tree behavior must be covered by targeted widget tests first, then can be smoke-tested on the Flutter web app before asking Diane to download and validate an APK. Android-native behavior remains Android-only: IME integration, overlay service, native permissions, media/session access, system brightness, notification access, keyboard clipboard capture, and physical-device lifecycle must be validated through GitHub Actions/Blacksmith APKs and Diane's device QA. Manual APK QA should not be used as the first line of detection for testable Flutter widget regressions.
+- last_reviewed: 2026-05-24
+
+### Pre-APK QA Gate
+
+Before asking Diane to install or retest an Android APK, run the strongest local gate that matches the changed surface:
+
+- Always run `flutter analyze` and the targeted `flutter test ...` covering the changed workflow.
+- For any screen or flow change in a shared Flutter surface, add or extend widget tests for the actual user path, including open/close dialogs, `Annuler`, no-op `Sauvegarder`, real save, delete/cancel, search/filter, and empty/error states when relevant.
+- Run `flutter test test/widget_test.dart` or the relevant screen test file when the change touches central UI.
+- Run full `flutter test` before handing off a broad UI, onboarding, clipboard, settings, keyboard-preview, snippets, or dictionary change.
+- Use the Vercel Flutter web app as the fast manual smoke surface for shared Flutter UI before APK handoff when the behavior does not depend on Android-native APIs.
+- Ask Diane for physical-device APK QA only for Android-native behavior or as the final confirmation after automated and web-smoke coverage have already reduced widget-regression risk.
 
 ## ARM64 Android Release Guardrail
 

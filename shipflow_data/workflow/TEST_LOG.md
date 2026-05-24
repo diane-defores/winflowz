@@ -287,3 +287,16 @@ Environment: Android APK on real phone.
   - Local `POST` with allowed origin `http://localhost:4321` reflected that origin; disallowed origin did not receive `Access-Control-Allow-Origin`.
 - Manual action needed from Diane: configure the real production env names/values, including Clerk keys, suite bridge/Firebase/Convex vars, and `SUITE_API_ALLOWED_ORIGINS` with the WinFlowz app web origin.
 - Follow-up: push/redeploy the Formation patch, then rerun `/sf-prod winflowz` and `/sf-test unified-suite-authentication --prod`.
+
+## 2026-05-24 - Clipboard manual CRUD and edit-dialog crash retest
+
+- Scope: BUG-2026-05-24-002 clipboard edit dialog cancel/save retest
+- Environment: Android APK physical-device QA, operator-reported
+- Tester: Diane
+- Source: sf-test
+- Status: pass
+- Confidence: high
+- Result summary: Manual clipboard tests requested by Codex pass, including the previously crashing edit dialog close paths.
+- Bug pointer: BUG-2026-05-24-002 -> shipflow_data/workflow/bugs/BUG-2026-05-24-002.md
+- Evidence pointer: operator report in chat, 2026-05-24
+- Follow-up: ready for verification/ship closure
