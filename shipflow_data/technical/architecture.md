@@ -1,14 +1,14 @@
 ---
 artifact: architecture_context
-metadata_schema_version: "1.0"
-artifact_version: "1.0.1"
+metadata_schema_version: '1.0'
+artifact_version: '1.0.1'
 project: winflowz
-created: "2026-05-17"
-updated: "2026-05-23"
+created: '2026-05-17'
+updated: '2026-05-23'
 status: reviewed
 source_skill: sf-docs
 scope: architecture
-owner: "Diane"
+owner: 'Diane'
 confidence: high
 risk_level: medium
 docs_impact: yes
@@ -48,9 +48,10 @@ depends_on:
   - shipflow_data/business/branding.md
 supersedes:
   - ARCHITECTURE.md
-next_review: "2026-06-17"
-next_step: "pnpm build:check"
+next_review: '2026-06-17'
+next_step: 'pnpm build:check'
 ---
+
 # Architecture
 
 ## Purpose
@@ -110,7 +111,7 @@ Astro API routes act as thin integration controllers for:
 - suite bridge endpoints:
   - `POST /api/bridge/firebase` maps Firebase users to suite identities and mirrors `winflowz_app` access into Firestore.
   - `POST /api/bridge/sync` refreshes the Firestore access mirror by `globalUserId`.
-  - `POST /api/bridge/entitlement` verifies a Clerk session token server-side and returns a redacted ReplayGlowz entitlement snapshot for `product_id=replayglowz`, accepting `tubeflow` only as a legacy alias.
+  - `POST /api/bridge/entitlement` verifies a Clerk session token server-side and returns a redacted ReplayGlowz entitlement snapshot for `product_id=replayglowz`, accepting `tubeflow` only as a legacy alias. When a recognized Clerk account has no active ReplayGlowz entitlement yet, the bridge persists a product-scoped `replayglowz/free` default grant instead of granting suite-wide access.
 
 ### Backend state layer
 

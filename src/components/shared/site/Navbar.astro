@@ -1,5 +1,4 @@
 ---
-import { MobileMenu } from '@components/react/landing/MobileMenu'
 import ThemePicker from '@/components/ui/ThemePicker.astro'
 import { getLangFromUrl, useTranslations } from '@/utils/i18n'
 
@@ -51,6 +50,7 @@ const routeMappings: Record<string, string> = {
 	blog: 'blog',
 	contact: 'contact',
 	roadmap: 'roadmap',
+	signin: 'connexion',
 }
 
 function getTranslatedPath(path: string, targetLang: string): string {
@@ -84,6 +84,9 @@ const signInLabel = lang === 'fr' ? 'Connexion' : 'Sign In'
 const ctaLabel = lang === 'fr' ? 'Commencer' : 'Get Started'
 const signInUrl = lang === 'fr' ? '/fr/connexion' : '/signin'
 const ctaUrl = lang === 'fr' ? '/fr/produits' : '/products'
+const menuLabel = lang === 'fr' ? 'Ouvrir le menu' : 'Open menu'
+const darkModeLabel = lang === 'fr' ? 'Mode sombre' : 'Dark mode'
+const lightModeLabel = lang === 'fr' ? 'Mode clair' : 'Light mode'
 const mobileTagline =
 	lang === 'fr' ? 'Plugins Productivite & Formation Windows' : 'Productivity Plugins & Windows Training'
 
@@ -154,18 +157,70 @@ const ctaButtonClass = forceDark
 			</a>
 		</div>
 
-		<MobileMenu
-			client:only="react"
-			items={navItems}
-			signInLabel={signInLabel}
-			ctaLabel={ctaLabel}
-			signInUrl={signInUrl}
-			ctaUrl={ctaUrl}
-			altLangUrl={altLangUrl}
-			altLangLabel={altLangLabel}
-			forceDark={forceDark}
-			showThemeToggle={showThemePicker && !forceDark}
-		/>
+		<details class="mobile-menu relative md:hidden">
+			<summary
+				class="mobile-menu-toggle flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-neutral-100 hover:text-neutral-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+				aria-label={menuLabel}
+			>
+				<span class="sr-only">{menuLabel}</span>
+				<span class="hamburger-lines" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</summary>
+
+			<div class={forceDark
+				? 'absolute right-0 top-full mt-3 w-[calc(100vw-2rem)] max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950/96 p-4 shadow-2xl backdrop-blur-md'
+				: 'absolute right-0 top-full mt-3 w-[calc(100vw-2rem)] max-w-sm rounded-2xl border border-neutral-200/60 bg-white/95 p-4 shadow-lg backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/95 dark:shadow-none'
+			}>
+				<div class="flex flex-col gap-2">
+					{navItems.map((item) => (
+						<a
+							href={item.href}
+							class="rounded-lg px-4 py-3 text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-100 hover:text-neutral-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+						>
+							{item.label}
+						</a>
+					))}
+					<hr class="my-2 border-neutral-200 dark:border-zinc-800" />
+					<a
+						href={altLangUrl}
+						class="rounded-lg px-4 py-2 text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 hover:text-neutral-950 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-white"
+					>
+						{altLangLabel}
+					</a>
+					{showThemePicker && !forceDark && (
+						<>
+							<button
+								type="button"
+								data-hs-theme-click-value="dark"
+								class="rounded-lg px-4 py-3 text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-100 hover:text-neutral-950 hs-dark-mode-active:hidden dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+							>
+								{darkModeLabel}
+							</button>
+							<button
+								type="button"
+								data-hs-theme-click-value="light"
+								class="hidden rounded-lg px-4 py-3 text-left text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-100 hover:text-neutral-950 hs-dark-mode-active:block dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+							>
+								{lightModeLabel}
+							</button>
+						</>
+					)}
+					<a href={signInUrl}>
+						<span class="block rounded-lg px-4 py-3 text-sm font-medium text-neutral-800 transition-colors hover:bg-neutral-100 hover:text-neutral-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white">
+							{signInLabel}
+						</span>
+					</a>
+					<a href={ctaUrl}>
+						<span class="shimmer-btn inline-flex w-full items-center justify-center rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200">
+							{ctaLabel}
+						</span>
+					</a>
+				</div>
+			</div>
+		</details>
 	</nav>
 </header>
 
@@ -184,5 +239,35 @@ const ctaButtonClass = forceDark
 
 	.nav-link {
 		transition: background-color 0.2s ease, color 0.2s ease;
+	}
+
+	.mobile-menu > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.hamburger-lines {
+		display: grid;
+		gap: 4px;
+		width: 20px;
+	}
+
+	.hamburger-lines span {
+		display: block;
+		height: 2px;
+		border-radius: 999px;
+		background: currentColor;
+		transition: transform 0.18s ease, opacity 0.18s ease;
+	}
+
+	.mobile-menu[open] .hamburger-lines span:nth-child(1) {
+		transform: translateY(6px) rotate(45deg);
+	}
+
+	.mobile-menu[open] .hamburger-lines span:nth-child(2) {
+		opacity: 0;
+	}
+
+	.mobile-menu[open] .hamburger-lines span:nth-child(3) {
+		transform: translateY(-6px) rotate(-45deg);
 	}
 </style>

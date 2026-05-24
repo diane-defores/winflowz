@@ -2,9 +2,11 @@ import type { APIRoute } from "astro";
 import { ConvexHttpClient } from "convex/browser";
 import { FieldValue } from "firebase-admin/firestore";
 import { getFirebaseAdminState } from "@/lib/firebaseAdmin";
+import { getServerEnv } from "@/lib/serverEnv";
 import {
   buildFirestoreSuiteAccessMirror,
   getBearerTokenFromAuthorizationHeader,
+  getConvexBridgeSecret,
   isTrustedFirebaseIdTokenClaims,
   resolveBridgeEnvironment,
 } from "@/lib/suiteBridge";
@@ -14,8 +16,8 @@ export const prerender = false;
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
 export const POST: APIRoute = async ({ request }) => {
-  const env = import.meta.env as Record<string, string | undefined>;
-  const bridgeSecret = env.SUITE_BRIDGE_CONVEX_SECRET;
+  const env = getServerEnv();
+  const bridgeSecret = getConvexBridgeSecret(env);
 
   if (!bridgeSecret) {
     return new Response(

@@ -65,7 +65,8 @@ export const routes: {
     'copyright': 'copyright',
     'legal': 'legal',
     'landing': 'landing',
-    'cgv': 'cgv'
+    'cgv': 'cgv',
+    'signin': 'signin'
   },
   fr: {
     'products': 'produits',
@@ -80,6 +81,7 @@ export const routes: {
     'copyright': 'droits',
     'legal': 'mentions-legales',
     'landing': 'landing',
-    'cgv': 'cgv'
+    'cgv': 'cgv',
+    'signin': 'connexion'
   }
 }

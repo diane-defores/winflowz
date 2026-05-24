@@ -84,6 +84,10 @@ export const ROUTES: Record<string, RouteDefinition> = {
   legal: {
     en: 'legal',
     fr: 'mentions-legales'
+  },
+  signin: {
+    en: 'signin',
+    fr: 'connexion'
   }
 }
 
@@ -131,4 +135,4 @@ export function getLocalizedPath(lang: Language, routeKey: keyof typeof ROUTES):
   const path = route[lang]
   // Handle empty paths (root routes) - avoid double slashes
   return path ? `${prefix}/${path}` : prefix || '/'
-} 
+}

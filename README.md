@@ -1,14 +1,14 @@
 ---
 artifact: documentation
-metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+metadata_schema_version: '1.0'
+artifact_version: '1.0.0'
 project: winflowz
-created: "2026-04-25"
-updated: "2026-05-17"
+created: '2026-04-25'
+updated: '2026-05-17'
 status: reviewed
 source_skill: sf-docs
 scope: readme
-owner: "Diane"
+owner: 'Diane'
 confidence: medium
 risk_level: medium
 security_impact: yes
@@ -21,6 +21,7 @@ evidence:
   - shipflow_data/
 next_step: /sf-docs update
 ---
+
 # WinFlowz
 
 WinFlowz is a Windows-first productivity project centered on `Windows Mastery`, with bilingual content, gated learning surfaces, and companion product pages.
@@ -123,12 +124,15 @@ For `POST /api/bridge/firebase`, the backend verifies Firebase ID tokens with Fi
 - `SUITE_BRIDGE_SYNC_SECRET` (optional override; defaults to `SUITE_BRIDGE_CONVEX_SECRET`)
 
 `POST /api/bridge/sync` accepts only:
+
 - header `x-suite-bridge-secret` with the shared secret;
 - JSON body `{ "globalUserId": "..." }`.
 
 It recomputes entitlements from Convex (`productEntitlements` source of truth), discovers linked Firebase identity accounts, and writes server-owned Firestore `suiteAccess/{firebaseUid}` documents.
 
 The bridge also writes a server-owned Firestore mirror at `suiteAccess/{firebaseUid}` after Convex entitlement lookup. WinFlowz app Firestore rules use that mirror to allow or deny `winflowz_app` data under `users/{uid}`.
+
+`POST /api/bridge/entitlement` verifies ReplayGlowz Clerk sessions server-side. A recognized Clerk account without active ReplayGlowz access receives a persisted `replayglowz/free` default entitlement for that product only; this does not unlock other WinFlowz suite products.
 
 ### Clerk
 
