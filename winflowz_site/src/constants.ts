@@ -8,7 +8,7 @@ export const SITE = {
   authorName: 'Diane Defores',
   url: 'https://winflowz.com',
   domain: 'winflowz.com',
-  githubUrl: 'https://github.com/dianedef/winflowz',
+  githubUrl: 'https://github.com/diane-defores/winflowz',
   ogImage: '/images/WinFlowz.png',
   emails: {
     contact: 'hello@winflowz.com',

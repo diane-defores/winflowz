@@ -74,7 +74,7 @@ export function getFooterLinks(lang: Language = 'en'): FooterSection[] {
 export const socialLinks: SocialLinks = {
   facebook: '#',
   twitter: '#',
-  github: 'https://github.com/dianedef/winflowz',
+  github: 'https://github.com/diane-defores/winflowz',
   linkedin: '#',
   instagram: '#',
 }

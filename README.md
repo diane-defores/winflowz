@@ -10,7 +10,7 @@ Canonical monorepo for the WinFlowz site and application surfaces.
 
 ## Deployment Model
 
-- GitHub source of truth: `dianedef/winflowz`
+- GitHub source of truth: `diane-defores/winflowz`
 - Vercel site project uses `winflowz_site` as its Root Directory.
 - Vercel app project uses `winflowz_app` as its Root Directory when the Flutter web surface is deployed.
 - Firebase CLI files for the app live under `winflowz_app/`.
