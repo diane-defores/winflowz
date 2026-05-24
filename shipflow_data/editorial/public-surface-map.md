@@ -1,10 +1,10 @@
 ---
 artifact: editorial_governance
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: winflowz
 created: "2026-05-17"
-updated: "2026-05-17"
+updated: "2026-05-23"
 status: reviewed
 source_skill: sf-docs
 scope: public-surface-map
@@ -27,6 +27,9 @@ evidence:
   - src/pages/[...lang]/[windows_mastery].astro
   - src/pages/[...lang]/[products].astro
   - src/pages/[...lang]/[blog].astro
+  - src/pages/[...lang]/termux.astro
+  - src/pages/[...lang]/dotfiles.astro
+  - src/pages/[...lang]/shipflow.astro
 next_review: "2026-06-17"
 next_step: "/sf-docs update"
 ---
@@ -44,6 +47,7 @@ Identify the public surfaces that carry product promises, educational claims, or
 | Landing page | `/landing`, `/fr/landing` | paid and qualified traffic | high | CTA and proof framing must stay aligned |
 | Flagship offer page | `/windows-mastery`, `/fr/maitrise-windows` | high-intent buyers | high | pricing, support, curriculum, and promise claims |
 | Product catalog and detail pages | `/products`, `/fr/produits`, localized product routes | buyers comparing offers | high | status, CTA destination, availability |
+| Script utility pages | `/termux`, `/fr/termux`, `/dotfiles`, `/fr/dotfiles`, `/shipflow`, `/fr/shipflow` | operators who want one-command installers | medium | must match real bootstrap scope and raw script endpoints |
 | Blog index and articles | localized blog routes | top-of-funnel discovery | medium | claim discipline and internal linking |
 | Docs and training hub | localized docs routes and dashboard docs | learners and paid users | high | access model, curriculum, and lesson framing |
 | Legal pages | privacy, terms, copyright, legal, disclaimer routes | users and regulators | high | policy accuracy matters |
@@ -65,4 +69,3 @@ Identify the public surfaces that carry product promises, educational claims, or
 ## Maintenance Rule
 
 Update this map when a public route family, content collection, or conversion surface changes materially.
-

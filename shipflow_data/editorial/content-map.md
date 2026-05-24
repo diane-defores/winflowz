@@ -1,10 +1,10 @@
 ---
 artifact: content_map
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: winflowz
 created: "2026-05-17"
-updated: "2026-05-17"
+updated: "2026-05-23"
 status: reviewed
 source_skill: sf-docs
 scope: content-map
@@ -28,6 +28,9 @@ evidence:
   - src/content/docs/
   - src/content/products/
   - src/pages/[...lang]/
+  - src/pages/[...lang]/termux.astro
+  - src/pages/[...lang]/dotfiles.astro
+  - src/pages/[...lang]/shipflow.astro
 linked_artifacts:
   - shipflow_data/editorial/public-surface-map.md
   - shipflow_data/editorial/page-intent-map.md
@@ -57,6 +60,7 @@ Map public and semi-public content surfaces so publishing stays aligned with the
 | Training and docs | `src/content/docs/{en,fr}/` | gated or structured learning content | MD, MDX | offer contract and curriculum | offer or lesson scope changes |
 | Product pages | `src/content/products/{en,fr}/` | catalog and product narratives | Markdown | active offer reality | product positioning or status changes |
 | Landing and offer pages | `src/pages/[...lang]/` including `/windows-mastery` and `/products` | conversion surfaces | Astro pages | GTM and product contract | offer, CTA, or framing changes |
+| Script utility pages | `/termux`, `/dotfiles`, `/shipflow` and French equivalents | explain safe one-command installers and route to raw scripts | Astro pages | implemented bootstrap scripts and repositories | installer command, scope, or installed-tool boundary changes |
 | Changelog | `CHANGELOG.md` | user-facing release and documentation updates | Markdown | release history | relevant user-visible change ships |
 | Newsletter | `src/pages/api/newsletter/` plus external copy assets | capture and nurture | API plus external copy | lifecycle messaging | signup or nurture flow changes |
 
@@ -85,5 +89,5 @@ Map public and semi-public content surfaces so publishing stays aligned with the
 | New publishable source note in `CONTENU/` | blog, docs, and semantic cluster placement |
 | Positioning change | GTM, blog intros, landing pages, product pages, newsletter copy |
 | Workflow or access change | docs, premium lessons, product pages, support copy, changelog |
+| Installer command or scope change | script utility pages, raw script endpoint, repository README, changelog |
 | Bilingual content update | matching `en` and `fr` surfaces in the same release batch |
-

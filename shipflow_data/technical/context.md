@@ -1,10 +1,10 @@
 ---
 artifact: documentation
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: winflowz
 created: "2026-05-17"
-updated: "2026-05-17"
+updated: "2026-05-23"
 status: reviewed
 source_skill: sf-docs
 scope: technical-context
@@ -32,6 +32,9 @@ evidence:
   - src/components
   - src/middleware
   - convex/schema.ts
+  - src/pages/[...lang]/termux.astro
+  - src/pages/[...lang]/dotfiles.astro
+  - src/pages/[...lang]/shipflow.astro
 next_review: "2026-06-17"
 next_step: "pnpm build:check"
 ---
@@ -84,7 +87,14 @@ WinFlowz is an Astro server-rendered site with bilingual marketing pages, docume
 - `src/pages/[...lang]/[blog_slug].astro`
 - `src/pages/[...lang]/[services].astro`
 - `src/pages/[...lang]/[roadmap].astro`
+- script utility landing pages: `/termux`, `/dotfiles`, `/shipflow` and French equivalents
 - legal and utility pages under the same bilingual pattern
+
+### Raw installer endpoints
+
+- `src/pages/termux-script.ts`
+- `src/pages/dotfiles-script.ts`
+- `src/pages/shipflow-script.ts`
 
 ### Dashboard
 
@@ -123,4 +133,3 @@ python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py shipflow_data/tech
 ## Maintenance Rule
 
 Update this doc when major directories, route families, or repo-level mental models change.
-

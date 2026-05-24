@@ -14,12 +14,20 @@ const {
 	structuredData = defaultProps.structuredData,
 } = Astro.props
 
+const metaObject =
+	typeof meta === 'object' && meta !== null
+		? (meta as { title?: string; description?: string; canonicalURL?: string })
+		: undefined
+const metaDescription =
+	typeof meta === 'string' ? meta : metaObject?.description ?? defaultProps.meta
+const metaTitle = metaObject?.title ?? OG.title
+
 // Define the metadata for your website and individual pages
 const URL = `${Astro.site}`
 const author = SITE.author
-const canonical = Astro.url.href
-const ogTitle = OG.title
-const ogDescription = OG.description
+const canonical = metaObject?.canonicalURL ?? Astro.url.href
+const ogTitle = metaTitle
+const ogDescription = metaDescription
 const socialImageRes = await getImage({
 	src: OG.image,
 	width: 1200,
@@ -70,7 +78,7 @@ const favicon = await getImage({
 
 <!-- Meta tags -->
 <meta charset="utf-8" />
-<meta content={meta} name="description" />
+<meta content={metaDescription} name="description" />
 <meta name="web_author" content={author} />
 <meta
 	name="viewport"

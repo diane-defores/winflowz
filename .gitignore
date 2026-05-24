@@ -49,3 +49,4 @@ public/buildflowz-inspector.js
 
 # clerk configuration (can include secrets)
 /.clerk/
+.vercel
