@@ -6,8 +6,8 @@ project: "WinFlowz"
 created: "2026-05-24"
 created_at: "2026-05-24 21:02:33 UTC"
 updated: "2026-05-24"
-updated_at: "2026-05-24 21:12:12 UTC"
-status: ready
+updated_at: "2026-05-24 21:38:00 UTC"
+status: shipped
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "repository-migration"
@@ -44,7 +44,7 @@ evidence:
   - "2026-05-24: winflowz_app is a Flutter/Firebase app repository."
   - "ReplayGlowz and ContentGlowz already use a canonical monorepo root with app/site subdirectories."
   - "Vercel official monorepo docs confirm separate projects can target different root directories in the same repository."
-next_step: "/sf-verify shipflow_data/workflow/specs/winflowz-monorepo-migration.md"
+next_step: "/sf-end shipflow_data/workflow/specs/winflowz-monorepo-migration.md"
 ---
 
 # Title
@@ -308,9 +308,9 @@ None.
 - sf-spec: completed
 - sf-ready: ready
 - sf-start: implemented
-- sf-verify: pending
+- sf-verify: completed
 - sf-end: pending
-- sf-ship: pending
+- sf-ship: shipped
 
 # Skill Run History
 
@@ -319,3 +319,5 @@ None.
 | 2026-05-24 21:02:33 UTC | sf-spec | GPT-5 Codex | Created migration spec from exploration and clean-repo confirmation | draft | /sf-ready shipflow_data/workflow/specs/winflowz-monorepo-migration.md |
 | 2026-05-24 21:04:51 UTC | sf-ready | GPT-5 Codex | Validated readiness and added missing behavior/risk sections | ready | /sf-start shipflow_data/workflow/specs/winflowz-monorepo-migration.md |
 | 2026-05-24 21:12:12 UTC | sf-start | GPT-5 Codex | Migrated site/app into monorepo, consolidated governance, updated CI/docs, and ran local checks | implemented | /sf-verify shipflow_data/workflow/specs/winflowz-monorepo-migration.md |
+| 2026-05-24 21:29:00 UTC | sf-verify | GPT-5 Codex | Verified migrated app history/content, GitHub org transfer, PR checks, and standalone app/snapshot status | completed | /sf-ship shipflow_data/workflow/specs/winflowz-monorepo-migration.md |
+| 2026-05-24 21:38:00 UTC | sf-ship | GPT-5 Codex | Merged PR #99 into main and verified post-merge Android CI, Firestore deploy, Firebase Auth check, and APK artifact upload | shipped | /sf-end shipflow_data/workflow/specs/winflowz-monorepo-migration.md |
