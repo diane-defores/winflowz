@@ -510,7 +510,7 @@ Deferred decisions for later specs:
 | 2026-05-25 15:37:56 UTC | sf-ready | GPT-5 Codex | Ran readiness, adversarial, security, documentation, language, and freshness gates; resolved blocking ambiguity around first seed, queue revision checks, destructive cloud reset scope, and sequential execution. | Ready. | `/sf-start Account-Backed Keyboard Sync and Recovery` |
 | 2026-05-25 19:30:13 UTC | sf-start | GPT-5.5 coordination + sequential Codex workers | Implemented V1 keyboard sync models, safe policy, native Android export/apply bridge, Firestore store/rules, durable queue, controller conflict decisions, Settings sync panel, export/import fallback, save notifications, docs, and targeted/full Flutter verification. | Implemented locally; Android build/device proof still required through CI/device QA. | `/sf-verify Account-Backed Keyboard Sync and Recovery` |
 | 2026-05-25 19:51:50 UTC | sf-verify | GPT-5.5 | Verified spec contract, code coherence, Firestore/Auth docs freshness, rules/data safety, queue/conflict paths, bug gate, docs, language, and local validation. Fixed a destructive delete gap in `keyboardConfigs` rules during verification. | Partial: local proof passed; Android native compile/package, Firestore deploy, Flutter Web smoke, and physical-device IME restore/apply proof still missing. | `/sf-ship Account-Backed Keyboard Sync and Recovery` |
-| 2026-05-25 19:55:49 UTC | sf-ship | GPT-5.5 | Quick ship requested after partial verification; prepared scoped commit for account-backed keyboard sync and recovery without TASKS/CHANGELOG closeout. | Shipped for iteration; hosted/CI/device verification still required. | `/sf-prod winflowz_app` |
+| 2026-05-25 19:55:49 UTC | sf-ship | GPT-5.5 | Quick ship requested after partial verification; committed and pushed the scoped account-backed keyboard sync and recovery changes without TASKS/CHANGELOG closeout. | Shipped for iteration in commit `eac8bfd`; hosted/CI/device verification still required. | `/sf-prod winflowz_app` |
 
 # Current Chantier Flow
 
@@ -519,6 +519,6 @@ Deferred decisions for later specs:
 - sf-start: implemented locally; `flutter analyze`, full `flutter test`, metadata lint, and `git diff --check` passed.
 - sf-verify: partial; local code/rules/tests/docs verified, and destructive `keyboardConfigs` delete was closed during verification.
 - sf-end: not launched.
-- sf-ship: quick ship in progress; no TASKS/CHANGELOG closeout.
+- sf-ship: shipped quick in commit `eac8bfd`; no TASKS/CHANGELOG closeout.
 
 Next command: `/sf-prod winflowz_app`
