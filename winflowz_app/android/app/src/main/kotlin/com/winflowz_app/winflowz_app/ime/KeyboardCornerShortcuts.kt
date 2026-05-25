@@ -464,7 +464,8 @@ object KeyboardCornerShortcutResolver {
         fieldPolicy: KeyboardFieldPolicy,
         layoutProfile: KeyboardLayoutProfile,
     ): KeyboardCornerAssignments {
-        if (!cornerModeEnabled || !allowsCornerGesture(key, specialKeyCornersEnabled)) {
+        val resolvesTextKeyGestures = key.action == KeyboardKeyAction.Text && key.id != "space"
+        if (!cornerModeEnabled || (!specialKeyCornersEnabled && !resolvesTextKeyGestures)) {
             return KeyboardCornerAssignments.Empty
         }
 
@@ -503,13 +504,6 @@ object KeyboardCornerShortcutResolver {
                 )
             }
         return KeyboardCornerAssignments.from(assignments)
-    }
-
-    private fun allowsCornerGesture(
-        key: KeyboardKeySpec,
-        specialKeyCornersEnabled: Boolean,
-    ): Boolean {
-        return (key.action == KeyboardKeyAction.Text && key.id != "space") || specialKeyCornersEnabled
     }
 
     private fun KeyboardCornerShortcut.matchesLayout(layoutProfile: KeyboardLayoutProfile): Boolean {

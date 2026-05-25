@@ -16,6 +16,8 @@ import android.graphics.RectF
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.SystemClock
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -85,6 +87,12 @@ private data class NativeKeyboardColors(
     }
 }
 
+private data class KeySoundStep(
+    val toneType: Int,
+    val toneDurationMs: Int,
+    val postDelayMs: Long = 0L,
+)
+
 class WinFlowzKeyboardView(
     context: Context,
     private val callbacks: Callbacks,
@@ -97,6 +105,8 @@ class WinFlowzKeyboardView(
         fun onForwardDelete(): Boolean
         fun onDeleteWordBefore(): Boolean
         fun onDeleteWordAfter(): Boolean
+        fun onDeleteSentenceBefore(): Boolean
+        fun onDeleteSentenceAfter(): Boolean
         fun onEnter(): Boolean
         fun onVoice()
         fun onVoicePause()
@@ -131,6 +141,8 @@ class WinFlowzKeyboardView(
         fun onNavigateCharRight(): Boolean
         fun onNavigateWordLeft(): Boolean
         fun onNavigateWordRight(): Boolean
+        fun onNavigateSentenceLeft(): Boolean
+        fun onNavigateSentenceRight(): Boolean
         fun onNavigateLineUp(): Boolean
         fun onNavigateLineDown(): Boolean
         fun onNavigateParagraphUp(): Boolean
@@ -142,7 +154,9 @@ class WinFlowzKeyboardView(
         fun onCornerModeChanged(enabled: Boolean)
         fun onDebugTouchOverlayChanged(enabled: Boolean)
         fun onKeyVibrationChanged(enabled: Boolean)
+        fun onKeyVibrationModeChanged(level: Int)
         fun onKeySoundChanged(enabled: Boolean)
+        fun onKeySoundModeChanged(level: Int)
         fun onSpellingSuggestionsChanged(enabled: Boolean)
         fun onSpecialKeyCornersChanged(enabled: Boolean)
         fun onFrenchLanguageChanged(enabled: Boolean)
@@ -150,6 +164,8 @@ class WinFlowzKeyboardView(
         fun onDoubleSpacePeriodChanged(enabled: Boolean)
         fun onPunctuationAutoSpacingChanged(enabled: Boolean)
         fun onKeyboardHeightScaleChanged(scale: Float)
+        fun onHorizontalKeyboardPaddingChanged(scale: Float)
+        fun onVerticalKeyboardPaddingChanged(scale: Float)
         fun onCompactModeChanged(enabled: Boolean)
         fun onActionBarStateChanged(state: KeyboardActionBarState)
     }
@@ -184,8 +200,28 @@ class WinFlowzKeyboardView(
     private var layoutProfile = KeyboardStateStore.DEFAULT_LAYOUT_PROFILE
     private var cornerModeEnabled = KeyboardStateStore.DEFAULT_CORNER_MODE_ENABLED
     private var debugTouchOverlayEnabled = false
-    private var keyVibrationEnabled = true
-    private var keySoundEnabled = false
+    private var keyVibrationIntensity = KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM
+    private var keyVibrationEnabled: Boolean
+        get() = keyVibrationIntensity != KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF
+        set(value) {
+            keyVibrationIntensity =
+                if (value) {
+                    KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM
+                } else {
+                    KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF
+                }
+        }
+    private var keySoundIntensity = KeyboardStateStore.KEY_SOUND_INTENSITY_SHORT
+    private var keySoundEnabled: Boolean
+        get() = keySoundIntensity != KeyboardStateStore.KEY_SOUND_INTENSITY_OFF
+        set(value) {
+            keySoundIntensity =
+                if (value) {
+                    KeyboardStateStore.KEY_SOUND_INTENSITY_SHORT
+                } else {
+                    KeyboardStateStore.KEY_SOUND_INTENSITY_OFF
+                }
+        }
     private var spellingSuggestionsEnabled = true
     private var mediaControlsEnabled = true
     private var specialKeyCornersEnabled = false
@@ -194,6 +230,8 @@ class WinFlowzKeyboardView(
     private var doubleSpacePeriodEnabled = true
     private var punctuationAutoSpacingEnabled = true
     private var keyboardHeightScale = KeyboardStateStore.KEYBOARD_HEIGHT_DEFAULT
+    private var keyboardHorizontalPaddingScale = 0f
+    private var keyboardVerticalPaddingScale = 0f
     private var actionRowHeightScale = KeyboardStateStore.ACTION_ROW_HEIGHT_DEFAULT
     private var compactModeEnabled = false
     private var autoCloseModesEnabled = true
@@ -204,6 +242,10 @@ class WinFlowzKeyboardView(
     private var fieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var fieldContext = KeyboardFieldContextMode.Text
     private var enterLabel = "Enter"
+    private var keyToneGenerator: ToneGenerator? =
+        runCatching {
+            ToneGenerator(AudioManager.STREAM_MUSIC, ToneGenerator.MAX_VOLUME * 4 / 10)
+        }.getOrNull()
     private var statusText = "WinFlowz"
     private var baseStatusText = "WinFlowz"
     private var transientStatusText: String? = null
@@ -260,7 +302,9 @@ class WinFlowzKeyboardView(
 
     private val density = resources.displayMetrics.density
     private val pressEffects = KeyboardPressEffects(density) { SystemClock.uptimeMillis() }
-    private val outerPadding = dp(8f)
+    private val baseOuterPadding = dp(8f)
+    private val keyboardWidthPaddingStep = 0.05f
+    private val keyboardHeightPaddingStep = 0.05f
     private val keyRadius = dp(8f)
     private val minStatusHeight = dp(30f)
     private val maxStatusLines = 4
@@ -404,10 +448,14 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.ForwardDelete,
             KeyboardKeyAction.DeleteWordBefore,
             KeyboardKeyAction.DeleteWordAfter,
+            KeyboardKeyAction.DeleteSentenceBefore,
+            KeyboardKeyAction.DeleteSentenceAfter,
             KeyboardKeyAction.NavigateCharLeft,
             KeyboardKeyAction.NavigateCharRight,
             KeyboardKeyAction.NavigateWordLeft,
             KeyboardKeyAction.NavigateWordRight,
+            KeyboardKeyAction.NavigateSentenceLeft,
+            KeyboardKeyAction.NavigateSentenceRight,
             KeyboardKeyAction.NavigateLineUp,
             KeyboardKeyAction.NavigateLineDown,
             KeyboardKeyAction.NavigateParagraphUp,
@@ -447,8 +495,8 @@ class WinFlowzKeyboardView(
         profile: KeyboardLayoutProfile,
         cornersEnabled: Boolean,
         debugTouchOverlay: Boolean,
-        keyVibration: Boolean,
-        keySound: Boolean,
+        keyVibration: Int,
+        keySound: Int,
         spellingSuggestions: Boolean,
         mediaControlsEnabled: Boolean,
         specialKeyCorners: Boolean,
@@ -457,6 +505,8 @@ class WinFlowzKeyboardView(
         doubleSpacePeriod: Boolean,
         punctuationAutoSpacing: Boolean,
         keyboardHeightScale: Float,
+        keyboardHorizontalPaddingPercent: Int,
+        keyboardVerticalPaddingPercent: Int,
         actionRowHeightScale: Float,
         compactMode: Boolean,
         autoCloseModes: Boolean,
@@ -476,8 +526,8 @@ class WinFlowzKeyboardView(
         layoutProfile = profile
         cornerModeEnabled = cornersEnabled
         debugTouchOverlayEnabled = debugTouchOverlay
-        keyVibrationEnabled = keyVibration
-        keySoundEnabled = keySound
+        keyVibrationIntensity = keyVibration
+        keySoundIntensity = keySound
         spellingSuggestionsEnabled = spellingSuggestions
         this.mediaControlsEnabled = mediaControlsEnabled
         specialKeyCornersEnabled = specialKeyCorners
@@ -492,6 +542,14 @@ class WinFlowzKeyboardView(
         this.keyboardHeightScale = keyboardHeightScale.coerceIn(
             KeyboardStateStore.KEYBOARD_HEIGHT_MIN,
             KeyboardStateStore.KEYBOARD_HEIGHT_MAX,
+        )
+        keyboardHorizontalPaddingScale = (keyboardHorizontalPaddingPercent.coerceIn(0, KeyboardStateStore.KEYBOARD_PADDING_PERCENT_MAX) / 100f).coerceIn(
+            0f,
+            0.20f,
+        )
+        keyboardVerticalPaddingScale = (keyboardVerticalPaddingPercent.coerceIn(0, KeyboardStateStore.KEYBOARD_PADDING_PERCENT_MAX) / 100f).coerceIn(
+            0f,
+            0.20f,
         )
         this.actionRowHeightScale = KeyboardStateStore.normalizeActionRowHeightScale(actionRowHeightScale)
         compactModeEnabled = compactMode
@@ -899,19 +957,21 @@ class WinFlowzKeyboardView(
         )
         if (!fieldPolicy.privateMode && themeConfig.useImage) {
             themeBitmap?.let { bitmap ->
-                canvas.drawBitmap(bitmap, null, RectF(0f, 0f, width.toFloat(), height.toFloat()), null)
+        canvas.drawBitmap(bitmap, null, RectF(0f, 0f, width.toFloat(), height.toFloat()), null)
             }
         }
 
-        val left = outerPadding
-        val right = width - outerPadding
-        var y = outerPadding
+        val horizontalPadding = computedHorizontalPadding(width.toFloat())
+        val verticalPadding = computedVerticalPadding(width.toFloat())
+        val left = baseOuterPadding + horizontalPadding
+        val right = width - (baseOuterPadding + horizontalPadding)
+        var y = baseOuterPadding + verticalPadding
 
         val contentWidth = right - left
         val statusHeight = statusHeightFor(contentWidth)
         if (statusHeight > 0f) {
-            drawStatus(canvas, y, contentWidth, statusHeight)
-            y += statusHeight + rowGap()
+        drawStatus(canvas, y, left, contentWidth, statusHeight)
+        y += statusHeight + rowGap()
         }
 
         layoutSnapshot.rows.forEachIndexed { index, row ->
@@ -1557,6 +1617,7 @@ class WinFlowzKeyboardView(
     private fun drawStatus(
         canvas: Canvas,
         top: Float,
+        left: Float,
         contentWidth: Float,
         height: Float,
     ) {
@@ -1567,7 +1628,7 @@ class WinFlowzKeyboardView(
         var baseline =
             top + (height - totalTextHeight) / 2f - statusPaint.ascent()
         lines.forEach { line ->
-            canvas.drawText(line, outerPadding + contentWidth / 2f, baseline, statusPaint)
+            canvas.drawText(line, left + contentWidth / 2f, baseline, statusPaint)
             baseline += lineHeight
         }
     }
@@ -1689,16 +1750,17 @@ class WinFlowzKeyboardView(
     ) {
         val rowId = row.rowId ?: "scroll-row-${top.toInt()}"
         val visibleCount = row.visiblePageKeyCount
+        val keyGapSize = keyGap()
         val baseKeyWidth =
             if (visibleCount != null && visibleCount > 0) {
-                (width / visibleCount).coerceAtLeast(dp(1f))
+                ((width - keyGapSize * (visibleCount - 1)).coerceAtLeast(dp(1f)) / visibleCount)
             } else {
                 dp(76f) * keyWidthScale()
             }
         val keyWidths =
             row.keys.map { key ->
                 if (visibleCount != null && visibleCount > 0) {
-                    baseKeyWidth * keyWidthScale()
+                    baseKeyWidth
                 } else {
                     max(dp(54f), baseKeyWidth * key.weight)
                 }
@@ -1731,7 +1793,7 @@ class WinFlowzKeyboardView(
             }
         horizontalRowScrollOffsetById[rowId] = rowOffset
         val visualProgress = horizontalRowVisualProgress(rowId, row, width, maxOffset)
-        val keyWidthShrink = 0.28f * visualProgress
+        val keyHeightShrink = 0.28f * visualProgress
         val radiusScale = 1f - 0.24f * visualProgress
         val textScale = 1f - 0.18f * visualProgress
 
@@ -1757,8 +1819,8 @@ class WinFlowzKeyboardView(
                     if (visualProgress > 0f) {
                         scrollVisualRect.set(cell.visualRect)
                         scrollVisualRect.inset(
-                            scrollVisualRect.width() * keyWidthShrink / 2f,
                             0f,
+                            scrollVisualRect.height() * keyHeightShrink / 2f,
                         )
                         RectF(scrollVisualRect)
                     } else {
@@ -2179,7 +2241,7 @@ class WinFlowzKeyboardView(
         presetId: String = themeConfig.presetId,
     ) {
         val cx = rect.right - dp(8f)
-        val cy = rect.top + dp(8f)
+        val cy = rect.top + dp(4f)
         withAngledPinnedBadge(canvas, cx, cy, pinnedBadgeRotationForPreset(presetId)) {
             when (presetId) {
                 KeyboardThemePresets.PIXEL_CANDY -> drawCandyPinnedBadge(canvas, cx, cy, keyColor)
@@ -2193,9 +2255,9 @@ class WinFlowzKeyboardView(
 
     private fun pinnedBadgeRotationForPreset(presetId: String): Float {
         return when (presetId) {
-            KeyboardThemePresets.GLASS_MINT -> -45f
-            KeyboardThemePresets.MIDNIGHT_AURORA -> 0f
-            else -> 45f
+            KeyboardThemePresets.GLASS_MINT -> 20f
+            KeyboardThemePresets.MIDNIGHT_AURORA -> 20f
+            else -> 20f
         }
     }
 
@@ -2417,10 +2479,32 @@ class WinFlowzKeyboardView(
         key: KeyboardKeySpec,
         sample: GestureSample,
     ): GestureSelection {
-        if (!cornerModeEnabled || !allowsCornerGesture(key) || key.cornerAssignments.isEmpty()) {
-            return GestureSelection.PrimaryTap
+        val selection = KeyboardGestureClassifier.classify(sample, gestureThresholds)
+        return if (selection == GestureSelection.Canceled) {
+            GestureSelection.Canceled
+        } else if (!cornerModeEnabled) {
+            GestureSelection.PrimaryTap
+        } else if (selection == GestureSelection.PrimaryTap) {
+            GestureSelection.PrimaryTap
+        } else if (selection in SWIPE_GESTURES && allowsTextGesture(key)) {
+            selection
+        } else if (allowsCornerGesture(key)) {
+            selection
+        } else {
+            GestureSelection.PrimaryTap
         }
-        return KeyboardGestureClassifier.classify(sample, gestureThresholds)
+    }
+
+    private val SWIPE_GESTURES =
+        setOf(
+            GestureSelection.Up,
+            GestureSelection.Right,
+            GestureSelection.Down,
+            GestureSelection.Left,
+        )
+
+    private fun allowsTextGesture(key: KeyboardKeySpec): Boolean {
+        return key.action == KeyboardKeyAction.Text && key.id != "space"
     }
 
     private fun allowsCornerGesture(key: KeyboardKeySpec): Boolean {
@@ -2475,8 +2559,30 @@ class WinFlowzKeyboardView(
         performKeySound()
         if (selection != GestureSelection.PrimaryTap) {
             val cornerValue = keyValueForSelection(key, selection)
-            if (cornerValue == null || !dispatchKeyValue(cornerValue, selection, clearModifiersAfter = true)) {
-                setStatus("Gesture shortcut unavailable")
+            if (cornerValue == null) {
+                when (commandKey.action) {
+                    KeyboardKeyAction.Text,
+                    KeyboardKeyAction.KeyValue,
+                    -> {
+                        setStatus("Gesture shortcut unavailable")
+                    }
+                    else -> {
+                        dispatch(commandKey, GestureSelection.PrimaryTap)
+                    }
+                    }
+                return
+            }
+            if (!dispatchKeyValue(cornerValue, selection, clearModifiersAfter = true)) {
+                when (commandKey.action) {
+                    KeyboardKeyAction.Text,
+                    KeyboardKeyAction.KeyValue,
+                    -> {
+                        setStatus("Gesture shortcut unavailable")
+                    }
+                    else -> {
+                        dispatch(commandKey, GestureSelection.PrimaryTap)
+                    }
+                }
             }
             return
         }
@@ -2526,6 +2632,16 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.DeleteWordAfter -> {
                 if (!callbacks.onDeleteWordAfter()) {
                     setStatus("Forward word deletion unavailable")
+                }
+            }
+            KeyboardKeyAction.DeleteSentenceBefore -> {
+                if (!callbacks.onDeleteSentenceBefore()) {
+                    setStatus("Sentence deletion unavailable")
+                }
+            }
+            KeyboardKeyAction.DeleteSentenceAfter -> {
+                if (!callbacks.onDeleteSentenceAfter()) {
+                    setStatus("Forward sentence deletion unavailable")
                 }
             }
             KeyboardKeyAction.InsertTab -> {
@@ -2721,14 +2837,29 @@ class WinFlowzKeyboardView(
                 setStatus(if (debugTouchOverlayEnabled) "Touch debug enabled" else "Touch debug disabled")
             }
             KeyboardKeyAction.ToggleKeyVibration -> {
-                keyVibrationEnabled = !keyVibrationEnabled
+                keyVibrationIntensity =
+                    when (keyVibrationIntensity) {
+                        KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF -> KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT
+                        KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM
+                        KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG
+                        else -> KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF
+                    }
+                callbacks.onKeyVibrationModeChanged(keyVibrationIntensity)
                 callbacks.onKeyVibrationChanged(keyVibrationEnabled)
-                setStatus(if (keyVibrationEnabled) "Key vibration on" else "Key vibration off")
+                setStatus(vibrationModeStatusText())
             }
             KeyboardKeyAction.ToggleKeySound -> {
-                keySoundEnabled = !keySoundEnabled
+                keySoundIntensity =
+                    when (keySoundIntensity) {
+                        KeyboardStateStore.KEY_SOUND_INTENSITY_OFF -> KeyboardStateStore.KEY_SOUND_INTENSITY_SHORT
+                        KeyboardStateStore.KEY_SOUND_INTENSITY_SHORT -> KeyboardStateStore.KEY_SOUND_INTENSITY_MEDIUM
+                        KeyboardStateStore.KEY_SOUND_INTENSITY_MEDIUM -> KeyboardStateStore.KEY_SOUND_INTENSITY_LONG
+                        KeyboardStateStore.KEY_SOUND_INTENSITY_LONG -> KeyboardStateStore.KEY_SOUND_INTENSITY_EXTRA
+                        else -> KeyboardStateStore.KEY_SOUND_INTENSITY_OFF
+                    }
+                callbacks.onKeySoundModeChanged(keySoundIntensity)
                 callbacks.onKeySoundChanged(keySoundEnabled)
-                setStatus(if (keySoundEnabled) "Key sound on" else "Key sound off")
+                setStatus(soundModeStatusText())
             }
             KeyboardKeyAction.ToggleSpellingSuggestions -> {
                 spellingSuggestionsEnabled = !spellingSuggestionsEnabled
@@ -2766,6 +2897,18 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.IncreaseKeyboardHeight -> {
                 updateKeyboardHeightScale(keyboardHeightStep)
             }
+            KeyboardKeyAction.DecreaseKeyboardHorizontalPadding -> {
+                updateKeyboardHorizontalPadding(-keyboardWidthPaddingStep)
+            }
+            KeyboardKeyAction.IncreaseKeyboardHorizontalPadding -> {
+                updateKeyboardHorizontalPadding(keyboardWidthPaddingStep)
+            }
+            KeyboardKeyAction.DecreaseKeyboardVerticalPadding -> {
+                updateKeyboardVerticalPadding(-keyboardHeightPaddingStep)
+            }
+            KeyboardKeyAction.IncreaseKeyboardVerticalPadding -> {
+                updateKeyboardVerticalPadding(keyboardHeightPaddingStep)
+            }
             KeyboardKeyAction.ToggleCompactMode -> {
                 toggleCompactMode()
             }
@@ -2795,6 +2938,16 @@ class WinFlowzKeyboardView(
             KeyboardKeyAction.NavigateWordRight -> {
                 if (!callbacks.onNavigateWordRight()) {
                     setStatus("Word-right unavailable")
+                }
+            }
+            KeyboardKeyAction.NavigateSentenceLeft -> {
+                if (!callbacks.onNavigateSentenceLeft()) {
+                    setStatus("Sentence-left unavailable")
+                }
+            }
+            KeyboardKeyAction.NavigateSentenceRight -> {
+                if (!callbacks.onNavigateSentenceRight()) {
+                    setStatus("Sentence-right unavailable")
                 }
             }
             KeyboardKeyAction.NavigateLineUp -> {
@@ -2861,15 +3014,93 @@ class WinFlowzKeyboardView(
     }
 
     private fun performKeyboardHaptic(feedbackConstant: Int) {
-        if (keyVibrationEnabled) {
-            performHapticFeedback(feedbackConstant)
+        if (!keyVibrationEnabled) {
+            return
+        }
+        when (keyVibrationIntensity) {
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> {
+                performHapticFeedback(feedbackConstant)
+            }
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> {
+                performHapticFeedback(feedbackConstant)
+                postDelayed({ performHapticFeedback(feedbackConstant) }, 45L)
+            }
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> {
+                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                postDelayed({ performHapticFeedback(HapticFeedbackConstants.LONG_PRESS) }, 120L)
+            }
+            else -> {
+                performHapticFeedback(feedbackConstant)
+            }
         }
     }
 
-    private fun performKeySound() {
-        if (keySoundEnabled) {
-            playSoundEffect(SoundEffectConstants.CLICK)
+    private fun vibrationModeStatusText(): String {
+        return when (keyVibrationIntensity) {
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF -> "Key vibration off"
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> "Key vibration short"
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> "Key vibration medium"
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> "Key vibration long"
+            else -> if (keyVibrationEnabled) "Key vibration on" else "Key vibration off"
         }
+    }
+
+    private val keySoundProfiles = arrayOf(
+        listOf(),
+        listOf(KeySoundStep(ToneGenerator.TONE_PROP_BEEP, 24)),
+        listOf(
+            KeySoundStep(ToneGenerator.TONE_PROP_BEEP, 18),
+            KeySoundStep(ToneGenerator.TONE_PROP_BEEP2, 18, postDelayMs = 30L),
+        ),
+        listOf(
+            KeySoundStep(ToneGenerator.TONE_PROP_BEEP, 28, postDelayMs = 0L),
+            KeySoundStep(ToneGenerator.TONE_PROP_ACK, 18, postDelayMs = 32L),
+        ),
+        listOf(
+            KeySoundStep(ToneGenerator.TONE_PROP_BEEP2, 16),
+            KeySoundStep(ToneGenerator.TONE_PROP_BEEP, 16, postDelayMs = 18L),
+            KeySoundStep(ToneGenerator.TONE_PROP_ACK, 18, postDelayMs = 18L),
+        ),
+    )
+
+    private fun performKeySound() {
+        if (!keySoundEnabled) {
+            return
+        }
+        val profile = when (keySoundIntensity) {
+            KeyboardStateStore.KEY_SOUND_INTENSITY_SHORT -> keySoundProfiles[1]
+            KeyboardStateStore.KEY_SOUND_INTENSITY_MEDIUM -> keySoundProfiles[2]
+            KeyboardStateStore.KEY_SOUND_INTENSITY_LONG -> keySoundProfiles[3]
+            KeyboardStateStore.KEY_SOUND_INTENSITY_EXTRA -> keySoundProfiles[4]
+            else -> keySoundProfiles[1]
+        }
+        profile.forEach { step ->
+            postDelayed(
+                {
+                    val toneGenerator = keyToneGenerator
+                    if (toneGenerator == null) {
+                        playSoundEffect(SoundEffectConstants.CLICK)
+                    } else {
+                        toneGenerator.startTone(step.toneType, step.toneDurationMs)
+                    }
+                },
+                step.postDelayMs,
+            )
+        }
+    }
+
+    private fun soundModeStatusText(): String {
+        return if (keySoundEnabled) {
+            "Key sound on"
+        } else {
+            "Key sound off"
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        keyToneGenerator?.release()
+        keyToneGenerator = null
     }
 
     private fun retainPressedHighlight(keyId: String) {
@@ -2936,7 +3167,7 @@ class WinFlowzKeyboardView(
                             label = action.name,
                             action = action,
                         ),
-                        selection,
+                        GestureSelection.PrimaryTap,
                     )
                     true
                 }
@@ -3063,7 +3294,9 @@ class WinFlowzKeyboardView(
                 cornerModeEnabled = cornerModeEnabled,
                 debugTouchOverlayEnabled = debugTouchOverlayEnabled,
                 keyVibrationEnabled = keyVibrationEnabled,
+                keyVibrationIntensity = keyVibrationIntensity,
                 keySoundEnabled = keySoundEnabled,
+                keySoundIntensity = keySoundIntensity,
                 spellingSuggestionsEnabled = spellingSuggestionsEnabled,
                 specialKeyCornersEnabled = specialKeyCornersEnabled,
                 frenchLanguageEnabled = frenchLanguageEnabled,
@@ -3071,6 +3304,8 @@ class WinFlowzKeyboardView(
                 doubleSpacePeriodEnabled = doubleSpacePeriodEnabled,
                 punctuationAutoSpacingEnabled = punctuationAutoSpacingEnabled,
                 keyboardHeightScale = keyboardHeightScale,
+                keyboardHorizontalPaddingScale = keyboardHorizontalPaddingScale,
+                keyboardVerticalPaddingScale = keyboardVerticalPaddingScale,
                 compactModeEnabled = compactModeEnabled,
                 symbolPage = symbolPage,
                 emojiCategory = emojiCategory,
@@ -3181,7 +3416,9 @@ class WinFlowzKeyboardView(
 
     private fun desiredKeyboardHeight(viewWidth: Int): Int {
         val rowCount = layoutSnapshot.rows.size
-        val contentWidth = (viewWidth.toFloat() - outerPadding * 2).coerceAtLeast(dp(48f))
+        val horizontalPadding = computedHorizontalPadding(viewWidth.toFloat())
+        val verticalPadding = computedVerticalPadding(viewWidth.toFloat())
+        val contentWidth = (viewWidth.toFloat() - (baseOuterPadding + horizontalPadding) * 2).coerceAtLeast(dp(48f))
         val rowsHeight =
             if (usesVerticalPanelScroll()) {
                 scaledActionRowHeight() + visiblePanelHeight()
@@ -3192,7 +3429,10 @@ class WinFlowzKeyboardView(
         }
         val effectiveRowCount = if (usesVerticalPanelScroll()) 2 else rowCount
         val baseHeight =
-            outerPadding * 2 + statusHeightFor(contentWidth) + rowsHeight +
+            baseOuterPadding * 2 +
+                verticalPadding * 2 +
+                statusHeightFor(contentWidth) +
+                rowsHeight +
                 rowGap() * effectiveRowCount
         return baseHeight.toInt()
     }
@@ -3261,6 +3501,46 @@ class WinFlowzKeyboardView(
         refreshLayout()
     }
 
+    private fun computedHorizontalPadding(availableWidth: Float): Float {
+        return (availableWidth * keyboardHorizontalPaddingScale).coerceAtLeast(0f)
+    }
+
+    private fun computedVerticalPadding(availableWidth: Float): Float {
+        return (availableWidth * keyboardVerticalPaddingScale).coerceAtLeast(0f)
+    }
+
+    private fun updateKeyboardHorizontalPadding(delta: Float) {
+        val next = (keyboardHorizontalPaddingScale + delta).coerceIn(
+            0f,
+            KeyboardStateStore.KEYBOARD_PADDING_PERCENT_MAX / 100f,
+        )
+        if (next == keyboardHorizontalPaddingScale) {
+            setStatus("Keyboard horizontal margin ${(keyboardHorizontalPaddingScale * 100).toInt()}%")
+            return
+        }
+        keyboardHorizontalPaddingScale = next
+        callbacks.onHorizontalKeyboardPaddingChanged(next)
+        setStatus("Keyboard horizontal margin ${(keyboardHorizontalPaddingScale * 100).toInt()}%")
+        requestLayout()
+        refreshLayout()
+    }
+
+    private fun updateKeyboardVerticalPadding(delta: Float) {
+        val next = (keyboardVerticalPaddingScale + delta).coerceIn(
+            0f,
+            KeyboardStateStore.KEYBOARD_PADDING_PERCENT_MAX / 100f,
+        )
+        if (next == keyboardVerticalPaddingScale) {
+            setStatus("Keyboard vertical margin ${(keyboardVerticalPaddingScale * 100).toInt()}%")
+            return
+        }
+        keyboardVerticalPaddingScale = next
+        callbacks.onVerticalKeyboardPaddingChanged(next)
+        setStatus("Keyboard vertical margin ${(keyboardVerticalPaddingScale * 100).toInt()}%")
+        requestLayout()
+        refreshLayout()
+    }
+
     private fun drawDebugOverlay(canvas: Canvas) {
         keyFrames.forEach { frame ->
             canvas.drawRoundRect(frame.touchRect, resolvedKeyRadius, resolvedKeyRadius, debugStrokePaint)
@@ -3272,7 +3552,7 @@ class WinFlowzKeyboardView(
         debugTextPaint.textSize = sp(10f)
         val debugLine =
             "debug key=${activeKeyId ?: "-"} dir=$direction sel=${debugGestureText}"
-        canvas.drawText(debugLine, outerPadding, height - dp(6f), debugTextPaint)
+        canvas.drawText(debugLine, baseOuterPadding, height - dp(6f), debugTextPaint)
     }
 
     private fun directionFrom(dx: Float, dy: Float): String {

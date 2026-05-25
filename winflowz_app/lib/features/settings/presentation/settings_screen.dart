@@ -420,32 +420,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _setKeyboardThemeMode(String themeMode) async {
-    setState(() => _keyboardBusy = true);
-    try {
-      final status = await AndroidKeyboardBridge.setThemeMode(themeMode);
-      if (!mounted) {
-        return;
-      }
-      setState(() => _keyboardStatus = status);
-    } on AndroidKeyboardBridgeException catch (error) {
-      if (!mounted) {
-        return;
-      }
-      setState(
-        () => _message =
-            'Unable to update keyboard theme mode (${error.code}): ${error.message}',
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _keyboardBusy = false);
-      }
-    }
-  }
-
   Future<void> _setKeyboardThemePreset(String presetId) async {
-    final currentMode = _keyboardStatus?.themeMode ?? 'system';
-    final brightness = _keyboardThemeBrightnessFor(currentMode);
+    final brightness = Theme.of(context).brightness;
     setState(() => _keyboardBusy = true);
     try {
       await AndroidKeyboardBridge.setKeyboardThemeConfig(
@@ -469,14 +445,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         setState(() => _keyboardBusy = false);
       }
     }
-  }
-
-  Brightness _keyboardThemeBrightnessFor(String themeMode) {
-    return switch (themeMode) {
-      'dark' => Brightness.dark,
-      'light' => Brightness.light,
-      _ => Theme.of(context).brightness,
-    };
   }
 
   Future<void> _openOverlaySettings() async {
@@ -1275,7 +1243,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onShowPicker: _showKeyboardPicker,
               onOpenCornerShortcuts: _openCornerShortcuts,
               onOpenKeyboardThemeStudio: _openKeyboardThemeStudio,
-              onThemeModeChanged: _setKeyboardThemeMode,
               onThemePresetChanged: _setKeyboardThemePreset,
               onPreferenceChanged: _setKeyboardPreferences,
             ),

@@ -895,7 +895,10 @@ class _PreviewSectionCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Expanded(child: _ThemeDraftPreview(theme: theme)),
+            Flexible(
+              fit: FlexFit.loose,
+              child: _ThemeDraftPreview(theme: theme),
+            ),
             const SizedBox(height: 8),
             Text(
               'Draft-only simulation before native save.',

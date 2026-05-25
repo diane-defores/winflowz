@@ -3,6 +3,7 @@ package com.winflowz_app.winflowz_app.ime
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.util.Log
 import android.inputmethodservice.InputMethodService
 import android.content.Context
 import android.view.inputmethod.InputMethodSubtype
@@ -12,6 +13,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import com.winflowz_app.winflowz_app.MainActivity
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
+import kotlin.math.roundToInt
 
 class WinFlowzInputMethodService :
     InputMethodService(),
@@ -26,6 +28,8 @@ class WinFlowzInputMethodService :
         KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var inputContext = KeyboardInputContextResolver.resolve(null)
     private var selectionState = KeyboardSelectionState.Unavailable
+    private val inputPackageName: String
+        get() = currentInputEditorInfo?.packageName ?: "unknown"
 
     override fun onCreate() {
         super.onCreate()
@@ -73,7 +77,16 @@ class WinFlowzInputMethodService :
         sharedPreferences: SharedPreferences?,
         key: String?,
     ) {
-        if (key == KeyboardStateStore.KEY_THEME_MODE || key == KeyboardStateStore.KEY_THEME_CONFIG) {
+        if (
+            key == KeyboardStateStore.KEY_THEME_MODE ||
+                key == KeyboardStateStore.KEY_THEME_CONFIG ||
+                key == KeyboardStateStore.KEY_KEYBOARD_HORIZONTAL_PADDING_PERCENT ||
+                key == KeyboardStateStore.KEY_KEYBOARD_VERTICAL_PADDING_PERCENT ||
+                key == KeyboardStateStore.KEY_KEY_VIBRATION_ENABLED ||
+                key == KeyboardStateStore.KEY_KEY_SOUND_ENABLED ||
+                key == KeyboardStateStore.KEY_KEY_SOUND_INTENSITY ||
+                key == KeyboardStateStore.KEY_KEY_VIBRATION_INTENSITY
+        ) {
             runServiceSafely("onSharedPreferenceChanged:$key") {
                 applyRuntimePreferencesToView()
             }
@@ -254,22 +267,30 @@ class WinFlowzInputMethodService :
         if (!editor.hasActiveConnection()) {
             return false
         }
+        Log.d(
+            TAG,
+            "word delete before pressed | package=$inputPackageName | hasSelection=${selectionState.hasSelection} | selectedText=${editor.selectedText()?.isNotEmpty()}",
+        )
         if (selectionState.hasSelection || !editor.selectedText().isNullOrEmpty()) {
             val deleted = editor.commitText("").reportFailure("Delete selection rejected by field")
+            Log.d(TAG, "word delete before fallback-to-selection-clear | result=${deleted.applied}")
             refreshTypingAssistantState(editor)
             return deleted
         }
         if (isTermuxInputTarget()) {
             val sent = sendSoftKey(KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+            Log.d(TAG, "word delete before termux-path | sent=$sent")
             refreshTypingAssistantState(editor)
             return sent
         }
         val deleted = editor.deleteWordBeforeCursor()
         if (deleted.applied) {
+            Log.d(TAG, "word delete before common-path | result=applied")
             refreshTypingAssistantState(editor)
             return true
         }
         val sent = sendSoftKey(KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+        Log.d(TAG, "word delete before fallback-to-softkey | result=$sent")
         refreshTypingAssistantState(editor)
         return sent
     }
@@ -279,22 +300,75 @@ class WinFlowzInputMethodService :
         if (!editor.hasActiveConnection()) {
             return false
         }
+        Log.d(
+            TAG,
+            "word delete after pressed | package=$inputPackageName | hasSelection=${selectionState.hasSelection} | selectedText=${editor.selectedText()?.isNotEmpty()}",
+        )
         if (selectionState.hasSelection || !editor.selectedText().isNullOrEmpty()) {
             val deleted = editor.commitText("").reportFailure("Delete selection rejected by field")
+            Log.d(TAG, "word delete after fallback-to-selection-clear | result=${deleted.applied}")
             refreshTypingAssistantState(editor)
             return deleted
         }
         if (isObsidianInputTarget()) {
             val sent = sendSoftKey(KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+            Log.d(TAG, "word delete after obsidian-path | sent=$sent")
             refreshTypingAssistantState(editor)
             return sent
         }
         val deleted = editor.deleteWordAfterCursor()
         if (deleted.applied) {
+            Log.d(TAG, "word delete after common-path | result=applied")
             refreshTypingAssistantState(editor)
             return true
         }
         val sent = sendSoftKey(KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON)
+        Log.d(TAG, "word delete after fallback-to-softkey | result=$sent")
+        refreshTypingAssistantState(editor)
+        return sent
+    }
+
+    override fun onDeleteSentenceBefore(): Boolean {
+        val editor = editor()
+        if (!editor.hasActiveConnection()) {
+            return false
+        }
+        if (selectionState.hasSelection || !editor.selectedText().isNullOrEmpty()) {
+            val deleted = editor.commitText("").reportFailure("Delete selection rejected by field")
+            refreshTypingAssistantState(editor)
+            return deleted
+        }
+        if (isTermuxInputTarget()) {
+            val sent = sendSoftKey(KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON)
+            refreshTypingAssistantState(editor)
+            return sent
+        }
+        val deleted = editor.deleteSentenceBeforeCursor()
+        if (deleted.applied) {
+            refreshTypingAssistantState(editor)
+            return true
+        }
+        val sent = sendSoftKey(KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON)
+        refreshTypingAssistantState(editor)
+        return sent
+    }
+
+    override fun onDeleteSentenceAfter(): Boolean {
+        val editor = editor()
+        if (!editor.hasActiveConnection()) {
+            return false
+        }
+        if (selectionState.hasSelection || !editor.selectedText().isNullOrEmpty()) {
+            val deleted = editor.commitText("").reportFailure("Delete selection rejected by field")
+            refreshTypingAssistantState(editor)
+            return deleted
+        }
+        val deleted = editor.deleteSentenceAfterCursor()
+        if (deleted.applied) {
+            refreshTypingAssistantState(editor)
+            return true
+        }
+        val sent = sendSoftKey(KeyEvent.KEYCODE_FORWARD_DEL, KeyEvent.META_CTRL_ON or KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON)
         refreshTypingAssistantState(editor)
         return sent
     }
@@ -735,6 +809,16 @@ class WinFlowzInputMethodService :
         return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON)
     }
 
+    override fun onNavigateSentenceLeft(): Boolean {
+        val moved = if (inputContext.selectionModeAllowed) editor().moveSentenceCursor(left = true).applied else false
+        return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON)
+    }
+
+    override fun onNavigateSentenceRight(): Boolean {
+        val moved = if (inputContext.selectionModeAllowed) editor().moveSentenceCursor(left = false).applied else false
+        return moved || sendSoftKey(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON)
+    }
+
     override fun onNavigateLineUp(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_UP, 0)
 
     override fun onNavigateLineDown(): Boolean = sendSoftKey(KeyEvent.KEYCODE_DPAD_DOWN, 0)
@@ -794,10 +878,30 @@ class WinFlowzInputMethodService :
         showStatus(if (enabled) "Key vibration enabled" else "Key vibration disabled")
     }
 
+    override fun onKeyVibrationModeChanged(level: Int) {
+        stateStore.keyVibrationIntensity = level
+        applyRuntimePreferencesToView()
+        showStatus(
+            when (level) {
+                KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF -> "Key vibration off"
+                KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> "Key vibration short"
+                KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> "Key vibration medium"
+                KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> "Key vibration long"
+                else -> if (stateStore.keyVibrationEnabled) "Key vibration enabled" else "Key vibration disabled"
+            },
+        )
+    }
+
     override fun onKeySoundChanged(enabled: Boolean) {
         stateStore.keySoundEnabled = enabled
         applyRuntimePreferencesToView()
         showStatus(if (enabled) "Key sound enabled" else "Key sound disabled")
+    }
+
+    override fun onKeySoundModeChanged(level: Int) {
+        stateStore.keySoundIntensity = level
+        applyRuntimePreferencesToView()
+        showStatus(if (stateStore.keySoundEnabled) "Key sound on" else "Key sound off")
     }
 
     override fun onSpellingSuggestionsChanged(enabled: Boolean) {
@@ -845,6 +949,24 @@ class WinFlowzInputMethodService :
         showStatus("Keyboard height ${(stateStore.keyboardHeightScale * 100).toInt()}%")
     }
 
+    override fun onHorizontalKeyboardPaddingChanged(scale: Float) {
+        stateStore.keyboardHorizontalPaddingPercent = (scale * 100f).roundToInt().coerceIn(
+            0,
+            KeyboardStateStore.KEYBOARD_PADDING_PERCENT_MAX,
+        )
+        applyRuntimePreferencesToView()
+        showStatus("Keyboard horizontal margin ${stateStore.keyboardHorizontalPaddingPercent}%")
+    }
+
+    override fun onVerticalKeyboardPaddingChanged(scale: Float) {
+        stateStore.keyboardVerticalPaddingPercent = (scale * 100f).roundToInt().coerceIn(
+            0,
+            KeyboardStateStore.KEYBOARD_PADDING_PERCENT_MAX,
+        )
+        applyRuntimePreferencesToView()
+        showStatus("Keyboard vertical margin ${stateStore.keyboardVerticalPaddingPercent}%")
+    }
+
     override fun onCompactModeChanged(enabled: Boolean) {
         stateStore.compactModeEnabled = enabled
         applyRuntimePreferencesToView()
@@ -873,8 +995,8 @@ class WinFlowzInputMethodService :
                 profile = stateStore.layoutProfile,
                 cornersEnabled = stateStore.cornerModeEnabled,
                 debugTouchOverlay = stateStore.debugTouchOverlayEnabled,
-                keyVibration = stateStore.keyVibrationEnabled,
-                keySound = stateStore.keySoundEnabled,
+                keyVibration = stateStore.keyVibrationIntensity,
+                keySound = stateStore.keySoundIntensity,
                 spellingSuggestions = stateStore.spellingSuggestionsEnabled,
                 mediaControlsEnabled = stateStore.mediaControlsEnabled,
                 specialKeyCorners = stateStore.specialKeyCornersEnabled,
@@ -883,6 +1005,8 @@ class WinFlowzInputMethodService :
                 doubleSpacePeriod = stateStore.doubleSpacePeriodEnabled,
                 punctuationAutoSpacing = stateStore.punctuationAutoSpacingEnabled,
                 keyboardHeightScale = stateStore.keyboardHeightScale,
+                keyboardHorizontalPaddingPercent = stateStore.keyboardHorizontalPaddingPercent,
+                keyboardVerticalPaddingPercent = stateStore.keyboardVerticalPaddingPercent,
                 actionRowHeightScale = stateStore.actionRowHeightScale,
                 compactMode = stateStore.compactModeEnabled,
                 autoCloseModes = stateStore.autoCloseModesEnabled,
@@ -1100,6 +1224,10 @@ class WinFlowzInputMethodService :
     }
 
     private fun editor(): InputConnectionEditor = InputConnectionEditor(currentInputConnection)
+
+    companion object {
+        private const val TAG = "WinFlowzIME"
+    }
 
     private fun KeyboardEditorResult.reportFailure(failureStatus: String): Boolean {
         if (!applied) {

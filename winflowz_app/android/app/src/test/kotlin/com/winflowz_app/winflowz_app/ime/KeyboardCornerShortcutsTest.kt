@@ -76,11 +76,25 @@ class KeyboardCornerShortcutsTest {
         val aKey = keyById("letter-a", layoutProfile = KeyboardLayoutProfile.AZERTY)
         val zKey = keyById("letter-z", layoutProfile = KeyboardLayoutProfile.AZERTY)
         val wKey = keyById("letter-w", layoutProfile = KeyboardLayoutProfile.AZERTY)
+        val sKey = keyById("letter-s", layoutProfile = KeyboardLayoutProfile.AZERTY)
 
         assertEquals("à", aKey.cornerAssignments.topLeft?.label)
         assertNull(wKey.cornerAssignments.down)
         assertEquals("↑", zKey.cornerAssignments.up?.label)
         assertEquals("↓", zKey.cornerAssignments.down?.label)
+        assertEquals("←", sKey.cornerAssignments.left?.label)
+        assertEquals("→", sKey.cornerAssignments.right?.label)
+    }
+
+    @Test
+    fun `azerty s and z directional gestures ignore special-key toggle`() {
+        val zKey = keyById("letter-z", layoutProfile = KeyboardLayoutProfile.AZERTY, specialKeyCorners = false)
+        val sKey = keyById("letter-s", layoutProfile = KeyboardLayoutProfile.AZERTY, specialKeyCorners = false)
+
+        assertEquals("↑", zKey.cornerAssignments.up?.label)
+        assertEquals("↓", zKey.cornerAssignments.down?.label)
+        assertEquals("←", sKey.cornerAssignments.left?.label)
+        assertEquals("→", sKey.cornerAssignments.right?.label)
     }
 
     @Test

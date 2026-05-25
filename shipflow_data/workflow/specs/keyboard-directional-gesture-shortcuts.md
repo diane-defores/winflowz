@@ -1,19 +1,20 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "winflowz_app"
 created: "2026-05-19"
 created_at: "2026-05-19 20:56:40 UTC"
-updated: "2026-05-19"
-updated_at: "2026-05-19 22:37:37 UTC"
-status: implemented-pending-android-qa
-source_skill: sf-build
-source_model: "GPT-5 Codex"
+updated: "2026-05-25"
+updated_at: "2026-05-25 14:55:01 UTC"
+status: ready
+source_skill: sf-spec
+source_model: "GPT-5.5 Codex"
 scope: "android-ime-keyboard-gestures"
 owner: "Diane"
 user_story: "En tant qu'utilisatrice du clavier WinFlowz sur Android, je veux pouvoir assigner des actions aux swipes haut, bas, gauche et droite en plus des corners diagonaux, afin que les actions directionnelles comme les fleches se declenchent par un geste qui correspond naturellement au symbole affiche."
 risk_level: "high"
+confidence: "high"
 security_impact: "yes"
 docs_impact: "yes"
 linked_systems:
@@ -50,14 +51,24 @@ evidence:
   - "Local code: WinFlowzKeyboardView.kt dispatches any non-primary selection through key.cornerAssignments.forSelection(selection)."
   - "Local code: Flutter keyboard_models.dart mirrors KeyboardCornerSlot with only topLeft/topRight/bottomLeft/bottomRight."
   - "Explorer subagent 2026-05-19: adding cardinal directions directly to KeyboardCornerSlot would blur the architecture; the spec should generalize to gesture slots while preserving JSON compatibility."
-next_step: "Blacksmith/GitHub Actions Android validation and Diane physical-device QA"
+  - "Audit 2026-05-25: current Kotlin code appears non-compilable around WinFlowzKeyboardView.retainPressedHighlight due to an extra brace after an early return."
+  - "Audit 2026-05-25: KeyboardCornerShortcutResolver.resolve still empties all assignments when cornerModeEnabled is false, so the later directional-swipe classification patch cannot reliably restore S/Z swipes."
+  - "Audit 2026-05-25: temporary WinFlowzCornerDebug logs for letter-s and letter-z remain in the dispatch path."
+  - "User clarification 2026-05-25: AZERTY S/Z gestures are swipes left/right/up/down, not corners, and should not be reasoned about through corner-only settings."
+next_step: "/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof"
 ---
 
 ## Title
 Keyboard Directional Gesture Shortcuts
 
 ## Status
-Implemented locally on 2026-05-19 with directional + corner gesture slots, legacy JSON compatibility, Kotlin runtime/editor-preview-settings wording updates, and Flutter/Kotlin tests updated in scope. The default arrow shortcuts now use layout-aware cardinal slots on `W`/`Z` for up/down and `S` for left/right, while diagonals remain available for accents and secondary shortcuts. The Smart French preset also adds numeric up-gestures on `R/T/Y/F/G/H/X/C/V/B` and `-`/`_` on `N` top corners. Remaining proof is Android compile/package CI and Diane physical-device QA, so status is `implemented-pending-android-qa`.
+Reopened on 2026-05-25 as a repair spec after code audit. The original 2026-05-19 implementation intent remains correct: default arrow shortcuts use layout-aware cardinal slots on `W`/`Z` for up/down and `S` for left/right, while diagonals remain available for accents and secondary shortcuts. The current code state does not satisfy the contract because directional assignments are still coupled to corner-mode resolution, the previous local patch happened too late in the dispatch chain, temporary debug logs remain, and `WinFlowzKeyboardView.kt` appears syntactically broken around `retainPressedHighlight()`.
+
+Readiness gate 2026-05-25: validated for repair execution. The current repair target is clear, the implementation task list is unambiguous, and only Tasks 11-15 are executable on the next `/sf-start`.
+
+Spec clarification 2026-05-25: this reopened chantier is now scoped as a repair-only pass. For the next `/sf-start`, only Tasks 11-15 are executable. Tasks 1-10 are retained as historical implementation reference from the original 2026-05-19 gesture-slot chantier and must not be reimplemented unless a separate broader gesture/editor chantier is explicitly reopened.
+
+Verification gate 2026-05-25: local verification is partial. The repair code and allowed local checks pass, but Android-native proof is still required through GitHub Actions/Blacksmith and Diane physical-device QA before the chantier can be marked fully verified.
 
 ## User Story
 En tant qu'utilisatrice du clavier WinFlowz sur Android, je veux pouvoir assigner des actions aux swipes haut, bas, gauche et droite en plus des corners diagonaux, afin que les actions directionnelles comme les fleches se declenchent par un geste qui correspond naturellement au symbole affiche.
@@ -94,8 +105,12 @@ Quand le mode gestures clavier est actif, WinFlowz accepte des raccourcis par to
 ## Problem
 Les raccourcis de gestes WinFlowz sont actuellement modeles comme des corners. C'est adapte pour des accents ou symboles secondaires, mais pas pour des actions directionnelles. Quand une fleche `↑` est placee dans un corner, l'utilisateur doit faire une diagonale pour declencher une action qui annonce une direction droite. Cette contradiction rend la navigation difficile a apprendre et donne une impression que le clavier ne respecte pas son propre langage visuel.
 
+Audit repair 2026-05-25: le modele a ete partiellement generalise, mais l'implementation actuelle garde une dependance de resolution a `cornerModeEnabled` dans `KeyboardCornerShortcutResolver.resolve()`. Comme `WinFlowzKeyboardView.effectiveGestureSelection()` commence par `key.cornerAssignments.isEmpty()`, un swipe cardinal valide peut redevenir un tap primaire avant que la classification directionnelle soit utile. Le code contient aussi des logs de diagnostic temporaires sur `letter-s`/`letter-z` et une anomalie d'accolade dans `retainPressedHighlight()` qui doit etre corrigee avant toute validation.
+
 ## Solution
 Generaliser le modele de corners en modele de gesture slots a huit directions, tout en gardant la compatibilite des anciens noms et configs. Le classifieur doit produire une selection cardinale ou diagonale selon l'angle et les seuils. Le resolver, le rendu natif, la preview Flutter, l'editeur et le bridge doivent utiliser un contrat commun capable d'afficher et de persister les quatre directions cardinales en plus des quatre diagonales.
+
+Pour la reparation actuelle, le fix doit etre place au bon niveau: le resolver doit pouvoir produire les assignments cardinaux des touches texte `letter-z` et `letter-s` sans passer par une condition de corner-only. La vue native doit ensuite appliquer une politique explicite: swipes cardinaux de touches texte comme gestes directionnels, diagonales comme corners, special keys derriere leur gate dediee. Un slot cardinal configure et autorise ne doit jamais afficher `Gesture shortcut unavailable` a cause d'une assignation supprimee en amont.
 
 ## Scope In
 - Ajouter un modele conceptuel `KeyboardGestureSlot` cote Kotlin avec `up`, `down`, `left`, `right`, `topLeft`, `topRight`, `bottomLeft`, `bottomRight`.
@@ -110,6 +125,10 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Preserver les policies existantes: private field, special key gating, snippets/clipboard, actions Android-only, labels courts, validation JSON.
 - Mettre a jour les tests Kotlin et Flutter ciblant classifier, resolver, import/export, preview et editor.
 - Mettre a jour les docs comportementales du clavier et les notes de verification Android.
+- Reparation 2026-05-25: corriger l'accolade de `retainPressedHighlight()` dans `WinFlowzKeyboardView.kt` avant toute autre validation.
+- Reparation 2026-05-25: supprimer les logs temporaires `WinFlowzCornerDebug` ajoutes pour `letter-s` et `letter-z`.
+- Reparation 2026-05-25: decoupler la resolution des swipes cardinaux de touches texte du gating corner-only dans `KeyboardCornerShortcutResolver.resolve()`.
+- Reparation 2026-05-25: verifier explicitement le flux AZERTY `letter-z` up/down et `letter-s` left/right, avec `cornerModeEnabled` et `specialKeyCornersEnabled` dans leurs combinaisons pertinentes.
 
 ## Scope Out
 - Glide typing.
@@ -119,6 +138,7 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Cloud sync multi-device des mappings.
 - Changement de la grille tactile ou de l'animation de barre d'action deja couverts par d'autres specs.
 - Build APK local, Gradle, install Android ou `flutter run -d android` sur cette VM.
+- Refonte complete des preferences utilisateur de gestures; cette reparation peut clarifier wording/gating localement, mais ne doit pas lancer une migration large de settings sans spec dediee.
 
 ## Constraints
 - Respecter les guardrails locaux: seuls `flutter analyze`, `flutter test` et tests Flutter cibles sont autorises localement; Android compile/package/IME validation passe par GitHub Actions/Blacksmith et QA physique Diane.
@@ -129,6 +149,8 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Une interaction tactile produit au plus un evenement productif.
 - Les nouveaux labels ne doivent pas masquer le label primaire de la touche ni rendre la preview illisible sur mobile.
 - `fresh-docs not needed`: le changement depend du code local Kotlin/Dart et des APIs Android deja utilisees; aucune nouvelle API externe, SDK, auth, service ou integration n'est introduite.
+- Les swipes cardinaux sur touches texte ne doivent pas dependre de `specialKeyCornersEnabled`; ce flag reste reserve aux touches non texte/speciales.
+- Si un toggle global de gestures continue d'exister, son role doit etre explicite dans le code et les tests: il ne peut pas etre appele "corner" tout en bloquant silencieusement des swipes directionnels.
 
 ## Dependencies
 - `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardGestureClassifier.kt`: classifier et enum `GestureSelection`.
@@ -143,6 +165,7 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - `lib/features/keyboard/presentation/keyboard_preview_screen.dart` et `keyboard_preview_widgets.dart`: rendu preview leger des overrides explicites, sans simulation des presets natifs.
 - `lib/features/settings/presentation/settings_screen.dart` et `settings_screen_sections.dart`: libelles, acces settings et toggles.
 - Tests existants: `KeyboardGestureClassifierTest.kt`, `KeyboardCornerShortcutsTest.kt`, `keyboard_corner_shortcuts_screen_test.dart`, `widget_test.dart`.
+- Audit repair 2026-05-25: `WinFlowzKeyboardView.kt` contient le correctif partiel actuel dans `effectiveGestureSelection()` mais le vrai point de couplage reste `KeyboardCornerShortcutResolver.resolve()`.
 
 ## Invariants
 - Les quatre corners existants gardent leur semantique diagonale.
@@ -153,6 +176,8 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Les raccourcis sensibles restent bloques dans les contexts prives.
 - Les gestures directionnels ne remplacent pas le mode Navigation; ils offrent des raccourcis optionnels sur certaines touches.
 - Le mode produit par defaut ne doit pas encourager huit actions sur toutes les touches.
+- Les assignations directionnelles par defaut pour `letter-z` et `letter-s` restent presentes dans le layout AZERTY normal tant que le preset Smart French/Punctuation actif les prevoit.
+- Aucun code de debug temporaire ne doit rester dans le chemin chaud de dispatch clavier une fois le diagnostic termine.
 
 ## Links & Consequences
 - Le nom utilisateur `Swipe-corner mode` devient trop etroit. L'UI devrait migrer vers `Swipe gestures` ou `Gesture shortcuts`, tout en gardant la cle de preference existante si cela reduit le risque de migration.
@@ -160,6 +185,7 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Le preset de fleches doit etre directionnel, pas diagonal; le mapping layout-aware `W`/`Z` + `S` est le cas principal a valider physiquement.
 - Les docs publiques ou in-app qui disent "quatre coins" doivent etre nuancees: corners pour diagonales, directions pour navigation.
 - Le debug touch overlay doit afficher la direction classifiee avec des noms lisibles (`up`, `right`, `topRight`, etc.).
+- Le message `Gesture shortcut unavailable` ne doit signaler qu'une action vraiment absente, invalide ou refusee; il ne doit pas masquer un bug de resolution d'assignments.
 
 ## Documentation Coherence
 - Mettre a jour `docs/PLATFORM_BEHAVIOR.md` pour decrire les gesture shortcuts a huit directions et le cas des fleches.
@@ -167,6 +193,7 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Mettre a jour `shipflow_data/technical/code-docs-map.md` si les fichiers d'architecture gesture changent de responsabilite.
 - Mettre a jour les textes Flutter Settings qui parlent seulement de `Swipe-corner mode`.
 - Mettre a jour ou ajouter une matrice QA dans docs de verification si un fichier de verification clavier existe dans le repo.
+- Pour la reparation 2026-05-25, une note de changelog interne suffit si seul le runtime natif change; mettre a jour les docs de comportement uniquement si le libelle ou la portee du toggle gestures change.
 
 ## Edge Cases
 - Geste tres horizontal mais legerement montant: classer `left/right` si l'angle reste dans le secteur cardinal, pas `topLeft/topRight`.
@@ -178,8 +205,15 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Space: conserver le slider horizontal; ne pas ajouter de direction productive sur espace dans cette phase sauf si une future spec tranche explicitement la priorite.
 - Import JSON venant d'une version future avec slot inconnu: ignorer proprement.
 - Flutter web preview: simuler seulement les actions sans effets natifs; afficher Android-only pour le reste.
+- AZERTY normal mode: `letter-z` possede `up/down`, `letter-s` possede `left/right`; les autres directions sur ces touches ne doivent pas afficher un succes trompeur.
+- Corner toggle off / special-key toggle off: les swipes cardinaux de touches texte doivent suivre la decision explicite du contrat de gestures, pas heriter d'un test nomme `allowsCornerGesture`.
+- Patch partiel: modifier seulement `effectiveGestureSelection()` ne suffit pas si `cornerAssignments` a deja ete vide par le resolver.
 
 ## Implementation Tasks
+Current repair scope for the next `/sf-start`: execute only Tasks 11-15.
+
+Historical reference only: Tasks 1-10 describe the original 2026-05-19 directional gesture implementation contract. They are kept for context, invariants and regression awareness, but they are not part of the current repair execution path.
+
 - [ ] Tache 1 : Introduire le modele de gesture slots Kotlin avec compatibilite corners
   - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardCornerShortcuts.kt`
   - Action : Ajouter un enum ou type `KeyboardGestureSlot` couvrant les huit directions, conserver les wire names legacy des corners, et fournir des helpers de migration depuis `KeyboardCornerSlot`.
@@ -260,6 +294,48 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
   - Validate with : `flutter analyze`, `flutter test` ou tests Flutter cibles autorises; Android compile/package via Blacksmith/GitHub Actions seulement.
   - Notes : Diane doit valider physiquement le ressenti sur appareil Android.
 
+Actionable repair tasks for the next `/sf-start`:
+
+- [ ] Tache 11 : Restaurer un etat compilable de la vue clavier native
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`
+  - Action : Corriger l'accolade de trop dans `retainPressedHighlight()` et verifier que le bloc `durationMs == 0` se ferme correctement.
+  - User story link : aucune correction gesture n'est livrable si le clavier natif ne compile pas.
+  - Depends on : None
+  - Validate with : `flutter analyze`; Android Kotlin/native compile via Blacksmith/GitHub Actions seulement si disponible.
+  - Notes : Ne pas melanger cette correction avec des refactors de rendu.
+
+- [ ] Tache 12 : Retirer le diagnostic temporaire S/Z du chemin de dispatch
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`
+  - Action : Supprimer `tracingCornerDebug` et les `Log.d("WinFlowzCornerDebug", ...)` ajoutes pour `letter-s` et `letter-z`.
+  - User story link : evite de garder du bruit debug dans un IME qui traite des interactions sensibles.
+  - Depends on : Tache 11
+  - Validate with : recherche locale `rg "WinFlowzCornerDebug" android/app/src/main/kotlin`.
+  - Notes : Le debug overlay existant reste autorise s'il ne loggue pas de texte utilisateur.
+
+- [ ] Tache 13 : Deplacer le decouplage cardinaux/corners dans le resolver
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardCornerShortcuts.kt`
+  - Action : Faire en sorte que les assignments cardinaux autorises pour touches texte soient resolus avant tout gate corner-only; conserver le gate des diagonales/corners et des special keys selon leur politique.
+  - User story link : rend `Z` haut/bas et `S` gauche/droite disponibles en AZERTY parce que ce sont des swipes directionnels, pas des corners.
+  - Depends on : Tache 11
+  - Validate with : test resolver ciblant `letter-z` AZERTY `up/down` et `letter-s` `left/right`, y compris quand `specialKeyCornersEnabled` est false.
+  - Notes : Si le toggle global `cornerModeEnabled` doit rester un toggle de tous les gestures, le code doit le nommer/traiter explicitement comme tel et les tests doivent le prouver; ne pas utiliser une condition corner-only implicite.
+
+- [ ] Tache 14 : Simplifier la classification effective apres resolver
+  - Fichier : `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`
+  - Action : Garder `effectiveGestureSelection()` comme arbitre clair entre tap, swipe cardinal, corner diagonal et cancel, sans compenser une assignation vide causee par le resolver.
+  - User story link : evite les corrections trop tardives qui transforment un vrai swipe en tap primaire ou en message `Gesture shortcut unavailable`.
+  - Depends on : Tache 13
+  - Validate with : test comportemental ou QA debug overlay montrant `letter-z` -> `Up/Down` et `letter-s` -> `Left/Right`.
+  - Notes : Preserver les priorites `slidingSpace`, `scrollingHorizontalRow`, `scrollingVerticalPanel` et `longPressTriggered`.
+
+- [ ] Tache 15 : Ajouter une regression test ou preuve ciblee pour S/Z AZERTY
+  - Fichiers : `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardCornerShortcutsTest.kt`, `android/app/src/test/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardGestureClassifierTest.kt`
+  - Action : Couvrir le mapping AZERTY `letter-z` up/down et `letter-s` left/right, plus un cas special-key qui reste bloque sans `specialKeyCornersEnabled`.
+  - User story link : protege exactement le bug signale par Diane.
+  - Depends on : Taches 13-14
+  - Validate with : tests unitaires Kotlin sur runner compatible; localement, au minimum `flutter analyze` et tests Flutter autorises si Kotlin test local n'est pas disponible.
+  - Notes : La preuve finale reste Android CI/Blacksmith + QA physique.
+
 ## Acceptance Criteria
 - [ ] CA 1 : Given une touche configuree avec `up`, when l'utilisateur swipe clairement vers le haut, then l'action `up` est executee et aucune action diagonale ne part.
 - [ ] CA 2 : Given une touche configuree avec `right`, when l'utilisateur swipe clairement vers la droite, then l'action `right` est executee et aucune action primaire ne part.
@@ -276,6 +352,11 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - [ ] CA 13 : Given les tests locaux autorises sont lances, when l'implementation est terminee, then `flutter analyze` passe et les tests Flutter cibles pertinents passent.
 - [ ] CA 14 : Given l'implementation est prete a shipper, when Android CI/Blacksmith compile l'IME, then aucune erreur Kotlin/native n'est presente.
 - [ ] CA 15 : Given Diane teste sur appareil physique, when elle utilise les fleches sur `W`/`Z` et `S`, then le geste ressenti correspond bien a la direction affichee.
+- [ ] CA 16 : Given le code est analyse ou compile, when `WinFlowzKeyboardView.kt` est pris en compte, then aucune erreur Kotlin n'est causee par `retainPressedHighlight()`.
+- [ ] CA 17 : Given `letter-z` en AZERTY possede `up/down`, when le resolver construit les assignments, then ils ne sont pas supprimes par un gate nomme ou pense pour les corners.
+- [ ] CA 18 : Given `letter-s` possede `left/right`, when `specialKeyCornersEnabled` est false, then les swipes texte gauche/droite restent resolus et les touches speciales restent bloquees.
+- [ ] CA 19 : Given un slot cardinal valide est swipe, when l'action native reussit, then `Gesture shortcut unavailable` n'est pas affiche.
+- [ ] CA 20 : Given le diagnostic S/Z est termine, when le code est cherche, then aucun `WinFlowzCornerDebug` temporaire ne reste dans le chemin de dispatch.
 
 ## Test Strategy
 - Unit Kotlin: `KeyboardGestureClassifierTest.kt` pour seuils, secteurs, retour centre, gestes ambigus, cardinaux et diagonales.
@@ -286,6 +367,7 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Local checks autorises: `flutter analyze`, `flutter test` ou tests Flutter cibles.
 - Android proof: GitHub Actions/Blacksmith pour compilation/package; pas de Gradle local.
 - Manual QA Diane: appareil Android, clavier reel, gestes rapides/lents, fleches `W`/`Z` + `S`, chiffres en swipe up, accents legacy, space slider, action row scroll, panel scroll, private fields, haptics/status.
+- Repair proof 2026-05-25: ajouter au moins une preuve statique ou test cible montrant que `KeyboardCornerShortcutResolver.resolve()` ne supprime plus les slots cardinaux de `letter-z`/`letter-s` par confusion avec les corners.
 
 ## Risks
 - Risque architecture high: le code et l'UI sont nommes `Corner`; une extension naive rendrait le modele incoherent.
@@ -295,6 +377,8 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Risque divergence: Kotlin doit rester la seule source de verite fonctionnelle pour les presets/resolution; Flutter garde les DTO, les ids/noms de presets, l'editeur Settings et une preview legere des overrides explicites uniquement.
 - Risque validation: `flutter analyze` ne compile pas le Kotlin; Android CI/Blacksmith reste obligatoire.
 - Risque privacy: les nouveaux slots doivent passer par les memes restrictions que les corners.
+- Risque correctif partiel: corriger uniquement `effectiveGestureSelection()` laisse le bug ouvert si `cornerAssignments` est deja vide.
+- Risque nomenclature: conserver les noms `Corner` partout augmente la probabilite de nouveaux bugs sur les gestures cardinaux.
 
 ## Execution Notes
 - Lire d'abord `KeyboardGestureClassifier.kt`, `KeyboardCornerShortcuts.kt`, `WinFlowzKeyboardView.kt`, puis le miroir Dart dans `keyboard_models.dart`.
@@ -304,6 +388,8 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 - Stop condition: si le preset fleches layout-aware sur `W`/`Z` + `S` doit changer encore l'experience par defaut pour tous les utilisateurs, demander validation Diane avant de figer ce changement.
 - Stop condition: si le classifieur cardinal degrade physiquement les accents ou scrolls, reduire le scope au preset fleches et revisiter les seuils avant ship.
 - Validation locale limitee par AGENTS.md: ne pas lancer `flutter build apk`, `flutter run -d android`, Gradle, assemble, bundle, compile ou `testDebugUnitTest`.
+- Repair note 2026-05-25: commencer par corriger la syntaxe, puis supprimer les logs temporaires, puis corriger le resolver. L'ordre inverse complique la preuve parce que le fichier peut ne pas compiler.
+- Repair note 2026-05-25: la decision produit conservee est celle formulee par Diane: les swipes gauche/droite/haut/bas de `S`/`Z` sont des swipes directionnels, pas des corners.
 
 ## Open Questions
 - None for the spec. The product decision captured here is: support both cardinal and diagonal slots technically, but use cardinal directions for arrows/navigation and keep diagonals for accents/secondary shortcuts.
@@ -319,15 +405,19 @@ Generaliser le modele de corners en modele de gesture slots a huit directions, t
 | 2026-05-19 21:55:47 UTC | direct preset update | GPT-5 Codex + explorer subagent | Updated Smart French/punctuation presets for numeric up-gestures, layout-aware arrow gestures on `W`/`Z` + `S`, and `-`/`_` on `N`; synced Kotlin/Dart/docs/tests. | implemented-pending-android-qa | Allowed local checks, then Android CI/physical QA |
 | 2026-05-19 22:37:37 UTC | sf-build | GPT-5 Codex | Removed Dart functional preset tables/resolution, kept preset ids/names as DTO/UI fallback, updated Flutter tests and docs for Kotlin-native source of truth. | implemented-local-verified | Android CI/Blacksmith and Diane physical-device QA |
 | 2026-05-19 23:45:16 UTC | direct default update | GPT-5 Codex + explorer subagent | Changed default keyboard layout to AZERTY and enabled gesture/corner mode by default across native state, view fallback, Flutter DTO fallback, preview default, docs, and tests. | implemented-local-verified | Android CI/Blacksmith and Diane physical-device QA |
+| 2026-05-25 06:02:12 UTC | sf-spec | GPT-5.5 Codex | Reopened the directional gesture chantier from code audit: current code has a probable Kotlin syntax break, temporary S/Z debug logs, and a resolver-level cardinal/corner coupling that can still suppress AZERTY `S`/`Z` swipes. | draft-repair | `/sf-ready keyboard-directional-gesture-shortcuts` |
+| 2026-05-25 06:33:58 UTC | sf-ready | GPT-5.5 Codex | Reviewed the reopened repair spec against Definition of Ready. | not ready: repair goal is clear but task list still mixes historical full gesture work with current S/Z repair scope. | `/sf-spec keyboard-directional-gesture-shortcuts repair-only scope clarification` |
+| 2026-05-25 09:29:00 UTC | sf-spec | GPT-5.5 Codex | Clarified repair-only execution scope after readiness review: Tasks 11-15 are the only actionable `/sf-start` tasks; Tasks 1-10 are historical reference only. | draft updated | `/sf-ready keyboard-directional-gesture-shortcuts` |
+| 2026-05-25 09:32:09 UTC | sf-ready | GPT-5.5 Codex | Re-validated the repaired scope and confirmed the repair task set is executable. | ready | `/sf-start keyboard-directional-gesture-shortcuts` |
+| 2026-05-25 10:01:47 UTC | sf-start | GPT-5 Codex | Corrigé la compilabilité de `retainPressedHighlight`, retiré les logs temporaires S/Z du dispatch, découpé le resolver pour désolidariser le gate special-key/texte, simplifié `effectiveGestureSelection`, et ajouté un test de régression AZERTY S/Z. | implemented | `/sf-verify keyboard-directional-gesture-shortcuts` |
+| 2026-05-25 14:55:01 UTC | sf-verify | GPT-5 Codex | Verified the repair against the spec with allowed local checks: resolver/dispatch snippets reviewed, S/Z regression test present, debug logs absent, metadata lint passed, and `flutter analyze` passed. Android-native CI/device proof remains required. | partial | `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof` |
 
 ## Current Chantier Flow
 
 Flux: sf-spec ✅ -> sf-ready ✅ -> sf-start ✅ -> sf-verify 🔄 -> sf-end ⏳ -> sf-ship ⏳
 
 Reste a faire:
-- Valider Android via Blacksmith/GitHub Actions (compile/package/checks natifs).
-- Valider sur appareil physique Android (gestes directionnels `W`/`Z` + `S`, chiffres swipe up, priorites protegees, ressenti tactile).
-- Clore la verification chantier apres preuves CI + QA physique.
+- Passer la preuve Android-native: compilation/tests Kotlin via CI/Blacksmith, puis QA appareil Android Diane sur `letter-z` haut/bas et `letter-s` gauche/droite.
 
 Prochaine etape:
-- Blacksmith/GitHub Actions Android validation puis QA physique Diane.
+- `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof`

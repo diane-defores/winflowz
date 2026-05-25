@@ -346,7 +346,6 @@ class _KeyboardSettingsSection extends StatelessWidget {
     required this.onShowPicker,
     required this.onOpenCornerShortcuts,
     required this.onOpenKeyboardThemeStudio,
-    required this.onThemeModeChanged,
     required this.onThemePresetChanged,
     required this.onPreferenceChanged,
   });
@@ -358,7 +357,6 @@ class _KeyboardSettingsSection extends StatelessWidget {
   final VoidCallback onShowPicker;
   final VoidCallback onOpenCornerShortcuts;
   final VoidCallback onOpenKeyboardThemeStudio;
-  final ValueChanged<String> onThemeModeChanged;
   final ValueChanged<String> onThemePresetChanged;
   final _KeyboardPreferenceChanged onPreferenceChanged;
 
@@ -379,8 +377,8 @@ class _KeyboardSettingsSection extends StatelessWidget {
 
   double get _actionRowHeightScale {
     final value = status?.actionRowHeightScale ?? 1;
-    if (value < 0.50) {
-      return 1 / 3;
+    if (value <= 0.56) {
+      return 0.56;
     }
     if (value < 0.84) {
       return 2 / 3;
@@ -484,13 +482,12 @@ class _KeyboardSettingsSection extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: AppInsets.keyboardControls,
-            child: _KeyboardThemeQuickPicker(
-              status: status,
-              busy: busy,
-              onThemeModeChanged: onThemeModeChanged,
-              onThemePresetChanged: onThemePresetChanged,
-            ),
+          padding: AppInsets.keyboardControls,
+          child: _KeyboardThemeQuickPicker(
+            status: status,
+            busy: busy,
+            onThemePresetChanged: onThemePresetChanged,
+          ),
           ),
           SwitchListTile(
             value: status?.voiceEnabled ?? true,
@@ -707,7 +704,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
                       label: Text('Square'),
                     ),
                     ButtonSegment(
-                      value: 1 / 3,
+                      value: 0.56,
                       icon: Icon(Icons.density_small_outlined),
                       label: Text('Mini'),
                     ),
@@ -840,64 +837,27 @@ class _KeyboardThemeQuickPicker extends StatelessWidget {
   const _KeyboardThemeQuickPicker({
     required this.status,
     required this.busy,
-    required this.onThemeModeChanged,
     required this.onThemePresetChanged,
   });
 
   final AndroidKeyboardStatus? status;
   final bool busy;
-  final ValueChanged<String> onThemeModeChanged;
   final ValueChanged<String> onThemePresetChanged;
-
-  String get _selectedMode {
-    final mode = status?.themeMode ?? 'system';
-    return switch (mode) {
-      'light' || 'dark' => mode,
-      _ => 'system',
-    };
-  }
-
-  Brightness _previewBrightness(BuildContext context) {
-    return switch (_selectedMode) {
-      'dark' => Brightness.dark,
-      'light' => Brightness.light,
-      _ => Theme.of(context).brightness,
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
     final selectedPresetId = _normalizedPresetId(
       status?.themePresetId ?? KeyboardThemePresetCatalog.system,
     );
-    final brightness = _previewBrightness(context);
+    final brightness = Theme.of(context).brightness;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Keyboard theme', style: Theme.of(context).textTheme.titleSmall),
         AppGaps.x2,
-        SegmentedButton<String>(
-          segments: const [
-            ButtonSegment(
-              value: 'system',
-              icon: Icon(Icons.brightness_auto_outlined),
-              label: Text('System'),
-            ),
-            ButtonSegment(
-              value: 'light',
-              icon: Icon(Icons.light_mode_outlined),
-              label: Text('Light'),
-            ),
-            ButtonSegment(
-              value: 'dark',
-              icon: Icon(Icons.dark_mode_outlined),
-              label: Text('Dark'),
-            ),
-          ],
-          selected: {_selectedMode},
-          onSelectionChanged: busy
-              ? null
-              : (selection) => onThemeModeChanged(selection.single),
+        Text(
+          'The keyboard theme follows the global app appearance setting above.',
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         AppGaps.x2,
         LayoutBuilder(

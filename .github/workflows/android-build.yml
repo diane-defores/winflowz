@@ -3,8 +3,14 @@ name: Flutter Android CI
 on:
   push:
     branches: [main, master]
+    paths:
+      - "winflowz_app/**"
+      - ".github/workflows/android-build.yml"
   pull_request:
     branches: [main, master]
+    paths:
+      - "winflowz_app/**"
+      - ".github/workflows/android-build.yml"
   workflow_dispatch:
 
 env:
@@ -29,10 +35,7 @@ jobs:
         with:
           filters: |
             apk:
-              - 'winflowz_app/android/**'
-              - 'winflowz_app/lib/**'
-              - 'winflowz_app/pubspec.yaml'
-              - 'winflowz_app/pubspec.lock'
+              - 'winflowz_app/**'
               - '.github/workflows/android-build.yml'
 
   analyze:

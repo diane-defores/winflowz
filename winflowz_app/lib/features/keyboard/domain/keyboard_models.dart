@@ -1918,8 +1918,8 @@ class AndroidKeyboardStatus {
   }
 
   static double _normalizeActionRowHeightScale(double value) {
-    if (value < 0.50) {
-      return 1 / 3;
+    if (value <= 0.56) {
+      return 0.56;
     }
     if (value < 0.84) {
       return 2 / 3;

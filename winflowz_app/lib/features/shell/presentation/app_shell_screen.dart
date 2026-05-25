@@ -33,7 +33,6 @@ class AppShellScreen extends ConsumerStatefulWidget {
 
 class _AppShellScreenState extends ConsumerState<AppShellScreen>
     with WidgetsBindingObserver {
-  static const _bottomNavIconOffset = Offset(0, -3);
   static const _unsupportedOverlayStatus = AndroidOverlayStatus(
     enabled: false,
     requestedEnabled: false,
@@ -679,114 +678,57 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                 ? null
                 : SafeArea(
                     top: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.x2,
-                        AppSpacing.x1,
-                        AppSpacing.x2,
-                        AppSpacing.x2,
-                      ),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerLow.withValues(
-                            alpha: colorScheme.brightness == Brightness.dark
-                                ? AppNavigationMetrics.bottomBarDarkAlpha
-                                : AppNavigationMetrics.bottomBarLightAlpha,
-                          ),
-                          borderRadius: BorderRadius.circular(AppRadii.lg),
-                          border: Border.all(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLow.withValues(
+                          alpha: colorScheme.brightness == Brightness.dark
+                              ? AppNavigationMetrics.bottomBarDarkAlpha
+                              : AppNavigationMetrics.bottomBarLightAlpha,
+                        ),
+                        border: Border(
+                          top: BorderSide(
                             color: colorScheme.outlineVariant.withValues(
-                              alpha: 0.78,
+                              alpha: 0.72,
                             ),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.black.withValues(
-                                alpha: colorScheme.brightness == Brightness.dark
-                                    ? AppNavigationMetrics
-                                          .bottomBarDarkShadowAlpha
-                                    : AppNavigationMetrics
-                                          .bottomBarLightShadowAlpha,
-                              ),
-                              blurRadius:
-                                  AppNavigationMetrics.bottomBarShadowBlur,
-                              offset:
-                                  AppNavigationMetrics.bottomBarShadowOffset,
-                            ),
-                          ],
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(AppRadii.lg),
-                          child: NavigationBar(
-                            labelBehavior: NavigationDestinationLabelBehavior
-                                .onlyShowSelected,
-                            selectedIndex: _index,
-                            onDestinationSelected: _selectTab,
-                            destinations: const [
-                              NavigationDestination(
-                                icon: _BottomNavIcon(
-                                  Icons.keyboard_voice_outlined,
-                                ),
-                                selectedIcon: _BottomNavIcon(
-                                  Icons.keyboard_voice,
-                                ),
-                                label: 'Voice',
-                              ),
-                              NavigationDestination(
-                                icon: _BottomNavIcon(
-                                  Icons.content_paste_outlined,
-                                ),
-                                selectedIcon: _BottomNavIcon(
-                                  Icons.content_paste,
-                                ),
-                                label: 'Clipboard',
-                              ),
-                              NavigationDestination(
-                                icon: _BottomNavIcon(
-                                  Icons.text_snippet_outlined,
-                                ),
-                                selectedIcon: _BottomNavIcon(
-                                  Icons.text_snippet,
-                                ),
-                                label: 'Snippets',
-                              ),
-                              NavigationDestination(
-                                icon: _BottomNavIcon(
-                                  Icons.auto_fix_high_outlined,
-                                ),
-                                selectedIcon: _BottomNavIcon(
-                                  Icons.auto_fix_high,
-                                ),
-                                label: 'Dictionary',
-                              ),
-                              NavigationDestination(
-                                icon: _BottomNavIcon(Icons.settings_outlined),
-                                selectedIcon: _BottomNavIcon(Icons.settings),
-                                label: 'Settings',
-                              ),
-                            ],
+                      ),
+                      child: NavigationBar(
+                        selectedIndex: _index,
+                        onDestinationSelected: _selectTab,
+                        destinations: const [
+                          NavigationDestination(
+                            icon: Icon(Icons.keyboard_voice_outlined),
+                            selectedIcon: Icon(Icons.keyboard_voice),
+                            label: 'Voice',
                           ),
-                        ),
+                          NavigationDestination(
+                            icon: Icon(Icons.content_paste_outlined),
+                            selectedIcon: Icon(Icons.content_paste),
+                            label: 'Clipboard',
+                          ),
+                          NavigationDestination(
+                            icon: Icon(Icons.text_snippet_outlined),
+                            selectedIcon: Icon(Icons.text_snippet),
+                            label: 'Snippets',
+                          ),
+                          NavigationDestination(
+                            icon: Icon(Icons.auto_fix_high_outlined),
+                            selectedIcon: Icon(Icons.auto_fix_high),
+                            label: 'Dictionary',
+                          ),
+                          NavigationDestination(
+                            icon: Icon(Icons.settings_outlined),
+                            selectedIcon: Icon(Icons.settings),
+                            label: 'Settings',
+                          ),
+                        ],
                       ),
                     ),
                   ),
           ),
         );
       },
-    );
-  }
-}
-
-class _BottomNavIcon extends StatelessWidget {
-  const _BottomNavIcon(this.icon);
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: _AppShellScreenState._bottomNavIconOffset,
-      child: Icon(icon),
     );
   }
 }
@@ -851,6 +793,7 @@ class _OnboardingOverlay extends StatelessWidget {
         readiness: activeReadiness,
         isBusy: isBusy,
         onPrimaryAction: onPrimaryAction,
+        onDefer: onDefer,
         onSecondaryAction: onSecondaryAction,
         onSkip: onSkip,
         onRefresh: onRefresh,
@@ -890,9 +833,6 @@ class _OnboardingOverlay extends StatelessWidget {
                         child: SizedBox(
                           key: const Key('onboarding-overlay-card-frame'),
                           width: cardWidth,
-                          height: showDeferPrompt
-                              ? null
-                              : constraints.maxHeight,
                           child: GestureDetector(
                             onTap: () {},
                             child: AppModalCard(
@@ -941,19 +881,6 @@ class _OnboardingOverlay extends StatelessWidget {
                                         ).colorScheme.error,
                                       ),
                                     ],
-                                    if (!showDeferPrompt) ...[
-                                      AppGaps.x3,
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: TextButton.icon(
-                                          onPressed: onDefer,
-                                          icon: const Icon(
-                                            Icons.close_outlined,
-                                          ),
-                                          label: const Text('Plus tard'),
-                                        ),
-                                      ),
-                                    ],
                                   ],
                                 ),
                               ),
@@ -977,6 +904,7 @@ class _OnboardingOverviewContent extends StatefulWidget {
   const _OnboardingOverviewContent({
     required this.readiness,
     required this.isBusy,
+    required this.onDefer,
     required this.onPrimaryAction,
     required this.onSecondaryAction,
     required this.onSkip,
@@ -986,6 +914,7 @@ class _OnboardingOverviewContent extends StatefulWidget {
 
   final OnboardingReadiness readiness;
   final bool isBusy;
+  final VoidCallback onDefer;
   final Future<void> Function(OnboardingStepId stepId) onPrimaryAction;
   final Future<void> Function(OnboardingStepId stepId)? onSecondaryAction;
   final Future<void> Function(OnboardingStepId stepId) onSkip;
@@ -1049,6 +978,7 @@ class _OnboardingOverviewContentState
   @override
   Widget build(BuildContext context) {
     final page = _pages[_pageIndex];
+    final showCompletionAction = widget.readiness.allStepsCompleted;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1100,6 +1030,17 @@ class _OnboardingOverviewContentState
               icon: const Icon(Icons.arrow_forward_outlined),
               label: const Text('Suivant'),
             ),
+            if (!showCompletionAction)
+              OutlinedButton.icon(
+                onPressed: widget.isBusy ? null : widget.onDefer,
+                icon: const Icon(Icons.schedule_outlined),
+                label: const Text('Plus tard'),
+              )
+            else
+              Text(
+                'Bravo ! Toutes les étapes sont complétées.',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
             if (widget.isBusy)
               const SizedBox(
                 width: 24,

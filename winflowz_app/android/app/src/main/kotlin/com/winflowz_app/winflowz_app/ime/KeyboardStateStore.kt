@@ -73,12 +73,79 @@ class KeyboardStateStore(private val context: Context) {
         set(value) = preferences.edit().putBoolean(KEY_DEBUG_TOUCH_OVERLAY_ENABLED, value).apply()
 
     var keyVibrationEnabled: Boolean
-        get() = preferences.getBoolean(KEY_KEY_VIBRATION_ENABLED, true)
-        set(value) = preferences.edit().putBoolean(KEY_KEY_VIBRATION_ENABLED, value).apply()
+        get() = keyVibrationIntensity != KEY_VIBRATION_INTENSITY_OFF
+        set(value) {
+            val next = if (value) KEY_VIBRATION_INTENSITY_MEDIUM else KEY_VIBRATION_INTENSITY_OFF
+            preferences
+                .edit()
+                .putBoolean(KEY_KEY_VIBRATION_ENABLED, value)
+                .putInt(KEY_KEY_VIBRATION_INTENSITY, next)
+                .apply()
+            keyVibrationIntensity = next
+        }
+
+    var keyVibrationIntensity: Int
+        get() =
+            if (preferences.contains(KEY_KEY_VIBRATION_INTENSITY)) {
+                normalizedKeyVibrationIntensity(preferences.getInt(KEY_KEY_VIBRATION_INTENSITY, DEFAULT_KEY_VIBRATION_INTENSITY))
+            } else if (preferences.contains(KEY_KEY_VIBRATION_ENABLED)) {
+                if (preferences.getBoolean(KEY_KEY_VIBRATION_ENABLED, true)) {
+                    KEY_VIBRATION_INTENSITY_MEDIUM
+                } else {
+                    KEY_VIBRATION_INTENSITY_OFF
+                }
+            } else {
+                DEFAULT_KEY_VIBRATION_INTENSITY
+            }
+        set(value) {
+            val normalized = normalizedKeyVibrationIntensity(value)
+            preferences
+                .edit()
+                .putInt(KEY_KEY_VIBRATION_INTENSITY, normalized)
+                .putBoolean(KEY_KEY_VIBRATION_ENABLED, normalized != KEY_VIBRATION_INTENSITY_OFF)
+                .apply()
+        }
 
     var keySoundEnabled: Boolean
-        get() = preferences.getBoolean(KEY_KEY_SOUND_ENABLED, false)
-        set(value) = preferences.edit().putBoolean(KEY_KEY_SOUND_ENABLED, value).apply()
+        get() = keySoundIntensity != KEY_SOUND_INTENSITY_OFF
+        set(value) {
+            val currentIntensity =
+                run {
+                    if (preferences.contains(KEY_KEY_SOUND_INTENSITY)) {
+                        normalizedKeySoundIntensity(preferences.getInt(KEY_KEY_SOUND_INTENSITY, DEFAULT_KEY_SOUND_INTENSITY))
+                    } else {
+                        DEFAULT_KEY_SOUND_INTENSITY
+                    }
+                }
+            val next = if (value) if (currentIntensity == KEY_SOUND_INTENSITY_OFF) KEY_SOUND_INTENSITY_SHORT else currentIntensity else KEY_SOUND_INTENSITY_OFF
+            preferences
+                .edit()
+                .putBoolean(KEY_KEY_SOUND_ENABLED, value)
+                .putInt(KEY_KEY_SOUND_INTENSITY, next)
+                .apply()
+        }
+
+    var keySoundIntensity: Int
+        get() =
+            if (preferences.contains(KEY_KEY_SOUND_INTENSITY)) {
+                normalizedKeySoundIntensity(preferences.getInt(KEY_KEY_SOUND_INTENSITY, DEFAULT_KEY_SOUND_INTENSITY))
+            } else if (preferences.contains(KEY_KEY_SOUND_ENABLED)) {
+                if (preferences.getBoolean(KEY_KEY_SOUND_ENABLED, false)) {
+                    KEY_SOUND_INTENSITY_SHORT
+                } else {
+                    KEY_SOUND_INTENSITY_OFF
+                }
+            } else {
+                DEFAULT_KEY_SOUND_INTENSITY
+            }
+        set(value) {
+            val normalized = normalizedKeySoundIntensity(value)
+            preferences
+                .edit()
+                .putInt(KEY_KEY_SOUND_INTENSITY, normalized)
+                .putBoolean(KEY_KEY_SOUND_ENABLED, normalized != KEY_SOUND_INTENSITY_OFF)
+                .apply()
+        }
 
     var spellingSuggestionsEnabled: Boolean
         get() = preferences.getBoolean(KEY_SPELLING_SUGGESTIONS_ENABLED, true)
@@ -117,6 +184,14 @@ class KeyboardStateStore(private val context: Context) {
             val normalized = value.coerceIn(KEYBOARD_HEIGHT_MIN, KEYBOARD_HEIGHT_MAX)
             preferences.edit().putFloat(KEY_KEYBOARD_HEIGHT_SCALE, normalized).apply()
         }
+
+    var keyboardHorizontalPaddingPercent: Int
+        get() = normalizeKeyboardPaddingPercent(preferences.getInt(KEY_KEYBOARD_HORIZONTAL_PADDING_PERCENT, 0))
+        set(value) = preferences.edit().putInt(KEY_KEYBOARD_HORIZONTAL_PADDING_PERCENT, normalizeKeyboardPaddingPercent(value)).apply()
+
+    var keyboardVerticalPaddingPercent: Int
+        get() = normalizeKeyboardPaddingPercent(preferences.getInt(KEY_KEYBOARD_VERTICAL_PADDING_PERCENT, 0))
+        set(value) = preferences.edit().putInt(KEY_KEYBOARD_VERTICAL_PADDING_PERCENT, normalizeKeyboardPaddingPercent(value)).apply()
 
     var actionRowHeightScale: Float
         get() = normalizeActionRowHeightScale(
@@ -342,7 +417,9 @@ class KeyboardStateStore(private val context: Context) {
             "cornerPresetId" to cornerConfig().presetId,
             "debugTouchOverlayEnabled" to debugTouchOverlayEnabled,
             "keyVibrationEnabled" to keyVibrationEnabled,
+            "keyVibrationIntensity" to keyVibrationIntensity,
             "keySoundEnabled" to keySoundEnabled,
+            "keySoundIntensity" to keySoundIntensity,
             "spellingSuggestionsEnabled" to spellingSuggestionsEnabled,
             "specialKeyCornersEnabled" to specialKeyCornersEnabled,
             "frenchLanguageEnabled" to frenchLanguageEnabled,
@@ -350,6 +427,8 @@ class KeyboardStateStore(private val context: Context) {
             "doubleSpacePeriodEnabled" to doubleSpacePeriodEnabled,
             "punctuationAutoSpacingEnabled" to punctuationAutoSpacingEnabled,
             "keyboardHeightScale" to keyboardHeightScale,
+            "keyboardHorizontalPaddingPercent" to keyboardHorizontalPaddingPercent,
+            "keyboardVerticalPaddingPercent" to keyboardVerticalPaddingPercent,
             "actionRowHeightScale" to actionRowHeightScale,
             "compactModeEnabled" to compactModeEnabled,
             "autoCloseModesEnabled" to autoCloseModesEnabled,
@@ -940,7 +1019,9 @@ class KeyboardStateStore(private val context: Context) {
         const val DEFAULT_CORNER_MODE_ENABLED = true
         const val KEY_DEBUG_TOUCH_OVERLAY_ENABLED = "debug_touch_overlay_enabled"
         const val KEY_KEY_VIBRATION_ENABLED = "key_vibration_enabled"
+        const val KEY_KEY_VIBRATION_INTENSITY = "key_vibration_intensity"
         const val KEY_KEY_SOUND_ENABLED = "key_sound_enabled"
+        const val KEY_KEY_SOUND_INTENSITY = "key_sound_intensity"
         const val KEY_SPELLING_SUGGESTIONS_ENABLED = "spelling_suggestions_enabled"
         const val KEY_SPECIAL_KEY_CORNERS_ENABLED = "special_key_corners_enabled"
         const val KEY_FRENCH_LANGUAGE_ENABLED = "french_language_enabled"
@@ -948,6 +1029,8 @@ class KeyboardStateStore(private val context: Context) {
         const val KEY_DOUBLE_SPACE_PERIOD_ENABLED = "double_space_period_enabled"
         const val KEY_PUNCTUATION_AUTO_SPACING_ENABLED = "punctuation_auto_spacing_enabled"
         const val KEY_KEYBOARD_HEIGHT_SCALE = "keyboard_height_scale"
+        const val KEY_KEYBOARD_HORIZONTAL_PADDING_PERCENT = "keyboard_horizontal_padding_percent"
+        const val KEY_KEYBOARD_VERTICAL_PADDING_PERCENT = "keyboard_vertical_padding_percent"
         const val KEY_ACTION_ROW_HEIGHT_SCALE = "action_row_height_scale"
         const val KEY_COMPACT_MODE_ENABLED = "compact_mode_enabled"
         const val KEY_AUTO_CLOSE_MODES_ENABLED = "auto_close_modes_enabled"
@@ -994,9 +1077,22 @@ class KeyboardStateStore(private val context: Context) {
         const val KEYBOARD_HEIGHT_MIN = 0.85f
         const val KEYBOARD_HEIGHT_MAX = 1.20f
         const val KEYBOARD_HEIGHT_DEFAULT = 1.0f
-        const val ACTION_ROW_HEIGHT_MIN = 0.33333334f
+        const val ACTION_ROW_HEIGHT_MIN = 0.56f
         const val ACTION_ROW_HEIGHT_MAX = 1.0f
         const val ACTION_ROW_HEIGHT_DEFAULT = 1.0f
+        const val KEYBOARD_PADDING_PERCENT_STEP = 5
+        const val KEYBOARD_PADDING_PERCENT_MAX = 20
+        const val KEY_VIBRATION_INTENSITY_OFF = 0
+        const val KEY_VIBRATION_INTENSITY_SHORT = 1
+        const val KEY_VIBRATION_INTENSITY_MEDIUM = 2
+        const val KEY_VIBRATION_INTENSITY_LONG = 3
+        const val DEFAULT_KEY_VIBRATION_INTENSITY = KEY_VIBRATION_INTENSITY_MEDIUM
+        const val KEY_SOUND_INTENSITY_OFF = 0
+        const val KEY_SOUND_INTENSITY_SHORT = 1
+        const val KEY_SOUND_INTENSITY_MEDIUM = 2
+        const val KEY_SOUND_INTENSITY_LONG = 3
+        const val KEY_SOUND_INTENSITY_EXTRA = 4
+        const val DEFAULT_KEY_SOUND_INTENSITY = KEY_SOUND_INTENSITY_SHORT
         const val MEDIA_STEP_PERCENT_MIN = 1
         const val MEDIA_STEP_PERCENT_MAX = 20
         const val MEDIA_VOLUME_STEP_PERCENT_DEFAULT = 5
@@ -1006,10 +1102,35 @@ class KeyboardStateStore(private val context: Context) {
 
         fun normalizeActionRowHeightScale(value: Float): Float {
             return when {
-                value < 0.50f -> ACTION_ROW_HEIGHT_MIN
+                value <= 0.56f -> ACTION_ROW_HEIGHT_MIN
                 value < 0.84f -> 0.6666667f
                 else -> 1.0f
             }
+        }
+
+        fun normalizedKeyVibrationIntensity(rawValue: Int): Int {
+            return when (rawValue) {
+                KEY_VIBRATION_INTENSITY_OFF,
+                KEY_VIBRATION_INTENSITY_SHORT,
+                KEY_VIBRATION_INTENSITY_MEDIUM,
+                KEY_VIBRATION_INTENSITY_LONG -> rawValue
+                else -> DEFAULT_KEY_VIBRATION_INTENSITY
+            }
+        }
+
+        fun normalizedKeySoundIntensity(rawValue: Int): Int {
+            return when (rawValue) {
+                KEY_SOUND_INTENSITY_OFF,
+                KEY_SOUND_INTENSITY_SHORT,
+                KEY_SOUND_INTENSITY_MEDIUM,
+                KEY_SOUND_INTENSITY_LONG,
+                KEY_SOUND_INTENSITY_EXTRA -> rawValue
+                else -> DEFAULT_KEY_SOUND_INTENSITY
+            }
+        }
+
+        private fun normalizeKeyboardPaddingPercent(rawPercent: Int): Int {
+            return (rawPercent.coerceIn(0, KEYBOARD_PADDING_PERCENT_MAX) / KEYBOARD_PADDING_PERCENT_STEP) * KEYBOARD_PADDING_PERCENT_STEP
         }
     }
 }

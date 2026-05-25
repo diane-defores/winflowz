@@ -122,38 +122,63 @@ class InputConnectionEditor(
     }
 
     fun deleteWordBeforeCursor(): KeyboardEditorResult {
-        val before = textBeforeCursor(128)?.toString() ?: return KeyboardEditorResult.Unavailable
-        if (before.isEmpty()) {
+        val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
+        val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
+        val cursor = extracted.selectionStart.coerceIn(0, text.length)
+        val target = KeyboardTextNavigation.previousWordBoundary(text, cursor)
+        if (target == cursor) {
             return KeyboardEditorResult.Rejected
         }
-        var index = before.length - 1
-        while (index >= 0 && before[index].isWhitespace()) {
-            index--
+        val codePoints = cursor - target
+        if (codePoints <= 0) {
+            return KeyboardEditorResult.Rejected
         }
-        if (index < 0) {
-            return deleteCodePointsBefore(before.codePointCount(0, before.length))
-        }
-        while (index >= 0 && !before[index].isWhitespace()) {
-            index--
-        }
-        val segment = before.substring(index + 1)
-        return deleteCodePointsBefore(segment.codePointCount(0, segment.length))
+        return deleteCodePointsBefore(codePoints)
     }
 
     fun deleteWordAfterCursor(): KeyboardEditorResult {
-        val after = textAfterCursor(128)?.toString() ?: return KeyboardEditorResult.Unavailable
-        if (after.isEmpty()) {
+        val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
+        val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
+        val cursor = extracted.selectionStart.coerceIn(0, text.length)
+        val target = KeyboardTextNavigation.nextWordBoundary(text, cursor)
+        if (target == cursor) {
             return KeyboardEditorResult.Rejected
         }
-        var index = 0
-        while (index < after.length && after[index].isWhitespace()) {
-            index++
+        val codePoints = target - cursor
+        if (codePoints <= 0) {
+            return KeyboardEditorResult.Rejected
         }
-        while (index < after.length && !after[index].isWhitespace()) {
-            index++
+        return deleteCodePointsAfter(codePoints)
+    }
+
+    fun deleteSentenceBeforeCursor(): KeyboardEditorResult {
+        val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
+        val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
+        val cursor = extracted.selectionStart.coerceIn(0, text.length)
+        val target = KeyboardTextNavigation.previousSentenceBoundary(text, cursor)
+        if (target == cursor) {
+            return KeyboardEditorResult.Rejected
         }
-        val segment = after.substring(0, index.coerceAtLeast(1))
-        return deleteCodePointsAfter(segment.codePointCount(0, segment.length))
+        val codePoints = cursor - target
+        if (codePoints <= 0) {
+            return KeyboardEditorResult.Rejected
+        }
+        return deleteCodePointsBefore(codePoints)
+    }
+
+    fun deleteSentenceAfterCursor(): KeyboardEditorResult {
+        val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
+        val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
+        val cursor = extracted.selectionStart.coerceIn(0, text.length)
+        val target = KeyboardTextNavigation.nextSentenceBoundary(text, cursor)
+        if (target == cursor) {
+            return KeyboardEditorResult.Rejected
+        }
+        val codePoints = target - cursor
+        if (codePoints <= 0) {
+            return KeyboardEditorResult.Rejected
+        }
+        return deleteCodePointsAfter(codePoints)
     }
 
     fun performEditorAction(actionId: Int): KeyboardEditorResult {
@@ -219,6 +244,19 @@ class InputConnectionEditor(
                 KeyboardTextNavigation.previousWordBoundary(text, selection)
             } else {
                 KeyboardTextNavigation.nextWordBoundary(text, selection)
+        }
+        return moveSelectionFromExtracted(extracted, target)
+    }
+
+    fun moveSentenceCursor(left: Boolean): KeyboardEditorResult {
+        val extracted = extractedText() ?: return KeyboardEditorResult.Unavailable
+        val text = extracted.text?.toString() ?: return KeyboardEditorResult.Unavailable
+        val selection = extracted.selectionStart.coerceIn(0, text.length)
+        val target =
+            if (left) {
+                KeyboardTextNavigation.previousSentenceBoundary(text, selection)
+            } else {
+                KeyboardTextNavigation.nextSentenceBoundary(text, selection)
             }
         return moveSelectionFromExtracted(extracted, target)
     }
@@ -360,6 +398,58 @@ object KeyboardTextNavigation {
             }
         } else {
             starts.firstOrNull { it > currentStart } ?: text.length
+        }
+    }
+
+    fun previousSentenceBoundary(
+        text: String,
+        cursor: Int,
+    ): Int {
+        if (cursor <= 0) {
+            return 0
+        }
+        var index = cursor.coerceAtMost(text.length) - 1
+        while (index >= 0 && text[index].isWhitespace()) {
+            index--
+        }
+        while (index >= 0) {
+            if (isSentenceBoundary(text[index])) {
+                val start = index + 1
+                var next = start
+                while (next < text.length && text[next].isWhitespace()) {
+                    next++
+                }
+                return next.coerceAtLeast(0).coerceAtMost(text.length)
+            }
+            index--
+        }
+        return 0
+    }
+
+    fun nextSentenceBoundary(
+        text: String,
+        cursor: Int,
+    ): Int {
+        if (cursor >= text.length) {
+            return text.length
+        }
+        var index = cursor.coerceIn(0, text.length)
+        while (index < text.length && !isSentenceBoundary(text[index])) {
+            index++
+        }
+        while (index < text.length && isSentenceBoundary(text[index])) {
+            index++
+        }
+        while (index < text.length && text[index].isWhitespace()) {
+            index++
+        }
+        return index.coerceAtMost(text.length)
+    }
+
+    private fun isSentenceBoundary(char: Char): Boolean {
+        return when (char) {
+            '.', '!', '?', '…', ';', ':', '\n', '\r' -> true
+            else -> false
         }
     }
 
