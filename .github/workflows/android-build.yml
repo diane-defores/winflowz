@@ -4,14 +4,40 @@ on:
   push:
     branches: [main, master]
     paths:
-      - "winflowz_app/**"
+      - "winflowz_app/lib/**"
+      - "winflowz_app/test/**"
+      - "winflowz_app/android/**"
+      - "winflowz_app/assets/**"
+      - "winflowz_app/scripts/**"
+      - "winflowz_app/firebase.json"
+      - "winflowz_app/firestore.indexes.json"
+      - "winflowz_app/firestore.rules"
+      - "winflowz_app/pubspec.yaml"
+      - "winflowz_app/pubspec.lock"
+      - "winflowz_app/analysis_options.yaml"
+      - "winflowz_app/vercel.json"
       - ".github/workflows/android-build.yml"
   pull_request:
     branches: [main, master]
     paths:
-      - "winflowz_app/**"
+      - "winflowz_app/lib/**"
+      - "winflowz_app/test/**"
+      - "winflowz_app/android/**"
+      - "winflowz_app/assets/**"
+      - "winflowz_app/scripts/**"
+      - "winflowz_app/firebase.json"
+      - "winflowz_app/firestore.indexes.json"
+      - "winflowz_app/firestore.rules"
+      - "winflowz_app/pubspec.yaml"
+      - "winflowz_app/pubspec.lock"
+      - "winflowz_app/analysis_options.yaml"
+      - "winflowz_app/vercel.json"
       - ".github/workflows/android-build.yml"
   workflow_dispatch:
+
+concurrency:
+  group: flutter-android-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -25,6 +51,7 @@ jobs:
       pull-requests: read
     outputs:
       apk: ${{ steps.filter.outputs.apk }}
+      firestore: ${{ steps.filter.outputs.firestore }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -35,135 +62,31 @@ jobs:
         with:
           filters: |
             apk:
-              - 'winflowz_app/**'
+              - 'winflowz_app/lib/**'
+              - 'winflowz_app/test/**'
+              - 'winflowz_app/android/**'
+              - 'winflowz_app/assets/**'
+              - 'winflowz_app/scripts/**'
+              - 'winflowz_app/firebase.json'
+              - 'winflowz_app/firestore.indexes.json'
+              - 'winflowz_app/firestore.rules'
+              - 'winflowz_app/pubspec.yaml'
+              - 'winflowz_app/pubspec.lock'
+              - 'winflowz_app/analysis_options.yaml'
+              - 'winflowz_app/vercel.json'
+              - '.github/workflows/android-build.yml'
+            firestore:
+              - 'winflowz_app/firebase.json'
+              - 'winflowz_app/firestore.indexes.json'
+              - 'winflowz_app/firestore.rules'
               - '.github/workflows/android-build.yml'
 
-  analyze:
-    name: Flutter Analyze
+  android_ci:
+    name: Analyze, Test, Build Debug APK
     runs-on: blacksmith-2vcpu-ubuntu-2404
-    timeout-minutes: 20
-
-    steps:
-      - name: Configure Git default branch
-        run: git config --global init.defaultBranch main
-
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Resolve dependencies
-        working-directory: winflowz_app
-        run: flutter pub get
-
-      - name: Static analysis
-        working-directory: winflowz_app
-        run: flutter analyze
-
-  test:
-    name: Flutter Test
-    runs-on: blacksmith-2vcpu-ubuntu-2404
-    timeout-minutes: 25
-
-    steps:
-      - name: Configure Git default branch
-        run: git config --global init.defaultBranch main
-
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Resolve dependencies
-        working-directory: winflowz_app
-        run: flutter pub get
-
-      - name: Run tests
-        working-directory: winflowz_app
-        run: flutter test
-
-  firebase_auth_config:
-    name: Validate Firebase Auth Config
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     needs:
       - changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.apk == 'true'
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Authenticate to Google Cloud via OIDC
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
-          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
-          create_credentials_file: true
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
-
-      - name: Verify Firebase Auth is configured
-        env:
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-        run: |
-          if [ -z "$FIREBASE_PROJECT_ID" ]; then
-            echo "::error::Missing FIREBASE_PROJECT_ID."
-            exit 1
-          fi
-
-          missing_services=()
-          for service in identitytoolkit.googleapis.com securetoken.googleapis.com; do
-            if ! gcloud services list --enabled --project "$FIREBASE_PROJECT_ID" --filter="config.name:${service}" --format="value(config.name)" | grep -qx "$service"; then
-              missing_services+=("$service")
-            fi
-          done
-          if [ "${#missing_services[@]}" -gt 0 ]; then
-            echo "::error::Firebase Auth services are not enabled on ${FIREBASE_PROJECT_ID}: ${missing_services[*]}"
-            exit 1
-          fi
-
-          http_status="$(
-            curl --silent --show-error --output /tmp/firebase-auth-config.json --write-out "%{http_code}" \
-              -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-              -H "x-goog-user-project: ${FIREBASE_PROJECT_ID}" \
-              "https://identitytoolkit.googleapis.com/admin/v2/projects/${FIREBASE_PROJECT_ID}/config"
-          )"
-          if [ "$http_status" != "200" ]; then
-            echo "::error::Firebase Auth config is not readable for ${FIREBASE_PROJECT_ID}; enable Firebase Authentication and its sign-in providers before building the APK."
-            exit 1
-          fi
-
-  build_apk:
-    name: Build Debug APK
-    runs-on: blacksmith-2vcpu-ubuntu-2404
-    timeout-minutes: 45
-    needs:
-      - changes
-      - analyze
-      - test
       - firebase_auth_config
     if: github.event_name != 'pull_request' || needs.changes.outputs.apk == 'true'
 
@@ -179,6 +102,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -190,15 +114,13 @@ jobs:
         working-directory: winflowz_app
         run: flutter pub get
 
-      - name: Cache Gradle
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('winflowz_app/**/*.gradle*', 'winflowz_app/**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Static analysis
+        working-directory: winflowz_app
+        run: flutter analyze
+
+      - name: Run tests
+        working-directory: winflowz_app
+        run: flutter test
 
       - name: Build debug APK
         working-directory: winflowz_app
@@ -258,11 +180,67 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  firebase_auth_config:
+    name: Validate Firebase Auth Config
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs:
+      - changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.apk == 'true'
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Authenticate to Google Cloud via OIDC
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
+          create_credentials_file: true
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Verify Firebase Auth is configured
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          if [ -z "$FIREBASE_PROJECT_ID" ]; then
+            echo "::error::Missing FIREBASE_PROJECT_ID."
+            exit 1
+          fi
+
+          missing_services=()
+          for service in identitytoolkit.googleapis.com securetoken.googleapis.com; do
+            if ! gcloud services list --enabled --project "$FIREBASE_PROJECT_ID" --filter="config.name:${service}" --format="value(config.name)" | grep -qx "$service"; then
+              missing_services+=("$service")
+            fi
+          done
+          if [ "${#missing_services[@]}" -gt 0 ]; then
+            echo "::error::Firebase Auth services are not enabled on ${FIREBASE_PROJECT_ID}: ${missing_services[*]}"
+            exit 1
+          fi
+
+          http_status="$(
+            curl --silent --show-error --output /tmp/firebase-auth-config.json --write-out "%{http_code}" \
+              -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+              -H "x-goog-user-project: ${FIREBASE_PROJECT_ID}" \
+              "https://identitytoolkit.googleapis.com/admin/v2/projects/${FIREBASE_PROJECT_ID}/config"
+          )"
+          if [ "$http_status" != "200" ]; then
+            echo "::error::Firebase Auth config is not readable for ${FIREBASE_PROJECT_ID}; enable Firebase Authentication and its sign-in providers before building the APK."
+            exit 1
+          fi
+
   firebase:
     name: Deploy Firestore Rules and Indexes
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    needs:
+      - changes
+    if: github.event_name == 'workflow_dispatch' || ((github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && needs.changes.outputs.firestore == 'true')
     permissions:
       contents: read
       id-token: write

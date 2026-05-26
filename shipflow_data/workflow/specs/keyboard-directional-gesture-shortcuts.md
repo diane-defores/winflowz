@@ -411,13 +411,14 @@ Actionable repair tasks for the next `/sf-start`:
 | 2026-05-25 09:32:09 UTC | sf-ready | GPT-5.5 Codex | Re-validated the repaired scope and confirmed the repair task set is executable. | ready | `/sf-start keyboard-directional-gesture-shortcuts` |
 | 2026-05-25 10:01:47 UTC | sf-start | GPT-5 Codex | Corrigé la compilabilité de `retainPressedHighlight`, retiré les logs temporaires S/Z du dispatch, découpé le resolver pour désolidariser le gate special-key/texte, simplifié `effectiveGestureSelection`, et ajouté un test de régression AZERTY S/Z. | implemented | `/sf-verify keyboard-directional-gesture-shortcuts` |
 | 2026-05-25 14:55:01 UTC | sf-verify | GPT-5 Codex | Verified the repair against the spec with allowed local checks: resolver/dispatch snippets reviewed, S/Z regression test present, debug logs absent, metadata lint passed, and `flutter analyze` passed. Android-native CI/device proof remains required. | partial | `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof` |
+| 2026-05-26 18:10:45 UTC | sf-test | GPT-5 Codex | Guided Diane through physical-device manual QA for AZERTY `letter-z` up/down and `letter-s` left/right directional swipes, including the expected absence of `Gesture shortcut unavailable`. | pass | `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof` |
 
 ## Current Chantier Flow
 
 Flux: sf-spec ✅ -> sf-ready ✅ -> sf-start ✅ -> sf-verify 🔄 -> sf-end ⏳ -> sf-ship ⏳
 
 Reste a faire:
-- Passer la preuve Android-native: compilation/tests Kotlin via CI/Blacksmith, puis QA appareil Android Diane sur `letter-z` haut/bas et `letter-s` gauche/droite.
+- Passer la preuve CI/Blacksmith Android-native pour confirmer compilation/tests Kotlin; la QA appareil Android Diane sur `letter-z` haut/bas et `letter-s` gauche/droite est passee.
 
 Prochaine etape:
 - `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof`

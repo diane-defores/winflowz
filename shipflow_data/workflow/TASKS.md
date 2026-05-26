@@ -13,6 +13,8 @@
 🟠 [WinFlowzApp] task: Redeploy the Flutter web auth patch and rerun Google plus email/password smoke on app.winflowz.com | status: todo | area: suite-auth | id: wfz-suite-auth-web-smoke
 🟠 [WinFlowzApp] task: Retest BUG-2026-05-24-001 onboarding active-state info box on Android APK | status: fixed_pending_verify | area: onboarding | id: BUG-2026-05-24-001
 ✅ [WinFlowzApp] task: Retest BUG-2026-05-24-002 clipboard edit dialog cancel/save on Android APK | status: done | area: clipboard | id: BUG-2026-05-24-002
+🟢 [WinFlowzApp] task: Reduce Android IME layout rebuilds during rapid typing | status: done | area: keyboard-ime-performance | id: wfz-ime-rapid-typing-layout-rebuild
+🟡 [WinFlowzApp] task: Verify Android IME multi-pointer rollover on hosted build and physical device | status: fixed_pending_verify | area: keyboard-ime-performance | id: wfz-ime-multipointer-touch-dispatch
 
 ---
 

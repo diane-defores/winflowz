@@ -1,5 +1,7 @@
 # Audit Log
 
+🟡 [WinFlowzApp] audit: Android IME rapid typing responsiveness | date: 2026-05-26 | overall: B | issues: fixed layout-rebuild hotspot and implemented multi-pointer rollover; pending hosted Android and device QA | scope: keyboard-ime-performance
+
 | Date       | Scope        | Code | Design | Copy | SEO | GTM | Translate | Deps | Perf | Overall | Issues |
 |------------|--------------|------|--------|------|-----|-----|-----------|------|------|---------|--------|
 | 2026-04-26 | dependencies | —    | —      | —    | —   | —   | —         | B    | —    | B       | 1 critical + 4 high fixed; 10 moderate remain blocked by Expo major/migration path |
