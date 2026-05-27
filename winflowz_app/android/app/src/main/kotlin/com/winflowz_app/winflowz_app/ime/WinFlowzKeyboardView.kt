@@ -185,6 +185,11 @@ class WinFlowzKeyboardView(
         val panelScrollable: Boolean = false,
     )
 
+    private data class LongPressSwipeVisual(
+        val startKeyId: String,
+        val startedAtMs: Long,
+    )
+
     private data class LayoutFingerprint(
         val layoutMode: KeyboardLayoutMode,
         val panelMode: KeyboardPanelMode,
@@ -308,6 +313,14 @@ class WinFlowzKeyboardView(
     private var mediaNowPlayingLabel: String? = null
     private var cornerConfig = KeyboardCornerConfig()
     private val activeSystemModifiers = linkedSetOf<KeyboardSystemModifier>()
+    private val ctrlHoldPointerIds = linkedSetOf<Int>()
+    private val ctrlHoldForceAddedPointerIds = linkedSetOf<Int>()
+    private val longPressSwipeDispatchPointerIds = linkedSetOf<Int>()
+    private val longPressSwipeStartKeyIdByPointerId = mutableMapOf<Int, String>()
+    private val longPressSwipeActionDescriptorByPointerId = mutableMapOf<Int, String?>()
+    private val longPressSwipeActionPinnedBeforeByPointerId = mutableMapOf<Int, Boolean>()
+    private val longPressSwipeActionRowsBeforeByPointerId = mutableMapOf<Int, Set<String>>()
+    private val longPressSwipeVisualByPointerId = mutableMapOf<Int, LongPressSwipeVisual>()
 
     private val pointerTracker = KeyboardPointerTracker<KeyFrame>()
     private val longPressRunnablesByPointerId = mutableMapOf<Int, Runnable>()
@@ -417,6 +430,16 @@ class WinFlowzKeyboardView(
         style = Paint.Style.STROKE
         strokeWidth = 0f
     }
+    private val longPressSwipeStrokePaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
+        }
+    private val longPressSwipeFillPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+        }
     private val keyEffectPath = Path()
     private val keyShadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.TRANSPARENT
@@ -1069,6 +1092,9 @@ class WinFlowzKeyboardView(
             y += rowHeight + rowGap()
         }
 
+        if (drawLongPressSwipeVisuals(canvas)) {
+            postInvalidateOnAnimation()
+        }
         if (pressEffects.draw(canvas, resolvedKeyRadius, activeKeyPaint.color)) {
             postInvalidateOnAnimation()
         }
@@ -1083,6 +1109,397 @@ class WinFlowzKeyboardView(
             drawDebugOverlay(canvas)
         }
         pruneHorizontalRowVisualState()
+    }
+
+    private fun drawLongPressSwipeVisuals(canvas: Canvas): Boolean {
+        if (longPressSwipeVisualByPointerId.isEmpty()) {
+            return false
+        }
+        val swipeEffect = KeyboardPressEffectPolicy.resolve(themeConfig, fieldPolicy.privateMode)
+        val accent = activeKeyPaint.color
+        var hasActiveVisual = false
+        val toClear = mutableListOf<Int>()
+        val now = SystemClock.uptimeMillis()
+        val activePointers = longPressSwipeVisualByPointerId.toList()
+        for ((pointerId, visual) in activePointers) {
+            val state = pointerTracker.get(pointerId)
+            if (state == null) {
+                toClear.add(pointerId)
+                continue
+            }
+            val startFrame = keyFrameForId(visual.startKeyId)
+            if (startFrame == null) {
+                toClear.add(pointerId)
+                continue
+            }
+            drawLongPressSwipeVisual(
+                canvas = canvas,
+                startX = startFrame.visualRect.centerX(),
+                startY = startFrame.visualRect.centerY(),
+                endX = state.latestX,
+                endY = state.latestY,
+                effectSpec = swipeEffect,
+                accentColor = accent,
+                phaseMs = now - visual.startedAtMs,
+            )
+            hasActiveVisual = true
+        }
+        toClear.forEach { pointerId ->
+            longPressSwipeVisualByPointerId.remove(pointerId)
+        }
+        return hasActiveVisual
+    }
+
+    private fun drawLongPressSwipeVisual(
+        canvas: Canvas,
+        startX: Float,
+        startY: Float,
+        endX: Float,
+        endY: Float,
+        effectSpec: KeyboardPressEffectSpec,
+        accentColor: Int,
+        phaseMs: Long,
+    ) {
+        val dx = endX - startX
+        val dy = endY - startY
+        val length = hypot(dx.toDouble(), dy.toDouble()).toFloat()
+        if (length < dp(1f)) {
+            return
+        }
+        val progress = (phaseMs % 720L) / 720f
+        val intensity = effectSpec.intensity.coerceIn(0.2f, 1f)
+        val unitX = dx / length
+        val unitY = dy / length
+        val normalX = -unitY
+        val normalY = unitX
+        val phase = progress * 18.849556f
+        when (effectSpec.effect) {
+            "none" -> {
+                longPressSwipeStrokePaint.color = colorWithOpacity(accentColor, 0.12f)
+                longPressSwipeStrokePaint.strokeWidth = dp(1.6f)
+                canvas.drawLine(startX, startY, endX, endY, longPressSwipeStrokePaint)
+            }
+            "scale", "glow", "pulse" -> {
+                drawSwipeArcPath(
+                    canvas,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    normalX,
+                    normalY,
+                    effectSpec,
+                    accentColor,
+                    intensity,
+                    phase,
+                    wobble = false,
+                )
+                drawSwipeEndpointBubbles(
+                    canvas,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    accentColor,
+                    progress,
+                    intensity,
+                )
+            }
+            "shake", "edgeCompression" -> {
+                drawSwipeArcPath(
+                    canvas,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    normalX,
+                    normalY,
+                    effectSpec,
+                    accentColor,
+                    intensity,
+                    phase,
+                    wobble = true,
+                )
+            }
+            "electricArc" -> {
+                drawSwipeElectricPath(
+                    canvas,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    accentColor,
+                    intensity,
+                    phase,
+                    normalX,
+                    normalY,
+                )
+            }
+            "specularSweep" -> {
+                drawSwipeSpecularPath(
+                    canvas,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    accentColor,
+                    intensity,
+                    progress,
+                )
+            }
+            "inkPress", "keycapTilt" -> {
+                drawSwipeInkRibbon(
+                    canvas,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    accentColor,
+                    intensity,
+                    phase,
+                )
+            }
+            "confettiLite", "fireworksLite" -> {
+                drawSwipeParticles(canvas, startX, startY, endX, endY, effectSpec, accentColor, progress)
+            }
+            else -> {
+                drawSwipeArcPath(
+                    canvas,
+                    startX,
+                    startY,
+                    endX,
+                    endY,
+                    normalX,
+                    normalY,
+                    effectSpec,
+                    accentColor,
+                    intensity,
+                    phase,
+                    wobble = false,
+                )
+            }
+        }
+    }
+
+    private fun drawSwipeArcPath(
+        canvas: Canvas,
+        startX: Float,
+        startY: Float,
+        endX: Float,
+        endY: Float,
+        normalX: Float,
+        normalY: Float,
+        effectSpec: KeyboardPressEffectSpec,
+        accentColor: Int,
+        intensity: Float,
+        phase: Float,
+        wobble: Boolean,
+    ) {
+        val eased = 1f - easeOutPress(phase / kotlin.math.PI.toFloat() / 2f % 1f)
+        keyEffectPath.reset()
+        keyEffectPath.moveTo(startX, startY)
+        val segments = 18
+        for (index in 1..segments) {
+            val t = index / segments.toFloat()
+            val x = startX + (endX - startX) * t
+            val y = startY + (endY - startY) * t
+            if (wobble) {
+                val offset = if (index % 2 == 0) 1f else -1f
+                keyEffectPath.lineTo(
+                    x + normalX * offset * dp(1.8f) * intensity * sin((phase + t * 12f).toDouble()).toFloat(),
+                    y + normalY * offset * dp(1.8f) * intensity * sin((phase + t * 12f).toDouble()).toFloat(),
+                )
+            } else {
+                val wave = if (effectSpec.effect == "glow") {
+                    sin((phase + t * 8f).toDouble()).toFloat() * dp(1.2f) * intensity * eased
+                } else {
+                    0f
+                }
+                keyEffectPath.lineTo(
+                    x + normalX * wave,
+                    y + normalY * wave,
+                )
+            }
+        }
+        longPressSwipeStrokePaint.strokeWidth =
+            if (effectSpec.effect == "scale") {
+                dp(2.6f) * intensity
+            } else if (effectSpec.effect == "pulse") {
+                dp(2.2f) * intensity
+            } else if (effectSpec.effect == "glow") {
+                dp(2.8f) * intensity
+            } else if (wobble) {
+                dp(1.9f) * intensity
+            } else {
+                dp(2f) * intensity
+            }
+        longPressSwipeStrokePaint.color = colorWithOpacity(accentColor, 0.52f + 0.12f * intensity)
+        canvas.drawPath(keyEffectPath, longPressSwipeStrokePaint)
+    }
+
+    private fun drawSwipeEndpointBubbles(
+        canvas: Canvas,
+        startX: Float,
+        startY: Float,
+        endX: Float,
+        endY: Float,
+        accentColor: Int,
+        progress: Float,
+        intensity: Float,
+    ) {
+        val trailPhase = (1f - (progress * 0.5f + 0.5f).coerceIn(0f, 1f))
+        longPressSwipeFillPaint.color = colorWithOpacity(accentColor, 0.38f + 0.22f * trailPhase * intensity)
+        canvas.drawCircle(startX, startY, dp(3f), longPressSwipeFillPaint)
+        longPressSwipeFillPaint.color = colorWithOpacity(Color.WHITE, 0.28f + 0.22f * intensity)
+        canvas.drawCircle(endX, endY, dp(4.4f) * (0.7f + 0.3f * intensity), longPressSwipeFillPaint)
+    }
+
+    private fun drawSwipeElectricPath(
+        canvas: Canvas,
+        startX: Float,
+        startY: Float,
+        endX: Float,
+        endY: Float,
+        accentColor: Int,
+        intensity: Float,
+        phase: Float,
+        normalX: Float,
+        normalY: Float,
+    ) {
+        keyEffectPath.reset()
+        keyEffectPath.moveTo(startX, startY)
+        val segments = 22
+        for (index in 1..segments) {
+            val t = index / segments.toFloat()
+            val x = startX + (endX - startX) * t
+            val y = startY + (endY - startY) * t
+            val wave = sin((phase + index * 1.4f).toDouble()).toFloat() * dp(2.8f) * intensity
+            keyEffectPath.lineTo(x + normalX * wave, y + normalY * wave)
+        }
+        longPressSwipeStrokePaint.color = colorWithOpacity(accentColor, 0.36f + 0.18f * intensity)
+        longPressSwipeStrokePaint.strokeWidth = dp(1.7f) * intensity
+        canvas.drawPath(keyEffectPath, longPressSwipeStrokePaint)
+        longPressSwipeStrokePaint.color = colorWithOpacity(Color.WHITE, 0.22f)
+        longPressSwipeStrokePaint.strokeWidth = dp(0.9f)
+        longPressSwipeStrokePaint.shader = null
+        canvas.drawCircle(endX, endY, dp(5.2f) * intensity, longPressSwipeStrokePaint)
+    }
+
+    private fun drawSwipeSpecularPath(
+        canvas: Canvas,
+        startX: Float,
+        startY: Float,
+        endX: Float,
+        endY: Float,
+        accentColor: Int,
+        intensity: Float,
+        progress: Float,
+    ) {
+        val dx = endX - startX
+        val dy = endY - startY
+        val length = hypot(dx.toDouble(), dy.toDouble()).toFloat()
+        if (length <= 0f) return
+        val normalX = -dy / length
+        val normalY = dx / length
+        drawSwipeArcPath(
+            canvas,
+            startX,
+            startY,
+            endX,
+            endY,
+            normalX,
+            normalY,
+            KeyboardPressEffectSpec("specularSweep", 1, intensity, "linear"),
+            accentColor,
+            intensity,
+            progress * 18.849556f,
+            wobble = false,
+        )
+        val sweepT = progress
+        val sparkleX = startX + (endX - startX) * sweepT
+        val sparkleY = startY + (endY - startY) * sweepT
+        longPressSwipeFillPaint.shader =
+            LinearGradient(
+                startX,
+                startY,
+                sparkleX,
+                sparkleY,
+                intArrayOf(
+                    colorWithOpacity(Color.WHITE, 0f),
+                    colorWithOpacity(Color.WHITE, 0.3f + 0.15f * intensity),
+                    colorWithOpacity(Color.WHITE, 0f),
+                ),
+                floatArrayOf(0f, 0.5f, 1f),
+                Shader.TileMode.CLAMP,
+            )
+        canvas.drawCircle(sparkleX, sparkleY, dp(6f) * intensity, longPressSwipeFillPaint)
+        longPressSwipeFillPaint.shader = null
+    }
+
+    private fun drawSwipeInkRibbon(
+        canvas: Canvas,
+        startX: Float,
+        startY: Float,
+        endX: Float,
+        endY: Float,
+        accentColor: Int,
+        intensity: Float,
+        phase: Float,
+    ) {
+        longPressSwipeFillPaint.color = colorWithOpacity(accentColor, 0.12f + 0.16f * intensity)
+        longPressSwipeStrokePaint.color = colorWithOpacity(accentColor, 0.5f + 0.18f * intensity)
+        longPressSwipeStrokePaint.strokeWidth = dp(2.5f) * intensity
+        canvas.drawLine(startX, startY, endX, endY, longPressSwipeStrokePaint)
+        val pulse = (sin((phase * 0.95f).toDouble()) * 0.5f + 0.5f) * 0.45f
+        val markerX = startX + (endX - startX) * (0.18f + 0.64f * pulse)
+        val markerY = startY + (endY - startY) * (0.18f + 0.64f * pulse)
+        longPressSwipeFillPaint.color = colorWithOpacity(Color.WHITE, 0.2f + 0.16f * intensity * (1f - pulse))
+        canvas.drawCircle(markerX, markerY, dp(3.8f), longPressSwipeFillPaint)
+    }
+
+    private fun drawSwipeParticles(
+        canvas: Canvas,
+        startX: Float,
+        startY: Float,
+        endX: Float,
+        endY: Float,
+        effectSpec: KeyboardPressEffectSpec,
+        accentColor: Int,
+        progress: Float,
+    ) {
+        val radiusBase = if (effectSpec.effect == "fireworksLite") dp(3.6f) else dp(2.5f)
+        val particleCount = if (effectSpec.effect == "fireworksLite") 15 else 9
+        val dx = endX - startX
+        val dy = endY - startY
+        val dirX = if (dx == 0f) 1f else dx
+        val dirY = if (dy == 0f) 1f else dy
+        val spread = dp(8f) * progress
+        for (index in 0 until particleCount) {
+            val localProgress = ((index.toFloat() / particleCount) + progress * 0.85f) % 1f
+            val angle = (Math.PI * 2.0 * localProgress).toFloat()
+            val distance = spread * (0.35f + 0.65f * localProgress)
+            val x = endX + kotlin.math.cos(angle) * distance + (index % 2 - 0.5f) * dirX * 0.012f
+            val y = endY + kotlin.math.sin(angle) * distance + (index % 2 - 0.5f) * dirY * 0.012f
+            val alpha = (200f * (1f - localProgress)).toInt().coerceIn(0, 200)
+            longPressSwipeFillPaint.color = colorWithOpacity(
+                when (index % 4) {
+                    0 -> Color.WHITE
+                    1 -> accentColor
+                    2 -> Color.YELLOW
+                    else -> Color.CYAN
+                },
+                alpha / 255f,
+            )
+            canvas.drawCircle(x, y, radiusBase * (1f - localProgress * 0.45f), longPressSwipeFillPaint)
+        }
+    }
+
+    private fun keyFrameForId(keyId: String): KeyFrame? {
+        return keyFrames.firstOrNull { it.key.id == keyId }
+    }
+
+    private fun registerLongPressSwipeVisual(pointerId: Int, startKeyId: String) {
+        longPressSwipeVisualByPointerId[pointerId] = LongPressSwipeVisual(startKeyId, SystemClock.uptimeMillis())
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -1167,6 +1584,9 @@ class WinFlowzKeyboardView(
                 )
                 return@forEach
             }
+            if (tryActivateLongPressSwipeFromExit(updated)) {
+                return@forEach
+            }
             val dx = updated.latestX - updated.startX
             val dy = updated.latestY - updated.startY
             handleSpaceSlider(updated, dx, dy)
@@ -1176,6 +1596,99 @@ class WinFlowzKeyboardView(
             debugGestureText =
                 "move ptr=${updated.pointerId} dir=${directionFrom(dx, dy)} dist=${distance.toInt()} max=${updated.maxDistanceFromStart.toInt()} lock=${pointerTracker.protectedInteraction ?: "none"}"
         }
+        invalidate()
+        return true
+    }
+
+    private fun tryActivateLongPressSwipeFromExit(state: KeyboardPointerState<KeyFrame>): Boolean {
+        if (state.consumedByProtectedInteraction || state.longPressTriggered) {
+            return false
+        }
+        val key = state.payload.key
+        if (!key.enabled || state.payload.touchRect.contains(state.latestX, state.latestY)) {
+            return false
+        }
+        if (isCtrlModifierKey(key)) {
+            return activateCtrlHoldSwipeMode(state.pointerId, key)
+        }
+        if (key.actionDescriptorPrimary && key.actionDescriptorId != null) {
+            return activateActionLongPressSwipeMode(
+                pointerId = state.pointerId,
+                actionDescriptorId = key.actionDescriptorId,
+                startKeyId = key.id,
+            )
+        }
+        return false
+    }
+
+    private fun activateCtrlHoldSwipeMode(
+        pointerId: Int,
+        key: KeyboardKeySpec,
+    ): Boolean {
+        val hadCtrlBefore = activeSystemModifiers.contains(KeyboardSystemModifier.Ctrl)
+        if (hadCtrlBefore && ctrlHoldPointerIds.contains(pointerId)) {
+            return false
+        }
+        clearLongPress(pointerId)
+        acquireProtectedInteraction(pointerId, KeyboardProtectedInteraction.LongPressAction)
+        pointerTracker.markLongPressTriggered(pointerId)
+        activeSystemModifiers.add(KeyboardSystemModifier.Ctrl)
+        ctrlHoldPointerIds.add(pointerId)
+        longPressSwipeDispatchPointerIds.add(pointerId)
+        longPressSwipeStartKeyIdByPointerId[pointerId] = key.id
+        longPressSwipeActionDescriptorByPointerId[pointerId] = null
+        longPressSwipeActionPinnedBeforeByPointerId[pointerId] = false
+        longPressSwipeActionRowsBeforeByPointerId[pointerId] = emptySet()
+        if (!hadCtrlBefore) {
+            ctrlHoldForceAddedPointerIds.add(pointerId)
+        }
+        registerLongPressSwipeVisual(pointerId, key.id)
+        setStatus("Ctrl")
+        performKeyboardHaptic(HapticFeedbackConstants.LONG_PRESS)
+        invalidate()
+        return true
+    }
+
+    private fun activateActionLongPressSwipeMode(
+        pointerId: Int,
+        actionDescriptorId: String,
+        startKeyId: String,
+    ): Boolean {
+        val result =
+            actionBarController.onLongPress(
+                actionId = actionDescriptorId,
+                state = actionBarState,
+                environment = actionEnvironment(),
+            )
+        if (!result.consumed) {
+            setStatus(result.status ?: "Action unavailable")
+            return false
+        }
+        clearLongPress(pointerId)
+        acquireProtectedInteraction(pointerId, KeyboardProtectedInteraction.LongPressAction)
+        pointerTracker.markLongPressTriggered(pointerId)
+        longPressSwipeDispatchPointerIds.add(pointerId)
+        longPressSwipeStartKeyIdByPointerId[pointerId] = startKeyId
+        longPressSwipeActionDescriptorByPointerId[pointerId] = actionDescriptorId
+        longPressSwipeActionPinnedBeforeByPointerId[pointerId] =
+            actionBarState.pinnedActionIds.contains(actionDescriptorId)
+        longPressSwipeActionRowsBeforeByPointerId[pointerId] =
+            actionBarState.attachedRows
+                .filter { it.providerActionId == actionDescriptorId }
+                .map { it.rowId }
+                .toSet()
+        registerLongPressSwipeVisual(pointerId, startKeyId)
+        setActionBarState(result.nextState)
+        if (actionDescriptorId == "numbers" && layoutMode == KeyboardLayoutMode.Numbers) {
+            layoutMode = KeyboardLayoutMode.Letters
+            panelMode = KeyboardPanelMode.None
+            shifted = false
+        }
+        result.status?.let { setStatus(it) }
+        clearHorizontalRowScrollState()
+        reconcileActionBarState()
+        refreshLayout()
+        performKeyboardHaptic(HapticFeedbackConstants.LONG_PRESS)
         invalidate()
         return true
     }
@@ -1201,6 +1714,11 @@ class WinFlowzKeyboardView(
             return true
         }
         if (updated.consumedByProtectedInteraction || updated.longPressTriggered) {
+            if (tryDispatchAfterLongPressSwipe(pointerId, updated, x, y)) {
+                removePointerState(pointerId)
+                invalidate()
+                return true
+            }
             if (scrollingHorizontalRow && horizontalScrollOwnerPointerId == pointerId) {
                 finishHorizontalRowScroll()
             }
@@ -1261,6 +1779,19 @@ class WinFlowzKeyboardView(
         clearLongPress(pointerId)
         if (repeatOwnerPointerId == pointerId) {
             stopRepeat(pointerId)
+        }
+        if (ctrlHoldPointerIds.remove(pointerId)) {
+            ctrlHoldForceAddedPointerIds.remove(pointerId)
+            if (ctrlHoldForceAddedPointerIds.isEmpty()) {
+                activeSystemModifiers.remove(KeyboardSystemModifier.Ctrl)
+            }
+        }
+        val hadSwipeVisual = longPressSwipeVisualByPointerId.remove(pointerId) != null
+        if (longPressSwipeDispatchPointerIds.remove(pointerId) || hadSwipeVisual) {
+            longPressSwipeStartKeyIdByPointerId.remove(pointerId)
+            longPressSwipeActionDescriptorByPointerId.remove(pointerId)
+            longPressSwipeActionPinnedBeforeByPointerId.remove(pointerId)
+            longPressSwipeActionRowsBeforeByPointerId.remove(pointerId)
         }
         if (slidingSpaceOwnerPointerId == pointerId) {
             slidingSpace = false
@@ -1338,10 +1869,27 @@ class WinFlowzKeyboardView(
             pointerTracker.markLongPressTriggered(pointerId)
             startRepeat(pointerId, key, state.payload)
             dispatch(key, GestureSelection.PrimaryTap, state.payload)
+        } else if (isCtrlModifierKey(key)) {
+            acquireProtectedInteraction(pointerId, KeyboardProtectedInteraction.LongPressAction)
+            pointerTracker.markLongPressTriggered(pointerId)
+            val hadCtrlBefore = activeSystemModifiers.contains(KeyboardSystemModifier.Ctrl)
+            activeSystemModifiers.add(KeyboardSystemModifier.Ctrl)
+            ctrlHoldPointerIds.add(pointerId)
+            longPressSwipeDispatchPointerIds.add(pointerId)
+            longPressSwipeStartKeyIdByPointerId[pointerId] = key.id
+            longPressSwipeActionDescriptorByPointerId[pointerId] = null
+            longPressSwipeActionPinnedBeforeByPointerId[pointerId] = false
+            longPressSwipeActionRowsBeforeByPointerId[pointerId] = emptySet()
+            if (!hadCtrlBefore) {
+                ctrlHoldForceAddedPointerIds.add(pointerId)
+            }
+            registerLongPressSwipeVisual(pointerId, key.id)
+            setStatus("Ctrl")
         } else if (key.actionDescriptorPrimary && key.actionDescriptorId != null) {
+            val actionDescriptorId = key.actionDescriptorId
             val result =
                 actionBarController.onLongPress(
-                    actionId = key.actionDescriptorId,
+                    actionId = actionDescriptorId,
                     state = actionBarState,
                     environment = actionEnvironment(),
                 )
@@ -1351,6 +1899,17 @@ class WinFlowzKeyboardView(
             }
             acquireProtectedInteraction(pointerId, KeyboardProtectedInteraction.LongPressAction)
             pointerTracker.markLongPressTriggered(pointerId)
+            longPressSwipeDispatchPointerIds.add(pointerId)
+            longPressSwipeStartKeyIdByPointerId[pointerId] = key.id
+            longPressSwipeActionDescriptorByPointerId[pointerId] = actionDescriptorId
+            longPressSwipeActionPinnedBeforeByPointerId[pointerId] =
+                actionBarState.pinnedActionIds.contains(actionDescriptorId)
+            longPressSwipeActionRowsBeforeByPointerId[pointerId] =
+                actionBarState.attachedRows
+                    .filter { it.providerActionId == actionDescriptorId }
+                    .map { it.rowId }
+                    .toSet()
+            registerLongPressSwipeVisual(pointerId, key.id)
             setActionBarState(result.nextState)
             if (key.actionDescriptorId == "numbers" && layoutMode == KeyboardLayoutMode.Numbers) {
                 layoutMode = KeyboardLayoutMode.Letters
@@ -1484,6 +2043,55 @@ class WinFlowzKeyboardView(
             }
         }
         lastSlideStep = step
+    }
+
+    private fun tryDispatchAfterLongPressSwipe(
+        pointerId: Int,
+        state: KeyboardPointerState<KeyFrame>,
+        x: Float,
+        y: Float,
+    ): Boolean {
+        if (!longPressSwipeDispatchPointerIds.contains(pointerId)) {
+            return false
+        }
+        val startKeyId = longPressSwipeStartKeyIdByPointerId[pointerId] ?: return false
+        val targetHit = hitTest(x, y) ?: return false
+        val targetKey = targetHit.key
+        if (!targetKey.enabled || targetKey.id == startKeyId) {
+            return false
+        }
+        dispatch(targetKey, GestureSelection.PrimaryTap, targetHit)
+        closeLongPressActionRowIfNeeded(pointerId)
+        debugGestureText =
+            "swipe dispatch ptr=$pointerId from=$startKeyId to=${targetKey.id} dist=${state.maxDistanceFromStart.toInt()}"
+        return true
+    }
+
+    private fun closeLongPressActionRowIfNeeded(pointerId: Int) {
+        val actionDescriptorId = longPressSwipeActionDescriptorByPointerId[pointerId] ?: return
+        val wasPinnedBefore = longPressSwipeActionPinnedBeforeByPointerId[pointerId] ?: false
+        if (wasPinnedBefore) {
+            return
+        }
+        val attachedRowsBefore = longPressSwipeActionRowsBeforeByPointerId[pointerId].orEmpty()
+        val rowsToClose = actionBarState.attachedRows.filter {
+            it.providerActionId == actionDescriptorId && it.rowId !in attachedRowsBefore
+        }
+        if (rowsToClose.isEmpty()) {
+            return
+        }
+        val nextRows = actionBarState.attachedRows.filterNot { it in rowsToClose }
+        val rowIdsToClose = rowsToClose.mapTo(linkedSetOf()) { it.rowId }
+        val nextRowPages = actionBarState.rowPageById.filter { (rowId, _) -> rowId !in rowIdsToClose }
+        setActionBarState(
+            actionBarState.copy(
+                pinnedActionIds = actionBarState.pinnedActionIds - actionDescriptorId,
+                attachedRows = nextRows,
+                rowPageById = nextRowPages,
+            ),
+        )
+        reconcileActionBarState()
+        refreshLayout()
     }
 
     private fun handleHorizontalRowScroll(
@@ -3135,7 +3743,12 @@ class WinFlowzKeyboardView(
             }
             KeyboardKeyAction.Text -> {
                 val keyValue = keyValueForSelection(commandKey, selection) ?: return
-                val committed = dispatchKeyValue(keyValue, selection, clearModifiersAfter = true)
+                val ctrlPromoted = keyValue == ctrlPrimaryCornerActionValue(commandKey)
+                val committed = dispatchKeyValue(
+                    keyValue,
+                    selection,
+                    clearModifiersAfter = !ctrlPromoted,
+                )
                 if (!committed) {
                     setStatus("Text input unavailable")
                     return
@@ -3910,6 +4523,10 @@ class WinFlowzKeyboardView(
         selection: GestureSelection,
     ): KeyboardKeyValue? {
         return if (selection == GestureSelection.PrimaryTap) {
+            val ctrlPromoted = ctrlPrimaryCornerActionValue(key)
+            if (ctrlPromoted != null) {
+                return ctrlPromoted
+            }
             val raw = key.glyph?.primary ?: key.label
             key.keyValue ?: KeyboardKeyValue.text(raw, key.label)
         } else {
@@ -3924,6 +4541,12 @@ class WinFlowzKeyboardView(
         if (key.action != KeyboardKeyAction.Text) {
             return key.label
         }
+        if (KeyboardSystemModifier.Ctrl in currentSystemModifiers()) {
+            val ctrlPrimary = ctrlPrimaryCornerActionLabel(key)
+            if (ctrlPrimary != null) {
+                return ctrlPrimary
+            }
+        }
         val primary = key.glyph?.primary ?: key.label
         if (primary == " ") {
             return key.label
@@ -3936,6 +4559,46 @@ class WinFlowzKeyboardView(
         } else {
             primary
         }
+    }
+
+    private fun ctrlPrimaryCornerActionValue(key: KeyboardKeySpec): KeyboardKeyValue? {
+        if (key.action != KeyboardKeyAction.Text || key.id == "space") {
+            return null
+        }
+        if (KeyboardSystemModifier.Ctrl !in currentSystemModifiers()) {
+            return null
+        }
+        val candidates = listOfNotNull(
+            key.cornerAssignments.up,
+            key.cornerAssignments.right,
+            key.cornerAssignments.down,
+            key.cornerAssignments.left,
+            key.cornerAssignments.topLeft,
+            key.cornerAssignments.topRight,
+            key.cornerAssignments.bottomLeft,
+            key.cornerAssignments.bottomRight,
+        )
+        return candidates.firstOrNull { it.value.kind in setOf(KeyboardKeyValueKind.Action, KeyboardKeyValueKind.Macro) }?.value
+    }
+
+    private fun ctrlPrimaryCornerActionLabel(key: KeyboardKeySpec): String? {
+        if (key.action != KeyboardKeyAction.Text || key.id == "space") {
+            return null
+        }
+        if (KeyboardSystemModifier.Ctrl !in currentSystemModifiers()) {
+            return null
+        }
+        val candidates = listOfNotNull(
+            key.cornerAssignments.up,
+            key.cornerAssignments.right,
+            key.cornerAssignments.down,
+            key.cornerAssignments.left,
+            key.cornerAssignments.topLeft,
+            key.cornerAssignments.topRight,
+            key.cornerAssignments.bottomLeft,
+            key.cornerAssignments.bottomRight,
+        )
+        return candidates.firstOrNull { it.value.kind in setOf(KeyboardKeyValueKind.Action, KeyboardKeyValueKind.Macro) }?.label
     }
 
     private fun displayLabelForRect(
@@ -3957,6 +4620,11 @@ class WinFlowzKeyboardView(
             maxTextWidth,
             TextUtils.TruncateAt.END,
         ).toString()
+    }
+
+    private fun isCtrlModifierKey(key: KeyboardKeySpec): Boolean {
+        return key.keyValue?.kind == KeyboardKeyValueKind.Modifier &&
+            key.keyValue.modifier == KeyboardSystemModifier.Ctrl
     }
 
     private fun keyTextSize(key: KeyboardKeySpec): Float {
