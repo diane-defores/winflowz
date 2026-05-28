@@ -212,12 +212,12 @@ class AppIconMetrics {
   static const sm = AppSpacing.x4;
   static const progressStroke = AppSpacing.x1 / 2;
   static const stepAvatarRadius = AppSpacing.x3;
-  static const minTarget = 40.0;
+  static const minTarget = 48.0;
   static const listActionSpacing = AppSpacing.x1;
 }
 
 class AppButtonMetrics {
-  static const minHeight = 34.0;
+  static const minHeight = 42.0;
 }
 
 class AppNavigationMetrics {

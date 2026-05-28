@@ -176,7 +176,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _message = 'Unable to load onboarding progress: $error');
+      setState(
+        () =>
+            _message = 'Impossible de charger la progression de l\'onboarding : $error',
+      );
     } finally {
       if (mounted) {
         setState(() => _onboardingLoading = false);
@@ -195,8 +198,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() {
       _onboardingSettings = next;
       _message = value
-          ? 'Delete confirmations enabled.'
-          : 'Delete confirmations disabled.';
+          ? 'Confirmations de suppression activées.'
+          : 'Confirmations de suppression désactivées.';
     });
   }
 
@@ -229,9 +232,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       await store.writeOpenAiKey(_openAiController.text);
       await store.writeAnthropicKey(_anthropicController.text);
-      setState(() => _message = 'Keys saved locally.');
+      setState(() => _message = 'Clés enregistrées localement.');
     } catch (error) {
-      setState(() => _message = 'Unable to save keys: $error');
+      setState(() => _message = 'Enregistrement des clés impossible : $error');
     } finally {
       if (mounted) {
         setState(() => _saving = false);
@@ -266,8 +269,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         return;
       }
       setState(
-        () =>
-            _message = 'Overlay status error (${error.code}): ${error.message}',
+        () => _message =
+            'Erreur d\'état de l\'overlay (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -294,7 +297,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Keyboard status error (${error.code}): ${error.message}',
+            'Erreur d\'état du clavier (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -313,7 +316,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _message = 'Unable to open keyboard settings: $error');
+      setState(
+        () => _message = 'Impossible d\'ouvrir les réglages clavier : $error',
+      );
     }
   }
 
@@ -326,7 +331,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _message = 'Unable to show keyboard picker: $error');
+      setState(
+        () => _message = 'Impossible d\'ouvrir le sélecteur clavier : $error',
+      );
     }
   }
 
@@ -415,7 +422,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to update keyboard settings (${error.code}): ${error.message}',
+            'Mise à jour des paramètres clavier impossible (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -442,7 +449,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to update keyboard theme (${error.code}): ${error.message}',
+            'Mise à jour du thème clavier impossible (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -474,7 +481,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to update keyboard relief (${error.code}): ${error.message}',
+            'Mise à jour du relief clavier impossible (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -493,7 +500,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _message = 'Unable to open overlay settings: $error');
+      setState(
+        () => _message = 'Impossible d\'ouvrir les réglages overlay : $error',
+      );
     }
   }
 
@@ -522,7 +531,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to toggle overlay (${error.code}): ${error.message}',
+            'Impossible d\'activer/désactiver l\'overlay (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -563,7 +572,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to update overlay appearance (${error.code}): ${error.message}',
+            'Mise à jour de l\'apparence overlay impossible (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -585,7 +594,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _message = status.running
             ? 'Overlay recording started.'
             : 'Overlay start requested, but the native service is not running yet '
-                  '(state=${status.serviceState}). Copy diagnostics if it stays blocked.';
+                  '(state=${status.serviceState}). Copiez le diagnostic si cela reste bloqué.';
       });
       AppDiagnostics.record(
         'overlay_start_result',
@@ -601,7 +610,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to start overlay (${error.code}): ${error.message}',
+            'Impossible de démarrer l\'overlay (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -620,7 +629,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(() {
         _overlayStatus = status;
-        _message = 'Overlay recording stopped.';
+        _message = 'Enregistrement overlay arrêté.';
       });
       AppDiagnostics.record(
         'overlay_stop_result',
@@ -636,7 +645,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to stop overlay (${error.code}): ${error.message}',
+            'Impossible d\'arrêter l\'overlay (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -655,7 +664,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(() {
         _overlayStatus = status;
-        _message = 'Overlay recording cancelled.';
+        _message = 'Enregistrement overlay annulé.';
       });
       AppDiagnostics.record(
         'overlay_cancel_result',
@@ -671,7 +680,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to cancel overlay (${error.code}): ${error.message}',
+            'Impossible d\'annuler l\'overlay (${error.code}) : ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -692,7 +701,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       setState(
         () => _message =
-            'Unable to open accessibility settings (${error.code}): ${error.message}',
+            'Impossible d\'ouvrir l\'accessibilité (${error.code}) : ${error.message}',
       );
     }
   }
@@ -715,7 +724,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return;
     }
     ref.read(localAuthModeProvider.notifier).disable();
-    setState(() => _message = 'Cloud account connected.');
+    setState(() => _message = 'Compte cloud connecté.');
   }
 
   Future<void> _copyBackendDiagnostic() async {
@@ -726,7 +735,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!mounted) {
       return;
     }
-    setState(() => _message = 'Backend diagnostic copied.');
+    setState(() => _message = 'Diagnostic backend copié.');
   }
 
   Future<void> _clearDiagnosticLogs() async {
@@ -749,7 +758,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (status != null) {
         _keyboardStatus = status;
       }
-      _message = 'Diagnostic logs cleared.';
+      _message = 'Journaux de diagnostic effacés.';
     });
   }
 
@@ -826,40 +835,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   String _appearanceSyncLabel(AsyncValue<AuthSessionSnapshot> authAsync) {
     if (!FirebaseBootstrap.isConfigured) {
-      return 'Theme preference is saved on this device only.';
+      return 'Le thème est enregistré uniquement sur cet appareil.';
     }
     return authAsync.maybeWhen(
       data: (session) {
         if (session.isSignedIn && !session.isLocalFallback) {
-          return 'Theme preference syncs with your signed-in account.';
+          return 'Le thème est synchronisé avec votre compte connecté.';
         }
         if (session.isLocalFallback) {
-          return 'Theme preference currently stays local (local fallback session).';
+          return 'Le thème reste local pour le moment (session locale de secours).';
         }
-        return 'Theme preference is local until you sign in.';
+        return 'Le thème reste local tant que vous n\'êtes pas connecté.';
       },
-      orElse: () => 'Theme sync status is loading.',
+      orElse: () => 'L\'état de synchronisation du thème est en cours de chargement.',
     );
   }
 
   String _appearanceSyncDetail(AsyncValue<AuthSessionSnapshot> authAsync) {
     if (!FirebaseBootstrap.isConfigured) {
-      return 'Remote settings are not configured. This setting applies immediately and persists locally.';
+      return 'Le réglage distant n\'est pas configuré. Cette option s\'applique tout de suite en local.';
     }
     return authAsync.when(
       data: (session) {
         if (session.isSignedIn && !session.isLocalFallback) {
-          return 'Signed in with remote settings available. New appearance changes are written locally first, then synced to your account settings.';
+          return 'Compte connecté et paramètres distants disponibles. Les changements sont d\'abord enregistrés en local puis synchronisés.';
         }
         if (session.isLocalFallback) {
-          return 'Firebase is configured but this session is local fallback. Appearance changes are kept locally until remote auth recovers.';
+          return 'Firebase est configuré, mais cette session est locale de secours. Les réglages restent locaux jusqu\'à ce que l\'authentification distante revienne.';
         }
-        return 'Firebase is configured but no signed-in account is active. Appearance changes are local until sign-in.';
+          return 'Firebase est configuré mais aucun compte connecté. Les réglages restent locaux jusqu\'à la connexion.';
       },
       loading: () =>
-          'Checking authentication session before confirming remote sync state.',
+          'Vérification de la session avant confirmation de la synchronisation distante.',
       error: (error, stackTrace) =>
-          'Authentication session is unavailable, so appearance sync is currently local only.',
+          'La session d\'authentification est indisponible, la synchronisation reste locale.',
     );
   }
 
@@ -868,9 +877,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   ) {
     return suiteIdentityAsync.when(
       data: (identity) => identity.status.name,
-      loading: () => 'Checking suite identity state.',
+      loading: () => 'Vérification de l\'état de l\'identité suite.',
       error: (error, _) =>
-          'Suite identity unavailable: ${_sanitizeDiagnostic(error)}',
+          'Identité de suite indisponible : ${_sanitizeDiagnostic(error)}',
     );
   }
 
@@ -1237,7 +1246,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         if (onboardingTile != null && !moveOnboardingTileToEnd) onboardingTile,
         _collapsibleSection(
           id: 'account_cloud',
-          title: 'Account & Cloud',
+          title: 'Compte & cloud',
           child: _AccountCloudSection(
             authAsync: authAsync,
             remoteAuthConfigured: remoteAuthConfigured,
@@ -1247,7 +1256,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         _collapsibleSection(
           id: 'appearance',
-          title: 'Appearance',
+          title: 'Apparence',
           child: _AppearanceSection(
             themeMode: themeMode,
             confirmDestructiveActions:
@@ -1262,47 +1271,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             },
           ),
         ),
-        _collapsibleSection(
-          id: 'keyboard_sync',
-          title: 'Keyboard Sync',
-          child: const KeyboardSyncPanel(),
-        ),
-        _collapsibleSection(
-          id: 'backend',
-          title: 'Backend Provider',
-          child: _BackendProviderSection(
-            summary: FirebaseBootstrap.isConfigured
-                ? 'Firebase is configured as the first backend adapter.'
-                : 'Remote sync is not configured. WinFlowz runs in local mode.',
-            detail:
-                '${_appearanceSyncDetail(authAsync)}\nSuite account status: ${_suiteIdentitySummary(suiteIdentityAsync)}',
-            diagnosticText: _backendDiagnosticText(suiteIdentityAsync),
-            onCopyDiagnostic: _copyBackendDiagnostic,
-            onClearDiagnosticLogs: _clearDiagnosticLogs,
-          ),
-        ),
-        _collapsibleSection(
-          id: 'keys',
-          title: 'Local AI Keys',
-          child: _SecretsSection(
-            storageStatusAsync: storageStatusAsync,
-            openAiController: _openAiController,
-            anthropicController: _anthropicController,
-            message: _message,
-            saving: _saving,
-            onSave: _saveSecrets,
-            onSignOut: _signOut,
-          ),
-        ),
-        _collapsibleSection(
-          id: 'platform',
-          title: 'Platform Capabilities',
-          child: const _PlatformCapabilitiesSection(),
-        ),
         if (PlatformCapabilities.keyboardImeSupported)
           _collapsibleSection(
             id: 'keyboard',
-            title: 'WinFlowz Keyboard',
+            title: 'Clavier WinFlowz',
             child: _KeyboardSettingsSection(
               status: keyboardStatus,
               busy: _keyboardBusy,
@@ -1317,8 +1289,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
         _collapsibleSection(
+          id: 'keyboard_sync',
+          title: 'Synchronisation clavier',
+          child: const KeyboardSyncPanel(),
+        ),
+        if (onboardingTile != null && !moveOnboardingTileToEnd)
+          onboardingTile,
+        _collapsibleSection(
           id: 'voice_packs',
-          title: 'On-device Speech',
+          title: 'Reconnaissance vocale locale',
           child: _OnDeviceSpeechSection(
             state: voiceCatalogState,
             keyboardStatus: keyboardStatus,
@@ -1339,10 +1318,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onRemove: _removeSpeechPack,
           ),
         ),
+        _collapsibleSection(
+          id: 'backend',
+          title: 'Fournisseur backend',
+          child: _BackendProviderSection(
+            summary: FirebaseBootstrap.isConfigured
+                ? 'Firebase est configuré comme adaptateur backend principal.'
+                : 'La synchronisation distante n’est pas configurée. WinFlowz fonctionne en mode local.',
+            detail:
+                '${_appearanceSyncDetail(authAsync)}\nStatut du compte Suite: ${_suiteIdentitySummary(suiteIdentityAsync)}',
+            diagnosticText: _backendDiagnosticText(suiteIdentityAsync),
+            onCopyDiagnostic: _copyBackendDiagnostic,
+            onClearDiagnosticLogs: _clearDiagnosticLogs,
+          ),
+        ),
+        _collapsibleSection(
+          id: 'keys',
+          title: 'Clés IA locales',
+          child: _SecretsSection(
+            storageStatusAsync: storageStatusAsync,
+            openAiController: _openAiController,
+            anthropicController: _anthropicController,
+            message: _message,
+            saving: _saving,
+            onSave: _saveSecrets,
+            onSignOut: _signOut,
+          ),
+        ),
+        _collapsibleSection(
+          id: 'platform',
+          title: 'Capacités de la plateforme',
+          child: const _PlatformCapabilitiesSection(),
+        ),
         if (PlatformCapabilities.overlaySupported)
           _collapsibleSection(
             id: 'overlay',
-            title: 'Android Overlay',
+            title: 'Overlay Android',
             child: _OverlaySettingsSection(
               status: overlayStatus,
               busy: _overlayBusy,

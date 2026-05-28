@@ -70,18 +70,18 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
           _items = rows;
           if (importResult.rejectedSensitive > 0) {
             _message =
-                '${importResult.rejectedSensitive} capture clavier sensible ignoree.';
+                '${importResult.rejectedSensitive} capture(s) sensible(s) ignorée(s).';
           } else if (importResult.failed > 0) {
-            _message = '${importResult.failed} capture clavier non importee.';
+            _message = '${importResult.failed} capture(s) clavier non importée(s).';
           } else if (importResult.imported > 0) {
-            _message = '${importResult.imported} capture clavier importee.';
+            _message = '${importResult.imported} capture(s) clavier importée(s).';
           }
         });
       }
     } catch (error) {
       AppDiagnostics.record('clipboard_load_error', error);
       if (mounted) {
-        setState(() => _message = 'Erreur chargement clipboard: $error');
+        setState(() => _message = 'Erreur de chargement du clipboard: $error');
       }
     } finally {
       if (mounted) {
@@ -132,7 +132,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
         return AlertDialog(
           title: const Text('Contenu sensible'),
           content: Text(
-            'Ce contenu ressemble a: ${classification.label}. Le sauvegarder dans le clipboard ?',
+            'Ce contenu ressemble à: ${classification.label}. Souhaites-tu le sauvegarder dans le clipboard ?',
           ),
           actions: [
             TextButton(
@@ -206,7 +206,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
       await _load();
     } catch (error) {
       if (mounted) {
-        setState(() => _message = 'Pin update impossible: $error');
+        setState(() => _message = 'Échec de la mise à jour du marqueur: $error');
       }
     } finally {
       if (mounted) {
@@ -218,7 +218,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
   Future<void> _copyToSystemClipboard(ClipboardItemRecord item) async {
     await Clipboard.setData(ClipboardData(text: item.content));
     if (mounted) {
-      setState(() => _message = 'Item clipboard copié.');
+      setState(() => _message = 'Élément clipboard copié.');
     }
   }
 
@@ -227,12 +227,12 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
     if (!mounted) {
       return;
     }
-    final confirmed = await showConfirmActionDialog(
+      final confirmed = await showConfirmActionDialog(
       context: context,
-      title: 'Delete clipboard item?',
+      title: 'Supprimer cet élément clipboard ?',
       message:
-          'This removes the item from WinFlowz clipboard history. This action cannot be undone from this screen.',
-      confirmLabel: 'Delete',
+          'Cette action supprime cet élément de l’historique WinFlowz. Il ne peut pas être annulé depuis cet écran.',
+      confirmLabel: 'Supprimer',
       destructive: true,
       confirmationEnabled: settings.confirmDestructiveActions,
     );
@@ -282,7 +282,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
         ),
         AppGaps.x2,
         AppSectionCard(
-          title: 'Nouvel item clipboard',
+        title: 'Nouvel élément clipboard',
           subtitle:
               'Ajoute un texte utile à retrouver depuis le clavier, ou importe les captures automatiques.',
           leading: Icon(
@@ -298,7 +298,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
                 maxLines: 6,
                 textInputAction: TextInputAction.newline,
                 decoration: const InputDecoration(
-                  labelText: 'Clipboard content',
+                  labelText: 'Contenu',
                   hintText: 'Colle un message, un lien ou une commande...',
                 ),
               ),
@@ -334,7 +334,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
                   child: _ClipboardInlineNotice(
                     icon: Icons.privacy_tip_outlined,
                     text:
-                        'Contenu sensible détecté: ${draftClassification.label}. Une confirmation sera demandée avant sauvegarde.',
+                        'Contenu sensible détecté : ${draftClassification.label}. Une confirmation sera demandée avant la sauvegarde.',
                     destructive: true,
                   ),
                 ),
@@ -342,7 +342,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
               _DraftStatsRow(content: draftContent, source: _source),
               AppGaps.x3,
               AppFormActions(
-                primaryLabel: 'Add clipboard item',
+                primaryLabel: 'Ajouter',
                 primaryIcon: Icons.add_link,
                 onPrimary: _busy || draftContent.isEmpty ? null : _add,
                 onSecondary: _busy ? null : _load,
@@ -361,15 +361,15 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
             child: _ClipboardMessage(message: _message!),
           ),
         AppGaps.x4,
-        const AppEntityListHeader(title: 'Clipboard items'),
+        const AppEntityListHeader(title: 'Éléments du clipboard'),
         AppGaps.x2,
         TextField(
           controller: _searchController,
           enabled: _items.isNotEmpty,
           decoration: const InputDecoration(
             prefixIcon: Icon(Icons.search),
-            labelText: 'Search history',
-            hintText: 'Texte, source, sync...',
+            labelText: 'Rechercher',
+            hintText: 'Texte, source, état…',
           ),
         ),
         AppGaps.x2,
@@ -707,13 +707,13 @@ class _ClipboardEditItemDialogState extends State<_ClipboardEditItemDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Modifier le clipboard'),
+      title: const Text('Modifier le contenu'),
       content: TextField(
         controller: _controller,
         autofocus: true,
         minLines: 4,
         maxLines: 8,
-        decoration: const InputDecoration(labelText: 'Clipboard content'),
+        decoration: const InputDecoration(labelText: 'Contenu'),
       ),
       actions: [
         TextButton(
@@ -734,34 +734,13 @@ class _EmptyClipboardState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Card(
-      child: Padding(
-        padding: AppInsets.card,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.content_paste_off_outlined, color: colorScheme.primary),
-            AppGaps.horizontalX3,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'No clipboard item yet.',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  AppGaps.x1,
-                  Text(
-                    'Ajoute un item manuel ou rafraîchis pour importer les captures clavier Android.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    return AppEmptyStateCard(
+      title: 'Aucun élément de clipboard',
+      message:
+          'Tu n’as encore rien enregistré. Ajoute un élément manuellement ou importe les captures clavier depuis Android.',
+      example: 'Exemple : colle un texte utile, puis ouvre le clavier pour une capture auto.',
+      actionLabel: null,
+      onAction: null,
     );
   }
 }
@@ -849,14 +828,14 @@ class _ClipboardItemTile extends StatelessWidget {
                       icon: const Icon(Icons.edit_outlined),
                     ),
                     IconButton(
-                      tooltip: item.pinned ? 'Unpin' : 'Pin',
+                      tooltip: item.pinned ? 'Retirer des épingles' : 'Épingler',
                       onPressed: onTogglePin,
                       icon: Icon(
                         item.pinned ? Icons.push_pin : Icons.push_pin_outlined,
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Delete',
+                      tooltip: 'Supprimer',
                       onPressed: onDelete,
                       icon: const Icon(Icons.delete_outline),
                     ),
@@ -915,23 +894,23 @@ IconData _sourceIcon(ClipboardCanonicalSource source) {
 
 String _sourceLabel(ClipboardCanonicalSource source) {
   return switch (source) {
-    ClipboardCanonicalSource.manual => 'Manual',
-    ClipboardCanonicalSource.voice => 'Voice',
-    ClipboardCanonicalSource.overlay => 'Overlay',
-    ClipboardCanonicalSource.system => 'System clipboard',
-    ClipboardCanonicalSource.keyboard => 'Keyboard',
-    ClipboardCanonicalSource.keyboardVoice => 'Keyboard voice',
-    ClipboardCanonicalSource.keyboardClipboard => 'Keyboard clipboard',
+    ClipboardCanonicalSource.manual => 'Manuel',
+    ClipboardCanonicalSource.voice => 'Voix',
+    ClipboardCanonicalSource.overlay => 'Superposition',
+    ClipboardCanonicalSource.system => 'Presse-papiers système',
+    ClipboardCanonicalSource.keyboard => 'Clavier',
+    ClipboardCanonicalSource.keyboardVoice => 'Dictée clavier',
+    ClipboardCanonicalSource.keyboardClipboard => 'Clipboard clavier',
   };
 }
 
 String _syncLabel(ClipboardSyncState state) {
   return switch (state) {
     ClipboardSyncState.local => 'Local',
-    ClipboardSyncState.pending => 'Sync pending',
-    ClipboardSyncState.synced => 'Synced',
-    ClipboardSyncState.error => 'Sync error',
-    ClipboardSyncState.deleted => 'Deleted',
+    ClipboardSyncState.pending => 'Synchronisation…',
+    ClipboardSyncState.synced => 'Synchronisé',
+    ClipboardSyncState.error => 'Erreur',
+    ClipboardSyncState.deleted => 'Supprimé',
   };
 }
 

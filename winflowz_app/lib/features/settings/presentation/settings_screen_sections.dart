@@ -46,20 +46,20 @@ class _AccountCloudSection extends StatelessWidget {
     final isRemoteSignedIn =
         session != null && session.isSignedIn && !session.isLocalFallback;
     final title = isRemoteSignedIn
-        ? 'Cloud account connected'
+        ? 'Compte cloud connecté'
         : session?.isLocalFallback == true
-        ? 'Local mode active'
-        : 'Cloud account not connected';
+        ? 'Mode local actif'
+        : 'Compte cloud non connecté';
     final subtitle = !remoteAuthConfigured
-        ? 'Remote auth is not configured in this build.'
+        ? 'L’authentification distante n’est pas configurée pour cette version.'
         : isRemoteSignedIn
-        ? 'Keyboard, appearance and eligible data can sync with your WinFlowz account.'
-        : 'Connect a WinFlowz account to sync keyboard settings and recover work across devices.';
+        ? 'Le clavier, l’apparence et les données éligibles peuvent être synchronisés avec votre compte WinFlowz.'
+        : 'Connectez un compte WinFlowz pour synchroniser les réglages clavier et retrouver votre travail sur tous vos appareils.';
     final account =
         session?.user?.email ?? session?.user?.provider.name ?? 'none';
 
     return AppSectionCard(
-      title: 'Account & cloud',
+      title: 'Compte & cloud',
       subtitle: subtitle,
       leading: const Icon(Icons.cloud_sync_outlined),
       stretch: false,
@@ -71,7 +71,7 @@ class _AccountCloudSection extends StatelessWidget {
                 ? Icons.cloud_done_outlined
                 : Icons.cloud_off_outlined,
             title: title,
-            subtitle: 'Current account: $account',
+            subtitle: 'Compte actuel : $account',
           ),
           AppGaps.x3,
           Wrap(
@@ -84,13 +84,13 @@ class _AccountCloudSection extends StatelessWidget {
                     ? onConnectCloudAccount
                     : null,
                 icon: const Icon(Icons.login_outlined),
-                label: const Text('Connect cloud account'),
+                label: const Text('Connecter le compte cloud'),
               ),
               if (session?.isSignedIn == true)
                 OutlinedButton.icon(
                   onPressed: onSignOut,
                   icon: const Icon(Icons.logout_outlined),
-                  label: const Text('Sign out'),
+                  label: const Text('Se déconnecter'),
                 ),
             ],
           ),
@@ -122,9 +122,9 @@ class _AppearanceSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Appearance',
+      title: 'Apparence',
       subtitle:
-          'Uses the WinFlowz palette and shared Flowz interface tokens. '
+          'Utilise la palette WinFlowz et les tokens d’interface partagés. '
           '$syncStateLabel',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,17 +134,17 @@ class _AppearanceSection extends StatelessWidget {
               ButtonSegment(
                 value: AppThemeMode.system,
                 icon: Icon(Icons.brightness_auto_outlined),
-                label: Text('System'),
+                label: Text('Système'),
               ),
               ButtonSegment(
                 value: AppThemeMode.light,
                 icon: Icon(Icons.light_mode_outlined),
-                label: Text('Light'),
+                label: Text('Clair'),
               ),
               ButtonSegment(
                 value: AppThemeMode.dark,
                 icon: Icon(Icons.dark_mode_outlined),
-                label: Text('Dark'),
+                label: Text('Sombre'),
               ),
             ],
             selected: {themeMode},
@@ -158,9 +158,9 @@ class _AppearanceSection extends StatelessWidget {
             secondary: const Icon(Icons.delete_outline),
             value: confirmDestructiveActions,
             onChanged: onConfirmDestructiveActionsChanged,
-            title: const Text('Confirm before deleting'),
+            title: const Text('Confirmer avant suppression'),
             subtitle: const Text(
-              'Ask before deleting history items, snippets and dictionary terms.',
+              'Demander confirmation avant de supprimer l’historique, les snippets et les termes du dictionnaire.',
             ),
           ),
           AppGaps.x2,
@@ -169,7 +169,7 @@ class _AppearanceSection extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onOpenKeyboardThemeStudio,
               icon: const Icon(Icons.palette_outlined),
-              label: const Text('Keyboard Theme Studio'),
+              label: const Text('Studio de thème clavier'),
             ),
           ),
         ],
@@ -196,7 +196,7 @@ class _BackendProviderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Backend provider',
+      title: 'Fournisseur backend',
       subtitle: summary,
       leading: const Icon(Icons.storage_outlined),
       stretch: false,
@@ -206,7 +206,7 @@ class _BackendProviderSection extends StatelessWidget {
           Text(detail, style: Theme.of(context).textTheme.bodySmall),
           AppGaps.x3,
           Text(
-            'Logs & diagnostic',
+            'Journaux et diagnostic',
             style: Theme.of(context).textTheme.titleSmall,
           ),
           AppGaps.x2,
@@ -217,15 +217,15 @@ class _BackendProviderSection extends StatelessWidget {
             runSpacing: 8,
             children: [
               OutlinedButton.icon(
-                onPressed: onCopyDiagnostic,
-                icon: const Icon(Icons.copy_outlined),
-                label: const Text('Copy diagnostic'),
-              ),
+              onPressed: onCopyDiagnostic,
+              icon: const Icon(Icons.copy_outlined),
+              label: const Text('Copier diagnostic'),
+            ),
               OutlinedButton.icon(
-                onPressed: onClearDiagnosticLogs,
-                icon: const Icon(Icons.delete_sweep_outlined),
-                label: const Text('Clear logs'),
-              ),
+              onPressed: onClearDiagnosticLogs,
+              icon: const Icon(Icons.delete_sweep_outlined),
+              label: const Text('Effacer journaux'),
+            ),
             ],
           ),
         ],
@@ -309,8 +309,9 @@ class _SecretsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Local AI keys',
-      subtitle: 'Stored on this device and kept out of synced preferences.',
+      title: 'Clés IA locales',
+      subtitle:
+          'Stockées sur cet appareil et exclues des préférences synchronisées.',
       leading: const Icon(Icons.key_outlined),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -320,34 +321,36 @@ class _SecretsSection extends StatelessWidget {
               if (status == SecretStorageStatus.available) {
                 return const ListTile(
                   leading: Icon(Icons.verified_user_outlined),
-                  title: Text('Local secure storage available'),
+                  title: Text('Stockage sécurisé local disponible'),
                 );
               }
-              return const ListTile(
-                leading: Icon(Icons.warning_amber_outlined),
-                title: Text('Secure storage degraded'),
-                subtitle: Text(
-                  'Web/Linux may not provide equivalent keystore/keychain guarantees. '
-                  'Treat cloud AI mode as degraded until explicitly accepted.',
-                ),
-              );
+                return const ListTile(
+                  leading: Icon(Icons.warning_amber_outlined),
+                  title: Text('Stockage sécurisé dégradé'),
+                  subtitle: Text(
+                    'Web/Linux peut ne pas offrir les mêmes garanties de keystore/keychain. '
+                    'Le mode IA cloud est considéré comme dégradé tant qu’aucune confirmation explicite n’a été faite.',
+                  ),
+                );
             },
             loading: () =>
-                const ListTile(title: Text('Checking storage capabilities...')),
+                const ListTile(
+                  title: Text('Vérification des capacités de stockage...'),
+                ),
             error: (error, stack) =>
-                ListTile(title: Text('Storage status error: $error')),
+                ListTile(title: Text('Erreur de statut du stockage : $error')),
           ),
           AppGaps.x3,
           TextField(
             controller: openAiController,
             obscureText: true,
-            decoration: const InputDecoration(labelText: 'OpenAI API key'),
+            decoration: const InputDecoration(labelText: 'Clé API OpenAI'),
           ),
           AppGaps.x3,
           TextField(
             controller: anthropicController,
             obscureText: true,
-            decoration: const InputDecoration(labelText: 'Anthropic API key'),
+            decoration: const InputDecoration(labelText: 'Clé API Anthropic'),
           ),
           if (message != null) ...[AppGaps.x3, Text(message!)],
           AppGaps.x4,
@@ -356,14 +359,14 @@ class _SecretsSection extends StatelessWidget {
               Expanded(
                 child: FilledButton(
                   onPressed: saving ? null : onSave,
-                  child: const Text('Save local keys'),
+                  child: const Text('Enregistrer les clés locales'),
                 ),
               ),
               AppGaps.horizontalX3,
               Expanded(
                 child: OutlinedButton(
                   onPressed: saving ? null : onSignOut,
-                  child: const Text('Sign out'),
+                  child: const Text('Se déconnecter'),
                 ),
               ),
             ],
@@ -383,7 +386,7 @@ class _PlatformCapabilitiesSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Platform capabilities',
+          'Capacités de la plateforme',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         AppGaps.x2,
@@ -396,19 +399,19 @@ class _PlatformCapabilitiesSection extends StatelessWidget {
               ? 'Le moteur local de la plateforme peut être utilisé.'
               : '${PlatformCapabilities.localSpeechUnavailableReason} WinFlowz bascule vers l’enregistrement avancé et Whisper.',
         ),
-        AppStatusCard(
-          icon: Icons.bubble_chart_outlined,
-          title: PlatformCapabilities.overlaySupported
-              ? 'Android overlay supported'
+          AppStatusCard(
+            icon: Icons.bubble_chart_outlined,
+            title: PlatformCapabilities.overlaySupported
+              ? 'Overlay Android pris en charge'
               : 'Overlay Android indisponible sur ${PlatformCapabilities.currentPlatformLabel}',
           subtitle: PlatformCapabilities.overlaySupported
               ? 'La bulle native Android peut être utilisée.'
               : PlatformCapabilities.overlayUnavailableReason,
         ),
-        AppStatusCard(
-          icon: Icons.keyboard_outlined,
-          title: PlatformCapabilities.keyboardImeSupported
-              ? 'Android keyboard IME supported'
+          AppStatusCard(
+            icon: Icons.keyboard_outlined,
+            title: PlatformCapabilities.keyboardImeSupported
+              ? 'IME clavier Android pris en charge'
               : 'Clavier Android indisponible sur ${PlatformCapabilities.currentPlatformLabel}',
           subtitle: PlatformCapabilities.keyboardImeSupported
               ? 'Le clavier WinFlowz fonctionne comme méthode de saisie native Android.'
@@ -473,13 +476,14 @@ class _KeyboardSettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'WinFlowz keyboard',
-      subtitle: 'Android input method status, layout, gestures, and privacy.',
+      title: 'Clavier WinFlowz',
+      subtitle:
+          'Statut de la méthode de saisie Android, disposition, gestes et confidentialité.',
       leading: const Icon(Icons.keyboard_outlined),
       child: Column(
         children: [
           ListTile(
-            title: const Text('Runtime status'),
+            title: const Text('État d’exécution'),
             subtitle: Text(
               'enabled=${status?.enabled ?? false} | '
               'active=${status?.active ?? false} | '
@@ -496,14 +500,14 @@ class _KeyboardSettingsSection extends StatelessWidget {
                     ),
                   )
                 : IconButton(
-                    tooltip: 'Refresh keyboard status',
+                    tooltip: 'Actualiser l’état du clavier',
                     onPressed: onRefresh,
                     icon: const Icon(Icons.refresh),
                   ),
           ),
           ListTile(
             leading: const Icon(Icons.health_and_safety_outlined),
-            title: const Text('Recovery diagnostics'),
+            title: const Text('Diagnostics de reprise'),
             subtitle: Text(
               'recoveries=${status?.keyboardRecoveryCount ?? 0} | '
               'last=${status?.lastKeyboardErrorAt ?? 'none'} | '
@@ -515,8 +519,8 @@ class _KeyboardSettingsSection extends StatelessWidget {
               tilePadding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.x4,
               ),
-              title: const Text('Last keyboard incident'),
-              subtitle: const Text('Redacted native diagnostic'),
+              title: const Text('Dernier incident clavier'),
+              subtitle: const Text('Diagnostic natif masqué'),
               children: [
                 Padding(
                   padding: AppInsets.keyboardPrivacy,
@@ -527,9 +531,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
           if (status?.enabled == false)
             const ListTile(
               leading: Icon(Icons.info_outline),
-              title: Text('Keyboard not enabled'),
+              title: Text('Clavier non activé'),
               subtitle: Text(
-                'Enable WinFlowz keyboard in Android input method settings, then switch to it from any text field.',
+                'Activez le clavier WinFlowz dans les paramètres de méthode de saisie Android, puis sélectionnez-le depuis n’importe quel champ texte.',
               ),
             ),
           Padding(
@@ -540,7 +544,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: busy ? null : onOpenInputSettings,
                     icon: const Icon(Icons.open_in_new),
-                    label: const Text('Input settings'),
+                    label: const Text('Paramètres de saisie'),
                   ),
                 ),
                 AppGaps.horizontalX2,
@@ -548,7 +552,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: busy ? null : onShowPicker,
                     icon: const Icon(Icons.keyboard),
-                    label: const Text('Switch keyboard'),
+                    label: const Text('Changer de clavier'),
                   ),
                 ),
               ],
@@ -561,7 +565,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: busy ? null : onOpenKeyboardThemeStudio,
                 icon: const Icon(Icons.palette_outlined),
-                label: const Text('Keyboard Theme Studio'),
+                label: const Text('Studio de thème clavier'),
               ),
             ),
           ),
@@ -576,9 +580,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
           SwitchListTile(
             value: status?.themeKeyReliefEnabled ?? false,
             onChanged: busy ? null : onReliefChanged,
-            title: const Text('Keyboard relief'),
+            title: const Text('Relief clavier'),
             subtitle: const Text(
-              'Adds a physical-key edge and a pressed-in feel to the native keyboard.',
+              'Ajoute un contour de touche et une sensation de touche enfoncée au clavier natif.',
             ),
           ),
           SwitchListTile(
@@ -586,9 +590,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(voiceEnabled: value),
-            title: const Text('Keyboard dictation'),
+            title: const Text('Dictée clavier'),
             subtitle: const Text(
-              'Uses Android speech recognition from the IME when microphone permission is available.',
+              'Utilise la reconnaissance vocale Android de l’IME quand la permission micro est accordée.',
             ),
           ),
           SwitchListTile(
@@ -596,9 +600,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(clipboardSyncDesired: value),
-            title: const Text('Keyboard clipboard sync intent'),
+            title: const Text('Synchronisation clavier presse-papiers'),
             subtitle: const Text(
-              'Opt-in flag for cloud sync of eligible keyboard clipboard items. Local history is handled separately.',
+              'Option de synchronisation cloud des éléments éligibles du presse-papiers clavier. L’historique local est géré séparément.',
             ),
           ),
           SwitchListTile(
@@ -608,9 +612,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 : (value) => onPreferenceChanged(
                     clipboardSensitiveFieldHistoryEnabled: value,
                   ),
-            title: const Text('Clipboard history in sensitive fields'),
+            title: const Text('Historique dans champs sensibles'),
             subtitle: const Text(
-              'Advanced opt-in: copy/cut/paste from password, OTP, or private fields can appear in clipboard history. Off by default.',
+              'Option avancée : le copier/coller des champs mot de passe, OTP ou privés peut apparaître dans l’historique du presse-papiers. Désactivé par défaut.',
             ),
           ),
           SwitchListTile(
@@ -618,9 +622,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(mediaControlsEnabled: value),
-            title: const Text('Keyboard media play/pause'),
+            title: const Text('Lecture/pause média clavier'),
             subtitle: const Text(
-              'Sends a generic Android media key without reading media metadata.',
+              'Envoie une touche média Android générique sans lire les métadonnées.',
             ),
           ),
           Padding(
@@ -629,7 +633,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Expanded(child: Text('Volume step')),
+                    const Expanded(child: Text('Pas de volume')),
                     Text('${status?.mediaVolumeStepPercent ?? 5}%'),
                   ],
                 ),
@@ -641,7 +645,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
                   max: (_mediaStepPercentOptions.length - 1).toDouble(),
                   divisions: _mediaStepPercentOptions.length - 1,
                   semanticFormatterCallback: (value) =>
-                      'Volume step ${_mediaStepPercentForSliderValue(value)} percent',
+                      'Pas de volume ${_mediaStepPercentForSliderValue(value)} pourcentage',
                   onChanged: busy
                       ? null
                       : (value) => onPreferenceChanged(
@@ -651,7 +655,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    const Expanded(child: Text('Brightness step')),
+                    const Expanded(child: Text('Pas de luminosité')),
                     Text('${status?.mediaBrightnessStepPercent ?? 10}%'),
                   ],
                 ),
@@ -663,7 +667,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
                   max: (_mediaStepPercentOptions.length - 1).toDouble(),
                   divisions: _mediaStepPercentOptions.length - 1,
                   semanticFormatterCallback: (value) =>
-                      'Brightness step ${_mediaStepPercentForSliderValue(value)} percent',
+                      'Pas de luminosité ${_mediaStepPercentForSliderValue(value)} pourcentage',
                   onChanged: busy
                       ? null
                       : (value) => onPreferenceChanged(
@@ -680,7 +684,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
               initialValue:
                   status?.layoutProfile ?? KeyboardLayoutProfile.qwerty,
               decoration: const InputDecoration(
-                labelText: 'Keyboard letter layout',
+                labelText: 'Disposition des lettres',
               ),
               items: const [
                 DropdownMenuItem(
@@ -704,16 +708,16 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(cornerModeEnabled: value),
-            title: const Text('Swipe gestures'),
+            title: const Text('Gestes de glissement'),
             subtitle: const Text(
-              'When enabled, key swipes can trigger directional and corner shortcuts.',
+              'Quand activé, les glissements sur les touches déclenchent des raccourcis directionnels et d’angle.',
             ),
           ),
           ListTile(
             leading: const Icon(Icons.open_in_full_outlined),
-            title: const Text('Gesture shortcuts'),
+            title: const Text('Raccourcis de gestes'),
             subtitle: Text(
-              'Preset=${status?.cornerPresetId ?? KeyboardCornerPresetCatalog.frenchAccents}. Configure per-key gesture actions.',
+              'Préréglage=${status?.cornerPresetId ?? KeyboardCornerPresetCatalog.frenchAccents}. Configurez les actions par touche.',
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: busy ? null : onOpenCornerShortcuts,
@@ -723,9 +727,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(frenchLanguageEnabled: value),
-            title: const Text('French suggestions'),
+            title: const Text('Suggestions françaises'),
             subtitle: const Text(
-              'Enables the built-in French suggestion dictionary.',
+              'Active le dictionnaire de suggestions français intégré.',
             ),
           ),
           SwitchListTile(
@@ -733,9 +737,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(englishLanguageEnabled: value),
-            title: const Text('English suggestions'),
+            title: const Text('Suggestions anglaises'),
             subtitle: const Text(
-              'Enables the built-in English suggestion dictionary.',
+              'Active le dictionnaire de suggestions anglais intégré.',
             ),
           ),
           SwitchListTile(
@@ -744,9 +748,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 ? null
                 : (value) =>
                       onPreferenceChanged(spellingSuggestionsEnabled: value),
-            title: const Text('Spelling suggestions'),
+            title: const Text('Suggestions orthographiques'),
             subtitle: const Text(
-              'Shows candidate words above the native keyboard. Text expansion rules still run separately.',
+              'Affiche des candidats de mots au-dessus du clavier natif. Les règles d’extension de texte restent séparées.',
             ),
           ),
           Padding(
@@ -755,7 +759,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Expanded(child: Text('Keyboard height')),
+                    const Expanded(child: Text('Hauteur du clavier')),
                     Text(
                       '${((status?.keyboardHeightScale ?? 1) * 100).round()}%',
                     ),
@@ -767,7 +771,7 @@ class _KeyboardSettingsSection extends StatelessWidget {
                   max: 1.2,
                   divisions: 12,
                   semanticFormatterCallback: (value) =>
-                      'Keyboard height ${(value * 100).round()} percent',
+                      'Hauteur du clavier ${(value * 100).round()} pourcentage',
                   onChanged: busy
                       ? null
                       : (value) =>
@@ -781,19 +785,19 @@ class _KeyboardSettingsSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Action row height'),
+                const Text('Hauteur de la rangée d’action'),
                 AppGaps.x1,
                 SegmentedButton<double>(
                   segments: const [
                     ButtonSegment(
                       value: 1,
                       icon: Icon(Icons.crop_16_9_outlined),
-                      label: Text('Full'),
+                      label: Text('Pleine'),
                     ),
                     ButtonSegment(
                       value: 2 / 3,
                       icon: Icon(Icons.crop_square_outlined),
-                      label: Text('Square'),
+                      label: Text('Carrée'),
                     ),
                     ButtonSegment(
                       value: 0.56,
@@ -816,9 +820,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(compactModeEnabled: value),
-            title: const Text('Compact keyboard mode'),
+            title: const Text('Mode clavier compact'),
             subtitle: const Text(
-              'Uses three dense typing rows when you need the lowest keyboard height.',
+              'Utilise trois lignes de saisie denses lorsque vous avez besoin de la hauteur clavier la plus faible.',
             ),
           ),
           SwitchListTile(
@@ -826,9 +830,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(autoCloseModesEnabled: value),
-            title: const Text('Auto-close modes'),
+            title: const Text('Fermeture automatique des modes'),
             subtitle: const Text(
-              'Returns to ABC after one key in numbers, symbols, accents, or emoji mode.',
+              'Revient à ABC après une touche en mode chiffres, symboles, accents ou émoji.',
             ),
           ),
           SwitchListTile(
@@ -836,16 +840,16 @@ class _KeyboardSettingsSection extends StatelessWidget {
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(keyVibrationEnabled: value),
-            title: const Text('Key vibration'),
-            subtitle: const Text('Toggles keyboard haptic feedback.'),
+            title: const Text('Vibration des touches'),
+            subtitle: const Text('Active/désactive le retour haptique du clavier.'),
           ),
           SwitchListTile(
             value: status?.keySoundEnabled ?? false,
             onChanged: busy
                 ? null
                 : (value) => onPreferenceChanged(keySoundEnabled: value),
-            title: const Text('Key sound'),
-            subtitle: const Text('Toggles keyboard click sounds.'),
+            title: const Text('Son des touches'),
+            subtitle: const Text('Active/désactive le clic sonore des touches.'),
           ),
           SwitchListTile(
             value: status?.specialKeyCornersEnabled ?? false,
@@ -853,9 +857,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 ? null
                 : (value) =>
                       onPreferenceChanged(specialKeyCornersEnabled: value),
-            title: const Text('Special-key gesture shortcuts'),
+            title: const Text('Raccourcis par glissement de touches spéciales'),
             subtitle: const Text(
-              'Allows swipe gesture shortcuts on non-letter keys when swipe gestures are enabled.',
+              'Autorise les raccourcis de glissement sur les touches non alphabétiques quand les gestes de glissement sont activés.',
             ),
           ),
           SwitchListTile(
@@ -864,9 +868,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 ? null
                 : (value) =>
                       onPreferenceChanged(doubleSpacePeriodEnabled: value),
-            title: const Text('Double-space to period'),
+            title: const Text('Double espace vers point'),
             subtitle: const Text(
-              'Transforms double space into period-space in standard text fields.',
+              'Transforme le double espace en point-espace dans les champs texte standards.',
             ),
           ),
           SwitchListTile(
@@ -875,9 +879,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 ? null
                 : (value) =>
                       onPreferenceChanged(punctuationAutoSpacingEnabled: value),
-            title: const Text('Punctuation auto-spacing'),
+            title: const Text('Espacement automatique de ponctuation'),
             subtitle: const Text(
-              'Adds basic spacing around punctuation for standard text fields.',
+              'Ajoute un espacement basique autour de la ponctuation pour les champs texte standards.',
             ),
           ),
           SwitchListTile(
@@ -886,9 +890,9 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 ? null
                 : (value) =>
                       onPreferenceChanged(debugTouchOverlayEnabled: value),
-            title: const Text('Keyboard touch debug overlay'),
+            title: const Text('Overlay de débogage tactile clavier'),
             subtitle: const Text(
-              'Shows key bounds and gesture classifier diagnostics on the native keyboard.',
+              'Affiche les limites des touches et les diagnostics de classification des gestes sur le clavier natif.',
             ),
           ),
           Padding(
@@ -896,20 +900,20 @@ class _KeyboardSettingsSection extends StatelessWidget {
             child: DropdownButtonFormField<KeyboardPrivacyMode>(
               initialValue: status?.privacyMode ?? KeyboardPrivacyMode.auto,
               decoration: const InputDecoration(
-                labelText: 'Keyboard privacy mode',
+                labelText: 'Mode confidentialité clavier',
               ),
               items: const [
                 DropdownMenuItem(
                   value: KeyboardPrivacyMode.auto,
-                  child: Text('Auto: detect sensitive fields'),
+                  child: Text('Auto : détecter les champs sensibles'),
                 ),
                 DropdownMenuItem(
                   value: KeyboardPrivacyMode.strict,
-                  child: Text('Strict: private mode everywhere'),
+                  child: Text('Strict : mode privé partout'),
                 ),
                 DropdownMenuItem(
                   value: KeyboardPrivacyMode.standard,
-                  child: Text('Standard: normal fields only'),
+                  child: Text('Standard : champs normaux uniquement'),
                 ),
               ],
               onChanged: busy
@@ -945,10 +949,10 @@ class _KeyboardThemeQuickPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Keyboard theme', style: Theme.of(context).textTheme.titleSmall),
+        Text('Thème clavier', style: Theme.of(context).textTheme.titleSmall),
         AppGaps.x2,
         Text(
-          'The keyboard theme follows the global app appearance setting above.',
+          'Le thème clavier suit le paramètre d’apparence global ci-dessus.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         AppGaps.x2,
@@ -1144,16 +1148,16 @@ class _OnDeviceSpeechSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final entries = state.catalog.entries;
     return AppSectionCard(
-      title: 'On-device speech',
+      title: 'Reconnaissance vocale locale',
       subtitle:
-          'Install only the local packs you need. Android or cloud fallback is always labeled explicitly.',
+          'Installez uniquement les packs locaux dont vous avez besoin. Le fallback Android ou cloud est toujours explicitement indiqué.',
       leading: const Icon(Icons.record_voice_over_outlined),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Runtime status'),
+            title: const Text('État d’exécution'),
             subtitle: Text(
               'runtime=${keyboardStatus?.voiceRuntimeMode ?? 'unavailable'} | '
               'language=${keyboardStatus?.voiceLanguageTag ?? 'und'} | '
@@ -1162,7 +1166,7 @@ class _OnDeviceSpeechSection extends StatelessWidget {
               'fallback=${keyboardStatus?.voiceFallbackReason ?? 'unsupported_language'}',
             ),
             trailing: IconButton(
-              tooltip: 'Refresh speech catalog',
+              tooltip: 'Actualiser le catalogue vocal',
               onPressed: onRefresh,
               icon: const Icon(Icons.refresh),
             ),
@@ -1171,9 +1175,9 @@ class _OnDeviceSpeechSection extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
             value: state.allowCloudFallback,
             onChanged: onAllowCloudFallbackChanged,
-            title: const Text('Allow cloud fallback'),
+            title: const Text('Autoriser fallback cloud'),
             subtitle: const Text(
-              'When off, WinFlowz must show unavailable instead of sending speech to cloud fallback.',
+              'Quand il est désactivé, WinFlowz affiche indisponible au lieu d’envoyer la dictée au fallback cloud.',
             ),
           ),
           if (state.hasError || state.isStale)
@@ -1181,10 +1185,11 @@ class _OnDeviceSpeechSection extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.warning_amber_outlined),
               title: Text(
-                state.isStale ? 'Catalog stale' : 'Catalog unavailable',
+                state.isStale ? 'Catalogue obsolète' : 'Catalogue indisponible',
               ),
               subtitle: Text(
-                state.lastErrorMessage ?? 'Retry loading the local catalog.',
+                state.lastErrorMessage ??
+                    'Réessayez de charger le catalogue local.',
               ),
             ),
           AppGaps.x2,
@@ -1249,10 +1254,10 @@ class _LanguagePackTile extends StatelessWidget {
         installed.installState != InstalledLanguagePackState.removed;
     final removeLabel =
         installed.installState == InstalledLanguagePackState.removed
-        ? 'Removed'
+        ? 'Supprimé'
         : installed.installState == InstalledLanguagePackState.notInstalled
-        ? 'Not installed'
-        : 'Remove';
+        ? 'Non installé'
+        : 'Supprimer';
     return DecoratedBox(
       decoration: BoxDecoration(
         border: Border.all(color: theme.colorScheme.outlineVariant),
@@ -1290,7 +1295,7 @@ class _LanguagePackTile extends StatelessWidget {
                 InstalledLanguagePackState.blockedInsufficientStorage) ...[
               AppGaps.x1,
               Text(
-                'Storage blocked: required=${installed.requiredMb}MB, available=${installed.availableMb}MB.',
+                'Stockage bloqué : requis=${installed.requiredMb}Mo, disponible=${installed.availableMb}Mo.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.error,
                 ),
@@ -1300,7 +1305,7 @@ class _LanguagePackTile extends StatelessWidget {
                 InstalledLanguagePackState.blockedIncompatibleDevice) ...[
               AppGaps.x1,
               Text(
-                'Device blocked: ${installed.lastErrorCode}. This pack cannot be queued on the current device profile.',
+                'Appareil bloqué : ${installed.lastErrorCode}. Ce pack ne peut pas être mis en file sur le profil d’appareil actuel.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.error,
                 ),
@@ -1310,7 +1315,7 @@ class _LanguagePackTile extends StatelessWidget {
                 InstalledLanguagePackState.updateAvailable) ...[
               AppGaps.x1,
               Text(
-                'Update available: reinstall this pack to refresh local model files.',
+                'Mise à jour disponible : réinstallez ce pack pour actualiser les fichiers locaux du modèle.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
@@ -1320,7 +1325,7 @@ class _LanguagePackTile extends StatelessWidget {
                 InstalledLanguagePackState.corrupted) ...[
               AppGaps.x1,
               Text(
-                'Corrupted pack detected: retry install to recover local runtime.',
+                'Pack corrompu détecté : réessayez l’installation pour restaurer le runtime local.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.error,
                 ),
@@ -1329,7 +1334,7 @@ class _LanguagePackTile extends StatelessWidget {
             if (!entry.isInstallable) ...[
               AppGaps.x1,
               Text(
-                'Status-only row: this language has no downloadable local pack in the current catalog.',
+                'Ligne état uniquement : cette langue n’a pas de pack local téléchargeable dans le catalogue actuel.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -1347,7 +1352,7 @@ class _LanguagePackTile extends StatelessWidget {
                         }
                       : null,
                   icon: const Icon(Icons.download_outlined),
-                  label: const Text('Install now'),
+                  label: const Text('Installer maintenant'),
                 ),
                 OutlinedButton.icon(
                   onPressed:
@@ -1368,7 +1373,7 @@ class _LanguagePackTile extends StatelessWidget {
                         }
                       : null,
                   icon: const Icon(Icons.refresh_outlined),
-                  label: const Text('Retry'),
+                  label: const Text('Réessayer'),
                 ),
                 OutlinedButton.icon(
                   onPressed:
@@ -1379,7 +1384,7 @@ class _LanguagePackTile extends StatelessWidget {
                         }
                       : null,
                   icon: const Icon(Icons.system_update_alt_outlined),
-                  label: const Text('Mark update'),
+                  label: const Text('Marquer mise à jour'),
                 ),
                 OutlinedButton.icon(
                   onPressed:
@@ -1392,7 +1397,7 @@ class _LanguagePackTile extends StatelessWidget {
                         }
                       : null,
                   icon: const Icon(Icons.warning_amber_outlined),
-                  label: const Text('Mark corrupted'),
+                  label: const Text('Marquer corrompu'),
                 ),
                 OutlinedButton.icon(
                   onPressed: canRemove ? onRemove : null,
@@ -1471,8 +1476,9 @@ class _OverlaySettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Android overlay',
-      subtitle: 'Floating bubble permissions, recording runtime, and delivery.',
+      title: 'Overlay Android',
+      subtitle:
+          'Permissions de bulle flottante, exécution d’enregistrement et mode de livraison.',
       leading: const Icon(Icons.bubble_chart_outlined),
       child: Column(
         children: [
@@ -1481,17 +1487,17 @@ class _OverlaySettingsSection extends StatelessWidget {
             onChanged: (status?.overlayPermissionGranted ?? false) && !busy
                 ? onToggle
                 : null,
-            title: const Text('Enable Android overlay bridge'),
+            title: const Text('Activer le pont overlay Android'),
             subtitle: Text(
               (status?.enabled ?? false)
-                  ? 'Overlay bridge enabled. The floating Android bubble should be visible.'
+                  ? 'Le pont overlay est actif. La bulle flottante Android devrait être visible.'
                   : (status?.overlayPermissionGranted ?? false)
-                  ? 'Overlay permission granted. Turn this on to show the floating bubble.'
-                  : 'Overlay permission required before enabling.',
+                  ? 'Permission overlay accordée. Activez-la pour afficher la bulle flottante.'
+                  : 'Permission overlay requise avant activation.',
             ),
           ),
           ListTile(
-            title: const Text('Overlay runtime status'),
+            title: const Text('État d’exécution de l’overlay'),
             subtitle: Text(
               'enabled=${status?.enabled ?? false} | '
               'requested=${status?.requestedEnabled ?? false} | '
@@ -1502,15 +1508,15 @@ class _OverlaySettingsSection extends StatelessWidget {
           ),
           if ((status?.lastNativeEvent ?? 'none') != 'none')
             ListTile(
-              title: const Text('Last native overlay event'),
+              title: const Text('Dernier évènement overlay natif'),
               subtitle: Text(status?.lastNativeEvent ?? 'none'),
             ),
           if (status?.accessibilityPermissionGranted == false)
             const ListTile(
               leading: Icon(Icons.info_outline),
-              title: Text('Accessibility disabled'),
+              title: Text('Accessibilité désactivée'),
               subtitle: Text(
-                'Overlay dictation will deliver clipboard only until accessibility service is enabled.',
+                'La dictée overlay ne transmettra que le presse-papiers tant que le service d’accessibilité n’est pas activé.',
               ),
             ),
           Padding(
@@ -1519,7 +1525,7 @@ class _OverlaySettingsSection extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Expanded(child: Text('Bubble size')),
+                    const Expanded(child: Text('Taille de bulle')),
                     Text('${((status?.sizeScale ?? 1) * 100).round()}%'),
                   ],
                 ),
@@ -1529,7 +1535,7 @@ class _OverlaySettingsSection extends StatelessWidget {
                   max: AppSliders.overlayBubbleSizeMax,
                   divisions: AppSliders.overlaySizeDivisions,
                   semanticFormatterCallback: (value) =>
-                      'Bubble size ${(value * 100).round()} percent',
+                      'Taille de bulle ${(value * 100).round()} pourcentage',
                   onChanged: busy
                       ? null
                       : (value) => onAppearanceChanged(
@@ -1541,7 +1547,7 @@ class _OverlaySettingsSection extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    const Expanded(child: Text('Bubble opacity')),
+                    const Expanded(child: Text('Opacité de bulle')),
                     Text(
                       '${((status?.opacity ?? AppSliders.overlayDefaultOpacity) * 100).round()}%',
                     ),
@@ -1553,7 +1559,7 @@ class _OverlaySettingsSection extends StatelessWidget {
                   max: AppSliders.overlayBubbleOpacityMax,
                   divisions: AppSliders.overlayOpacityDivisions,
                   semanticFormatterCallback: (value) =>
-                      'Bubble opacity ${(value * 100).round()} percent',
+                      'Opacité de bulle ${(value * 100).round()} pourcentage',
                   onChanged: busy
                       ? null
                       : (value) => onAppearanceChanged(
@@ -1574,7 +1580,7 @@ class _OverlaySettingsSection extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: onOpenOverlaySettings,
                     icon: const Icon(Icons.open_in_new),
-                    label: const Text('Overlay permission'),
+                    label: const Text('Permission overlay'),
                   ),
                 ),
                 AppGaps.horizontalX2,
@@ -1582,7 +1588,7 @@ class _OverlaySettingsSection extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: onOpenAccessibilitySettings,
                     icon: const Icon(Icons.accessibility_new),
-                    label: const Text('Accessibility settings'),
+                    label: const Text('Paramètres d’accessibilité'),
                   ),
                 ),
               ],
@@ -1595,21 +1601,21 @@ class _OverlaySettingsSection extends StatelessWidget {
                 Expanded(
                   child: FilledButton(
                     onPressed: busy ? null : onStart,
-                    child: const Text('Start'),
+                    child: const Text('Démarrer'),
                   ),
                 ),
                 AppGaps.horizontalX2,
                 Expanded(
                   child: OutlinedButton(
                     onPressed: busy ? null : onStop,
-                    child: const Text('Stop'),
+                    child: const Text('Arrêter'),
                   ),
                 ),
                 AppGaps.horizontalX2,
                 Expanded(
                   child: TextButton(
                     onPressed: busy ? null : onCancel,
-                    child: const Text('Cancel'),
+                    child: const Text('Annuler'),
                   ),
                 ),
               ],

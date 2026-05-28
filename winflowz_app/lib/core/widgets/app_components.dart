@@ -89,7 +89,7 @@ class AppFormActions extends StatelessWidget {
     required this.primaryLabel,
     required this.onPrimary,
     this.primaryIcon = Icons.add,
-    this.secondaryLabel = 'Refresh',
+    this.secondaryLabel = 'Rafraîchir',
     this.onSecondary,
   });
 
@@ -101,10 +101,18 @@ class AppFormActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryStyle = FilledButton.styleFrom(
+      minimumSize: const Size.fromHeight(AppButtonMetrics.minHeight),
+    );
+    final secondaryStyle = OutlinedButton.styleFrom(
+      minimumSize: const Size.fromHeight(AppButtonMetrics.minHeight),
+    );
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: FilledButton.icon(
+            style: primaryStyle,
             onPressed: onPrimary,
             icon: Icon(primaryIcon),
             label: Text(primaryLabel),
@@ -112,7 +120,11 @@ class AppFormActions extends StatelessWidget {
         ),
         if (onSecondary != null) ...[
           AppGaps.horizontalX2,
-          OutlinedButton(onPressed: onSecondary, child: Text(secondaryLabel)),
+          OutlinedButton(
+            style: secondaryStyle,
+            onPressed: onSecondary,
+            child: Text(secondaryLabel),
+          ),
         ],
       ],
     );
@@ -131,13 +143,58 @@ class AppEntityListHeader extends StatelessWidget {
 }
 
 class AppEmptyStateCard extends StatelessWidget {
-  const AppEmptyStateCard({super.key, required this.message});
+  const AppEmptyStateCard({
+    super.key,
+    required this.message,
+    this.title,
+    this.example,
+    this.actionLabel,
+    this.onAction,
+  });
 
   final String message;
+  final String? title;
+  final String? example;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
-    return Card(child: ListTile(title: Text(message)));
+    return Card(
+      child: Padding(
+        padding: AppInsets.card,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (title != null) ...[
+              Text(title!, style: Theme.of(context).textTheme.titleSmall),
+              AppGaps.x2,
+            ],
+            Text(
+              message,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            if (example != null) ...[
+              AppGaps.x1,
+              Text(
+                example!,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+            if (onAction != null && actionLabel != null) ...[
+              AppGaps.x2,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: FilledButton(
+                  onPressed: onAction,
+                  child: Text(actionLabel!),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }
 

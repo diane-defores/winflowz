@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Tokens centralisés inspirés du thème du site
-/// `tubeflow_site/src/styles/global.css` et des fichiers liés copiés en
-/// `assets/theme_reference/tubeflow_site`.
+/// Tokens partagés entre la base web TubeFlow et l'UI WinFlowz.
+/// `tubeflow_site/src/styles/global.css` et
+/// `assets/theme_reference/tubeflow_site` servent de ligne de départ historique.
+/// La couche d'exposition Dart conserve la responsabilité d'implémentation
+/// WinFlowz dans `core/theme/app_theme.dart`.
 class TubeflowSiteThemeTokens {
   // Typography
   static const fontSans = 'Manrope';
@@ -60,7 +62,8 @@ class TubeflowSiteThemeTokens {
   static const Color appLightText = Color(0xFF171717);
   static const Color appLightInput = Color(0xFFFFFFFF);
 
-  // App action palette: TubeFlow keeps primary actions monochrome.
+  // App action palette: source historique monochrome, surface d'exposition
+  // alignée avec la direction WinFlowz.
   static const Color appActionLight = Color(0xFF262626);
   static const Color appActionOnLight = Color(0xFFFCFCFC);
   static const Color appActionDark = Color(0xFFFCFCFC);

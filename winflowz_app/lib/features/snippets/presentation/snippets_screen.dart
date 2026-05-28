@@ -103,26 +103,26 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit snippet'),
+          title: const Text('Modifier le snippet'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: trigger,
-                  decoration: const InputDecoration(labelText: 'Trigger'),
+                  decoration: const InputDecoration(labelText: 'Déclencheur'),
                 ),
                 AppGaps.x2,
                 TextField(
                   controller: content,
                   minLines: 2,
                   maxLines: 5,
-                  decoration: const InputDecoration(labelText: 'Content'),
+                  decoration: const InputDecoration(labelText: 'Contenu'),
                 ),
                 AppGaps.x2,
                 TextField(
                   controller: label,
-                  decoration: const InputDecoration(labelText: 'Label'),
+                  decoration: const InputDecoration(labelText: 'Libellé (optionnel)'),
                 ),
               ],
             ),
@@ -130,11 +130,11 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: const Text('Annuler'),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Save'),
+              child: const Text('Enregistrer'),
             ),
           ],
         );
@@ -179,10 +179,10 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
     }
     final confirmed = await showConfirmActionDialog(
       context: context,
-      title: 'Delete snippet?',
+      title: 'Supprimer le snippet ?',
       message:
-          'This removes the snippet from your reusable text list. This action cannot be undone from this screen.',
-      confirmLabel: 'Delete',
+          'Cette action retire le snippet de ta liste de raccourcis texte. Elle ne peut pas être annulée depuis cet écran.',
+      confirmLabel: 'Supprimer',
       destructive: true,
       confirmationEnabled: settings.confirmDestructiveActions,
     );
@@ -232,31 +232,31 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
         const LocalModeNotice(surface: 'Snippets'),
         const LocalModeNoticeGap(),
         AppSectionCard(
-          title: 'Nouveau snippet',
+          title: 'Nouveau snippet (raccourci texte)',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
                 controller: _triggerController,
-                decoration: const InputDecoration(labelText: 'Trigger'),
+                decoration: const InputDecoration(labelText: 'Déclencheur'),
               ),
               AppGaps.x2,
               TextField(
                 controller: _contentController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(labelText: 'Content'),
+                decoration: const InputDecoration(labelText: 'Contenu'),
               ),
               AppGaps.x2,
               TextField(
                 controller: _labelController,
                 decoration: const InputDecoration(
-                  labelText: 'Label (optional)',
+                  labelText: 'Libellé (optionnel)',
                 ),
               ),
               AppGaps.x3,
               AppFormActions(
-                primaryLabel: 'Add snippet',
+                primaryLabel: 'Ajouter le snippet',
                 onPrimary: _busy ? null : _add,
                 onSecondary: _busy ? null : _load,
               ),
@@ -273,7 +273,13 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
         AppGaps.x4,
         const AppEntityListHeader(title: 'Snippets'),
         AppGaps.x2,
-        if (_items.isEmpty) const AppEmptyStateCard(message: 'No snippet yet.'),
+        if (_items.isEmpty)
+          const AppEmptyStateCard(
+            title: 'Aucun snippet',
+            message:
+                'Aucun raccourci texte pour le moment.',
+            example: 'Exemple : `brb` → `Je reviens tout de suite`',
+          ),
         for (final item in _items)
           AppEntityListTile(
             title: Text(item.trigger),
@@ -282,12 +288,12 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
             ),
             actions: [
               IconButton(
-                tooltip: 'Edit',
+                tooltip: 'Modifier',
                 onPressed: _busy ? null : () => _edit(item),
                 icon: const Icon(Icons.edit_outlined),
               ),
               IconButton(
-                tooltip: 'Delete',
+                tooltip: 'Supprimer',
                 onPressed: _busy ? null : () => _remove(item.id),
                 icon: const Icon(Icons.delete_outline),
               ),

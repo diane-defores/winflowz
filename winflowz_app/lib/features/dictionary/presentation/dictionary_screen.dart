@@ -58,7 +58,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
     } catch (error) {
       AppDiagnostics.record('dictionary_load_error', error);
       if (mounted) {
-        setState(() => _message = 'Erreur chargement dictionary: $error');
+      setState(() => _message = 'Erreur lors du chargement du dictionnaire: $error');
       }
     } finally {
       if (mounted) {
@@ -104,20 +104,20 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
         return StatefulBuilder(
           builder: (context, setLocalState) {
             return AlertDialog(
-              title: const Text('Edit dictionary term'),
+              title: const Text('Modifier un terme'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
                       controller: term,
-                      decoration: const InputDecoration(labelText: 'Term'),
+                      decoration: const InputDecoration(labelText: 'Terme'),
                     ),
                     AppGaps.x2,
                     TextField(
                       controller: replacement,
                       decoration: const InputDecoration(
-                        labelText: 'Replacement',
+                        labelText: 'Remplacement',
                       ),
                     ),
                     AppGaps.x2,
@@ -127,7 +127,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                       value: caseSensitive,
                       onChanged: (value) =>
                           setLocalState(() => caseSensitive = value),
-                      title: const Text('Case sensitive'),
+                      title: const Text('Respecter la casse'),
                     ),
                   ],
                 ),
@@ -135,11 +135,11 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
+                  child: const Text('Annuler'),
                 ),
                 FilledButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Save'),
+                  child: const Text('Enregistrer'),
                 ),
               ],
             );
@@ -186,10 +186,10 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
     }
     final confirmed = await showConfirmActionDialog(
       context: context,
-      title: 'Delete dictionary term?',
+      title: 'Supprimer le terme ?',
       message:
-          'This removes the personal dictionary rule. This action cannot be undone from this screen.',
-      confirmLabel: 'Delete',
+          'Cette action retire la règle du dictionnaire personnel. Elle ne peut pas être annulée depuis cet écran.',
+      confirmLabel: 'Supprimer',
       destructive: true,
       confirmationEnabled: settings.confirmDestructiveActions,
     );
@@ -247,12 +247,12 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
             children: [
               TextField(
                 controller: _termController,
-                decoration: const InputDecoration(labelText: 'Term'),
+                decoration: const InputDecoration(labelText: 'Terme'),
               ),
               AppGaps.x2,
               TextField(
                 controller: _replacementController,
-                decoration: const InputDecoration(labelText: 'Replacement'),
+                decoration: const InputDecoration(labelText: 'Remplacement'),
               ),
               SwitchListTile(
                 contentPadding: AppInsets.none,
@@ -260,10 +260,10 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 onChanged: _busy
                     ? null
                     : (value) => setState(() => _caseSensitive = value),
-                title: const Text('Case sensitive'),
+                title: const Text('Respecter la casse'),
               ),
               AppFormActions(
-                primaryLabel: 'Add term',
+                primaryLabel: 'Ajouter un terme',
                 onPrimary: _busy ? null : _add,
                 onSecondary: _busy ? null : _load,
               ),
@@ -278,25 +278,29 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
         if (_message != null)
           Padding(padding: AppInsets.message, child: Text(_message!)),
         AppGaps.x4,
-        const AppEntityListHeader(title: 'Dictionary terms'),
+        const AppEntityListHeader(title: 'Termes du dictionnaire'),
         AppGaps.x2,
         if (_items.isEmpty)
-          const AppEmptyStateCard(message: 'No dictionary term yet.'),
+          const AppEmptyStateCard(
+            title: 'Aucun terme',
+            message:
+                'Ajoute un terme personnalisé pour corriger tes expressions récurrentes.',
+          ),
         for (final item in _items)
           AppEntityListTile(
             title: Text(item.term),
             subtitle: Text(
-              '${item.replacement}\ncaseSensitive: ${item.caseSensitive}',
+              '${item.replacement}\nRespecter la casse: ${item.caseSensitive ? 'Oui' : 'Non'}',
             ),
             isThreeLine: true,
             actions: [
               IconButton(
-                tooltip: 'Edit',
+                tooltip: 'Modifier',
                 onPressed: _busy ? null : () => _edit(item),
                 icon: const Icon(Icons.edit_outlined),
               ),
               IconButton(
-                tooltip: 'Delete',
+                tooltip: 'Supprimer',
                 onPressed: _busy ? null : () => _remove(item.id),
                 icon: const Icon(Icons.delete_outline),
               ),

@@ -1057,9 +1057,9 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.settings_outlined).last);
       await _pumpNavigationFrame(tester);
-      expect(find.text('Keyboard Theme Studio'), findsOneWidget);
+      expect(find.text('Studio de thème clavier'), findsOneWidget);
 
-      final backendSection = find.text('Backend Provider').first;
+      final backendSection = find.text('Fournisseur backend').first;
       await tester.scrollUntilVisible(
         backendSection,
         500,
@@ -1072,7 +1072,7 @@ void main() {
         find.byKey(const Key('backend-diagnostic-log-text')),
         findsOneWidget,
       );
-      expect(find.text('Keyboard Theme Studio'), findsNothing);
+      expect(find.text('Journaux et diagnostic'), findsOneWidget);
       expect(tester.takeException(), isNull);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
