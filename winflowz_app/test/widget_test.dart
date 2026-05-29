@@ -575,7 +575,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await _pumpNavigationFrame(tester);
     expect(find.text('WinFlowz • Snippets'), findsOneWidget);
-    expect(find.text('Trigger'), findsOneWidget);
+    expect(find.text('Déclencheur'), findsOneWidget);
     expect(find.text('Snippets'), findsWidgets);
 
     final handled = await tester.binding.handlePopRoute();
@@ -756,7 +756,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(cloudAuthStore.emailPasswordCalls, 1);
-      expect(find.text('Compte & cloud'), findsOneWidget);
+      expect(find.text('Compte & cloud'), findsWidgets);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
@@ -955,25 +955,25 @@ void main() {
     await tester.tap(find.byIcon(Icons.content_paste_outlined).last);
     await _pumpNavigationFrame(tester);
     expect(find.text('WinFlowz • Clipboard'), findsOneWidget);
-    expect(find.text('Clipboard content'), findsOneWidget);
-    expect(find.text('Add clipboard item'), findsOneWidget);
+    expect(find.text('Contenu'), findsOneWidget);
+    expect(find.text('Ajouter'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.text_snippet_outlined).last);
     await _pumpNavigationFrame(tester);
     expect(find.text('WinFlowz • Snippets'), findsOneWidget);
-    expect(find.text('Trigger'), findsOneWidget);
-    expect(find.text('Add snippet'), findsOneWidget);
+    expect(find.text('Déclencheur'), findsOneWidget);
+    expect(find.text('Ajouter le snippet'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.auto_fix_high_outlined).last);
     await _pumpNavigationFrame(tester);
     expect(find.text('WinFlowz • Dictionary'), findsOneWidget);
-    expect(find.text('Term'), findsOneWidget);
-    expect(find.text('Add term'), findsOneWidget);
+    expect(find.text('Terme'), findsOneWidget);
+    expect(find.text('Ajouter un terme'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.settings_outlined).last);
     await _pumpNavigationFrame(tester);
     expect(find.text('WinFlowz • Settings'), findsOneWidget);
-    expect(find.text('Appearance'), findsWidgets);
+    expect(find.text('Apparence'), findsWidgets);
 
     debugDefaultTargetPlatformOverride = previousPlatform;
     _clearAndroidBridgeMocks();
@@ -995,14 +995,12 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.enterText(
-        find.widgetWithText(TextField, 'Clipboard content').first,
+        find.widgetWithText(TextField, 'Contenu').first,
         'clipboard item to edit',
       );
       await tester.pump();
-      await tester.ensureVisible(
-        find.widgetWithText(FilledButton, 'Add clipboard item'),
-      );
-      await tester.tap(find.widgetWithText(FilledButton, 'Add clipboard item'));
+      await tester.ensureVisible(find.widgetWithText(FilledButton, 'Ajouter'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Ajouter'));
       await tester.pumpAndSettle();
 
       expect(store.snapshot(), hasLength(1));
@@ -1011,22 +1009,22 @@ void main() {
       await tester.ensureVisible(find.byIcon(Icons.edit_outlined));
       await tester.tap(find.byIcon(Icons.edit_outlined));
       await tester.pumpAndSettle();
-      expect(find.text('Modifier le clipboard'), findsOneWidget);
+      expect(find.text('Modifier le contenu'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(TextButton, 'Annuler'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(find.text('Modifier le clipboard'), findsNothing);
+      expect(find.text('Modifier le contenu'), findsNothing);
 
       await tester.ensureVisible(find.byIcon(Icons.edit_outlined));
       await tester.tap(find.byIcon(Icons.edit_outlined));
       await tester.pumpAndSettle();
-      expect(find.text('Modifier le clipboard'), findsOneWidget);
+      expect(find.text('Modifier le contenu'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(FilledButton, 'Sauvegarder'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(find.text('Modifier le clipboard'), findsNothing);
+      expect(find.text('Modifier le contenu'), findsNothing);
       expect(store.snapshot(), hasLength(1));
       expect(store.snapshot().single.content, 'clipboard item to edit');
     } finally {

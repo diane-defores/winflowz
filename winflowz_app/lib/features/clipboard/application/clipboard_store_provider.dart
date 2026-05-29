@@ -53,4 +53,16 @@ final keyboardClipboardEventImporterProvider =
       return KeyboardClipboardEventImporter(api);
     });
 
-final clipboardHistoryRefreshSignalProvider = StateProvider<int>((ref) => 0);
+class ClipboardHistoryRefreshSignal extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void markChanged() {
+    state = state + 1;
+  }
+}
+
+final clipboardHistoryRefreshSignalProvider =
+    NotifierProvider<ClipboardHistoryRefreshSignal, int>(
+      ClipboardHistoryRefreshSignal.new,
+    );

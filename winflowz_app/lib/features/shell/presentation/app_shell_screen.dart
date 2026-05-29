@@ -191,7 +191,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         final notifier = ref.read(
           transcriptionHistoryRefreshSignalProvider.notifier,
         );
-        notifier.state += 1;
+        notifier.markChanged();
       }
     }
   }
@@ -201,9 +201,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       if (!mounted) {
         return;
       }
-      unawaited(
-        _syncKeyboardClipboardEvents(notifyClipboard: notifyClipboard),
-      );
+      unawaited(_syncKeyboardClipboardEvents(notifyClipboard: notifyClipboard));
     });
   }
 
@@ -245,7 +243,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         final notifier = ref.read(
           clipboardHistoryRefreshSignalProvider.notifier,
         );
-        notifier.state += 1;
+        notifier.markChanged();
       }
     }
   }

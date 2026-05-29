@@ -75,9 +75,11 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
             _message =
                 '${importResult.rejectedSensitive} capture(s) sensible(s) ignorée(s).';
           } else if (importResult.failed > 0) {
-            _message = '${importResult.failed} capture(s) clavier non importée(s).';
+            _message =
+                '${importResult.failed} capture(s) clavier non importée(s).';
           } else if (importResult.imported > 0) {
-            _message = '${importResult.imported} capture(s) clavier importée(s).';
+            _message =
+                '${importResult.imported} capture(s) clavier importée(s).';
           }
         });
       }
@@ -209,7 +211,9 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
       await _load();
     } catch (error) {
       if (mounted) {
-        setState(() => _message = 'Échec de la mise à jour du marqueur: $error');
+        setState(
+          () => _message = 'Échec de la mise à jour du marqueur: $error',
+        );
       }
     } finally {
       if (mounted) {
@@ -230,7 +234,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
     if (!mounted) {
       return;
     }
-      final confirmed = await showConfirmActionDialog(
+    final confirmed = await showConfirmActionDialog(
       context: context,
       title: 'Supprimer cet élément clipboard ?',
       message:
@@ -290,7 +294,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
         ),
         AppGaps.x2,
         AppSectionCard(
-        title: 'Nouvel élément clipboard',
+          title: 'Nouvel élément clipboard',
           subtitle:
               'Ajoute un texte utile à retrouver depuis le clavier, ou importe les captures automatiques.',
           leading: Icon(
@@ -746,7 +750,8 @@ class _EmptyClipboardState extends StatelessWidget {
       title: 'Aucun élément de clipboard',
       message:
           'Tu n’as encore rien enregistré. Ajoute un élément manuellement ou importe les captures clavier depuis Android.',
-      example: 'Exemple : colle un texte utile, puis ouvre le clavier pour une capture auto.',
+      example:
+          'Exemple : colle un texte utile, puis ouvre le clavier pour une capture auto.',
       actionLabel: null,
       onAction: null,
     );
@@ -836,7 +841,9 @@ class _ClipboardItemTile extends StatelessWidget {
                       icon: const Icon(Icons.edit_outlined),
                     ),
                     IconButton(
-                      tooltip: item.pinned ? 'Retirer des épingles' : 'Épingler',
+                      tooltip: item.pinned
+                          ? 'Retirer des épingles'
+                          : 'Épingler',
                       onPressed: onTogglePin,
                       icon: Icon(
                         item.pinned ? Icons.push_pin : Icons.push_pin_outlined,

@@ -102,10 +102,10 @@ class AppFormActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryStyle = FilledButton.styleFrom(
-      minimumSize: const Size.fromHeight(AppButtonMetrics.minHeight),
+      minimumSize: const Size(0, AppButtonMetrics.minHeight),
     );
     final secondaryStyle = OutlinedButton.styleFrom(
-      minimumSize: const Size.fromHeight(AppButtonMetrics.minHeight),
+      minimumSize: const Size(0, AppButtonMetrics.minHeight),
     );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,16 +170,10 @@ class AppEmptyStateCard extends StatelessWidget {
               Text(title!, style: Theme.of(context).textTheme.titleSmall),
               AppGaps.x2,
             ],
-            Text(
-              message,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            Text(message, style: Theme.of(context).textTheme.bodyMedium),
             if (example != null) ...[
               AppGaps.x1,
-              Text(
-                example!,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(example!, style: Theme.of(context).textTheme.bodySmall),
             ],
             if (onAction != null && actionLabel != null) ...[
               AppGaps.x2,

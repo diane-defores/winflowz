@@ -41,4 +41,16 @@ final transcriptionStoreProvider = Provider<TranscriptionStore>((ref) {
   return ref.watch(localTranscriptionStoreProvider);
 });
 
-final transcriptionHistoryRefreshSignalProvider = StateProvider<int>((ref) => 0);
+class TranscriptionHistoryRefreshSignal extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void markChanged() {
+    state = state + 1;
+  }
+}
+
+final transcriptionHistoryRefreshSignalProvider =
+    NotifierProvider<TranscriptionHistoryRefreshSignal, int>(
+      TranscriptionHistoryRefreshSignal.new,
+    );
