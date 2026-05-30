@@ -1,10 +1,10 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.1.2"
 project: "WinFlowz"
 created: "2026-05-04"
-updated: "2026-05-25"
+updated: "2026-05-30"
 status: draft
 source_skill: sf-docs
 scope: "flutter-app"
@@ -22,6 +22,7 @@ linked_systems:
   - "Firebase first adapter"
   - "Android MethodChannel"
   - "Windows desktop overlay host"
+  - "Send to actions"
 depends_on:
   - "CLAUDE.md@1.2.0"
   - "shipflow_data/technical/guidelines.md@0.1.0"
@@ -29,6 +30,8 @@ supersedes: []
 evidence:
   - "Mapped before Android IME Settings bridge work."
   - "Updated for account-backed keyboard sync panel, backup service, and sync change notifier wiring."
+  - "Updated for shared Voice/Clipboard Send to actions."
+  - "Updated for Windows desktop overlay bridge and runner host slice."
 next_review: "2026-06-04"
 next_step: "/sf-docs technical audit"
 ---
@@ -62,6 +65,7 @@ security, store policy, or runtime limitation makes that unsafe or impossible.
 | `lib/features/clipboard/application/**` | Clipboard product API and provider composition | Keep UI and future Android bridges pointed at `ClipboardHistoryApi`, not provider repositories. |
 | `lib/features/clipboard/domain/**` | Backend-neutral clipboard sources, sync state, sensitivity and dedupe contracts | Keep provider names, SQL columns and native Android details out of the domain. |
 | `lib/features/clipboard/data/**` | Local/offline clipboard stores | Local fallback history is persisted through secure storage; keep provider adapters outside this module. |
+| `lib/features/send_to/**` | Shared cross-surface text transformation actions | Keep Voice/Clipboard send-to behavior behind common UI/dialog primitives and write through feature stores. |
 | `lib/data/supabase/**` | Legacy Supabase adapter implementations | Keep compiling until Firebase parity exists; do not add new target behavior here. |
 | `lib/data/firebase/**` | Firebase adapter implementations | Keep Firebase behind backend-agnostic stores and Firestore Security Rules. |
 | `test/**` | Dart/widget tests | Cover model validation and bridge parsing when native contracts change. |
@@ -85,6 +89,12 @@ Shared overlay product surface
   -> Android foreground overlay service or Windows desktop overlay host
   -> clipboard fallback and best-effort text delivery
 
+Windows desktop overlay host
+  -> WindowsOverlayBridge (`winflowz_app/windows_overlay`)
+  -> Windows runner global hotkey and always-on-top window
+  -> clipboard copy plus best-effort paste delivery to the last foreground window
+  -> typed status, event queue, and delivery result models
+
 Keyboard corner editor / preview
   -> AndroidKeyboardCornerConfig + KeyboardCornerPresetCatalog
   -> KeyboardCornerDraft + guided action catalog for draft-before-save editing
@@ -97,6 +107,12 @@ Clipboard UI
   -> ClipboardHistoryApi
   -> ClipboardHistoryStore
   -> secure local persistent store or provider adapter
+
+Send to actions
+  -> Voice/Clipboard card icon menu
+  -> shared snippet creation dialog or ClipboardHistoryApi addManualItem
+  -> SnippetStore / ClipboardHistoryApi provider for the current session
+  -> snippets or clipboard refresh signal
 
 Keyboard sync panel
   -> authSessionProvider + suiteIdentityProvider
@@ -125,7 +141,10 @@ Keyboard sync panel
 - Android native code emits platform actions/events; backend writes go through the Flutter product API or an equivalent store contract.
 - Windows native code may emit hotkey, window, clipboard and delivery events;
   backend writes still go through Flutter product APIs or equivalent stores.
+- Windows desktop overlay delivery is best-effort: every final text must remain
+  recoverable through clipboard even when focus or paste delivery fails.
 - Keyboard clipboard bridge events are imported by Flutter before listing clipboard items; sensitive automatic content can be rejected by the store without user confirmation.
+- Cross-surface `Envoyer vers` actions must reuse existing feature stores and preserve sensitive clipboard confirmation before writing private text.
 - Keyboard corner config models in `lib/features/keyboard/domain/keyboard_models.dart` mirror the native preset/override wire shape. Kotlin native owns functional preset tables; Flutter keeps preset ids/names as DTO/UI fallback and resolves only explicit overrides.
 - `KeyboardCornerShortcutsScreen` edits corner shortcuts as a draft. It must not call the native save bridge until the user explicitly saves, and unsupported platforms must remain simulation-only.
 - `KeyboardThemeStudioScreen` and `KeyboardCornerShortcutsScreen` notify `keyboardSyncChangeNotifierProvider` only after successful native saves; these screens must not call Firestore directly.
@@ -169,11 +188,15 @@ flutter test
 - `lib/core/platform/**` changed -> verify native channel contract and Settings UI.
 - `windows/**` changed -> verify Windows runner/manual QA for hotkey, overlay
   window, focus, clipboard, delivery, multi-monitor and DPI behavior.
+- `lib/core/platform/windows_overlay_bridge.dart` changed -> run
+  `flutter test test/windows_overlay_bridge_test.dart` and `flutter analyze`;
+  Windows runner proof is still required for native behavior.
 - `lib/features/keyboard/domain/keyboard_models.dart` or keyboard preview changed -> verify preset id parsing, explicit override precedence, private-mode filtering, and widget tests for preview rendering.
 - `lib/features/keyboard/presentation/keyboard_corner_shortcuts_screen.dart` changed -> verify draft/save separation, private-mode warnings, snippet search, import/export safety, and unsupported-platform copy.
 - Domain model source allowlist changed -> verify SQL constraints and tests.
 - Repository metadata changed -> verify backend adapter docs and security rules/tests.
 - Clipboard API/store changed -> verify no feature UI imports `lib/data/supabase`, run clipboard tests including persistent local history, and update provider docs.
+- `lib/features/send_to/**`, Voice send-to, Clipboard send-to, or Snippet refresh changed -> run `flutter test test/send_to_actions_test.dart` and `flutter test test/page_scoped_search_test.dart`.
 - Auth adapter/router/sign-in changed -> run auth failure, sign-in, router guard,
   full Flutter tests, and the Android auth smoke before claiming ship readiness.
 

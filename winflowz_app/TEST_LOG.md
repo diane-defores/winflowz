@@ -62,3 +62,16 @@
 - Bug pointer: none
 - Evidence pointer: user report in session ("all PASS")
 - Follow-up: /sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof
+
+## 2026-05-30 - Windows desktop overlay and hotkeys parity
+
+- Scope: spec windows-desktop-overlay-hotkeys-parity
+- Environment: windows-desktop
+- Tester: user
+- Source: sf-test
+- Status: not run
+- Confidence: medium
+- Result summary: Manual Windows checklist prepared for build, launch, hotkey, topmost overlay, clipboard fallback, paste delivery, focus recovery, multi-monitor/DPI, event queue, and diagnostic redaction.
+- Bug pointer: none
+- Evidence pointer: shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md
+- Follow-up: /sf-test --local shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md

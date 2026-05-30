@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 class PlatformCapabilities {
   static bool get isAndroid =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+  static bool get isWindows =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
   static bool get isLinux =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
   static bool get isWeb => kIsWeb;
@@ -35,6 +37,9 @@ class PlatformCapabilities {
     if (isWeb) {
       return 'La version web s’exécute dans le navigateur: elle ne peut pas afficher une bulle système au-dessus des autres apps.';
     }
+    if (isWindows) {
+      return 'L’overlay Windows utilise un hôte desktop dédié: hotkey global, fenêtre flottante, clipboard et livraison best-effort, sans IME Windows.';
+    }
     return 'L’overlay WinFlowz dépend des APIs natives Android pour afficher une bulle au-dessus des autres apps.';
   }
 
@@ -47,6 +52,7 @@ class PlatformCapabilities {
 
   static bool get localSpeechSupported => !isWeb && !isLinux;
   static bool get overlaySupported => isAndroid;
+  static bool get windowsDesktopOverlaySupported => isWindows;
   static bool get keyboardImeSupported => isAndroid;
   static bool get secureStorageDegraded => isWeb || isLinux;
 }

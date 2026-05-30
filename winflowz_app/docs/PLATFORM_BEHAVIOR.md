@@ -1,10 +1,10 @@
 ---
 artifact: documentation
 metadata_schema_version: "1.0"
-artifact_version: "1.0.0"
+artifact_version: "1.0.1"
 project: "WinFlowz"
 created: "2026-04-27"
-updated: "2026-05-19"
+updated: "2026-05-30"
 status: "reviewed"
 source_skill: "sf-spec"
 scope: "platform_behavior"
@@ -88,11 +88,16 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 
 ## Windows Desktop Overlay
 
-- Windows overlay is now a target chantier, not an unavailable product concept.
+- Windows overlay is now implemented as a first native host slice, with Windows
+  runner proof still required before any public parity claim.
 - The Windows implementation must share Flutter UI, actions, stores, status
   states, and Settings patterns where possible, but use a Windows-native host
   for global hotkeys, always-on-top window behavior, focus, clipboard, and text
   delivery.
+- The first Windows channel is `winflowz_app/windows_overlay`. It exposes
+  typed Flutter status/events/delivery results and a native runner host for
+  `Ctrl+Alt+Space`, topmost show/hide, clipboard copy, and `Ctrl+V` paste
+  delivery back to the last foreground window.
 - Windows must not promise an IME. The expected equivalent is desktop quick
   actions: hotkey -> overlay -> correction/dictation/snippet/clipboard action ->
   clipboard or best-effort delivery into the active app.

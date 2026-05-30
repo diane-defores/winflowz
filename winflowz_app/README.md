@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: "WinFlowz"
 created: "2026-04-26"
-updated: "2026-05-14"
+updated: "2026-05-30"
 status: "reviewed"
 source_skill: "sf-docs"
 scope: "readme"
@@ -146,14 +146,17 @@ instead of a long-lived service account JSON key.
   should keep the shared interaction model.
 - Overlay model: Flutter owns the shared WinFlowz product UI, actions, states,
   Settings patterns, and backend-agnostic stores. Each OS owns its system host:
-  Android uses a native foreground overlay bubble; Windows now has a dedicated
-  desktop overlay/hotkeys chantier instead of being treated as unavailable.
+  Android uses a native foreground overlay bubble; Windows now has a first
+  desktop overlay/hotkeys host slice with a native `winflowz_app/windows_overlay`
+  channel for global hotkey, always-on-top window behavior, clipboard and
+  best-effort paste delivery.
 - Android overlay: Flutter now has a native foreground overlay bubble foundation with queued native events, visual states, accessibility delivery, clipboard fallback, and Settings size/opacity controls. Real-device QA is still required before deleting the legacy Expo overlay reference or snapshot archive.
 - Android IME: WinFlowz can be enabled as a native Android keyboard. The current foundation provides modular Canvas rows, tap + swipe-corner character selection, QWERTY/AZERTY profiles, Smart French corner defaults, normal/corner modes, numbers/accents/symbol layers, field-context variants (email/URL/phone/search), private-field gating, minimal navigation/emoji/clipboard/media/snippets/settings panels, basic double-space + punctuation auto-spacing corrections with exclusions, optional touch-debug overlay, local Android speech recognition, media key dispatch, and Settings status/preferences. Double-tap/long-press action policies from the full keyboard spec are still pending implementation. Cloud sync from the keyboard waits for Firebase CLI/emulator and real-device QA before it should be treated as production-ready.
-- Windows desktop target: no IME promise. The intended equivalent is a Flutter
-  desktop overlay surface hosted by Windows-native hotkeys, always-on-top
-  window behavior, clipboard, focus, and best-effort text delivery. The first
-  Windows wave should try the full path, not a clipboard-only slice.
+- Windows desktop target: no IME promise. The equivalent is a Flutter desktop
+  overlay surface hosted by Windows-native hotkeys, always-on-top window
+  behavior, clipboard, focus, and best-effort text delivery. The first native
+  host slice is implemented locally, but Windows runner/manual proof is still
+  required before making a public parity claim.
 - Other platform limits: iOS/macOS declare microphone and speech permission prompts; Linux and web keep local speech unavailable/degraded where the current stack cannot support it today; iOS/macOS/Linux/web need explicit parity chantiers for their native hosts and browser/store limits; IME remains Android-only.
 
 ## Project Structure (target)

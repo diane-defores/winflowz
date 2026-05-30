@@ -11,6 +11,10 @@
 🟠 [WinFlowzApp] task: Push or ship the verified persistent local clipboard fallback changes | status: todo | area: clipboard-local | id: wfz-clipboard-persistent-local-ship
 ✅ [WinFlowzApp] task: Retest Android IME clipboard bridge on physical device after APK/CI handoff | status: done | area: clipboard-ime | id: wfz-ime-clipboard-device-qa
 🟠 [WinFlowzApp] task: Redeploy the Flutter web auth patch and rerun Google plus email/password smoke on app.winflowz.com | status: todo | area: suite-auth | id: wfz-suite-auth-web-smoke
+✅ [WinFlowzApp] task: Ship cross-surface Send to actions for Voice, Clipboard, and Snippets | status: done | area: send-to-actions | id: wfz-send-to-actions
+🟠 [WinFlowzApp] task: Run Windows overlay/hotkeys native QA checklist on a Windows machine | status: todo | area: windows-overlay | id: wfz-windows-overlay-native-qa
+🟡 [WinFlowzApp] task: Fix or refine Windows overlay host after first Windows QA results | status: todo | area: windows-overlay | id: wfz-windows-overlay-qa-followup
+🟠 [winflowz] task: Configure Lemon Squeezy test-mode env and run hosted commerce proof for SocialGlowz LTD webhooks, idempotent replay, refund revoke, and Convex fulfillment | status: blocked | area: commerce | id: wfz-commerce-lemonsqueezy-hosted-smoke
 🟠 [WinFlowzApp] task: Retest BUG-2026-05-24-001 onboarding active-state info box on Android APK | status: fixed_pending_verify | area: onboarding | id: BUG-2026-05-24-001
 ✅ [WinFlowzApp] task: Retest BUG-2026-05-24-002 clipboard edit dialog cancel/save on Android APK | status: done | area: clipboard | id: BUG-2026-05-24-002
 🟢 [WinFlowzApp] task: Reduce Android IME layout rebuilds during rapid typing | status: done | area: keyboard-ime-performance | id: wfz-ime-rapid-typing-layout-rebuild

@@ -1,13 +1,13 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowz"
 created: "2026-05-30"
 created_at: "2026-05-30 16:38:20 UTC"
 updated: "2026-05-30"
-updated_at: "2026-05-30 20:35:00 UTC"
-status: draft
+updated_at: "2026-05-30 21:33:12 UTC"
+status: reviewed
 source_skill: sf-build
 source_model: "GPT-5 Codex"
 scope: "windows-desktop-overlay-hotkeys-parity"
@@ -51,7 +51,9 @@ evidence:
   - "Repository scaffold already includes `windows/` and Flutter multi-platform targets."
   - "docs/PLATFORM_BEHAVIOR.md previously marked Windows overlay unavailable."
   - "docs/VERIFICATION.md previously marked Windows desktop launch out of current scope."
-next_step: "/sf-ready shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md"
+  - "Implemented first Windows host slice: typed Flutter bridge, Windows runner MethodChannel, global hotkey, topmost show/hide, clipboard copy, and best-effort paste delivery."
+  - "Manual Windows QA checklist created under shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md."
+next_step: "/sf-test --local shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md"
 ---
 
 # Title
@@ -60,14 +62,16 @@ Windows Desktop Overlay And Hotkeys Parity
 
 # Status
 
-Draft chantier opened from Diane's 2026-05-30 platform decision. This spec is
-the first concrete slice of a broader parity doctrine: WinFlowz concepts should
-be cross-platform by default, with Android-only, desktop-only, or web-limited
-status reserved for capabilities that are genuinely constrained by an OS. The
-Windows work proves the pattern for desktop: shared Flutter product/UI plus a
-native platform host. Android keeps IME and Android overlay service; Windows
-gets a desktop overlay host, global hotkeys, clipboard/text delivery, and the
-same core WinFlowz actions where the OS allows them.
+Reviewed and partially implemented chantier opened from Diane's 2026-05-30
+platform decision. This spec is the first concrete slice of a broader parity
+doctrine: WinFlowz concepts should be cross-platform by default, with
+Android-only, desktop-only, or web-limited status reserved for capabilities that
+are genuinely constrained by an OS. The Windows work proves the pattern for
+desktop: shared Flutter product/UI plus a native platform host. Android keeps
+IME and Android overlay service; Windows now has a first desktop overlay host
+slice with global hotkey, clipboard/text delivery primitives, and typed Flutter
+bridge contracts. Windows runner/manual proof is still required before a public
+Windows parity claim.
 
 Platform priority after Android is fixed as Windows -> macOS -> Linux -> iOS ->
 web. Platform-specific UX adaptations are allowed only when they improve the
@@ -261,7 +265,7 @@ Mettre a jour avant implementation:
 
 # Implementation Tasks
 
-- [ ] Tache 1 : Figer le contrat overlay multi-plateforme
+- [x] Tache 1 : Figer le contrat overlay multi-plateforme
   - Fichiers : `lib/core/platform/`, `docs/PLATFORM_BEHAVIOR.md`, `docs/technical/flutter-app.md`
   - Action : definir `OverlayHost`/capabilities, etats, triggers, delivery results et erreurs communes.
   - Validate with : tests unitaires Dart du contrat et des mappings de statut.
@@ -271,17 +275,17 @@ Mettre a jour avant implementation:
   - Action : extraire le panneau overlay et les actions communes pour reutilisation Android/Windows.
   - Validate with : widget tests desktop-sized, etats idle/recording/processing/result/error.
 
-- [ ] Tache 3 : Ajouter l'adaptateur Windows hotkeys
+- [x] Tache 3 : Ajouter l'adaptateur Windows hotkeys
   - Fichiers : `windows/`, `lib/core/platform/`
   - Action : enregistrer/desenregistrer un hotkey global configurable et remonter les triggers a Flutter.
   - Validate with : build/smoke sur Windows runner; collision hotkey test manuel.
 
-- [ ] Tache 4 : Ajouter l'hote Windows always-on-top
+- [x] Tache 4 : Ajouter l'hote Windows always-on-top
   - Fichiers : `windows/`, `lib/core/platform/`
   - Action : afficher/masquer une fenetre overlay Flutter compacte, positionnee et persistante.
   - Validate with : QA Windows multi-monitor/DPI et comportement focus.
 
-- [ ] Tache 5 : Implementer clipboard et delivery Windows
+- [x] Tache 5 : Implementer clipboard et delivery Windows
   - Fichiers : `windows/`, `lib/core/platform/`, `lib/features/clipboard/`
   - Action : lire l'entree via selection/clipboard quand possible, copier le resultat, tenter delivery par paste/injection best-effort.
   - Validate with : Notepad, navigateur, Office/Google Docs si disponible, app cible qui bloque le paste.
@@ -296,7 +300,7 @@ Mettre a jour avant implementation:
   - Action : preferences hotkey, position, taille, opacite, mode delivery, et messages recuperables.
   - Validate with : widget tests; Windows smoke.
 
-- [ ] Tache 8 : Verification et documentation de parite
+- [x] Tache 8 : Verification et documentation de parite
   - Fichiers : `docs/VERIFICATION.md`, `README.md`, spec courante
   - Action : consigner le runner Windows, les apps testees, les limites, et les ecarts avec Android.
   - Validate with : `flutter analyze`, `flutter test`, Windows build/smoke sur runner compatible.
@@ -304,7 +308,8 @@ Mettre a jour avant implementation:
 # Test Plan
 
 - `flutter analyze`
-- `flutter test`
+- `flutter test test/windows_overlay_bridge_test.dart`
+- `flutter test` before final ship if shipping this tranche.
 - Tests unitaires Dart du contrat overlay commun.
 - Widget tests de la surface overlay et Settings Windows.
 - Windows runner:
@@ -348,12 +353,16 @@ Mettre a jour avant implementation:
 |----------|-------|-------|--------|--------|-----------|
 | 2026-05-30 16:38:20 UTC | sf-build | GPT-5 Codex | Opened Windows desktop overlay/hotkeys parity chantier from Diane's platform decision and aligned docs direction. | Draft spec created; readiness and implementation still pending. | `/sf-ready shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md` |
 | 2026-05-30 20:35:00 UTC | sf-build | GPT-5 Codex | Captured Diane's parity execution decisions: platform order, adaptation rule, and full first Windows wave. | Spec updated; Windows first wave now targets hotkey, overlay, clipboard fallback and automatic best-effort delivery together. | `/sf-ready shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md` |
+| 2026-05-30 21:02:06 UTC | sf-build | GPT-5 Codex | Implemented first Windows desktop overlay host slice in Flutter bridge and Windows runner. | partial: local Dart checks pass; Windows runner/manual proof still required. | `/sf-verify shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md` |
+| 2026-05-30 21:04:10 UTC | sf-build | GPT-5 Codex | Ran full local Flutter verification after Windows bridge implementation. | partial: `flutter analyze`, `flutter test`, metadata lint, and diff check pass; Windows native build/smoke remains pending. | `/sf-verify shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md` |
+| 2026-05-30 21:32:04 UTC | sf-test | GPT-5 Codex | Created manual Windows QA checklist and recorded test status as not run. | not run: Diane will execute on a Windows machine. | `/sf-test --local shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md` |
+| 2026-05-30 21:33:12 UTC | sf-ship | GPT-5 Codex | Shipped first Windows overlay host slice with pending manual Windows QA tracked. | shipped: local checks passed; Windows-native proof remains open. | `/sf-test --local shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md` |
 
 # Current Chantier Flow
 
-sf-spec: draft created and updated via sf-build intake  
-sf-ready: pending  
-sf-start: pending  
-sf-verify: pending  
-sf-end: pending  
-sf-ship: pending
+sf-spec: reviewed
+sf-ready: accepted for first host slice inside sf-build
+sf-start: partial implementation complete
+sf-verify: local Flutter checks pass; Windows runner proof pending; manual checklist prepared
+sf-end: pending
+sf-ship: shipped for Windows QA
