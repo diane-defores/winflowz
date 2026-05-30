@@ -1,10 +1,10 @@
 ---
 artifact: documentation
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.1.1"
 project: "WinFlowz"
 created: "2026-03-18"
-updated: "2026-05-10"
+updated: "2026-05-30"
 status: "draft"
 source_skill: "sf-docs"
 scope: "update"
@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added cross-surface `Envoyer vers` actions so Voice transcriptions can become Snippets or Clipboard WinFlowz items, Clipboard entries can become Snippets, and sensitive Voice-to-Clipboard content requires confirmation.
 - Added the WinFlowz app Accueil feed with global search, shared page search controls, shared refresh/sync/save status actions, page-scoped searches, and Settings save status feedback.
 - Added persistent local clipboard history for local/offline mode, including reload-safe deduplication, search, direct copy back to the system clipboard, and corruption-tolerant recovery tests.
 - Wired the Android IME key-value engine into the live keyboard layout and dispatch path, including parsed text keys, Ctrl/Alt/Fn modifier keys, key-event dispatch, macro dispatch support and an Fn navigation modmap.

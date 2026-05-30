@@ -275,6 +275,11 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<int>(snippetRefreshSignalProvider, (previous, next) {
+      if (previous != null && previous != next) {
+        Future<void>.microtask(_load);
+      }
+    });
     AppDiagnostics.record('screen_build', 'Snippets');
     final visibleItems = _visibleItems();
     return ListView(

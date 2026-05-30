@@ -38,3 +38,15 @@ final snippetStoreProvider = Provider<SnippetStore>((ref) {
 
   return ref.watch(localSnippetStoreProvider);
 });
+
+class SnippetRefreshSignal extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void markChanged() {
+    state = state + 1;
+  }
+}
+
+final snippetRefreshSignalProvider =
+    NotifierProvider<SnippetRefreshSignal, int>(SnippetRefreshSignal.new);

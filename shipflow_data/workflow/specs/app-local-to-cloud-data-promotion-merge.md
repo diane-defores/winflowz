@@ -6,8 +6,8 @@ project: "WinFlowz"
 created: "2026-05-30"
 created_at: "2026-05-30 20:24:44 UTC"
 updated: "2026-05-30"
-updated_at: "2026-05-30 20:36:19 UTC"
-status: draft
+updated_at: "2026-05-30 21:10:44 UTC"
+status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
 scope: "flutter-app-local-to-cloud-data-promotion-merge"
@@ -73,7 +73,9 @@ evidence:
   - "Official Firebase docs checked 2026-05-30: Cloud Firestore set writes can merge into existing documents to avoid full overwrites."
   - "Official Firebase docs checked 2026-05-30: Cloud Firestore supports transactions and batched writes; transactions retry on concurrent edits and fail offline, while batched writes are atomic."
   - "Official Firebase docs checked 2026-05-30: Firebase Security Rules can use Firebase Authentication request.auth.uid to restrict reads and writes to the owning user."
-next_step: "/sf-spec shipflow_data/workflow/specs/app-local-to-cloud-data-promotion-merge.md"
+  - "User decisions 2026-05-30: auto-seed local data only for account creation in the same flow; make voice transcriptions eligible only after durable local storage; sync clipboard deletes with tombstones; promote up to the current 200 clipboard item cap; resolve conflicts primarily in Settings > Compte & cloud with feed indicators; require physical-device QA by Diane."
+  - "User decision 2026-05-30: secrets are excluded from V1; any future secret sync requires a separate encrypted vault / secret backup spec."
+next_step: "/sf-verify shipflow_data/workflow/specs/app-local-to-cloud-data-promotion-merge.md"
 ---
 
 # Title
@@ -203,7 +205,7 @@ Le chemin principal est:
 # Scope Out
 
 - Chiffrement end-to-end ou coffre secret cloud.
-- Synchronisation des cles OpenAI, Anthropic, tokens, secrets locaux ou credentials.
+- Synchronisation des clés OpenAI, Anthropic, tokens, secrets locaux ou credentials dans cette V1. Diane souhaite l'ergonomie de sync des secrets, mais cette exigence doit passer par un chantier séparé de coffre chiffré ou de secret sync explicitement sécurisé avant d'être autorisée.
 - Synchronisation de contenus rejetes par les protections clipboard/saisie sensible.
 - Refonte complete de Firebase, migration fournisseur ou remplacement Firestore.
 - Sync realtime multi-device exhaustive au-dela du chargement, de la queue et du refresh.
@@ -223,31 +225,63 @@ Le chemin principal est:
 - Les transactions Firestore peuvent echouer offline; le mode offline doit passer par la queue locale et les batchs/transactions au retour reseau.
 - Les limites de Firestore batch/transaction doivent etre respectees; les grosses promotions doivent etre chunked et resumables.
 - Les logs et erreurs doivent rester rediges.
-- Les textes francais doivent rester naturels et honnetes: `local uniquement`, `en attente`, `synchronise`, `conflit`, `erreur`.
+- Les textes français doivent rester naturels et honnêtes: `local uniquement`, `en attente`, `synchronisé`, `conflit`, `erreur`.
+- Les secrets utilisateur ne doivent pas être synchronisés en clair dans Firestore; la V1 peut synchroniser les préférences non sensibles et l'état de configuration, mais pas la valeur des clés API/tokens.
 
 # Test Contract
 
-La specification n'est pas prete pour implementation tant que le plan de tests ne couvre pas au minimum:
+Surface: application Flutter WinFlowz, stores locaux/Firebase des domaines clipboard, voice, snippets, dictionary, settings, flux post-auth, écran Settings > Compte & cloud, Accueil/feed et composant partagé sync/save.
 
-- creation de compte avec donnees locales et cloud vide;
-- connexion a un compte existant depuis local propre;
-- connexion a un compte existant avec local divergent;
-- retour online avec queue pending;
-- changement de compte avec queue ancienne;
-- absence d'entitlement;
-- Firebase indisponible;
-- donnees sensibles exclues;
-- reinstall/relogin qui restaure les donnees promues;
-- clic sur le composant sync/save qui relance sans doublonner.
+Proof profile: automated-first plus QA manuelle. Les preuves automatisées doivent couvrir les décisions, adapters, queue, statut UI et règles de sécurité; Diane fait la QA physique finale sur appareil.
+
+Proof order:
+
+1. Unit tests de doctrine sync et queue.
+2. Adapter tests par domaine.
+3. Widget tests Settings / Compte & cloud, composant sync/save, conflit et Accueil/feed.
+4. Tests Firebase fake/emulator ou Security Rules si disponibles.
+5. `flutter analyze`.
+6. `flutter test`.
+7. Smoke Vercel/web avec contexte propre.
+8. QA physique Diane pour le scénario local -> compte -> sync -> réinstallation/reconnexion ou équivalent appareil propre, et pour toute surface Android native touchée.
+
+Checklist path: `shipflow_data/workflow/verification/app-local-to-cloud-data-promotion-merge-checklist.md`.
+
+Required scenario IDs:
+
+- `L2C-001`: création de compte dans le même flux avec données locales et cloud vide.
+- `L2C-002`: connexion à un compte existant vide depuis un appareil local non associé.
+- `L2C-003`: connexion à un compte existant depuis local propre.
+- `L2C-004`: connexion à un compte existant avec local divergent.
+- `L2C-005`: retour online avec queue pending.
+- `L2C-006`: changement de compte avec queue ancienne.
+- `L2C-007`: absence d'entitlement.
+- `L2C-008`: Firebase indisponible.
+- `L2C-009`: données sensibles et secrets exclus.
+- `L2C-010`: suppression clipboard synchronisée par tombstone.
+- `L2C-011`: réinstallation/reconnexion qui restaure les données promues.
+- `L2C-012`: clic sur le composant sync/save qui relance sans doublonner.
+
+Required results:
+
+- Les données locales éligibles sont visibles après création de compte et après reconnexion sur contexte propre.
+- Le compte existant vide ne reçoit pas automatiquement les données locales non associées sans confirmation.
+- Les conflits restent visibles et récupérables dans Settings > Compte & cloud.
+- Le feed peut signaler un conflit ou un état pending sans devenir le centre principal de résolution.
+- Les secrets restent exclus de la V1 et les logs ne contiennent pas de payload brut.
+
+Exception with proof: si les voice transcriptions ne sont pas encore rendues durables, elles doivent être explicitement marquées `local uniquement` et exclues des critères de restauration V1 avec test/widget preuve.
+
+Exception without proof: aucune exception ne peut marquer un domaine `synchronisé` sans preuve d'écriture ou de présence cloud.
 
 # Dependencies
 
-- `firebase_core`, `firebase_auth` et `cloud_firestore` deja presents dans WinFlowz.
+- `firebase_core` 4.7.0, `firebase_auth` 6.4.0 et `cloud_firestore` 6.3.0 présents dans `pubspec.lock` le 2026-05-30.
 - Firebase Auth pour l'identite du compte.
 - Suite identity / entitlement `winflowz_app` pour autoriser la sync produit.
 - Cloud Firestore pour les collections user-scoped existantes.
 - Firestore Security Rules pour verifier que `request.auth.uid` correspond au chemin utilisateur.
-- Documentation officielle Firebase consultee le 2026-05-30:
+- Documentation officielle Firebase consultée le 2026-05-30:
   - `https://firebase.google.com/docs/firestore/manage-data/add-data`
   - `https://firebase.google.com/docs/firestore/manage-data/transactions`
   - `https://firebase.google.com/docs/rules/rules-and-auth`
@@ -257,6 +291,7 @@ La specification n'est pas prete pour implementation tant que le plan de tests n
   - `/home/claude/socialglowz/src/lib/cloudSyncQueue.ts`
   - `/home/claude/socialglowz/src/lib/postAuthSyncFeedback.ts`
   - `lib/features/keyboard/application/keyboard_sync_controller.dart`
+- Provider note Firebase/Firestore locale: aucune note dédiée trouvée sous `shipflow_data/technical/platforms/` ou `shipflow_data/technical/external-platforms/` le 2026-05-30; décision basée sur code local + docs officielles Firebase.
 
 # Invariants
 
@@ -268,6 +303,7 @@ La specification n'est pas prete pour implementation tant que le plan de tests n
 - Une queue locale est toujours partitionnee par compte cible et ne peut pas etre replayed cross-user.
 - Le statut UI represente l'etat reel: local-only, pending, syncing, synced, conflict, failed ou unavailable.
 - Les donnees sensibles et secrets restent exclus meme si l'utilisateur clique sur synchroniser.
+- Les données locales non associées à un compte peuvent être seed automatiquement uniquement lors d'une création de compte dans le même flux; pour une connexion à un compte existant, une confirmation est requise si le cloud est vide.
 
 # Links & Consequences
 
@@ -292,7 +328,7 @@ Mettre a jour, si l'implementation touche les fichiers concernes:
 
 - Cloud vide mais local contient seulement des donnees non eligibles: afficher `rien a synchroniser` et ne pas creer de faux profil cloud.
 - Cloud vide et creation de compte: seed local automatique pour donnees eligibles.
-- Cloud vide et connexion a un compte existant: seed automatique seulement si le compte est reconnu comme meme utilisateur ou si l'utilisateur confirme.
+- Cloud vide et connexion à un compte existant: pas de seed automatique depuis un local non associé; demander confirmation, sauf si les métadonnées locales prouvent que c'est le même compte remembered.
 - Cloud non vide et local vide: hydrate local depuis cloud.
 - Cloud non vide et local clean cache du meme compte: hydrate ou compare checksum.
 - Cloud non vide et local divergent: merge non conflictuel, conflit pour collisions.
@@ -304,8 +340,10 @@ Mettre a jour, si l'implementation touche les fichiers concernes:
 - Clipboard duplicate avec timestamps proches: dedupe par hash normalise + source + fenetre temporelle.
 - Snippet meme trigger contenu different: conflit.
 - Dictionary meme terme remplacement different: conflit.
-- Settings field sensible ou secret: exclu.
+- Settings field sensible ou secret: valeur exclue en V1; l'app peut synchroniser un indicateur de présence/configuration non secret.
 - Transcription sans id stable historique: generer une migration locale d'identifiants avant promotion.
+- Clipboard history volumineux: promouvoir au maximum le plafond local existant de 200 éléments, après exclusions sensibles et dedupe.
+- Conflit entre deux versions d'une même entité: la modification la plus récente peut primer seulement si l'entité porte une horloge fiable, un auteur/device et aucune collision sémantique; sinon conflit explicite.
 
 # Implementation Tasks
 
@@ -313,7 +351,7 @@ Mettre a jour, si l'implementation touche les fichiers concernes:
 2. Creer un `LocalCloudSyncController` dans `lib/features/sync/application/` qui orchestre lecture locale, lecture cloud, decision, ecriture, queue et statut.
 3. Ajouter un provider Riverpod pour exposer l'etat sync global et par domaine au shell, Settings, Accueil et composant sync/save.
 4. Ajouter un store de metadata locale durable: device ID, remembered Firebase UID, remembered global user ID, last promoted at, per-domain checksums et queue partitions.
-5. Rendre durables les stores locaux actuellement en memoire pour les domaines promouvables, au minimum snippets, dictionnaire et transcriptions, ou reduire explicitement la promesse produit de ces domaines jusqu'a durabilisation.
+5. Rendre durables les stores locaux actuellement en mémoire pour les domaines promouvables, au minimum snippets, dictionnaire et transcriptions, ou réduire explicitement la promesse produit de ces domaines jusqu'à durabilisation.
 6. Ajouter des adapters `LocalSyncSnapshotAdapter` par domaine: clipboard, voice, snippets, dictionary, settings.
 7. Ajouter des adapters `CloudSyncSnapshotAdapter` par domaine, en reutilisant les Firebase stores existants quand ils suffisent.
 8. Definir les schemas de snapshot assainis avec bornes: longueurs max, timestamps, source, version, device ID, deleted/tombstone si necessaire.
@@ -323,14 +361,14 @@ Mettre a jour, si l'implementation touche les fichiers concernes:
    - snippets: trigger normalise par compte;
    - dictionary: terme normalise + caseSensitive;
    - settings: champ nomme + version de schema.
-10. Implementer la queue locale durable partitionnee par compte et domaine avec idempotency keys, retry count, next retry at, last error redigee et statut.
-11. Implementer les decisions: seed empty cloud, hydrate clean local, merge safe, conflict, local-only, blocked different user, pending offline.
-12. Implementer les ecritures Firestore par batch ou transaction selon le besoin de revision; chunker les gros lots.
+10. Implémenter la queue locale durable partitionnée par compte et domaine avec idempotency keys, retry count, next retry at, last error rédigée et statut.
+11. Implémenter les décisions: seed empty cloud pour création de compte dans le même flux, confirmation pour compte existant vide non associé, hydrate clean local, merge safe, conflict, local-only, blocked different user, pending offline.
+12. Implémenter les écritures Firestore par batch ou transaction selon le besoin de révision; chunker les gros lots, promouvoir au maximum 200 éléments clipboard et écrire des tombstones pour suppressions clipboard V1.
 13. Ajouter une confirmation post-write par revision/checksum ou lecture cible avant de marquer `synced`.
 14. Integrer le controller dans le flux post-auth, creation de compte et retour session.
 15. Integrer le controller dans Settings / Compte & cloud avec les etapes: preparation locale, lecture cloud, fusion, envoi, pret ou action requise.
 16. Brancher le composant partage sync/save sur le statut global et les actions retry/refresh.
-17. Ajouter les actions de resolution de conflits: fusionner quand possible, garder cet appareil, utiliser le cloud, laisser local-only, exporter si applicable.
+17. Ajouter les actions de résolution de conflits dans Settings > Compte & cloud: fusionner quand possible, garder cet appareil, utiliser le cloud, laisser local-only, exporter si applicable; Accueil/feed affiche seulement un indicateur et un lien vers cette résolution.
 18. Ajouter les protections de changement de compte: purge/ignore des queues anciennes, binding des caches, confirmation avant upload vers nouveau compte.
 19. Ajouter diagnostics rediges: statut par domaine, counts, queue length, last safe error, aucun payload brut.
 20. Mettre a jour l'accueil/feed pour afficher des statuts vrais si une donnee est local-only, pending ou synced.
@@ -342,10 +380,13 @@ Mettre a jour, si l'implementation touche les fichiers concernes:
 - Une utilisatrice peut creer des donnees locales, creer un compte, attendre la sync, puis retrouver ces donnees apres reconnexion sur un contexte propre.
 - Les domaines eligibles affichent un statut correct: local-only, pending, syncing, synced, conflict, failed ou unavailable.
 - Aucun domaine ne marque `synced` sans preuve d'ecriture cloud ou de presence cloud existante.
-- Le cloud vide apres sign-up recoit les donnees locales eligibles sans action supplementaire.
+- Le cloud vide après sign-up reçoit les données locales éligibles sans action supplémentaire.
+- Le cloud vide d'un compte existant ne reçoit pas automatiquement des données locales non associées; l'utilisateur doit confirmer.
 - Un compte cloud existant ne se fait pas ecraser silencieusement par des donnees locales divergentes.
 - Un changement de compte ne rejoue pas les queues de l'ancien compte.
-- Les donnees sensibles, secrets et contenus rejetes restent exclus.
+- Les données sensibles, secrets et contenus rejetés restent exclus de la V1; leur synchronisation exige un chantier de coffre chiffré séparé.
+- Les suppressions clipboard synchronisées sont représentées par tombstone ou opération équivalente et ne réapparaissent pas après refresh/reconnexion.
+- La promotion initiale clipboard respecte le plafond actuel de 200 éléments après exclusions.
 - Les retries sont idempotents et ne creent pas de doublons.
 - Les tests couvrent les decisions, adapters, queue, conflit, UI de statut et smoke de reconnexion.
 - La documentation ne promet plus une sync pour un domaine non implemente ou non verifie.
@@ -385,7 +426,7 @@ Mettre a jour, si l'implementation touche les fichiers concernes:
 - Smoke checks:
   - Vercel/web: create local data, create/sign in, verify data remains visible and status is truthful;
   - clean browser/app state: sign in same account and verify promoted data appears;
-  - Android physical QA only if native IME or keyboard clipboard integration changed.
+  - physical-device QA by Diane for the final local -> account -> sync -> reinstall/relogin confidence path and any native Android surface touched.
 
 # Risks
 
@@ -405,23 +446,34 @@ Mettre a jour, si l'implementation touche les fichiers concernes:
 - Reuse the keyboard sync controller's account-safety ideas wherever possible.
 - Use official Firebase APIs for merge writes, batched writes and transactions; avoid ad hoc overwrite flows.
 - Run focused tests first, then `flutter analyze` and `flutter test` within app guardrails.
+- Do not implement secret-value sync in this V1. If product insists on secret sync, stop and create a separate encrypted vault / secret backup spec before writing code.
 
 # Open Questions
 
-- Should sign-in to an existing but empty cloud account auto-seed local data, or require one confirmation unless the account was just created in the same flow?
-- Which voice transcription fields are safe and valuable enough for V1 cloud promotion?
-- Do clipboard deletes need tombstones in V1, or can delete sync be deferred to a later realtime/multi-device spec?
-- Should conflict resolution live only in Settings / Compte & cloud, or also surface from Accueil when a feed item is blocked?
-- What retention limit should apply when promoting a large local clipboard history: all 200 local items or a smaller default with opt-in?
+None.
+
+Resolved decisions:
+
+- Existing but empty cloud account: require confirmation unless the account was created in the same flow or is proven to be the same remembered account.
+- Voice transcriptions: eligible in V1 only after durable local storage and safe field allowlist; otherwise label local-only.
+- Clipboard deletes: synchronize in V1 through tombstones or equivalent delete operations.
+- Clipboard retention: promote up to the current 200-item local cap after exclusions and dedupe.
+- Conflict resolution: Settings > Compte & cloud is the primary resolution surface; Accueil/feed may show indicators and deep links.
+- Cross-account local association: only metadata created after prior account use can associate local cache/queue to a Firebase/global user; pre-account local data is unassociated and needs sign-up flow or confirmation for existing accounts.
+- Secrets: excluded from V1. Future secret synchronization requires a separate encrypted vault / secret backup spec.
+- QA: Diane performs final physical-device QA; automated tests and Vercel/web smoke still remain required before handoff.
 
 # Skill Run History
 
 - 2026-05-30 20:24 UTC - `sf-spec` - Created draft spec for local-to-cloud promotion and merge after Diane clarified that local-first account creation must preserve user data and should follow the SocialGlowz doctrine.
 - 2026-05-30 20:36 UTC - `sf-ready` - Readiness review failed because open product/security-impacting questions remain, the manual proof contract is incomplete, Firebase local versions are not captured in the spec dependencies, and implementation tasks do not yet name validation checks/file targets precisely enough for a fresh agent.
+- 2026-05-30 20:50 UTC - `sf-spec` - Integrated Diane's decisions for account seeding, voice durability, clipboard tombstones, clipboard retention, conflict surface, account association explanation and physical-device QA; kept secret-value sync as a security blocker requiring either V1 exclusion or separate encrypted vault spec.
+- 2026-05-30 20:55 UTC - `sf-ready` - Marked ready after Diane confirmed secrets are excluded from V1 and future secret sync requires a separate encrypted vault / secret backup spec.
+- 2026-05-30 21:10 UTC - `sf-build` - Implemented the local-cloud sync foundation: domain models, metadata and queue stores, controller decisions, concrete adapter bridge/provider, clipboard snapshot support, and controller tests for seed, confirmation, hydrate, merge, conflict, latest-wins guard, account replay blocking, local-only voice, and metadata persistence. `flutter analyze` and `flutter test` passed. Physical-device QA remains required before closure.
 
 # Current Chantier Flow
 
-- Current phase: readiness failed; spec needs tightening before implementation.
-- Current owner: Diane for product decisions, then spec agent for correction.
-- Recommended next command: `/sf-spec shipflow_data/workflow/specs/app-local-to-cloud-data-promotion-merge.md`.
-- Blockers: Open Questions must be resolved or explicitly scoped out; Test Contract must include proof profile/order/results/exceptions; dependencies must record local Firebase package versions and any provider notes checked or intentionally absent; implementation tasks need concrete file targets and validation checks.
+- Current phase: implementation complete for local automated proof; verification/manual QA pending.
+- Current owner: verification agent, then Diane for physical-device QA.
+- Recommended next command: `/sf-verify shipflow_data/workflow/specs/app-local-to-cloud-data-promotion-merge.md`.
+- Blockers: physical-device reinstall/relogin QA and end-to-end Settings conflict-resolution proof remain before `sf-end`/`sf-ship`.

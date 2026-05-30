@@ -11,8 +11,13 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../../core/widgets/local_mode_notice.dart';
+import '../../clipboard/application/clipboard_store_provider.dart';
+import '../../clipboard/domain/clipboard_capture_event.dart';
+import '../../clipboard/domain/clipboard_normalizer.dart';
 import '../../keyboard/domain/keyboard_models.dart';
+import '../../send_to/presentation/send_to_actions.dart';
 import '../../settings/application/settings_store_provider.dart';
+import '../../snippets/application/snippet_store_provider.dart';
 import '../application/language_pack_catalog_provider.dart';
 import '../application/transcription_store.dart';
 import '../application/transcription_store_provider.dart';
@@ -467,6 +472,104 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     }
   }
 
+  String _reusableText(TranscriptionRecord item) {
+    final cleaned = item.cleanedText.trim();
+    if (cleaned.isNotEmpty) {
+      return cleaned;
+    }
+    return item.rawText.trim();
+  }
+
+  Future<void> _sendToClipboard(TranscriptionRecord item) async {
+    final content = _reusableText(item);
+    if (content.isEmpty) {
+      setState(() => _message = 'Aucun texte vocal à envoyer.');
+      return;
+    }
+
+    var sensitiveConfirmed = false;
+    final classification = classifySensitiveContent(content);
+    if (classification != ClipboardSensitiveClassification.none) {
+      sensitiveConfirmed = await confirmSensitiveSendToClipboard(
+        context: context,
+        classification: classification,
+      );
+      if (!sensitiveConfirmed || !mounted) {
+        return;
+      }
+    }
+
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    try {
+      await ref
+          .read(clipboardHistoryApiProvider)
+          .addManualItem(
+            content: content,
+            source: ClipboardCanonicalSource.voice,
+            sensitiveConfirmed: sensitiveConfirmed,
+          );
+      ref.read(clipboardHistoryRefreshSignalProvider.notifier).markChanged();
+      if (mounted) {
+        setState(() => _message = 'Transcription envoyée vers Clipboard.');
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() => _message = 'Envoi vers Clipboard impossible: $error');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Future<void> _sendToSnippet(TranscriptionRecord item) async {
+    final content = _reusableText(item);
+    if (content.isEmpty) {
+      setState(() => _message = 'Aucun texte vocal à envoyer.');
+      return;
+    }
+
+    final draft = await showSendToSnippetDialog(
+      context: context,
+      initialContent: content,
+      sourceLabel: 'Voix',
+      initialLabel: 'Voix',
+    );
+    if (draft == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    try {
+      await ref
+          .read(snippetStoreProvider)
+          .insert(
+            trigger: draft.trigger,
+            content: draft.content,
+            label: draft.label,
+          );
+      ref.read(snippetRefreshSignalProvider.notifier).markChanged();
+      if (mounted) {
+        setState(() => _message = 'Snippet créé depuis la transcription.');
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() => _message = 'Création snippet impossible: $error');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
   AppSyncStatus _pageStatus() {
     if (_busy) {
       return const AppSyncStatus(
@@ -632,6 +735,9 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         for (final item in visibleItems)
           _TranscriptionTile(
             item: item,
+            sendToEnabled: !_busy,
+            onSendToClipboard: _busy ? null : () => _sendToClipboard(item),
+            onSendToSnippet: _busy ? null : () => _sendToSnippet(item),
             onEdit: _busy ? null : () => _quickEdit(item),
             onDelete: _busy ? null : () => _delete(item.id),
           ),
@@ -1177,11 +1283,17 @@ class _EmptyVoiceState extends StatelessWidget {
 class _TranscriptionTile extends StatelessWidget {
   const _TranscriptionTile({
     required this.item,
+    required this.sendToEnabled,
+    required this.onSendToClipboard,
+    required this.onSendToSnippet,
     required this.onEdit,
     required this.onDelete,
   });
 
   final TranscriptionRecord item;
+  final bool sendToEnabled;
+  final VoidCallback? onSendToClipboard;
+  final VoidCallback? onSendToSnippet;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
@@ -1210,6 +1322,17 @@ class _TranscriptionTile extends StatelessWidget {
             )
           : null,
       actions: [
+        SendToMenu(
+          enabled: sendToEnabled,
+          targets: const [SendToTarget.snippet, SendToTarget.clipboard],
+          onSelected: (target) {
+            if (target == SendToTarget.snippet) {
+              onSendToSnippet?.call();
+            } else {
+              onSendToClipboard?.call();
+            }
+          },
+        ),
         IconButton(
           tooltip: 'Modifier le texte nettoyé',
           onPressed: onEdit,

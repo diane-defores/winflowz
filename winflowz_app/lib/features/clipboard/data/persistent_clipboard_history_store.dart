@@ -57,6 +57,13 @@ class PersistentClipboardHistoryStore implements ClipboardHistoryStore {
     return delegate.list();
   }
 
+  Future<List<ClipboardItemRecord>> snapshot({
+    bool includeDeleted = false,
+  }) async {
+    final delegate = await _load();
+    return delegate.snapshot(includeDeleted: includeDeleted);
+  }
+
   @override
   Future<void> insert({
     required String content,

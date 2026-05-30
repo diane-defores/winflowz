@@ -7,7 +7,9 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../../core/widgets/local_mode_notice.dart';
+import '../../send_to/presentation/send_to_actions.dart';
 import '../../settings/application/settings_store_provider.dart';
+import '../../snippets/application/snippet_store_provider.dart';
 import '../application/clipboard_store_provider.dart';
 import '../domain/clipboard_capture_event.dart';
 import '../domain/clipboard_normalizer.dart';
@@ -229,6 +231,50 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
     }
   }
 
+  Future<void> _sendToSnippet(ClipboardItemRecord item) async {
+    final content = item.content.trim();
+    if (content.isEmpty) {
+      setState(() => _message = 'Aucun contenu clipboard à envoyer.');
+      return;
+    }
+
+    final draft = await showSendToSnippetDialog(
+      context: context,
+      initialContent: content,
+      sourceLabel: 'Clipboard',
+      initialLabel: 'Clipboard',
+    );
+    if (draft == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    try {
+      await ref
+          .read(snippetStoreProvider)
+          .insert(
+            trigger: draft.trigger,
+            content: draft.content,
+            label: draft.label,
+          );
+      ref.read(snippetRefreshSignalProvider.notifier).markChanged();
+      if (mounted) {
+        setState(() => _message = 'Snippet créé depuis le clipboard.');
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() => _message = 'Création snippet impossible: $error');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
   Future<void> _remove(String id) async {
     final settings = await ref.read(settingsStoreProvider).load();
     if (!mounted) {
@@ -397,6 +443,8 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
         for (final item in visibleItems)
           _ClipboardItemTile(
             item: item,
+            sendToEnabled: !_busy,
+            onSendToSnippet: _busy ? null : () => _sendToSnippet(item),
             onCopy: _busy ? null : () => _copyToSystemClipboard(item),
             onEdit: _busy ? null : () => _edit(item),
             onTogglePin: _busy ? null : () => _togglePin(item),
@@ -824,6 +872,8 @@ class _EmptyClipboardSearchState extends StatelessWidget {
 class _ClipboardItemTile extends StatelessWidget {
   const _ClipboardItemTile({
     required this.item,
+    required this.sendToEnabled,
+    required this.onSendToSnippet,
     required this.onCopy,
     required this.onEdit,
     required this.onTogglePin,
@@ -831,6 +881,8 @@ class _ClipboardItemTile extends StatelessWidget {
   });
 
   final ClipboardItemRecord item;
+  final bool sendToEnabled;
+  final VoidCallback? onSendToSnippet;
   final VoidCallback? onCopy;
   final VoidCallback? onEdit;
   final VoidCallback? onTogglePin;
@@ -868,6 +920,15 @@ class _ClipboardItemTile extends StatelessWidget {
             )
           : null,
       actions: [
+        SendToMenu(
+          enabled: sendToEnabled,
+          targets: const [SendToTarget.snippet],
+          onSelected: (target) {
+            if (target == SendToTarget.snippet) {
+              onSendToSnippet?.call();
+            }
+          },
+        ),
         IconButton(
           tooltip: 'Copier',
           onPressed: onCopy,
