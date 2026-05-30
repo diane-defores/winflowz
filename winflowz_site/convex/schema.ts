@@ -40,6 +40,24 @@ export default defineSchema({
     .index("by_productStatus", ["productId", "status"])
     .index("by_idempotencyKey", ["idempotencyKey"]),
 
+  productActivationCodes: defineTable({
+    codeNormalized: v.string(),
+    productId: v.string(),
+    plan: v.string(),
+    source: v.string(),
+    status: v.string(),
+    sourceRef: v.optional(v.string()),
+    environment: v.string(),
+    idempotencyKey: v.string(),
+    redeemedByGlobalUserId: v.optional(v.id("globalUsers")),
+    redeemedEntitlementId: v.optional(v.id("productEntitlements")),
+    redeemedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_codeNormalized", ["codeNormalized"])
+    .index("by_productStatus", ["productId", "status"])
+    .index("by_idempotencyKey", ["idempotencyKey"]),
+
   productAccessEvents: defineTable({
     source: v.string(),
     eventType: v.string(),

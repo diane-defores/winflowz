@@ -1,12 +1,12 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "WinFlowz"
 created: "2026-05-28"
 created_at: "2026-05-28 19:36:12 UTC"
-updated: "2026-05-28"
-updated_at: "2026-05-28 20:37:59 UTC"
+updated: "2026-05-29"
+updated_at: "2026-05-29 23:58:11 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -325,6 +325,7 @@ None.
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
+| 2026-05-29 23:58:11 UTC | sf-build | gpt-5-codex | Harmonized French-facing copy in shell navigation, voice screen, and keyboard theme studio; updated affected widget/router tests. Local proof: `flutter analyze`, `flutter test test/keyboard_theme_studio_screen_test.dart test/app_router_auth_guard_test.dart`, and targeted `test/widget_test.dart` onboarding/navigation cases passed. | implemented | Review bounded diff; ship only with an explicit clean scope because another governance spec is already dirty. |
 | 2026-05-28 21:10:13 UTC | sf-start | gpt-5.4-mini | Reordered Settings IA (account/appearance/keyboard/onboarding primary first, backend/keys/platform/overlay advanced collapsed defaults kept) and prepared for Settings disclosure verification. | implemented | /sf-verify shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md |
 | 2026-05-28 21:27:43 UTC | sf-verify | gpt-5.4-mini | Re-ran targeted widget verification and local analyze after previous wording adjustment: 2/2 tests passed; local analyze clean; Flutter test lock issue resolved by re-running from project root. | partial | /sf-verify shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md |
 | 2026-05-28 21:12:45 UTC | sf-verify | gpt-5.4-mini | Targeted widget tests on modified Settings IA sections pass after wording adjustment in backend diagnostics test (`completed onboarding card moves...`, `settings backend diagnostics panel opens without layout error`). | partial | /sf-start shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md |
@@ -341,7 +342,7 @@ None.
 |------|--------|----------|------|
 | sf-spec | complete | This spec created on 2026-05-28. | Run `/sf-ready shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md`. |
 | sf-ready | ready | Repaired spec passed readiness on 2026-05-28. | Start implementation. |
-| sf-start | complete | Reordered settings section IA so account, appearance, keyboard essentials, and onboarding are primary; backend/keys/platform/overlay kept as advanced-collapsed group defaults. | Run `/sf-verify shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md`. |
-| sf-verify | partial | `Test-first` proof done with targeted widget tests; hosted/mobile proof still pending (as documented in next step). | Run `flutter test test/widget_test.dart --name "completed onboarding card moves to bottom of settings|settings backend diagnostics panel opens without layout error"`. |
-| sf-end | pending | Not closed. | Close after verification. |
-| sf-ship | pending | Not shipped. | Ship after closure if requested. |
+| sf-start | complete | Localization continuation implemented for app shell navigation, voice copy, keyboard theme studio copy, and affected tests. | Local verification complete for this slice. |
+| sf-verify | complete | `flutter analyze`; `flutter test test/keyboard_theme_studio_screen_test.dart test/app_router_auth_guard_test.dart`; targeted `test/widget_test.dart` onboarding/navigation cases all passed on 2026-05-29. | Review bounded diff; hosted/mobile proof remains reserved for broader UI release or Android-native QA. |
+| sf-end | pending | Not closed because the broader UI-coherence chantier remains open. | Close when remaining chantier scope is accepted or explicitly split. |
+| sf-ship | pending | Not shipped; worktree also contains an unrelated dirty governance spec outside this slice. | Ship only with explicit bounded staging scope. |

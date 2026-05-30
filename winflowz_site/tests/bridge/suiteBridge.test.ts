@@ -3,14 +3,18 @@ import {
   getBridgeEndpointSecret,
   getConvexBridgeSecret,
   getBearerTokenFromAuthorizationHeader,
+  getSocialGlowzBridgeSecret,
   getSuiteEntitlementVerifySecret,
   hasActiveEntitlement,
   isActiveAccessStatus,
+  isAllowedSocialGlowzPlan,
+  isAllowedSocialGlowzSource,
   isAllowedSuiteProduct,
   isTrustedFirebaseIdTokenClaims,
   parseSyncRequestBody,
   maskProviderAccountId,
   resolveReplayGlowzEntitlementSnapshot,
+  resolveSocialGlowzEntitlementSnapshot,
 } from '@/lib/suiteBridge'
 
 describe('suiteBridge helpers', () => {
@@ -139,6 +143,56 @@ describe('suiteBridge helpers', () => {
         SUITE_BRIDGE_CONVEX_SECRET: 'convex-secret',
       })
     ).toBeNull()
+  })
+
+  test('resolves socialglowz bridge secret from dedicated env keys', () => {
+    expect(
+      getSocialGlowzBridgeSecret({
+        SOCIALGLOWZ_SUITE_BRIDGE_SECRET: 'social-bridge-secret',
+      })
+    ).toBe('social-bridge-secret')
+    expect(
+      getSocialGlowzBridgeSecret({
+        SUITE_SOCIALGLOWZ_BRIDGE_SECRET: 'suite-social-secret',
+      })
+    ).toBe('suite-social-secret')
+    expect(
+      getSocialGlowzBridgeSecret({
+        SOCIALGLOWZ_SUITE_BRIDGE_SECRET: '  ',
+      })
+    ).toBeNull()
+  })
+
+  test('allows only allowlisted socialglowz plan/source values', () => {
+    expect(isAllowedSocialGlowzPlan('lifetime_deal')).toBe(true)
+    expect(isAllowedSocialGlowzPlan('founder_ltd')).toBe(true)
+    expect(isAllowedSocialGlowzPlan('monthly')).toBe(false)
+
+    expect(isAllowedSocialGlowzSource('manual')).toBe(true)
+    expect(isAllowedSocialGlowzSource('direct')).toBe(true)
+    expect(isAllowedSocialGlowzSource('stripe')).toBe(false)
+  })
+
+  test('resolves socialglowz snapshot from canonical entitlement', () => {
+    expect(
+      resolveSocialGlowzEntitlementSnapshot({
+        globalUserId: 'gu_123',
+        entitlements: [
+          {
+            productId: 'socialglowz',
+            status: 'active',
+            plan: 'lifetime_deal',
+            source: 'manual',
+          },
+        ],
+      })
+    ).toEqual({
+      hasAccess: true,
+      planId: 'lifetime_deal',
+      source: 'manual',
+      globalUserId: 'gu_123',
+      reasonCode: 'active_entitlement',
+    })
   })
 
   test('resolves ReplayGlowz access from canonical entitlement first', () => {

@@ -99,6 +99,7 @@ winflowz_site/
 - `/api/polar/*` — checkout/webhook surfaces
 - `/api/bridge/firebase` — Firebase ID token bridge to suite identity snapshot
 - `/api/bridge/sync` — internal entitlement mirror sync by `globalUserId` + shared secret
+- `/api/bridge/socialglowz` — SocialGlowz server-to-server entitlement snapshot and activation-code redemption bridge
 
 ## Environment Variables
 
@@ -133,6 +134,16 @@ It recomputes entitlements from Convex (`productEntitlements` source of truth), 
 The bridge also writes a server-owned Firestore mirror at `suiteAccess/{firebaseUid}` after Convex entitlement lookup. WinFlowz app Firestore rules use that mirror to allow or deny `winflowz_app` data under `users/{uid}`.
 
 `POST /api/bridge/entitlement` verifies ReplayGlowz Clerk sessions server-side. A recognized Clerk account without active ReplayGlowz access receives a persisted `replayglowz/free` default entitlement for that product only; this does not unlock other WinFlowz suite products.
+
+`POST /api/bridge/socialglowz` accepts only:
+
+- header `x-socialglowz-suite-secret` with a dedicated shared secret;
+- JSON body with `operation` (`snapshot` or `redeem_code`), `providerAccountId`, and optional `email`/`sourceRef` (`code` required for `redeem_code`).
+
+The route calls suite Convex bridge mutations for `socialglowz` entitlement snapshot and activation-code redemption without merging identities by email alone.
+
+- `SOCIALGLOWZ_SUITE_BRIDGE_SECRET` (preferred dedicated secret)
+- `SUITE_SOCIALGLOWZ_BRIDGE_SECRET` (legacy/alternate key accepted as fallback)
 
 ### Clerk
 

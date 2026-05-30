@@ -391,6 +391,9 @@ None. Décisions readiness:
 |----------|-------|-------|--------|--------|-----------|
 | 2026-05-29 12:58:30 UTC | sf-spec | GPT-5 Codex | Created spec from UX audit and user request for SocialGlowz-style cloud account sync guidance. | Draft spec created. | /sf-ready shipflow_data/workflow/specs/guidage-compte-cloud-winflowz-socialglowz-parity.md |
 | 2026-05-29 14:44:54 UTC | sf-ready | GPT-5 Codex | Validated readiness, resolved open decisions, strengthened test contract and security/execution notes. | ready | /sf-start shipflow_data/workflow/specs/guidage-compte-cloud-winflowz-socialglowz-parity.md |
+| 2026-05-29 22:19:59 UTC | sf-start | GPT-5 Codex | Implemented the Flutter settings/mainline cloud-sync UX tranche: overview provider/model, account/sync section rewrite, post-auth feedback, and targeted widget/unit tests. | implemented | /sf-verify shipflow_data/workflow/specs/guidage-compte-cloud-winflowz-socialglowz-parity.md |
+| 2026-05-29 22:55:47 UTC | sf-verify | GPT-5 Codex | Verified implementation against the spec, reran local analyze/tests and metadata lint, and checked proof gaps. | partial | Vercel Flutter web smoke remains required before clean ship-readiness. |
+| 2026-05-29 23:24:54 UTC | sf-browser | GPT-5 Codex | Ran local Flutter Web browser smoke on the current dirty workspace with Chromium/CDP screenshots and console capture. | pass | /sf-verify can reclassify local web proof; deployed Vercel proof still pending until ship/prod. |
 
 # Current Chantier Flow
 
@@ -398,7 +401,7 @@ None. Décisions readiness:
 |------|--------|-------|
 | sf-spec | done | Spec created from audit intake. |
 | sf-ready | done | Ready after resolving open decisions and proof contract. |
-| sf-start | next | Implement the Flutter UX and tests. |
-| sf-verify | pending | Verify UX, tests, docs and risk gates. |
+| sf-start | done | Implemented the Flutter UX and tests for account cloud synthesis, post-auth feedback, and sync overview. |
+| sf-verify | partial | Local automated verification and local Flutter Web browser smoke passed; deployed Vercel proof remains before clean ship-readiness. |
 | sf-end | pending | Close tracking and changelog after implementation. |
 | sf-ship | pending | Ship only after checks and required web/device proof. |
