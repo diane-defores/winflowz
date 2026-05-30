@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-05-30"
 created_at: "2026-05-30 07:06:27 UTC"
 updated: "2026-05-30"
-updated_at: "2026-05-30 16:40:37 UTC"
+updated_at: "2026-05-30 17:09:14 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -55,7 +55,7 @@ evidence:
   - "Current Clipboard screen already has a local search field in lib/features/clipboard/presentation/clipboard_screen.dart."
   - "Current AppFormActions defines a default refresh label in lib/core/widgets/app_components.dart."
   - "Current SyncStatus and CloudSyncOverview already model localOnly, pending, syncing, synced, failed, conflict and unavailable states."
-next_step: "/sf-prod winflowz-app"
+next_step: "None"
 ---
 
 # Title
@@ -64,7 +64,7 @@ WinFlowz App Home Feed, Global Search, and Shared Page Actions
 
 ## Status
 
-Implementation complete locally after `sf-start`. Created from Diane's 2026-05-30 product direction, updated the same day to expand the shared refresh control into a save/sync/status action component, passed readiness review once, then returned to draft on 2026-05-30 to clarify that search and sync/save are separate shared components. Readiness was rerun on 2026-05-30. Implementation now includes shared search/status/toolbar components, Accueil feed provider/screen, `/home` routing, shell tab insertion, page-scoped searches across Voice/Clipboard/Snippets/Dictionary, Settings save/sync status feedback, focused tests, and local validation. `sf-verify` remains partial until Flutter web smoke is run on a deployed/allowed web surface.
+Implementation complete, shipped, deployed and smoke-verified after `sf-start`. Created from Diane's 2026-05-30 product direction, updated the same day to expand the shared refresh control into a save/sync/status action component, passed readiness review once, then returned to draft on 2026-05-30 to clarify that search and sync/save are separate shared components. Readiness was rerun on 2026-05-30. Implementation includes shared search/status/toolbar components, Accueil feed provider/screen, `/home` routing, shell tab insertion, page-scoped searches across Voice/Clipboard/Snippets/Dictionary, Settings save/sync status feedback, focused tests, local validation, Vercel production deployment, and Flutter web smoke proof on `https://app.winflowz.com`.
 
 ## User Story
 
@@ -408,26 +408,26 @@ Manual checklist path if needed: `shipflow_data/workflow/test-checklists/app-hom
 
 ## Acceptance Criteria
 
-- [ ] CA 1: Given a signed-in or local fallback user, when the app shell opens with default settings, then Accueil is selected and shows the global feed surface.
-- [ ] CA 2: Given the stores contain at least one transcription, clipboard item, snippet and dictionary term, when Accueil loads, then entries from all four sources appear in a single date-ordered feed with visible type labels.
-- [ ] CA 3: Given the global search query matches only a snippet trigger, when the user types the query on Accueil, then the feed shows that snippet and hides non-matching voice, clipboard and dictionary entries.
-- [ ] CA 4: Given the global search query matches nothing, when the user types it, then Accueil shows a no-results state with an affordance to clear the query.
-- [ ] CA 5: Given one feed source throws during refresh, when Accueil refreshes, then available sources still render and a partial warning identifies the unavailable source.
-- [ ] CA 6: Given all feed sources throw during refresh, when Accueil refreshes, then the page shows a recoverable error and a refresh action.
-- [ ] CA 7: Given the user taps a feed entry source action, when the source is Voice, Clipboard, Snippets or Dictionary, then the shell selects the corresponding page without losing navigation state.
-- [ ] CA 8: Given the user is on Clipboard, when they search, then results are restricted to clipboard entries and do not include voice/snippet/dictionary data.
-- [ ] CA 9: Given the user is on Voice, Snippets or Dictionary, when they search, then results are restricted to that page's data type and the shared search component visuals remain consistent.
-- [ ] CA 9.1: Given a page uses only search, only sync/save, or both, when it renders, then search and sync/save remain separate components and the optional toolbar only composes layout.
-- [ ] CA 10: Given a refresh is in progress on any page using the shared sync/save component, when the user taps refresh again, then no concurrent refresh starts and the component communicates busy/disabled state.
-- [ ] CA 10.1: Given a setting change is being saved, when the operation is in flight, then the shared component shows a loading/saving state and disables duplicate save/refresh actions.
-- [ ] CA 10.2: Given a setting change saved locally but cloud sync is unavailable, when the operation completes, then the shared component says local-only or pending instead of synced.
-- [ ] CA 10.3: Given a setting change or sync fails, when the operation returns an error, then the shared component shows an error state and clicking it retries the configured refresh/sync action.
-- [ ] CA 10.4: Given a setting change saves and syncs successfully, when the operation completes, then the shared component briefly shows a saved/synced confirmation with an accessible label.
-- [ ] CA 11: Given existing direct routes `/voice`, `/clipboard`, `/snippets`, `/dictionary`, `/settings`, when authenticated, then each still opens the correct tab after the Accueil index insertion.
-- [ ] CA 12: Given unauthenticated access to `/home`, when the auth guard runs, then the user is redirected to sign-in just like other protected routes.
-- [ ] CA 13: Given no data exists in any source, when Accueil loads, then it shows an empty state with shortcuts to the main data-creation pages.
-- [ ] CA 14: Given clipboard sensitive captures were rejected by existing importer logic, when global search runs, then rejected sensitive payloads do not appear.
-- [ ] CA 15: Given implementation completes, when local validation runs, then `flutter analyze` and relevant `flutter test` targets pass or any accepted exceptions are documented with proof.
+- [x] CA 1: Given a signed-in or local fallback user, when the app shell opens with default settings, then Accueil is selected and shows the global feed surface.
+- [x] CA 2: Given the stores contain at least one transcription, clipboard item, snippet and dictionary term, when Accueil loads, then entries from all four sources appear in a single date-ordered feed with visible type labels.
+- [x] CA 3: Given the global search query matches only a snippet trigger, when the user types the query on Accueil, then the feed shows that snippet and hides non-matching voice, clipboard and dictionary entries.
+- [x] CA 4: Given the global search query matches nothing, when the user types it, then Accueil shows a no-results state with an affordance to clear the query.
+- [x] CA 5: Given one feed source throws during refresh, when Accueil refreshes, then available sources still render and a partial warning identifies the unavailable source.
+- [x] CA 6: Given all feed sources throw during refresh, when Accueil refreshes, then the page shows a recoverable error and a refresh action.
+- [x] CA 7: Given the user taps a feed entry source action, when the source is Voice, Clipboard, Snippets or Dictionary, then the shell selects the corresponding page without losing navigation state.
+- [x] CA 8: Given the user is on Clipboard, when they search, then results are restricted to clipboard entries and do not include voice/snippet/dictionary data.
+- [x] CA 9: Given the user is on Voice, Snippets or Dictionary, when they search, then results are restricted to that page's data type and the shared search component visuals remain consistent.
+- [x] CA 9.1: Given a page uses only search, only sync/save, or both, when it renders, then search and sync/save remain separate components and the optional toolbar only composes layout.
+- [x] CA 10: Given a refresh is in progress on any page using the shared sync/save component, when the user taps refresh again, then no concurrent refresh starts and the component communicates busy/disabled state.
+- [x] CA 10.1: Given a setting change is being saved, when the operation is in flight, then the shared component shows a loading/saving state and disables duplicate save/refresh actions.
+- [x] CA 10.2: Given a setting change saved locally but cloud sync is unavailable, when the operation completes, then the shared component says local-only or pending instead of synced.
+- [x] CA 10.3: Given a setting change or sync fails, when the operation returns an error, then the shared component shows an error state and clicking it retries the configured refresh/sync action.
+- [x] CA 10.4: Given a setting change saves and syncs successfully, when the operation completes, then the shared component briefly shows a saved/synced confirmation with an accessible label.
+- [x] CA 11: Given existing direct routes `/voice`, `/clipboard`, `/snippets`, `/dictionary`, `/settings`, when authenticated, then each still opens the correct tab after the Accueil index insertion.
+- [x] CA 12: Given unauthenticated access to `/home`, when the auth guard runs, then the user is redirected to sign-in just like other protected routes.
+- [x] CA 13: Given no data exists in any source, when Accueil loads, then it shows an empty state with shortcuts to the main data-creation pages.
+- [x] CA 14: Given clipboard sensitive captures were rejected by existing importer logic, when global search runs, then rejected sensitive payloads do not appear.
+- [x] CA 15: Given implementation completes, when local validation runs, then `flutter analyze` and relevant `flutter test` targets pass or any accepted exceptions are documented with proof.
 
 ## Test Strategy
 
@@ -495,14 +495,18 @@ None blocking for the initial spec. Additional ideas are welcome before `/sf-rea
 | 2026-05-30 16:34:31 UTC | sf-start | GPT-5 Codex + GPT-5.3 Codex Spark worker | Completed page-scoped search migration, shared refresh/status controls, Settings save/sync status, docs alignment, and local checks | implemented | `/sf-verify shipflow_data/workflow/specs/app-home-feed-global-actions-search.md` |
 | 2026-05-30 16:34:31 UTC | sf-verify | GPT-5 Codex | Verified local implementation with `flutter analyze`, `flutter test`, focused page/settings tests, and metadata lint; Flutter web smoke remains required before clean ship readiness | partial | `/sf-ship shipflow_data/workflow/specs/app-home-feed-global-actions-search.md` |
 | 2026-05-30 16:40:37 UTC | sf-ship | GPT-5 Codex | Prepared targeted ship for the WinFlowz app home feed and shared action/status chantier, excluding unrelated site changes | shipped | `/sf-prod winflowz-app` |
+| 2026-05-30 17:07:36 UTC | sf-prod | GPT-5 Codex | Verified Vercel production deployment `dpl_AsApHLHxFidUgmi7wRt8aDb5oLS5`, `https://app.winflowz.com` health 200, and Flutter web smoke for local mode, Accueil feed, refresh, global search, and Clipboard scoped search | verified | `/sf-end shipflow_data/workflow/specs/app-home-feed-global-actions-search.md` |
+| 2026-05-30 17:07:36 UTC | sf-verify | GPT-5 Codex + GPT-5.3 Codex Spark explorer | Closed the remaining deployed web smoke gate and reviewed spec-to-implementation coherence; no blocking issue remains | verified | `/sf-end shipflow_data/workflow/specs/app-home-feed-global-actions-search.md` |
+| 2026-05-30 17:07:36 UTC | sf-end | GPT-5 Codex | Closed the app home feed, global/page search, and shared sync/save status chantier after ship, production deploy and smoke verification | closed | `None` |
+| 2026-05-30 17:09:14 UTC | sf-ship | GPT-5 Codex | Shipped final chantier closure trace and app changelog entry, excluding unrelated dirty files | shipped | `None` |
 
 ## Current Chantier Flow
 
 sf-spec: done
 sf-ready: ready
 sf-start: implemented
-sf-verify: partial
-sf-end: not launched
+sf-verify: verified
+sf-end: closed
 sf-ship: shipped
 
-Next command: `/sf-prod winflowz-app`
+Next command: None
