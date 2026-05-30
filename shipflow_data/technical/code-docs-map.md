@@ -56,6 +56,7 @@ Map stable code areas to their primary technical docs, expected validations, and
 | `src/pages/[...lang]/**`, `src/layouts/**`, `src/components/**` | public presentation and route surface | `shipflow_data/technical/context.md` | `shipflow_data/editorial/page-intent-map.md`, `shipflow_data/technical/guidelines.md` | `pnpm build:check` | page structure, CTA flow, localization, or route additions |
 | `src/middleware/**`, `src/i18n/**`, `src/utils/routing.ts` | locale and route orchestration | `shipflow_data/technical/context-function-tree.md` | `shipflow_data/technical/architecture.md`, `shipflow_data/technical/guidelines.md` | `pnpm build:check` | locale rules, redirects, slug naming, route additions |
 | `src/pages/api/**`, `convex/**` | auth, billing, newsletter, backend state | `shipflow_data/technical/architecture.md` | `shipflow_data/technical/context-function-tree.md`, `shipflow_data/technical/guidelines.md` | `pnpm build:check` | auth, checkout, webhook, newsletter, schema, or entitlement changes |
+| `src/pages/api/commerce/**`, `src/lib/commerce/**` | processor-agnostic commerce and provider webhooks | `shipflow_data/technical/architecture.md` | `shipflow_data/technical/context.md`, `shipflow_data/technical/context-function-tree.md`, `shipflow_data/technical/platforms/lemonsqueezy.md` | `pnpm test tests/commerce/*.test.ts` | checkout route, webhook normalization, provider abstraction, and commerce idempotency behavior |
 | `src/content/config.ts`, `src/content/**` | runtime content schema and content collections | `shipflow_data/technical/guidelines.md` | `shipflow_data/editorial/astro-content-schema-policy.md`, `shipflow_data/editorial/content-map.md` | `pnpm build:check` | schema changes, new collections, frontmatter contract changes |
 | `README.md`, `AGENT.md`, `shipflow_data/**` | governance and onboarding docs | `shipflow_data/technical/README.md` | all canonical governance docs | metadata lint + targeted `rg` checks | doc drift, new subsystem docs, or governance migration |
 
@@ -89,4 +90,3 @@ rg -n "Maintenance Rule|Validation|Owned Files|Entrypoints" shipflow_data/techni
 ## Maintenance Rule
 
 Update this map whenever a major code area, canonical doc, or validation contract changes.
-

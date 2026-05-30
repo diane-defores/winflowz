@@ -1,6 +1,7 @@
 const CLERK_BYPASS_API_PATHS = new Set([
   "/api/clerk/webhook",
   "/api/polar/webhook",
+  "/api/commerce/webhooks/lemon-squeezy",
 ]);
 
 const CLERK_BYPASS_PUBLIC_PATHS = new Set([
@@ -10,6 +11,7 @@ const CLERK_BYPASS_PUBLIC_PATHS = new Set([
 const CLERK_BYPASS_API_PREFIXES = [
   "/api/bridge",
   "/api/newsletter",
+  "/api/commerce",
 ];
 
 function normalizePathname(pathname: string): string {

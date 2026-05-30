@@ -97,6 +97,8 @@ winflowz_site/
 - `/dashboard/*` — authenticated surfaces
 - `/api/newsletter/*` — newsletter subscribe and unsubscribe
 - `/api/polar/*` — checkout/webhook surfaces
+- `/api/commerce/*` — provider-agnostic checkout/webhook surfaces
+- `/api/commerce/webhooks/lemon-squeezy` — Lemon Squeezy webhook for normalized LTD commerce events
 - `/api/bridge/firebase` — Firebase ID token bridge to suite identity snapshot
 - `/api/bridge/sync` — internal entitlement mirror sync by `globalUserId` + shared secret
 - `/api/bridge/socialglowz` — SocialGlowz server-to-server entitlement snapshot and activation-code redemption bridge
@@ -135,12 +137,15 @@ The bridge also writes a server-owned Firestore mirror at `suiteAccess/{firebase
 
 `POST /api/bridge/entitlement` verifies ReplayGlowz Clerk sessions server-side. A recognized Clerk account without active ReplayGlowz access receives a persisted `replayglowz/free` default entitlement for that product only; this does not unlock other WinFlowz suite products.
 
-`POST /api/bridge/socialglowz` accepts only:
+`POST /api/bridge/socialglowz` accepts:
 
 - header `x-socialglowz-suite-secret` with a dedicated shared secret;
-- JSON body with `operation` (`snapshot` or `redeem_code`), `providerAccountId`, and optional `email`/`sourceRef` (`code` required for `redeem_code`).
+- JSON body with `operation` (`snapshot`, `redeem_code`, or `commerce`), plus
+  operation-specific fields:
+  - `snapshot` and `redeem_code` require `providerAccountId`,
+  - `commerce` requires provider/offer/product/plan/event and identity context (`provider`, `offerId`, `productId`, `plan`, `eventType`, `environment`, `providerEventId`, `providerOrderId`, `idempotencyKey`, `status`).
 
-The route calls suite Convex bridge mutations for `socialglowz` entitlement snapshot and activation-code redemption without merging identities by email alone.
+The route calls suite Convex bridge mutations for `socialglowz` entitlement snapshot, activation-code redemption, and commerce fulfillment without merging identities by email alone.
 
 - `SOCIALGLOWZ_SUITE_BRIDGE_SECRET` (preferred dedicated secret)
 - `SUITE_SOCIALGLOWZ_BRIDGE_SECRET` (legacy/alternate key accepted as fallback)
@@ -159,6 +164,18 @@ The route calls suite Convex bridge mutations for `socialglowz` entitlement snap
 - `POLAR_WEBHOOK_SECRET`
 - `POLAR_SERVER`
 - `SUITE_BRIDGE_SYNC_URL` (used by Convex Polar webhook handling to call `/api/bridge/sync`)
+
+### Lemon Squeezy (direct LTD checkout)
+
+- `LEMONSQUEEZY_API_KEY`
+- `LEMONSQUEEZY_API_URL` (default: `https://api.lemonsqueezy.com`)
+- `LEMONSQUEEZY_STORE_ID`
+- `LEMONSQUEEZY_SOCIALGLOWZ_PRODUCT_ID`
+- `LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID`
+- `LEMONSQUEEZY_WEBHOOK_SECRET`
+- `COMMERCE_PROVIDER_ORDER` (optional provider preference, e.g. `lemonsqueezy,polar`)
+
+The direct checkout adapter creates hosted Lemon Squeezy checkouts with `product_options.redirect_url` and `checkout_data.custom`. Webhook fulfillment reads the signed raw body, verifies `X-Signature`, uses `X-Event-Name`, and maps Lemon Squeezy `meta.custom_data` back to the suite entitlement ledger.
 
 ### Resend
 

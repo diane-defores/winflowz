@@ -8,6 +8,9 @@ describe("auth routing middleware", () => {
     expect(shouldBypassClerkMiddleware("/api/clerk/webhook")).toBe(true);
     expect(shouldBypassClerkMiddleware("/api/polar/webhook")).toBe(true);
     expect(shouldBypassClerkMiddleware("/api/newsletter/subscribe")).toBe(true);
+    expect(shouldBypassClerkMiddleware("/api/commerce/webhooks/lemon-squeezy")).toBe(true);
+    expect(shouldBypassClerkMiddleware("/api/commerce")).toBe(true);
+    expect(shouldBypassClerkMiddleware("/api/commerce/something")).toBe(true);
   });
 
   test("keeps Clerk for account pages and Clerk-backed checkout", () => {
