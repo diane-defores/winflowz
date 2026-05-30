@@ -21,6 +21,7 @@ linked_systems:
   - "Backend-agnostic stores"
   - "Firebase first adapter"
   - "Android MethodChannel"
+  - "Windows desktop overlay host"
 depends_on:
   - "CLAUDE.md@1.2.0"
   - "shipflow_data/technical/guidelines.md@0.1.0"
@@ -37,16 +38,22 @@ next_step: "/sf-docs technical audit"
 ## Purpose
 
 The Flutter app owns the user-facing screens, backend-agnostic feature APIs and
-stores, platform capability gates, and MethodChannel bridge wrappers.
+stores, platform capability gates, shared overlay/action UI, and native bridge
+wrappers.
 Provider-specific repositories such as Supabase legacy or Firebase are adapters,
-not product contracts. Android-only capabilities must be hidden or described as
-unavailable on non-Android platforms.
+not product contracts. OS-specific capabilities must be represented as platform
+hosts behind shared contracts: Android IME remains Android-only, Android overlay
+controls remain Android-only, and Windows desktop overlay/hotkeys must be a
+Windows host for the shared overlay product concept. Product parity is the
+default: a feature should be planned as cross-platform unless an OS, browser,
+security, store policy, or runtime limitation makes that unsafe or impossible.
 
 ## Owned Files
 
 | Path | Role | Edit notes |
 | --- | --- | --- |
 | `lib/core/platform/**` | Platform capability and native bridge wrappers | Keep native channel names stable and return typed models instead of raw maps. |
+| `windows/**` | Windows desktop host | Own global hotkeys, overlay window behavior, focus, clipboard and text delivery; do not duplicate product stores here. |
 | `lib/core/router/app_router.dart` | App route table and auth/local-mode guard | Protected product routes must pass through the app shell and must not build without signed-in or explicit local fallback state. |
 | `lib/core/diagnostics/**` | Local diagnostics and redaction helpers | Redact secrets/tokens/password-like fields before support copy, breadcrumbs, or event details. |
 | `lib/features/auth/**` | Auth contracts, Firebase/Google adapters, auth gate, and sign-in UI | Keep SDK errors behind typed domain failures; UI should not parse raw Firebase/Google exceptions directly. |
@@ -72,6 +79,11 @@ Settings UI
   -> Dart bridge wrapper
   -> Android MethodChannel
   -> native status/settings action
+
+Shared overlay product surface
+  -> Overlay host contract
+  -> Android foreground overlay service or Windows desktop overlay host
+  -> clipboard fallback and best-effort text delivery
 
 Keyboard corner editor / preview
   -> AndroidKeyboardCornerConfig + KeyboardCornerPresetCatalog
@@ -103,10 +115,16 @@ Keyboard sync panel
 - Firebase/Google SDK exceptions cross into presentation as typed
   `AuthFailure` values with redacted support details.
 - Android-only controls render only when `PlatformCapabilities.isAndroid` is true.
+- Windows overlay controls must render only when Windows host support exists and
+  must never imply Windows IME support.
+- Unsupported states must describe the missing host or platform proof, not imply
+  that the product concept is permanently Android-only.
 - Domain model source allowlists must match database constraints.
 - Clipboard UI, application APIs and domain models must not import Supabase adapters.
 - Signed-out, local fallback, and entitlement-missing sessions keep clipboard history usable through `PersistentClipboardHistoryStore`.
 - Android native code emits platform actions/events; backend writes go through the Flutter product API or an equivalent store contract.
+- Windows native code may emit hotkey, window, clipboard and delivery events;
+  backend writes still go through Flutter product APIs or equivalent stores.
 - Keyboard clipboard bridge events are imported by Flutter before listing clipboard items; sensitive automatic content can be rejected by the store without user confirmation.
 - Keyboard corner config models in `lib/features/keyboard/domain/keyboard_models.dart` mirror the native preset/override wire shape. Kotlin native owns functional preset tables; Flutter keeps preset ids/names as DTO/UI fallback and resolves only explicit overrides.
 - `KeyboardCornerShortcutsScreen` edits corner shortcuts as a draft. It must not call the native save bridge until the user explicitly saves, and unsupported platforms must remain simulation-only.
@@ -118,6 +136,9 @@ Keyboard sync panel
 ## Failure Modes
 
 - Native channel unavailable: show a recoverable Settings message instead of crashing.
+- Windows hotkey, always-on-top window, focus, clipboard or delivery unavailable:
+  keep the shared overlay UI recoverable and preserve final text through visible
+  clipboard/manual-copy fallback.
 - Remote backend not configured: keep local UI usable with the secure persistent clipboard store and display configuration state for cloud sync.
 - Auth provider unavailable or misconfigured: show a recoverable French auth
   message, keep support detail redacted/copyable only when useful, and do not
@@ -146,6 +167,8 @@ flutter test
 ## Reader Checklist
 
 - `lib/core/platform/**` changed -> verify native channel contract and Settings UI.
+- `windows/**` changed -> verify Windows runner/manual QA for hotkey, overlay
+  window, focus, clipboard, delivery, multi-monitor and DPI behavior.
 - `lib/features/keyboard/domain/keyboard_models.dart` or keyboard preview changed -> verify preset id parsing, explicit override precedence, private-mode filtering, and widget tests for preview rendering.
 - `lib/features/keyboard/presentation/keyboard_corner_shortcuts_screen.dart` changed -> verify draft/save separation, private-mode warnings, snippet search, import/export safety, and unsupported-platform copy.
 - Domain model source allowlist changed -> verify SQL constraints and tests.

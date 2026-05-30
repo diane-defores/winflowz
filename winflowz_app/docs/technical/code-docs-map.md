@@ -16,6 +16,7 @@ docs_impact: yes
 linked_systems:
   - "Flutter"
   - "Android native"
+  - "Windows native"
   - "Supabase"
 depends_on:
   - "docs/technical/README.md@0.1.0"
@@ -35,6 +36,7 @@ next_step: "/sf-docs technical audit"
 | `lib/data/supabase/**` | Supabase provider adapters | `docs/technical/supabase-data.md` | `flutter test test/supabase_clipboard_store_test.dart`; Supabase smoke tests when DB is available | Provider payloads, table mapping, RLS-sensitive metadata, or adapter contract changes |
 | `.github/workflows/**`, `firebase.json`, `firestore.rules`, `firestore.indexes.json` | Firebase CI deploy and Firestore config | `docs/technical/firebase-cli-foundation.md`; `docs/technical/firebase-oidc-ci-playbook.md` | Trigger GitHub workflow; verify `Deploy Firestore Rules and Indexes` job; optional local `firebase deploy --only firestore --project <id>` | OIDC/WIF auth, Firebase deploy command, CI secrets, IAM assumptions, rules/indexes, or Firestore API enablement changes |
 | `android/app/src/main/**` | Android native | `docs/technical/android-native.md` | `./gradlew :app:compileDebugKotlin` or `flutter build apk --debug` on supported host | Manifest/service/permission, MethodChannel, overlay, IME, media, clipboard, accessibility, or lifecycle changes |
+| `windows/**` | Windows native desktop host | `docs/technical/flutter-app.md`; `docs/PLATFORM_BEHAVIOR.md`; `docs/VERIFICATION.md` | Windows runner/manual QA; future `flutter build windows` on supported host | Global hotkeys, overlay window, focus, clipboard, text delivery, Windows plugin/channel, or desktop launch behavior changes |
 | `supabase/migrations/**`, `supabase/tests/**` | Supabase data | `docs/technical/supabase-data.md` | Supabase migration apply and `supabase/tests/rls_smoke.sql` against a linked project | Table, policy, constraint, RLS, realtime, repository metadata, or smoke-test changes |
 | `docs/**`, `README.md`, `shipflow_data/business/product.md`, `shipflow_data/business/business.md` | Documentation | `docs/technical/code-docs-map.md` plus target doc | Markdown review and relevant code checks | User-visible platform capability, setup, verification, API, or security promise changes |
 

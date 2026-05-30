@@ -23,6 +23,7 @@ evidence:
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/OverlayTextInjectionHelper.kt"
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt"
   - "shipflow_data/workflow/specs/android-ime-winflowz_app-keyboard.md"
+  - "shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md"
 next_step: "/sf-verify shipflow_data/workflow/specs/android-overlay-flutter-parity-repair.md"
 ---
 
@@ -30,7 +31,21 @@ next_step: "/sf-verify shipflow_data/workflow/specs/android-overlay-flutter-pari
 
 ## Contract
 
-Android overlay is an Android-only native capability exposed to Flutter through a narrow Dart bridge. It must not be represented as available on iOS, macOS, Windows, Linux, or web.
+This document describes the Android host for the WinFlowz overlay capability.
+The Android implementation is Android-only: foreground service, `WindowManager`
+bubble, Android accessibility delivery, and Android permissions must not be
+represented as available on iOS, macOS, Windows, Linux, or web.
+
+The overlay product concept is broader than Android. Windows now has a separate
+desktop overlay/hotkeys chantier: it should reuse the shared Flutter product UI
+and actions, but implement hotkeys, always-on-top window behavior, focus,
+clipboard, and text delivery through a Windows-native host rather than porting
+the Kotlin service.
+
+This same principle should apply to the rest of the platform roadmap: concepts
+such as overlay/quick actions, voice, snippets, dictionary, clipboard, local
+history and sync are parity targets by default. Android-only language in this
+document refers to Android system mechanisms, not to the product concept.
 
 WinFlowz keyboard is now the preferred Android text-entry surface for in-field typing, dictation, clipboard actions, snippets entry points, and generic media play/pause. Overlay remains complementary for floating capture flows and fallback delivery, not the primary keyboard path.
 

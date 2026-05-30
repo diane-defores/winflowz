@@ -21,6 +21,7 @@ evidence:
   - "lib/core/platform/platform_capabilities.dart"
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzInputMethodService.kt"
   - "shipflow_data/workflow/specs/keyboard-stable-grid-touch-geometry.md"
+  - "shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md"
 next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-migration.md"
 ---
 
@@ -33,17 +34,26 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 - If secure local storage is unavailable or materially degraded, cloud AI features must be disabled or clearly marked degraded until the user accepts the risk.
 - Clipboard sync is opt-in and visibly controllable.
 - Platform limitations must be visible in Settings and docs.
+- Flutter is the shared product and UI layer. System-level surfaces such as
+  IME, overlay windows, global hotkeys, focus handling, accessibility, and text
+  delivery are platform hosts behind the shared product contract, not one
+  portable OS mechanism.
+- Product parity is the default. Voice, overlay/quick actions, clipboard,
+  snippets, dictionary, history, settings, local-first behavior, sync and AI
+  workflows should be planned for every supported platform unless an OS,
+  browser, security, or store policy makes a capability impossible or unsafe.
+  Exceptions must be visible in Settings and docs.
 
 ## Capability Matrix
 
-| Platform | Local speech | Advanced recording + Whisper | Secure key storage | Clipboard sync | Overlay | WinFlowz keyboard IME |
+| Platform | Local speech | Advanced recording + Whisper | Secure key storage | Clipboard sync | Overlay / quick actions | WinFlowz keyboard IME |
 |---|---|---|---|---|---|---|
 | Android | supported when `speech_to_text` or Android speech recognition supports locale/device | supported | Android keystore via `flutter_secure_storage` | opt-in; respect background limits | supported | supported as native Kotlin IME |
-| iOS | supported when permission and locale allow | supported | Keychain via `flutter_secure_storage` | opt-in; no Android-style overlay | unavailable | unavailable |
-| macOS | supported when package/platform allows | supported | keychain-backed where available | opt-in | unavailable | unavailable |
-| Windows | supported when package/platform allows | supported | platform secure storage where available | opt-in | unavailable | unavailable |
-| Linux | local speech unavailable unless package support changes | supported via recording + Whisper | may be degraded; require explicit UI state | opt-in | unavailable | unavailable |
-| Web | unavailable for current Android-first work | unavailable for current Android-first work | degraded compared with native keychain/keystore | not a current priority | unavailable | unavailable |
+| iOS | supported when permission and locale allow | supported | Keychain via `flutter_secure_storage` | opt-in; no Android-style overlay | target parity; native host/recovery model still to spec | unavailable |
+| macOS | supported when package/platform allows | supported | keychain-backed where available | opt-in | target parity after Windows; native host still to spec | unavailable |
+| Windows | supported when package/platform allows | supported | platform secure storage where available | opt-in | target chantier: desktop overlay window + global hotkeys + clipboard/delivery | unavailable |
+| Linux | local speech unavailable unless package support changes | supported via recording + Whisper | may be degraded; require explicit UI state | opt-in | target parity after Windows; desktop host still to spec | unavailable |
+| Web | browser-limited; target explicit degraded parity where safe | browser-limited unless a secure proxy/direct contract is specified | degraded compared with native keychain/keystore | target explicit degraded parity where safe | browser-limited quick actions; no OS overlay | unavailable |
 
 ## Android Keyboard IME
 
@@ -71,15 +81,36 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 - The bubble can emit queued events to Flutter for tap, long press, stop, cancel, and native service errors.
 - Accessibility delivery is optional and best-effort; clipboard fallback remains mandatory for final text.
 - The overlay and IME must not run concurrent voice sessions. Until full arbitration is implemented, UI and logs must treat this as a high-risk QA case.
-- Non-Android platforms must not show overlay activation controls.
+- Non-Android platforms must not show Android overlay activation controls.
+
+## Windows Desktop Overlay
+
+- Windows overlay is now a target chantier, not an unavailable product concept.
+- The Windows implementation must share Flutter UI, actions, stores, status
+  states, and Settings patterns where possible, but use a Windows-native host
+  for global hotkeys, always-on-top window behavior, focus, clipboard, and text
+  delivery.
+- Windows must not promise an IME. The expected equivalent is desktop quick
+  actions: hotkey -> overlay -> correction/dictation/snippet/clipboard action ->
+  clipboard or best-effort delivery into the active app.
+- Clipboard fallback is mandatory. Automatic paste/injection is a best-effort
+  enhancement and must be visibly recoverable when the target app blocks it.
+- macOS and Linux should follow after the Windows pattern is proven, each with
+  its own native host and verification matrix. iOS and web also need explicit
+  parity specs, with browser/store limits treated as documented product
+  constraints rather than silent omissions.
 
 ## Direct AI Calls
 
-Android may call OpenAI/Anthropic directly with user-provided keys where secure local storage and provider behavior allow. Web is intentionally ignored for now and must stay disabled for advanced cloud AI until a later reviewed decision reopens it.
+Native platforms may call OpenAI/Anthropic directly with user-provided keys
+where secure local storage and provider behavior allow. Web remains disabled for
+advanced cloud AI until a secure direct/proxy contract is specified; this is a
+documented degraded-parity constraint, not a reason to ignore web product
+behavior.
 
 ## Apple Microphone And Speech Permissions
 
-iOS and macOS must declare microphone and speech recognition usage descriptions before any dictation or recording prompt is tested. macOS also requires sandbox audio input entitlement for microphone capture. These declarations do not reopen overlay or IME scope outside Android.
+iOS and macOS must declare microphone and speech recognition usage descriptions before any dictation or recording prompt is tested. macOS also requires sandbox audio input entitlement for microphone capture. These declarations support the broader parity target; they do not imply an IME outside Android.
 
 ## Limits
 

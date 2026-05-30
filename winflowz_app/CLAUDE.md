@@ -18,6 +18,7 @@ linked_systems:
   - "Supabase Auth"
   - "Supabase Postgres + RLS"
   - "Android Overlay Bridge"
+  - "Windows Desktop Overlay Host"
 evidence: []
 depends_on:
   - "shipflow_data/business/business.md@0.1.0"
@@ -34,8 +35,18 @@ next_step: "$sf-docs update"
 
 ## Project Overview
 
-WinFlowz is now a Flutter application using Supabase for authentication and data persistence.
-The app targets multi-platform delivery with Android-specific overlay capabilities exposed through a Flutter method channel.
+WinFlowz is now a Flutter application using backend-agnostic product stores
+with Firebase as the first active Android adapter and Supabase retained as
+legacy/migration reference where still present.
+
+The app targets multi-platform delivery with a shared Flutter product/UI layer.
+System-level entry points are native hosts behind that shared layer: Android has
+IME plus Android overlay, and Windows now has a dedicated desktop
+overlay/hotkeys parity chantier.
+
+Product parity is the default planning posture. Treat Android-only,
+desktop-only, web-limited, or unavailable status as an exception that must be
+caused by OS/browser/security/store constraints and documented explicitly.
 
 Current migration baseline includes:
 - Supabase auth gate and email/password login flow
@@ -51,7 +62,8 @@ Current migration baseline includes:
 - Backend: Supabase (Auth + Postgres + RLS)
 - Secure storage: flutter_secure_storage
 - Audio/voice primitives: record + speech_to_text
-- Android native: Kotlin `MethodChannel` bridge for overlay permission and bridge state
+- Android native: Kotlin `MethodChannel` bridge for overlay permission, bridge state, and IME status
+- Windows native target: desktop overlay host for global hotkeys, always-on-top window behavior, focus, clipboard, and delivery
 
 ## Commands
 
@@ -76,7 +88,7 @@ supabase db push
 - deployment_provider: vercel for web; GitHub Actions/Blacksmith for Android builds
 - preview_source: https://winflowz-app.vercel.app/
 - production_url: https://winflowz-app.vercel.app/
-- notes: Agents can access and validate the Flutter web app on Vercel at `https://winflowz-app.vercel.app/`. Pure Flutter surfaces are considered shared across web and Android for QA purposes: onboarding UI, Settings UI, clipboard manual CRUD, snippets, dictionary, dialogs, form validation, navigation, and other widget-tree behavior must be covered by targeted widget tests first, then can be smoke-tested on the Flutter web app before asking Diane to download and validate an APK. Android-native behavior remains Android-only: IME integration, overlay service, native permissions, media/session access, system brightness, notification access, keyboard clipboard capture, and physical-device lifecycle must be validated through GitHub Actions/Blacksmith APKs and Diane's device QA. Manual APK QA should not be used as the first line of detection for testable Flutter widget regressions.
+- notes: Agents can access and validate the Flutter web app on Vercel at `https://winflowz-app.vercel.app/`. Pure Flutter surfaces are considered shared across web, Android, and desktop for QA purposes: onboarding UI, Settings UI, clipboard manual CRUD, snippets, dictionary, dialogs, form validation, navigation, overlay panel UI, and other widget-tree behavior must be covered by targeted widget tests first. Native host behavior is platform-specific: Android IME/overlay/native permissions/media/session lifecycle must be validated through GitHub Actions/Blacksmith APKs and Diane's device QA; Windows overlay hotkeys/window/focus/clipboard/delivery require a Windows runner or Windows manual QA. Manual APK QA should not be used as the first line of detection for testable Flutter widget regressions.
 - last_reviewed: 2026-05-24
 
 ### Pre-APK QA Gate
@@ -138,11 +150,21 @@ supabase/
 - No service-role key is allowed in Flutter client code.
 - Data access is controlled by Supabase RLS policies; client code must never bypass tenant/user filters.
 - Clipboard, snippets, dictionary, and transcriptions are user-scoped CRUD resources.
-- Android overlay features are Android-only and must remain disabled on non-Android platforms.
+- Android overlay controls are Android-only and must remain disabled on non-Android platforms.
+- Overlay as a product capability is multi-platform. Windows owns the next host:
+  desktop overlay window, global hotkeys, clipboard, focus, and best-effort text
+  delivery. Do not promise a Windows IME.
+- Most WinFlowz concepts should target parity across Android, iOS, macOS,
+  Windows, Linux and web. Do not classify a feature as Android-only unless the
+  OS mechanism itself is Android-specific, such as the IME.
 
 ## Known Gaps
 
-- Full Android overlay foreground-service flow and accessibility injection are not yet ported.
+- Windows desktop overlay/hotkeys parity is a draft chantier; do not claim it is
+  implemented until a Windows runner or manual QA proves hotkey, overlay window,
+  clipboard, and delivery behavior.
+- Full Android overlay foreground-service flow and accessibility injection still
+  require Android device QA for final parity claims.
 - Voice recording and AI cleanup pipelines are not fully wired end-to-end.
 - Legacy JS/TS artifacts may remain in non-Flutter directories until final purge is completed.
 

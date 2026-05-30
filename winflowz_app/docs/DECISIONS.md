@@ -26,6 +26,41 @@ next_step: "/sf-ready shipflow_data/workflow/specs/unified-suite-authentication.
 
 # Decisions — WinFlowz
 
+## 2026-05-30 — Cross-platform parity becomes the product default (draft)
+
+### Decision
+
+Flutter remains the shared product/UI codebase for WinFlowz. WinFlowz should
+target near-complete functional parity across Android, iOS, macOS, Windows,
+Linux and web. Android-only, desktop-only, web-limited, or unavailable status
+must be treated as an explicit exception caused by OS/browser/security/store
+constraints, not as the default planning posture.
+
+Platform split:
+
+1. Android keeps the native Kotlin IME and Android foreground overlay host.
+2. Windows becomes the next target for parity through a desktop overlay host:
+   global hotkeys, always-on-top Flutter window, clipboard, focus, and
+   best-effort text delivery.
+3. iOS, macOS, Linux and web should be opened as separate parity chantiers after
+   the Windows pattern is proven or when a platform-specific feature is needed.
+4. Overlay/quick actions are a multi-platform product concept, not Android-only.
+5. No platform may claim universal injection; clipboard fallback remains
+   mandatory.
+
+### Consequences
+
+- Do not port Android overlay code directly to Windows; port the concept,
+  interaction model, and shared Flutter UI.
+- Do not promise a Windows IME.
+- Documentation that marks a concept Android-only must justify the OS constraint
+  or be updated to a parity target with an implementation/proof status.
+- Documentation that says overlay is unavailable on Windows is stale once
+  touched and must be replaced with "Windows target chantier, not implemented
+  until Windows proof exists."
+- The active chantier is
+  `shipflow_data/workflow/specs/windows-desktop-overlay-hotkeys-parity.md`.
+
 ## 2026-05-19 — Suite identity exception for Clerk (reviewed)
 
 ### Decision
@@ -56,7 +91,10 @@ WinFlowz no longer treats Supabase as the active backend target. The app must mo
 2. Firebase Auth + Firestore is the first remote adapter candidate for the Android MVP because it has a free Spark plan, does not use Supabase-style project pausing, supports Flutter/Android well, and is deployable through CLI-managed rules/indexes.
 3. Supabase remains a migration artifact and reference only until removed or replaced. Do not add new Supabase-coupled product code.
 4. GitHub Secrets remain the CI secret source for Android builds on Blacksmith.
-5. Current implementation focus is Android. Web and non-Android cloud-AI behavior are ignored for now unless a later reviewed decision reopens them.
+5. Historical implementation focus was Android. This remains relevant for
+   existing Android proof gates, but the 2026-05-30 parity decision supersedes
+   any assumption that web or non-Android behavior can be ignored as product
+   scope.
 6. The proprietary Android keyboard implementation proceeds progressively: base typing and safety first, advanced gestures/modularity after the first usable keyboard slice.
 
 ### Consequences
