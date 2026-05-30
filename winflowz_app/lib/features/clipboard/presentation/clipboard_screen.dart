@@ -840,89 +840,55 @@ class _ClipboardItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isError = item.syncState == ClipboardSyncState.error;
-    return Card(
-      child: Padding(
-        padding: AppInsets.compactCard,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  item.pinned ? Icons.push_pin : _sourceIcon(_sourceFrom(item)),
-                  color: item.pinned ? colorScheme.primary : null,
-                ),
-                AppGaps.horizontalX2,
-                Expanded(
-                  child: Text(
-                    item.content,
-                    maxLines: 5,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-                AppGaps.horizontalX2,
-                Wrap(
-                  spacing: AppIconMetrics.listActionSpacing,
-                  children: [
-                    IconButton(
-                      tooltip: 'Copier',
-                      onPressed: onCopy,
-                      icon: const Icon(Icons.content_copy),
-                    ),
-                    IconButton(
-                      tooltip: 'Modifier',
-                      onPressed: onEdit,
-                      icon: const Icon(Icons.edit_outlined),
-                    ),
-                    IconButton(
-                      tooltip: item.pinned
-                          ? 'Retirer des épingles'
-                          : 'Épingler',
-                      onPressed: onTogglePin,
-                      icon: Icon(
-                        item.pinned ? Icons.push_pin : Icons.push_pin_outlined,
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: 'Supprimer',
-                      onPressed: onDelete,
-                      icon: const Icon(Icons.delete_outline),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            AppGaps.x2,
-            Wrap(
-              spacing: AppSpacing.x2,
-              runSpacing: AppSpacing.x1,
-              children: [
-                AppTag(label: item.sourceLabel),
-                AppTag(label: _syncLabel(item.syncState)),
-                AppTag(label: 'vu ${_formatShortDateTime(item.lastSeenAt)}'),
-                if (item.captureCount > 1)
-                  AppTag(label: '${item.captureCount} captures'),
-                if (item.pinned)
-                  AppTag(
-                    label: 'Épinglé',
-                    color: colorScheme.primary,
-                    backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
-                  ),
-              ],
-            ),
-            if (isError && item.syncError != null) ...[
-              AppGaps.x2,
-              _ClipboardInlineNotice(
-                icon: Icons.sync_problem_outlined,
-                text: item.syncError!,
-                destructive: true,
-              ),
-            ],
-          ],
-        ),
+    return AppEntityCard(
+      leading: Icon(
+        item.pinned ? Icons.push_pin : _sourceIcon(_sourceFrom(item)),
+        color: item.pinned ? colorScheme.primary : null,
       ),
+      title: Text(item.content),
+      bodyMaxLines: 5,
+      tags: [
+        AppTag(label: item.sourceLabel),
+        AppTag(label: _syncLabel(item.syncState)),
+        AppTag(label: 'vu ${_formatShortDateTime(item.lastSeenAt)}'),
+        if (item.captureCount > 1)
+          AppTag(label: '${item.captureCount} captures'),
+        if (item.pinned)
+          AppTag(
+            label: 'Épinglé',
+            color: colorScheme.primary,
+            backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
+          ),
+      ],
+      notice: isError && item.syncError != null
+          ? _ClipboardInlineNotice(
+              icon: Icons.sync_problem_outlined,
+              text: item.syncError!,
+              destructive: true,
+            )
+          : null,
+      actions: [
+        IconButton(
+          tooltip: 'Copier',
+          onPressed: onCopy,
+          icon: const Icon(Icons.content_copy),
+        ),
+        IconButton(
+          tooltip: 'Modifier',
+          onPressed: onEdit,
+          icon: const Icon(Icons.edit_outlined),
+        ),
+        IconButton(
+          tooltip: item.pinned ? 'Retirer des épingles' : 'Épingler',
+          onPressed: onTogglePin,
+          icon: Icon(item.pinned ? Icons.push_pin : Icons.push_pin_outlined),
+        ),
+        IconButton(
+          tooltip: 'Supprimer',
+          onPressed: onDelete,
+          icon: const Icon(Icons.delete_outline),
+        ),
+      ],
     );
   }
 }

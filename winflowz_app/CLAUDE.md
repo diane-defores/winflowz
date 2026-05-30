@@ -47,6 +47,9 @@ overlay/hotkeys parity chantier.
 Product parity is the default planning posture. Treat Android-only,
 desktop-only, web-limited, or unavailable status as an exception that must be
 caused by OS/browser/security/store constraints and documented explicitly.
+Platform order after Windows is macOS, Linux, iOS, then web. Platform-adapted
+experiences are acceptable only when they produce a better result; if the result
+is equivalent, keep the shared interaction model.
 
 Current migration baseline includes:
 - Supabase auth gate and email/password login flow
@@ -153,7 +156,8 @@ supabase/
 - Android overlay controls are Android-only and must remain disabled on non-Android platforms.
 - Overlay as a product capability is multi-platform. Windows owns the next host:
   desktop overlay window, global hotkeys, clipboard, focus, and best-effort text
-  delivery. Do not promise a Windows IME.
+  delivery. The first Windows wave should try the full path, including automatic
+  best-effort delivery with clipboard fallback. Do not promise a Windows IME.
 - Most WinFlowz concepts should target parity across Android, iOS, macOS,
   Windows, Linux and web. Do not classify a feature as Android-only unless the
   OS mechanism itself is Android-specific, such as the IME.

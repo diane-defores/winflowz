@@ -42,10 +42,12 @@ Platform split:
 2. Windows becomes the next target for parity through a desktop overlay host:
    global hotkeys, always-on-top Flutter window, clipboard, focus, and
    best-effort text delivery.
-3. iOS, macOS, Linux and web should be opened as separate parity chantiers after
-   the Windows pattern is proven or when a platform-specific feature is needed.
-4. Overlay/quick actions are a multi-platform product concept, not Android-only.
-5. No platform may claim universal injection; clipboard fallback remains
+3. Next platform order is macOS, Linux, iOS, then web.
+4. Platform-adapted experiences are acceptable only when they produce a better
+   user result. If the result is equivalent, keep the shared mental model and do
+   not perturb the user.
+5. Overlay/quick actions are a multi-platform product concept, not Android-only.
+6. No platform may claim universal injection; clipboard fallback remains
    mandatory.
 
 ### Consequences
@@ -53,6 +55,8 @@ Platform split:
 - Do not port Android overlay code directly to Windows; port the concept,
   interaction model, and shared Flutter UI.
 - Do not promise a Windows IME.
+- The first Windows wave should try to deliver the full workflow: hotkey,
+  overlay, input, action, clipboard fallback, and automatic best-effort delivery.
 - Documentation that marks a concept Android-only must justify the OS constraint
   or be updated to a parity target with an implementation/proof status.
 - Documentation that says overlay is unavailable on Windows is stale once

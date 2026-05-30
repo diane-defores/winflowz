@@ -460,17 +460,113 @@ class AppEntityListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return AppEntityCard(
+      title: title,
+      subtitle: subtitle,
+      actions: actions,
+      bodyMaxLines: isThreeLine ? 3 : 2,
+    );
+  }
+}
+
+class AppEntityCard extends StatelessWidget {
+  const AppEntityCard({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.leading,
+    this.tags = const [],
+    this.notice,
+    this.actions = const [],
+    this.bodyMaxLines,
+  });
+
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? leading;
+  final List<Widget> tags;
+  final Widget? notice;
+  final List<Widget> actions;
+  final int? bodyMaxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DefaultTextStyle.merge(
+          style: Theme.of(context).textTheme.bodyLarge,
+          maxLines: bodyMaxLines,
+          overflow: TextOverflow.ellipsis,
+          child: title,
+        ),
+        if (subtitle != null) ...[
+          AppGaps.x1,
+          DefaultTextStyle.merge(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            maxLines: bodyMaxLines,
+            overflow: TextOverflow.ellipsis,
+            child: subtitle!,
+          ),
+        ],
+      ],
+    );
+
     return Card(
-      child: ListTile(
-        title: title,
-        subtitle: subtitle,
-        isThreeLine: isThreeLine,
-        trailing: actions.isEmpty
-            ? null
-            : Wrap(
-                spacing: AppIconMetrics.listActionSpacing,
-                children: actions,
+      child: Padding(
+        padding: AppInsets.compactCard,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (leading == null)
+              content
+            else
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.x1 / 2),
+                    child: leading!,
+                  ),
+                  AppGaps.horizontalX2,
+                  Expanded(child: content),
+                ],
               ),
+            if (tags.isNotEmpty) ...[
+              AppGaps.x2,
+              Wrap(
+                spacing: AppSpacing.x2,
+                runSpacing: AppSpacing.x1,
+                children: tags,
+              ),
+            ],
+            if (notice != null) ...[AppGaps.x2, notice!],
+            if (actions.isNotEmpty) ...[
+              AppGaps.x2,
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButtonTheme(
+                  data: IconButtonThemeData(
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size.square(40),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.all(AppSpacing.x2),
+                    ),
+                  ),
+                  child: Wrap(
+                    spacing: AppIconMetrics.listActionSpacing,
+                    runSpacing: AppIconMetrics.listActionSpacing,
+                    alignment: WrapAlignment.end,
+                    children: actions,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

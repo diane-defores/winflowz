@@ -43,6 +43,9 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
   workflows should be planned for every supported platform unless an OS,
   browser, security, or store policy makes a capability impossible or unsafe.
   Exceptions must be visible in Settings and docs.
+- Priority order after Windows is macOS, Linux, iOS, then web. Platform-adapted
+  experiences are acceptable only when they improve the result; if the result is
+  equivalent, keep the shared interaction model to avoid perturbing users.
 
 ## Capability Matrix
 
@@ -93,11 +96,13 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 - Windows must not promise an IME. The expected equivalent is desktop quick
   actions: hotkey -> overlay -> correction/dictation/snippet/clipboard action ->
   clipboard or best-effort delivery into the active app.
+- The first Windows implementation should attempt the complete path: global
+  hotkey, overlay, selection/clipboard/manual input, shared WinFlowz action,
+  clipboard fallback, and automatic best-effort delivery.
 - Clipboard fallback is mandatory. Automatic paste/injection is a best-effort
   enhancement and must be visibly recoverable when the target app blocks it.
-- macOS and Linux should follow after the Windows pattern is proven, each with
-  its own native host and verification matrix. iOS and web also need explicit
-  parity specs, with browser/store limits treated as documented product
+- macOS, Linux, iOS and web should follow in that order, each with its own host
+  or degraded-parity proof. Browser/store limits are documented product
   constraints rather than silent omissions.
 
 ## Direct AI Calls

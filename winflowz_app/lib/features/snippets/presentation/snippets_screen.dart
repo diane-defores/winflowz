@@ -352,11 +352,14 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
             message: 'Aucun snippet ne correspond à cette recherche.',
           ),
         for (final item in visibleItems)
-          AppEntityListTile(
+          AppEntityCard(
             title: Text(item.trigger),
-            subtitle: Text(
-              '${item.label == null || item.label!.isEmpty ? '' : '[${item.label}] '}${item.content}',
-            ),
+            subtitle: Text(item.content),
+            bodyMaxLines: 4,
+            tags: [
+              if (item.label != null && item.label!.isNotEmpty)
+                AppTag(label: item.label!),
+            ],
             actions: [
               IconButton(
                 tooltip: 'Modifier',

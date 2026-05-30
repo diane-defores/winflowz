@@ -1190,66 +1190,37 @@ class _TranscriptionTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final hasRawDiff = item.rawText.trim() != item.cleanedText.trim();
 
-    return Card(
-      child: Padding(
-        padding: AppInsets.compactCard,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    item.cleanedText,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-                AppGaps.horizontalX2,
-                Wrap(
-                  spacing: AppIconMetrics.listActionSpacing,
-                  children: [
-                    IconButton(
-                      tooltip: 'Modifier le texte nettoyé',
-                      onPressed: onEdit,
-                      icon: const Icon(Icons.edit_outlined),
-                    ),
-                    IconButton(
-                      tooltip: 'Supprimer',
-                      onPressed: onDelete,
-                      icon: const Icon(Icons.delete_outline),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            AppGaps.x2,
-            Wrap(
-              spacing: AppSpacing.x2,
-              runSpacing: AppSpacing.x1,
-              children: [
-                AppTag(label: _languageLabel(item.language)),
-                AppTag(label: _sourceLabel(item.source)),
-                AppTag(label: _formatDuration(item.durationMs)),
-                AppTag(label: _formatShortDateTime(item.createdAt)),
-              ],
-            ),
-            if (hasRawDiff) ...[
-              AppGaps.x2,
-              Text(
-                'Brut: ${item.rawText}',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+    return AppEntityCard(
+      title: Text(item.cleanedText),
+      bodyMaxLines: 5,
+      tags: [
+        AppTag(label: _languageLabel(item.language)),
+        AppTag(label: _sourceLabel(item.source)),
+        AppTag(label: _formatDuration(item.durationMs)),
+        AppTag(label: _formatShortDateTime(item.createdAt)),
+      ],
+      notice: hasRawDiff
+          ? Text(
+              'Brut: ${item.rawText}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-            ],
-          ],
+            )
+          : null,
+      actions: [
+        IconButton(
+          tooltip: 'Modifier le texte nettoyé',
+          onPressed: onEdit,
+          icon: const Icon(Icons.edit_outlined),
         ),
-      ),
+        IconButton(
+          tooltip: 'Supprimer',
+          onPressed: onDelete,
+          icon: const Icon(Icons.delete_outline),
+        ),
+      ],
     );
   }
 }

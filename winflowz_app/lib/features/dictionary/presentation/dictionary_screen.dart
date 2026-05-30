@@ -361,12 +361,17 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
             message: 'Aucun terme ne correspond à cette recherche.',
           ),
         for (final item in visibleItems)
-          AppEntityListTile(
+          AppEntityCard(
             title: Text(item.term),
-            subtitle: Text(
-              '${item.replacement}\nRespecter la casse: ${item.caseSensitive ? 'Oui' : 'Non'}',
-            ),
-            isThreeLine: true,
+            subtitle: Text(item.replacement),
+            bodyMaxLines: 4,
+            tags: [
+              AppTag(
+                label: item.caseSensitive
+                    ? 'Respecter la casse'
+                    : 'Casse flexible',
+              ),
+            ],
             actions: [
               IconButton(
                 tooltip: 'Modifier',
