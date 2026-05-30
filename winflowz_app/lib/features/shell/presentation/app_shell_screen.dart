@@ -81,7 +81,13 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       }
       return;
     }
-    const titles = ['Voice', 'Clipboard', 'Snippets', 'Dictionary', 'Settings'];
+    const titles = [
+      'Voix',
+      'Presse-papiers',
+      'Snippets',
+      'Dictionnaire',
+      'Réglages',
+    ];
     AppDiagnostics.record(
       'tab_select',
       '${titles[_index]} -> ${titles[value]}',
@@ -708,7 +714,13 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         },
       ),
     ];
-    const titles = ['Voice', 'Clipboard', 'Snippets', 'Dictionary', 'Settings'];
+    const titles = [
+      'Voix',
+      'Presse-papiers',
+      'Snippets',
+      'Dictionnaire',
+      'Réglages',
+    ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -753,11 +765,11 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                         destinations: const [
                           NavigationRailDestination(
                             icon: Icon(Icons.keyboard_voice_outlined),
-                            label: Text('Voice'),
+                            label: Text('Voix'),
                           ),
                           NavigationRailDestination(
                             icon: Icon(Icons.content_paste_outlined),
-                            label: Text('Clipboard'),
+                            label: Text('Presse-papiers'),
                           ),
                           NavigationRailDestination(
                             icon: Icon(Icons.text_snippet_outlined),
@@ -765,11 +777,11 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                           ),
                           NavigationRailDestination(
                             icon: Icon(Icons.auto_fix_high_outlined),
-                            label: Text('Dictionary'),
+                            label: Text('Dictionnaire'),
                           ),
                           NavigationRailDestination(
                             icon: Icon(Icons.settings_outlined),
-                            label: Text('Settings'),
+                            label: Text('Réglages'),
                           ),
                         ],
                       ),
@@ -855,12 +867,12 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                       NavigationDestination(
                         icon: Icon(Icons.keyboard_voice_outlined),
                         selectedIcon: Icon(Icons.keyboard_voice),
-                        label: 'Voice',
+                        label: 'Voix',
                       ),
                       NavigationDestination(
                         icon: Icon(Icons.content_paste_outlined),
                         selectedIcon: Icon(Icons.content_paste),
-                        label: 'Clipboard',
+                        label: 'Presse-papiers',
                       ),
                       NavigationDestination(
                         icon: Icon(Icons.text_snippet_outlined),
@@ -870,12 +882,12 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                       NavigationDestination(
                         icon: Icon(Icons.auto_fix_high_outlined),
                         selectedIcon: Icon(Icons.auto_fix_high),
-                        label: 'Dictionary',
+                        label: 'Dictionnaire',
                       ),
                       NavigationDestination(
                         icon: Icon(Icons.settings_outlined),
                         selectedIcon: Icon(Icons.settings),
-                        label: 'Settings',
+                        label: 'Réglages',
                       ),
                     ],
                   ),
@@ -944,20 +956,20 @@ class _WelcomeGuideOverlay extends StatelessWidget {
                           ),
                           AppGaps.x2,
                           Text(
-                            'Ton compte est prêt. Commence par configurer les accès utiles, puis ajoute tes premiers snippets, mots de dictionnaire et captures clipboard.',
+                            'Ton compte est prêt. Commence par configurer les accès utiles, puis ajoute tes premiers snippets, mots de dictionnaire et captures presse-papiers.',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           AppGaps.x3,
                           const _WelcomeGuideItem(
                             icon: Icons.keyboard_voice_outlined,
-                            title: 'Voice',
+                            title: 'Voix',
                             message:
                                 'Dicte un texte, relis le brouillon, puis envoie-le dans ton champ actif.',
                           ),
                           AppGaps.x2,
                           const _WelcomeGuideItem(
                             icon: Icons.content_paste_outlined,
-                            title: 'Clipboard',
+                            title: 'Presse-papiers',
                             message:
                                 'Retrouve les éléments capturés et épingle ceux que tu réutilises souvent.',
                           ),
@@ -1106,7 +1118,7 @@ class _OnboardingOverlay extends StatelessWidget {
           scopesRoute: true,
           namesRoute: true,
           explicitChildNodes: true,
-          label: 'Onboarding setup guide',
+          label: 'Guide de configuration',
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => onClose(),
@@ -1234,7 +1246,7 @@ class _OnboardingOverviewContentState
     _OnboardingUseCasePage(
       stepId: OnboardingStepId.microphoneForDictation,
       icon: Icons.keyboard_voice_outlined,
-      title: 'Micro et voice',
+      title: 'Micro et voix',
       subtitle: 'Dictée vocale et injection assistée.',
     ),
     _OnboardingUseCasePage(
@@ -1264,8 +1276,8 @@ class _OnboardingOverviewContentState
     _OnboardingUseCasePage(
       stepId: OnboardingStepId.keyboardClipboard,
       icon: Icons.content_paste_outlined,
-      title: 'Clipboard',
-      subtitle: 'Historique et synchronisation du clipboard clavier.',
+      title: 'Presse-papiers',
+      subtitle: 'Historique et synchronisation du presse-papiers clavier.',
     ),
     _OnboardingUseCasePage(
       stepId: OnboardingStepId.overlay,
@@ -1733,7 +1745,7 @@ class _OnboardingCompletionContent extends StatelessWidget {
           ),
           _OnboardingPathHint(
             icon: Icons.content_paste_outlined,
-            title: 'Retrouver ton clipboard',
+            title: 'Retrouver ton presse-papiers',
             text:
                 'Garde tes copies récentes à portée de main pour les réutiliser depuis le clavier.',
             permissions: [stepsById[OnboardingStepId.keyboardClipboard]],
@@ -1808,7 +1820,7 @@ class _OnboardingDeferredContent extends StatelessWidget {
           icon: Icons.info_outline,
           title: 'Onboarding mis en pause',
           message:
-              "Tu peux reprendre la suite de l'onboarding quand tu veux à partir des paramètres.",
+              'Tu peux reprendre la configuration quand tu veux à partir des paramètres.',
           accentColor: Theme.of(context).colorScheme.primary,
         ),
         AppGaps.x3,

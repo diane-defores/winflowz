@@ -98,7 +98,7 @@ void main() {
       findsOneWidget,
     );
 
-    await openStudioSection(tester, 'Background');
+    await openStudioSection(tester, 'Fond');
 
     final firstField = find.byType(TextFormField).first;
     await tester.enterText(firstField, 'FF0000FF');
@@ -121,13 +121,13 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     final keyColorField = find.byKey(
-      const ValueKey('keyboard-theme-color-Key color'),
+      const ValueKey('keyboard-theme-color-Couleur des touches'),
     );
     final textColorField = find.byKey(
-      const ValueKey('keyboard-theme-color-Text'),
+      const ValueKey('keyboard-theme-color-Texte'),
     );
 
-    await openStudioSection(tester, 'Keys');
+    await openStudioSection(tester, 'Touches');
 
     await tester.scrollUntilVisible(
       keyColorField,
@@ -145,7 +145,7 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump(const Duration(milliseconds: 200));
 
-    final saveFinder = find.widgetWithText(FilledButton, 'Save');
+    final saveFinder = find.widgetWithText(FilledButton, 'Enregistrer');
     await tester.scrollUntilVisible(
       saveFinder,
       400,
@@ -191,10 +191,10 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 200));
 
-    await openStudioSection(tester, 'Effects');
+    await openStudioSection(tester, 'Effets');
 
-    expect(find.text('Color hold'), findsOneWidget);
-    expect(find.text('Effect time'), findsOneWidget);
+    expect(find.text('Maintien couleur'), findsOneWidget);
+    expect(find.text('Durée de l’effet'), findsOneWidget);
   });
 
   testWidgets('shows capped swipe glyph opacity control', (tester) async {
@@ -205,9 +205,9 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 200));
 
-    await openStudioSection(tester, 'Keys');
+    await openStudioSection(tester, 'Touches');
 
-    expect(find.text('Opacity'), findsOneWidget);
+    expect(find.text('Opacité'), findsOneWidget);
     expect(find.text('85%'), findsOneWidget);
   });
 
@@ -219,13 +219,13 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 200));
 
-    await openStudioSection(tester, 'Background');
-    expect(find.text('Gradient background'), findsOneWidget);
+    await openStudioSection(tester, 'Fond');
+    expect(find.text('Fond en dégradé'), findsOneWidget);
 
-    await openStudioSection(tester, 'Spacing');
+    await openStudioSection(tester, 'Espacement');
 
-    expect(find.text('Key gap'), findsOneWidget);
-    expect(find.text('Gradient background'), findsNothing);
+    expect(find.text('Écart des touches'), findsOneWidget);
+    expect(find.text('Fond en dégradé'), findsNothing);
   });
 
   testWidgets('shows keyboard opacity control near image background', (
@@ -238,10 +238,10 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 200));
 
-    await openStudioSection(tester, 'Background');
+    await openStudioSection(tester, 'Fond');
 
-    expect(find.text('Image background'), findsOneWidget);
-    expect(find.text('Opacity'), findsOneWidget);
+    expect(find.text('Image de fond'), findsOneWidget);
+    expect(find.text('Opacité'), findsOneWidget);
     expect(find.text('100%'), findsOneWidget);
   });
 
@@ -253,11 +253,11 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 200));
 
-    await openStudioSection(tester, 'Spacing');
+    await openStudioSection(tester, 'Espacement');
 
-    expect(find.text('Key gap'), findsOneWidget);
-    expect(find.text('Row gap'), findsOneWidget);
-    expect(find.text('Key width'), findsNothing);
+    expect(find.text('Écart des touches'), findsOneWidget);
+    expect(find.text('Écart des rangées'), findsOneWidget);
+    expect(find.text('Largeur des touches'), findsNothing);
   });
 
   testWidgets('imports JSON into draft without saving natively', (
@@ -278,11 +278,11 @@ void main() {
       find.byKey(const Key('theme-import-json-field')),
       '{"version":1,"presetId":"paper_ink","backgroundStartColor":4294303458,"backgroundEndColor":4294303458,"keyColor":4294966260,"specialKeyColor":4293512649,"activeKeyColor":4281154086,"pressedKeyColor":4292993723,"textColor":4279917078,"cornerTextColor":4285160778,"statusTextColor":4282394669,"borderColor":4281960847,"borderWidth":1,"keyRadius":10,"shadowColor":855638016,"shadowBlur":3,"shadowOffsetY":1,"useGradient":false,"gradientStyle":"linear","useImage":false,"pressEffect":"none","effectIntensity":0.35,"effectDurationMs":170,"effectEasing":"easeOut"}',
     );
-    await tester.tap(find.text('Preview import'));
+    await tester.tap(find.text('Prévisualiser l’import'));
     await tester.pump(const Duration(milliseconds: 200));
 
     final importedMessage = find.text(
-      'Theme JSON imported into draft. Press Save to apply.',
+      'Thème JSON importé dans le brouillon. Appuie sur Enregistrer pour appliquer.',
     );
     await tester.scrollUntilVisible(
       importedMessage,
@@ -309,7 +309,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Neon Terminal').last);
     await tester.pump(const Duration(milliseconds: 200));
-    await tester.tap(find.widgetWithText(FilledButton, 'Save'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Enregistrer'));
     await tester.pumpAndSettle();
 
     final after = container.read(keyboardSyncChangeNotifierProvider);

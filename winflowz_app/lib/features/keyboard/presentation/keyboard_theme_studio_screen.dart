@@ -54,12 +54,14 @@ class _KeyboardThemeStudioScreenState
         _saved = config;
         _draft = config;
         _message = PlatformCapabilities.keyboardImeSupported
-            ? 'Theme loaded. Changes remain in draft until Save.'
+            ? 'Thème chargé. Les changements restent en brouillon jusqu’à l’enregistrement.'
             : 'Simulation sur ${PlatformCapabilities.currentPlatformLabel}: ${PlatformCapabilities.keyboardImeUnavailableReason}';
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _message = 'Unable to load keyboard theme: $error');
+      setState(
+        () => _message = 'Chargement du thème clavier impossible: $error',
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -73,7 +75,8 @@ class _KeyboardThemeStudioScreenState
     }
     if (!PlatformCapabilities.keyboardImeSupported) {
       setState(
-        () => _message = 'Save is Android-only for native keyboard theme.',
+        () => _message =
+            'L’enregistrement du thème clavier natif est réservé à Android.',
       );
       return;
     }
@@ -84,14 +87,16 @@ class _KeyboardThemeStudioScreenState
       setState(() {
         _saved = saved;
         _draft = saved;
-        _message = 'Keyboard theme saved.';
+        _message = 'Thème clavier enregistré.';
       });
       ref
           .read(keyboardSyncChangeNotifierProvider.notifier)
           .markKeyboardProfileChanged();
     } catch (error) {
       if (!mounted) return;
-      setState(() => _message = 'Unable to save keyboard theme: $error');
+      setState(
+        () => _message = 'Enregistrement du thème clavier impossible: $error',
+      );
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -101,7 +106,8 @@ class _KeyboardThemeStudioScreenState
     if (!PlatformCapabilities.keyboardImeSupported) {
       setState(() {
         _draft = KeyboardThemeConfig.defaults();
-        _message = 'Draft reset to defaults (simulation).';
+        _message =
+            'Brouillon réinitialisé avec les valeurs par défaut (simulation).';
       });
       return;
     }
@@ -111,14 +117,16 @@ class _KeyboardThemeStudioScreenState
       setState(() {
         _saved = reset;
         _draft = reset;
-        _message = 'Keyboard theme reset to defaults.';
+        _message = 'Thème clavier réinitialisé avec les valeurs par défaut.';
       });
       ref
           .read(keyboardSyncChangeNotifierProvider.notifier)
           .markKeyboardProfileChanged();
     } catch (error) {
       if (!mounted) return;
-      setState(() => _message = 'Unable to reset keyboard theme: $error');
+      setState(
+        () => _message = 'Réinitialisation du thème clavier impossible: $error',
+      );
     }
   }
 
@@ -130,26 +138,26 @@ class _KeyboardThemeStudioScreenState
         return;
       }
       if (path == null || path.trim().isEmpty) {
-        setState(() => _message = 'Image import failed: empty path.');
+        setState(() => _message = 'Import d’image impossible: chemin vide.');
         return;
       }
       setState(() {
         _draft = _draft.copyWith(useImage: true, backgroundImagePath: path);
-        _message = 'Image imported for keyboard background.';
+        _message = 'Image importée pour le fond du clavier.';
       });
     } on AndroidKeyboardBridgeException catch (error) {
       if (!mounted) {
         return;
       }
       setState(
-        () =>
-            _message = 'Image import failed (${error.code}): ${error.message}',
+        () => _message =
+            'Import d’image impossible (${error.code}): ${error.message}',
       );
     } catch (error) {
       if (!mounted) {
         return;
       }
-      setState(() => _message = 'Image import failed: $error');
+      setState(() => _message = 'Import d’image impossible: $error');
     }
   }
 
@@ -159,7 +167,7 @@ class _KeyboardThemeStudioScreenState
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Export theme JSON'),
+        title: const Text('Exporter le thème JSON'),
         content: SizedBox(
           width: 520,
           child: SelectableText(jsonText, key: const Key('theme-export-json')),
@@ -167,7 +175,7 @@ class _KeyboardThemeStudioScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: const Text('Fermer'),
           ),
         ],
       ),
@@ -179,7 +187,7 @@ class _KeyboardThemeStudioScreenState
     final raw = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Import theme JSON'),
+        title: const Text('Importer un thème JSON'),
         content: SizedBox(
           width: 520,
           child: TextField(
@@ -195,11 +203,11 @@ class _KeyboardThemeStudioScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(controller.text),
-            child: const Text('Preview import'),
+            child: const Text('Prévisualiser l’import'),
           ),
         ],
       ),
@@ -209,7 +217,8 @@ class _KeyboardThemeStudioScreenState
       final decoded = jsonDecode(raw);
       if (decoded is! Map) {
         setState(
-          () => _message = 'Theme import failed: JSON must be an object.',
+          () => _message =
+              'Import du thème impossible: le JSON doit être un objet.',
         );
         return;
       }
@@ -219,16 +228,17 @@ class _KeyboardThemeStudioScreenState
       final validation = KeyboardThemeValidator.validate(imported);
       if (!validation.canSave) {
         setState(
-          () => _message = 'Theme import blocked: ${validation.errors.first}',
+          () => _message = 'Import du thème bloqué: ${validation.errors.first}',
         );
         return;
       }
       setState(() {
         _draft = imported;
-        _message = 'Theme JSON imported into draft. Press Save to apply.';
+        _message =
+            'Thème JSON importé dans le brouillon. Appuie sur Enregistrer pour appliquer.';
       });
     } catch (error) {
-      setState(() => _message = 'Theme import failed: invalid JSON.');
+      setState(() => _message = 'Import du thème impossible: JSON invalide.');
     }
   }
 
@@ -240,7 +250,7 @@ class _KeyboardThemeStudioScreenState
     final mediaQuery = MediaQuery.of(context);
     final safeBottomPadding = mediaQuery.viewPadding.bottom;
     return Scaffold(
-      appBar: AppBar(title: const Text('Keyboard Theme Studio')),
+      appBar: AppBar(title: const Text('Studio de thème clavier')),
       body: CustomScrollView(
         slivers: [
           SliverPersistentHeader(
@@ -272,15 +282,15 @@ class _KeyboardThemeStudioScreenState
               children: [
                 _StudioSection(
                   id: 'background',
-                  title: 'Background',
-                  subtitle: 'Use a flat background or gradient.',
+                  title: 'Fond',
+                  subtitle: 'Utilise un fond uni ou un dégradé.',
                   expanded: _isStudioSectionExpanded('background'),
                   onExpansionChanged: _setStudioSectionExpanded,
                   child: Column(
                     children: [
                       SwitchListTile.adaptive(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Gradient background'),
+                        title: const Text('Fond en dégradé'),
                         value: _draft.useGradient,
                         onChanged: (value) => setState(
                           () => _draft = _draft.copyWith(useGradient: value),
@@ -292,7 +302,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                         initialValue: _draft.gradientStyle,
                         decoration: const InputDecoration(
-                          labelText: 'Gradient style',
+                          labelText: 'Style de dégradé',
                         ),
                         items: KeyboardThemeGradientStyle.values
                             .map(
@@ -315,7 +325,7 @@ class _KeyboardThemeStudioScreenState
                       ),
                       SwitchListTile.adaptive(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Image background'),
+                        title: const Text('Image de fond'),
                         value: _draft.useImage,
                         onChanged: (value) => setState(
                           () => _draft = _draft.copyWith(useImage: value),
@@ -326,21 +336,21 @@ class _KeyboardThemeStudioScreenState
                         child: OutlinedButton.icon(
                           onPressed: _importImage,
                           icon: const Icon(Icons.image_outlined),
-                          label: const Text('Import image'),
+                          label: const Text('Importer une image'),
                         ),
                       ),
                       if (_draft.backgroundImagePath != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
-                            'Image: ${_draft.backgroundImagePath}',
+                            'Image : ${_draft.backgroundImagePath}',
                             style: Theme.of(context).textTheme.bodySmall,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       _SliderField(
-                        label: 'Opacity',
+                        label: 'Opacité',
                         value: _draft.keyboardOpacity,
                         min: 0.25,
                         max: 1,
@@ -353,7 +363,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _ColorField(
-                        label: 'Background start',
+                        label: 'Début du fond',
                         value: _draft.backgroundStartColor,
                         onChanged: (color) => setState(
                           () => _draft = _draft.copyWith(
@@ -362,7 +372,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _ColorField(
-                        label: 'Background end',
+                        label: 'Fin du fond',
                         value: _draft.backgroundEndColor,
                         onChanged: (color) => setState(
                           () => _draft = _draft.copyWith(
@@ -376,9 +386,9 @@ class _KeyboardThemeStudioScreenState
                 SizedBox(height: AppSectionMetrics.sectionGap),
                 _StudioSection(
                   id: 'keys',
-                  title: 'Keys',
+                  title: 'Touches',
                   subtitle:
-                      'Primary colors applied by the native keyboard renderer.',
+                      'Couleurs principales appliquées par le rendu natif du clavier.',
                   expanded: _isStudioSectionExpanded('keys'),
                   onExpansionChanged: _setStudioSectionExpanded,
                   child: Column(
@@ -387,49 +397,49 @@ class _KeyboardThemeStudioScreenState
                     ),
                     children: [
                       _ColorField(
-                        label: 'Key color',
+                        label: 'Couleur des touches',
                         value: _draft.keyColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(keyColor: c),
                         ),
                       ),
                       _ColorField(
-                        label: 'Special key',
+                        label: 'Touche spéciale',
                         value: _draft.specialKeyColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(specialKeyColor: c),
                         ),
                       ),
                       _ColorField(
-                        label: 'Active key',
+                        label: 'Touche active',
                         value: _draft.activeKeyColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(activeKeyColor: c),
                         ),
                       ),
                       _ColorField(
-                        label: 'Pressed key',
+                        label: 'Touche pressée',
                         value: _draft.pressedKeyColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(pressedKeyColor: c),
                         ),
                       ),
                       _ColorField(
-                        label: 'Text',
+                        label: 'Texte',
                         value: _draft.textColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(textColor: c),
                         ),
                       ),
                       _ColorField(
-                        label: 'Corner text',
+                        label: 'Texte d’angle',
                         value: _draft.cornerTextColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(cornerTextColor: c),
                         ),
                       ),
                       _SliderField(
-                        label: 'Opacity',
+                        label: 'Opacité',
                         value: _draft.cornerTextOpacity,
                         min: 0,
                         max: 0.85,
@@ -443,7 +453,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _ColorField(
-                        label: 'Status text',
+                        label: 'Texte de statut',
                         value: _draft.statusTextColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(statusTextColor: c),
@@ -455,15 +465,15 @@ class _KeyboardThemeStudioScreenState
                 SizedBox(height: AppSectionMetrics.sectionGap),
                 _StudioSection(
                   id: 'spacing',
-                  title: 'Spacing',
+                  title: 'Espacement',
                   subtitle:
-                      'Control touch density: no gap for larger targets, airy gap for visual style.',
+                      'Règle la densité tactile: sans écart pour de grandes cibles, avec plus d’air pour le style visuel.',
                   expanded: _isStudioSectionExpanded('spacing'),
                   onExpansionChanged: _setStudioSectionExpanded,
                   child: Column(
                     children: [
                       _SliderField(
-                        label: 'Key gap',
+                        label: 'Écart des touches',
                         value: _draft.keyHorizontalGap,
                         min: 0,
                         max: 16,
@@ -475,7 +485,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _SliderField(
-                        label: 'Row gap',
+                        label: 'Écart des rangées',
                         value: _draft.rowVerticalGap,
                         min: 0,
                         max: 16,
@@ -491,28 +501,29 @@ class _KeyboardThemeStudioScreenState
                 SizedBox(height: AppSectionMetrics.sectionGap),
                 _StudioSection(
                   id: 'borders',
-                  title: 'Borders & shadows',
-                  subtitle: 'Rounded keys, thin borders and bounded shadows.',
+                  title: 'Bordures et ombres',
+                  subtitle:
+                      'Touches arrondies, bordures fines et ombres maîtrisées.',
                   expanded: _isStudioSectionExpanded('borders'),
                   onExpansionChanged: _setStudioSectionExpanded,
                   child: Column(
                     children: [
                       _ColorField(
-                        label: 'Border',
+                        label: 'Bordure',
                         value: _draft.borderColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(borderColor: c),
                         ),
                       ),
                       _ColorField(
-                        label: 'Shadow',
+                        label: 'Ombre',
                         value: _draft.shadowColor,
                         onChanged: (c) => setState(
                           () => _draft = _draft.copyWith(shadowColor: c),
                         ),
                       ),
                       _SliderField(
-                        label: 'Border',
+                        label: 'Bordure',
                         value: _draft.borderWidth,
                         min: 0,
                         max: 4,
@@ -532,11 +543,11 @@ class _KeyboardThemeStudioScreenState
                         ),
                         title: const Text('Relief'),
                         subtitle: const Text(
-                          'Adds an integrated physical-key edge that sinks on press.',
+                          'Ajoute un bord de touche physique intégré qui s’enfonce à l’appui.',
                         ),
                       ),
                       _SliderField(
-                        label: 'Relief depth',
+                        label: 'Profondeur du relief',
                         value: _draft.keyReliefDepth,
                         min: 0,
                         max: 6,
@@ -552,7 +563,7 @@ class _KeyboardThemeStudioScreenState
                             : null,
                       ),
                       _SliderField(
-                        label: 'Radius',
+                        label: 'Rayon',
                         value: _draft.keyRadius,
                         min: 0,
                         max: 24,
@@ -563,7 +574,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _SliderField(
-                        label: 'Blur',
+                        label: 'Flou',
                         value: _draft.shadowBlur,
                         min: 0,
                         max: 18,
@@ -574,7 +585,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _SliderField(
-                        label: 'Offset',
+                        label: 'Décalage',
                         value: _draft.shadowOffsetY,
                         min: -4,
                         max: 10,
@@ -590,9 +601,9 @@ class _KeyboardThemeStudioScreenState
                 SizedBox(height: AppSectionMetrics.sectionGap),
                 _StudioSection(
                   id: 'effects',
-                  title: 'Effects',
+                  title: 'Effets',
                   subtitle:
-                      'Short native press effects, reduced in private fields.',
+                      'Effets natifs courts à l’appui, réduits dans les champs privés.',
                   expanded: _isStudioSectionExpanded('effects'),
                   onExpansionChanged: _setStudioSectionExpanded,
                   child: Column(
@@ -603,7 +614,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                         initialValue: _draft.pressEffect,
                         decoration: const InputDecoration(
-                          labelText: 'Press effect',
+                          labelText: 'Effet d’appui',
                         ),
                         items: KeyboardThemePressEffect.values
                             .map(
@@ -626,7 +637,9 @@ class _KeyboardThemeStudioScreenState
                           'theme-easing-${_draft.effectEasing.name}',
                         ),
                         initialValue: _draft.effectEasing,
-                        decoration: const InputDecoration(labelText: 'Easing'),
+                        decoration: const InputDecoration(
+                          labelText: 'Animation',
+                        ),
                         items: KeyboardThemeEffectEasing.values
                             .map(
                               (easing) => DropdownMenuItem(
@@ -645,7 +658,7 @@ class _KeyboardThemeStudioScreenState
                       ),
                       const SizedBox(height: 8),
                       _SliderField(
-                        label: 'Intensity',
+                        label: 'Intensité',
                         value: _draft.effectIntensity,
                         min: 0,
                         max: 1,
@@ -657,7 +670,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _SliderField(
-                        label: 'Color hold',
+                        label: 'Maintien couleur',
                         value: _draft.pressHighlightDurationMs.toDouble(),
                         min: 0,
                         max: 1200,
@@ -670,7 +683,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _SliderField(
-                        label: 'Effect time',
+                        label: 'Durée de l’effet',
                         value: _draft.effectDurationMs.toDouble(),
                         min: 80,
                         max: 600,
@@ -690,7 +703,7 @@ class _KeyboardThemeStudioScreenState
                   id: 'import_export',
                   title: 'Import / export',
                   subtitle:
-                      'Theme JSON excludes image bytes and stays local-only.',
+                      'Le JSON du thème exclut les images et reste local.',
                   expanded: _isStudioSectionExpanded('import_export'),
                   onExpansionChanged: _setStudioSectionExpanded,
                   child: Wrap(
@@ -701,13 +714,13 @@ class _KeyboardThemeStudioScreenState
                         key: const Key('theme-import-json'),
                         onPressed: _importJson,
                         icon: const Icon(Icons.upload_file_outlined),
-                        label: const Text('Import JSON'),
+                        label: const Text('Importer JSON'),
                       ),
                       OutlinedButton.icon(
                         key: const Key('theme-export-json-button'),
                         onPressed: _exportJson,
                         icon: const Icon(Icons.data_object_outlined),
-                        label: const Text('Export JSON'),
+                        label: const Text('Exporter JSON'),
                       ),
                     ],
                   ),
@@ -729,34 +742,34 @@ class _KeyboardThemeStudioScreenState
 
 String _effectLabel(KeyboardThemePressEffect effect) {
   return switch (effect) {
-    KeyboardThemePressEffect.none => 'None',
-    KeyboardThemePressEffect.scale => 'Scale',
-    KeyboardThemePressEffect.pulse => 'Pulse',
-    KeyboardThemePressEffect.shake => 'Shake',
-    KeyboardThemePressEffect.ripple => 'Ripple',
-    KeyboardThemePressEffect.glow => 'Glow',
-    KeyboardThemePressEffect.electricArc => 'Electric arc',
-    KeyboardThemePressEffect.specularSweep => 'Specular sweep',
-    KeyboardThemePressEffect.inkPress => 'Ink press',
-    KeyboardThemePressEffect.keycapTilt => 'Keycap tilt',
-    KeyboardThemePressEffect.edgeCompression => 'Edge compression',
-    KeyboardThemePressEffect.confettiLite => 'Confetti lite',
-    KeyboardThemePressEffect.fireworksLite => 'Fireworks lite',
+    KeyboardThemePressEffect.none => 'Aucun',
+    KeyboardThemePressEffect.scale => 'Échelle',
+    KeyboardThemePressEffect.pulse => 'Impulsion',
+    KeyboardThemePressEffect.shake => 'Secousse',
+    KeyboardThemePressEffect.ripple => 'Ondulation',
+    KeyboardThemePressEffect.glow => 'Lueur',
+    KeyboardThemePressEffect.electricArc => 'Arc électrique',
+    KeyboardThemePressEffect.specularSweep => 'Reflet balayé',
+    KeyboardThemePressEffect.inkPress => 'Encre',
+    KeyboardThemePressEffect.keycapTilt => 'Inclinaison',
+    KeyboardThemePressEffect.edgeCompression => 'Compression des bords',
+    KeyboardThemePressEffect.confettiLite => 'Confettis légers',
+    KeyboardThemePressEffect.fireworksLite => 'Feu d’artifice léger',
   };
 }
 
 String _gradientLabel(KeyboardThemeGradientStyle style) {
   return switch (style) {
-    KeyboardThemeGradientStyle.linear => 'Linear',
+    KeyboardThemeGradientStyle.linear => 'Linéaire',
     KeyboardThemeGradientStyle.radial => 'Radial',
   };
 }
 
 String _easingLabel(KeyboardThemeEffectEasing easing) {
   return switch (easing) {
-    KeyboardThemeEffectEasing.easeOut => 'Ease out',
-    KeyboardThemeEffectEasing.linear => 'Linear',
-    KeyboardThemeEffectEasing.spring => 'Spring',
+    KeyboardThemeEffectEasing.easeOut => 'Décélération',
+    KeyboardThemeEffectEasing.linear => 'Linéaire',
+    KeyboardThemeEffectEasing.spring => 'Ressort',
   };
 }
 
@@ -802,13 +815,16 @@ class _ValidationPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     if (validation.errors.isEmpty && validation.warnings.isEmpty) {
       return const AppStatusCard(
-        title: 'Theme is readable',
-        subtitle: 'Contrast and performance bounds are acceptable.',
+        title: 'Thème lisible',
+        subtitle:
+            'Le contraste et les limites de performance sont acceptables.',
         icon: Icons.check_circle_outline,
       );
     }
     return AppStatusCard(
-      title: validation.canSave ? 'Theme warnings' : 'Theme needs fixes',
+      title: validation.canSave
+          ? 'Alertes du thème'
+          : 'Corrections nécessaires',
       subtitle: [...validation.errors, ...validation.warnings].join('\n'),
       icon: validation.canSave ? Icons.info_outline : Icons.error_outline,
     );
@@ -911,7 +927,7 @@ class _PreviewSectionCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text('Preview', style: Theme.of(context).textTheme.titleSmall),
+                Text('Aperçu', style: Theme.of(context).textTheme.titleSmall),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12),
@@ -920,7 +936,7 @@ class _PreviewSectionCard extends StatelessWidget {
                       initialValue: theme.presetId,
                       decoration: const InputDecoration(
                         isDense: true,
-                        labelText: 'Theme',
+                        labelText: 'Thème',
                       ),
                       items: KeyboardThemePresetCatalog.presets
                           .map(
@@ -943,7 +959,7 @@ class _PreviewSectionCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Draft-only simulation before native save.',
+              'Simulation du brouillon avant l’enregistrement natif.',
               textAlign: TextAlign.left,
               style: subtitleStyle,
             ),
@@ -987,21 +1003,21 @@ class _PreviewActionRow extends StatelessWidget {
         Expanded(
           child: OutlinedButton(
             onPressed: dirty ? onDiscard : null,
-            child: const Text('Discard'),
+            child: const Text('Annuler'),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: OutlinedButton(
             onPressed: saving ? null : onReset,
-            child: const Text('Reset'),
+            child: const Text('Réinitialiser'),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: FilledButton(
             onPressed: saving || !validation.canSave ? null : onSave,
-            child: const Text('Save'),
+            child: const Text('Enregistrer'),
           ),
         ),
       ],
@@ -1130,7 +1146,7 @@ class _ColorFieldState extends State<_ColorField> {
             child: IconButton(
               key: ValueKey('keyboard-theme-color-picker-${widget.label}'),
               onPressed: _openPicker,
-              tooltip: 'Pick color',
+              tooltip: 'Choisir la couleur',
               icon: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Color(widget.value),
@@ -1188,7 +1204,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
   Widget build(BuildContext context) {
     final color = Color(_value);
     return AlertDialog(
-      title: Text('Pick ${widget.label}'),
+      title: Text('Choisir ${widget.label}'),
       content: SizedBox(
         width: 420,
         child: Column(
@@ -1241,11 +1257,11 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const Text('Annuler'),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_value),
-          child: const Text('Apply'),
+          child: const Text('Appliquer'),
         ),
       ],
     );
@@ -1369,13 +1385,13 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
               'G',
             ], pinnedLabel: 'D'),
             SizedBox(height: theme.rowVerticalGap.clamp(4, 8).toDouble()),
-            _previewRow(theme, const ['Shift', 'Z', 'X', 'C', '⌫']),
+            _previewRow(theme, const ['Maj', 'Z', 'X', 'C', '⌫']),
             SizedBox(height: theme.rowVerticalGap.clamp(4, 8).toDouble()),
             Row(
               children: [
                 Expanded(child: _previewKey(theme, ',', special: true)),
                 SizedBox(width: theme.keyHorizontalGap),
-                Expanded(flex: 2, child: _previewKey(theme, 'space')),
+                Expanded(flex: 2, child: _previewKey(theme, 'espace')),
                 SizedBox(width: theme.keyHorizontalGap),
                 Expanded(
                   child: _previewKey(theme, '↵', special: true, active: true),
@@ -1400,7 +1416,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
             child: _previewKey(
               theme,
               labels[i],
-              special: labels[i] == 'Shift' || labels[i] == '⌫',
+              special: labels[i] == 'Maj' || labels[i] == '⌫',
               pinned: labels[i] == pinnedLabel,
             ),
           ),
@@ -1411,7 +1427,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
   }
 
   Widget _previewActionRow(KeyboardThemeConfig theme) {
-    const labels = ['Prefs', 'Theme', 'Clip', 'Voice', 'Media'];
+    const labels = ['Préfs', 'Thème', 'Clip', 'Voix', 'Média'];
     return Row(
       children: [
         for (var i = 0; i < labels.length; i++) ...[
@@ -1420,7 +1436,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
               theme,
               labels[i],
               special: true,
-              pinned: labels[i] == 'Theme',
+              pinned: labels[i] == 'Thème',
               compact: true,
             ),
           ),

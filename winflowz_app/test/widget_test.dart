@@ -666,7 +666,7 @@ void main() {
     await _pumpNavigationFrame(tester);
 
     expect(handled, isTrue);
-    expect(find.text('WinFlowz • Voice'), findsOneWidget);
+    expect(find.text('WinFlowz • Voix'), findsOneWidget);
   });
 
   testWidgets('new account welcome guide is shown once in app shell', (
@@ -718,14 +718,14 @@ void main() {
       expect(find.widgetWithText(TextButton, 'Plus tard'), findsNothing);
       expect(
         find.text(
-          "Tu peux reprendre la suite de l'onboarding quand tu veux à partir des paramètres.",
+          'Tu peux reprendre la configuration quand tu veux à partir des paramètres.',
         ),
         findsOneWidget,
       );
       await tester.tap(find.widgetWithText(FilledButton, 'OK'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
       expect(find.text('Configuration WinFlowz'), findsNothing);
-      expect(find.text('WinFlowz • Settings'), findsOneWidget);
+      expect(find.text('WinFlowz • Réglages'), findsOneWidget);
       expect(find.text('Onboarding mis en pause'), findsNothing);
 
       final resumeButton = find.widgetWithText(TextButton, 'Reprendre');
@@ -743,7 +743,7 @@ void main() {
         find.text('Choisis les usages que tu veux activer'),
         findsOneWidget,
       );
-      expect(find.text('Micro et voice'), findsOneWidget);
+      expect(find.text('Micro et voix'), findsOneWidget);
       expect(find.text('Clavier'), findsNothing);
 
       final nextButton = find.text('Suivant');
@@ -759,7 +759,7 @@ void main() {
       expect(find.text('Clavier'), findsOneWidget);
       expect(
         find.textContaining(
-          'Historique et synchronisation du clipboard clavier.',
+          'Historique et synchronisation du presse-papiers clavier.',
         ),
         findsNothing,
       );
@@ -772,7 +772,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
       expect(
         find.textContaining(
-          'Historique et synchronisation du clipboard clavier.',
+          'Historique et synchronisation du presse-papiers clavier.',
         ),
         findsOneWidget,
       );
@@ -781,7 +781,7 @@ void main() {
       await tester.tap(find.widgetWithText(OutlinedButton, 'Paramètres'));
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
       expect(find.text('Configuration WinFlowz'), findsNothing);
-      expect(find.text('WinFlowz • Settings'), findsOneWidget);
+      expect(find.text('WinFlowz • Réglages'), findsOneWidget);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
@@ -1180,7 +1180,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
 
       expect(find.text('Configuration WinFlowz'), findsNothing);
-      expect(find.text('WinFlowz • Voice'), findsOneWidget);
+      expect(find.text('WinFlowz • Voix'), findsOneWidget);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
@@ -1210,13 +1210,13 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
     }
 
-    expect(find.text('WinFlowz • Voice'), findsOneWidget);
+    expect(find.text('WinFlowz • Voix'), findsOneWidget);
     expect(find.text('Capture automatique'), findsOneWidget);
-    expect(find.text('Refresh history'), findsOneWidget);
+    expect(find.text('Rafraîchir l’historique'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.content_paste_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowz • Clipboard'), findsOneWidget);
+    expect(find.text('WinFlowz • Presse-papiers'), findsOneWidget);
     expect(find.text('Contenu'), findsOneWidget);
     expect(find.text('Ajouter'), findsOneWidget);
 
@@ -1228,13 +1228,13 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.auto_fix_high_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowz • Dictionary'), findsOneWidget);
+    expect(find.text('WinFlowz • Dictionnaire'), findsOneWidget);
     expect(find.text('Terme'), findsOneWidget);
     expect(find.text('Ajouter un terme'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.settings_outlined).last);
     await _pumpNavigationFrame(tester);
-    expect(find.text('WinFlowz • Settings'), findsOneWidget);
+    expect(find.text('WinFlowz • Réglages'), findsOneWidget);
     expect(find.text('Apparence'), findsWidgets);
 
     debugDefaultTargetPlatformOverride = previousPlatform;

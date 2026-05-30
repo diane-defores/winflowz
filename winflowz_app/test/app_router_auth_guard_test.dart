@@ -8,11 +8,11 @@ import 'package:winflowz_app/features/auth/application/auth_session_provider.dar
 import 'package:winflowz_app/features/auth/domain/auth_session_store.dart';
 
 const _productRoutes = {
-  '/voice': 'WinFlowz • Voice',
-  '/clipboard': 'WinFlowz • Clipboard',
+  '/voice': 'WinFlowz • Voix',
+  '/clipboard': 'WinFlowz • Presse-papiers',
   '/snippets': 'WinFlowz • Snippets',
-  '/dictionary': 'WinFlowz • Dictionary',
-  '/settings': 'WinFlowz • Settings',
+  '/dictionary': 'WinFlowz • Dictionnaire',
+  '/settings': 'WinFlowz • Réglages',
 };
 
 const _signedOut = AuthSessionSnapshot(

@@ -144,14 +144,14 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         return;
       }
       setState(
-        () =>
-            _message = 'Overlay status error (${error.code}): ${error.message}',
+        () => _message =
+            'Erreur de statut overlay (${error.code}): ${error.message}',
       );
     } catch (error) {
       if (!mounted) {
         return;
       }
-      setState(() => _message = 'Overlay status error: $error');
+      setState(() => _message = 'Erreur de statut overlay: $error');
     }
   }
 
@@ -171,7 +171,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       }
       setState(
         () => _message =
-            'Keyboard status error (${error.code}): ${error.message}',
+            'Erreur de statut clavier (${error.code}): ${error.message}',
       );
     }
   }
@@ -252,8 +252,8 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     }
     setState(() {
       _message = installed
-          ? 'Local pack installed for ${entry.languageTag}.'
-          : 'Install failed or blocked for ${entry.languageTag}.';
+          ? 'Pack local installé pour ${entry.languageTag}.'
+          : 'Installation échouée ou bloquée pour ${entry.languageTag}.';
     });
   }
 
@@ -270,8 +270,8 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     );
     setState(() {
       _message = applied
-          ? 'Explicit fallback enabled for $languageTag.'
-          : 'No fallback path available for $languageTag.';
+          ? 'Fallback explicite activé pour $languageTag.'
+          : 'Aucun fallback disponible pour $languageTag.';
     });
   }
 
@@ -284,7 +284,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       }
       setState(() {
         _overlayStatus = status;
-        _message = 'Overlay started from Voice.';
+        _message = 'Overlay démarré depuis Voix.';
       });
       _refreshOverlayStatusSoon();
     } on AndroidOverlayBridgeException catch (error) {
@@ -292,8 +292,8 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         return;
       }
       setState(
-        () =>
-            _message = 'Overlay start failed (${error.code}): ${error.message}',
+        () => _message =
+            'Démarrage overlay impossible (${error.code}): ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -311,7 +311,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       }
       setState(() {
         _overlayStatus = status;
-        _message = 'Overlay stopped from Voice.';
+        _message = 'Overlay arrêté depuis Voix.';
       });
       _refreshOverlayStatusSoon();
     } on AndroidOverlayBridgeException catch (error) {
@@ -319,8 +319,8 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         return;
       }
       setState(
-        () =>
-            _message = 'Overlay stop failed (${error.code}): ${error.message}',
+        () => _message =
+            'Arrêt overlay impossible (${error.code}): ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -338,7 +338,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       }
       setState(() {
         _overlayStatus = status;
-        _message = 'Overlay canceled from Voice.';
+        _message = 'Overlay annulé depuis Voix.';
       });
       _refreshOverlayStatusSoon();
     } on AndroidOverlayBridgeException catch (error) {
@@ -347,7 +347,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       }
       setState(
         () => _message =
-            'Overlay cancel failed (${error.code}): ${error.message}',
+            'Annulation overlay impossible (${error.code}): ${error.message}',
       );
     } finally {
       if (mounted) {
@@ -379,10 +379,10 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     }
     final confirmed = await showConfirmActionDialog(
       context: context,
-      title: 'Delete transcription?',
+      title: 'Supprimer la transcription ?',
       message:
-          'This removes the transcription from the current history. This action cannot be undone from this screen.',
-      confirmLabel: 'Delete',
+          'La transcription sera retirée de l’historique actuel. Cette action ne peut pas être annulée depuis cet écran.',
+      confirmLabel: 'Supprimer',
       destructive: true,
       confirmationEnabled: settings.confirmDestructiveActions,
     );
@@ -414,7 +414,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit cleaned text'),
+          title: const Text('Modifier le texte nettoyé'),
           content: TextField(
             controller: controller,
             minLines: 2,
@@ -424,11 +424,11 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Annuler'),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(controller.text),
-              child: const Text('Save'),
+              child: const Text('Enregistrer'),
             ),
           ],
         );
@@ -459,7 +459,10 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<int>(transcriptionHistoryRefreshSignalProvider, (previous, next) {
+    ref.listen<int>(transcriptionHistoryRefreshSignalProvider, (
+      previous,
+      next,
+    ) {
       if (previous != null && previous != next) {
         Future<void>.microtask(_load);
       }
@@ -479,7 +482,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
     return ListView(
       padding: AppInsets.screen,
       children: [
-        const LocalModeNotice(surface: 'Voice'),
+        const LocalModeNotice(surface: 'Voix'),
         const LocalModeNoticeGap(),
         if (shouldShowNoPackPrompt)
           _MicroWithoutPackPromptCard(
@@ -512,7 +515,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
                 OutlinedButton.icon(
                   onPressed: _busy ? null : _load,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Refresh history'),
+                  label: const Text('Rafraîchir l’historique'),
                 ),
                 AppTag(
                   label: _items.isEmpty
@@ -585,12 +588,12 @@ class _MicroWithoutPackPromptCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final fallbackLabel = allowCloudFallback
-        ? 'cloud_fallback (explicit)'
-        : 'android_fallback / unavailable';
+        ? 'fallback cloud (explicite)'
+        : 'fallback Android / indisponible';
     return AppSectionCard(
-      title: 'Keyboard mic: local pack missing',
+      title: 'Micro clavier: pack local manquant',
       subtitle:
-          'No local pack is installed for $languageTag. Choose install now or explicit fallback before dictation.',
+          'Aucun pack local n’est installé pour $languageTag. Installe-le maintenant ou active le fallback explicite avant la dictée.',
       leading: Icon(
         Icons.priority_high_outlined,
         color: theme.colorScheme.primary,
@@ -599,7 +602,7 @@ class _MicroWithoutPackPromptCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'state=${installedState.installState.wireName} | fallback=$fallbackLabel | retries_hint=3 max',
+            'état=${installedState.installState.wireName} | fallback=$fallbackLabel | essais: 3 max',
             style: theme.textTheme.bodySmall,
           ),
           AppGaps.x2,
@@ -610,12 +613,12 @@ class _MicroWithoutPackPromptCard extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onInstall,
                 icon: const Icon(Icons.download_outlined),
-                label: const Text('Install local pack'),
+                label: const Text('Installer le pack local'),
               ),
               OutlinedButton.icon(
                 onPressed: onUseFallback,
                 icon: const Icon(Icons.alt_route_outlined),
-                label: const Text('Use explicit fallback'),
+                label: const Text('Utiliser le fallback explicite'),
               ),
             ],
           ),
@@ -652,15 +655,15 @@ String _overlayPermissionLabel(AndroidOverlayStatus? status) {
     return 'Micro à autoriser';
   }
   if (!status.accessibilityPermissionGranted) {
-    return 'Clipboard seulement';
+    return 'Presse-papiers seulement';
   }
   return 'Permissions prêtes';
 }
 
 String _overlayDeliveryLabel(AndroidOverlayStatus? status) {
   return switch (status?.deliveryMode) {
-    OverlayDeliveryMode.injectionAndClipboard => 'Insertion + clipboard',
-    OverlayDeliveryMode.clipboardOnly => 'Clipboard',
+    OverlayDeliveryMode.injectionAndClipboard => 'Insertion + presse-papiers',
+    OverlayDeliveryMode.clipboardOnly => 'Presse-papiers',
     null => 'Livraison inconnue',
   };
 }
@@ -764,7 +767,7 @@ class _VoiceOverviewCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isRecording ? 'Dictée en cours' : 'Voice',
+                        isRecording ? 'Dictée en cours' : 'Voix',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       AppGaps.x1,
@@ -892,12 +895,12 @@ class _OverlayControlCard extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onStop,
                     icon: const Icon(Icons.stop_circle_outlined),
-                    label: const Text('Stop'),
+                    label: const Text('Arrêter'),
                   ),
                   TextButton.icon(
                     onPressed: onCancel,
                     icon: const Icon(Icons.close),
-                    label: const Text('Cancel'),
+                    label: const Text('Annuler'),
                   ),
                   IconButton(
                     tooltip: 'Rafraîchir le statut overlay',
@@ -1082,7 +1085,7 @@ class _EmptyVoiceState extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'No transcription yet.',
+                    'Aucune transcription pour le moment.',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   AppGaps.x1,
@@ -1138,12 +1141,12 @@ class _TranscriptionTile extends StatelessWidget {
                   spacing: AppIconMetrics.listActionSpacing,
                   children: [
                     IconButton(
-                      tooltip: 'Edit cleaned',
+                      tooltip: 'Modifier le texte nettoyé',
                       onPressed: onEdit,
                       icon: const Icon(Icons.edit_outlined),
                     ),
                     IconButton(
-                      tooltip: 'Delete',
+                      tooltip: 'Supprimer',
                       onPressed: onDelete,
                       icon: const Icon(Icons.delete_outline),
                     ),
@@ -1311,7 +1314,7 @@ class _RecordingMicActionState extends State<_RecordingMicAction>
                     AppGaps.horizontalX2,
                     Flexible(
                       child: Text(
-                        widget.isRecording ? 'Stop rec' : 'Start',
+                        widget.isRecording ? 'Arrêter' : 'Démarrer',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
