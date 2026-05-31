@@ -61,9 +61,12 @@ Still required outside local VM:
 ## Required Manual Checks
 
 - Android: local speech, advanced recording, WinFlowz keyboard enable/switch/type/private-field behavior, keyboard dictation permission denied/allowed, keyboard clipboard actions, keyboard media play/pause, overlay permission, accessibility fallback, clipboard fallback.
-- iOS/macOS/Linux/web: parity target, but native overlay/quick-action hosts are
-  not implemented in the current runtime. Keep platform limits documented and
-  do not treat those builds as required proof for the Android MVP.
+- iOS/web: parity target, but native/browser overlay/quick-action hosts are not
+  implemented in the current runtime. Keep platform limits documented and do
+  not treat those builds as required proof for the Android MVP.
+- macOS/Linux desktop overlay/hotkeys are now separate parity slices. They are
+  not required proof for Android MVP closure, but they do require native
+  runner/manual QA before any macOS/Linux parity claim.
 - Windows desktop overlay/hotkeys is now a separate chantier. It is not required
   proof for Android MVP closure, but it does require Windows runner/manual QA
   before any Windows parity claim.
@@ -75,8 +78,8 @@ Still required outside local VM:
 | Android overlay parity | Partial | Native overlay bubble, event queue, accessibility delivery, clipboard fallback, Settings size/opacity controls, and Blacksmith Android compile proof already exist. | Real Android device QA for bubble behavior, permissions, injection, clipboard fallback, size/opacity, and overlay/IME recording arbitration. |
 | Android IME | Partial | Native IME declaration, Settings bridge, private-field gating, clipboard actions, Android speech recognition, and media key controls are implemented. | Real Android device QA for enable/switch/type/private-field/dictation/media flows. |
 | iOS microphone/speech | Parity target, not current proof | `Info.plist` declares microphone and speech recognition usage descriptions for future compatibility; IME remains unavailable; overlay/quick-action host still needs a platform spec. | None for Android MVP; future iOS parity QA. |
-| macOS desktop launch | Parity target, not current proof | `Info.plist` declares microphone/speech usage and sandbox audio input entitlement for future compatibility; IME remains unavailable; desktop overlay/quick-action host still needs a platform spec. | None for Android MVP; future macOS parity QA. |
-| Linux desktop launch | Parity target, not current proof | Local speech is unavailable by capability rule and secure storage is degraded; desktop overlay/quick-action host still needs a platform spec. | None for Android MVP; future Linux parity QA. |
+| macOS desktop overlay/hotkeys | Implemented locally, pending macOS runner proof | Flutter shared desktop bridge contract, Dart tests, and macOS runner channel cover status/events, Control+Option+Space quick action monitoring, floating show/hide, clipboard copy, and best-effort Command+V delivery. IME remains unavailable. | macOS runner/manual QA for launch, permissions, quick action monitoring, floating overlay, clipboard fallback, automatic best-effort delivery, focus recovery, Spaces/fullscreen behavior, multi-monitor/Retina. |
+| Linux desktop overlay/hotkeys | Implemented locally with degraded hotkey/delivery, pending Linux runner proof | Flutter shared desktop bridge contract, Dart tests, and Linux runner channel cover status/events, GTK keep-above show/hide, clipboard copy, and explicit Linux hotkey scope limitation. IME remains unavailable. | Linux runner/manual QA for launch, desktop environment behavior, keep-above overlay, clipboard fallback, accelerator scope, Wayland/X11 differences, multi-monitor/DPI. |
 | Windows desktop overlay/hotkeys | Implemented locally, pending Windows runner proof | Flutter bridge contract, Dart tests, and Windows runner channel now cover status/events, `Ctrl+Alt+Space`, always-on-top show/hide, clipboard copy, and best-effort `Ctrl+V` delivery. IME remains unavailable. | Windows runner/manual QA for launch, hotkey registration, always-on-top overlay, clipboard fallback, automatic best-effort delivery, focus recovery, multi-monitor/DPI. |
 | Web permission limits | Degraded parity target | `PlatformCapabilities.localSpeechSupported` is false on web today; secure storage remains degraded; OS overlay/IME are unavailable. `flutter build web` passed on 2026-05-10. | Browser smoke when web parity scope opens; document browser-only alternatives. |
 

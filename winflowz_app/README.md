@@ -149,7 +149,9 @@ instead of a long-lived service account JSON key.
   Android uses a native foreground overlay bubble; Windows now has a first
   desktop overlay/hotkeys host slice with a native `winflowz_app/windows_overlay`
   channel for global hotkey, always-on-top window behavior, clipboard and
-  best-effort paste delivery.
+  best-effort paste delivery. macOS and Linux now follow the same desktop-host
+  pattern with native `winflowz_app/macos_overlay` and
+  `winflowz_app/linux_overlay` channels.
 - Android overlay: Flutter now has a native foreground overlay bubble foundation with queued native events, visual states, accessibility delivery, clipboard fallback, and Settings size/opacity controls. Real-device QA is still required before deleting the legacy Expo overlay reference or snapshot archive.
 - Android IME: WinFlowz can be enabled as a native Android keyboard. The current foundation provides modular Canvas rows, tap + swipe-corner character selection, QWERTY/AZERTY profiles, Smart French corner defaults, normal/corner modes, numbers/accents/symbol layers, field-context variants (email/URL/phone/search), private-field gating, minimal navigation/emoji/clipboard/media/snippets/settings panels, basic double-space + punctuation auto-spacing corrections with exclusions, optional touch-debug overlay, local Android speech recognition, media key dispatch, and Settings status/preferences. Double-tap/long-press action policies from the full keyboard spec are still pending implementation. Cloud sync from the keyboard waits for Firebase CLI/emulator and real-device QA before it should be treated as production-ready.
 - Windows desktop target: no IME promise. The equivalent is a Flutter desktop
@@ -157,7 +159,15 @@ instead of a long-lived service account JSON key.
   behavior, clipboard, focus, and best-effort text delivery. The first native
   host slice is implemented locally, but Windows runner/manual proof is still
   required before making a public parity claim.
-- Other platform limits: iOS/macOS declare microphone and speech permission prompts; Linux and web keep local speech unavailable/degraded where the current stack cannot support it today; iOS/macOS/Linux/web need explicit parity chantiers for their native hosts and browser/store limits; IME remains Android-only.
+- macOS desktop target: no IME promise. The equivalent is a Flutter desktop
+  overlay surface hosted by macOS-native window floating behavior, a
+  Control+Option+Space quick action, clipboard, focus recovery, and best-effort
+  paste delivery. Native macOS runner/manual proof is still required.
+- Linux desktop target: no IME promise. The equivalent is a Flutter desktop
+  overlay surface with GTK keep-above behavior, clipboard fallback, and a
+  documented hotkey scope limitation until a compositor/portal/global-shortcut
+  integration is selected. Native Linux runner/manual proof is still required.
+- Other platform limits: iOS/macOS declare microphone and speech permission prompts; Linux and web keep local speech unavailable/degraded where the current stack cannot support it today; iOS/web still need explicit parity chantiers for their native/browser/store limits; IME remains Android-only.
 
 ## Project Structure (target)
 

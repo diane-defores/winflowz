@@ -53,9 +53,9 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 |---|---|---|---|---|---|---|
 | Android | supported when `speech_to_text` or Android speech recognition supports locale/device | supported | Android keystore via `flutter_secure_storage` | opt-in; respect background limits | supported | supported as native Kotlin IME |
 | iOS | supported when permission and locale allow | supported | Keychain via `flutter_secure_storage` | opt-in; no Android-style overlay | target parity; native host/recovery model still to spec | unavailable |
-| macOS | supported when package/platform allows | supported | keychain-backed where available | opt-in | target parity after Windows; native host still to spec | unavailable |
+| macOS | supported when package/platform allows | supported | keychain-backed where available | opt-in | first desktop host slice implemented locally: floating window + quick action + clipboard/delivery | unavailable |
 | Windows | supported when package/platform allows | supported | platform secure storage where available | opt-in | target chantier: desktop overlay window + global hotkeys + clipboard/delivery | unavailable |
-| Linux | local speech unavailable unless package support changes | supported via recording + Whisper | may be degraded; require explicit UI state | opt-in | target parity after Windows; desktop host still to spec | unavailable |
+| Linux | local speech unavailable unless package support changes | supported via recording + Whisper | may be degraded; require explicit UI state | opt-in | first desktop host slice implemented locally with GTK keep-above + clipboard fallback; global hotkey scope still degraded | unavailable |
 | Web | browser-limited; target explicit degraded parity where safe | browser-limited unless a secure proxy/direct contract is specified | degraded compared with native keychain/keystore | target explicit degraded parity where safe | browser-limited quick actions; no OS overlay | unavailable |
 
 ## Android Keyboard IME
@@ -109,6 +109,36 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 - macOS, Linux, iOS and web should follow in that order, each with its own host
   or degraded-parity proof. Browser/store limits are documented product
   constraints rather than silent omissions.
+
+## macOS Desktop Overlay
+
+- macOS overlay is implemented as a first native host slice, with runner/manual
+  proof still required before any public parity claim.
+- The channel is `winflowz_app/macos_overlay`. It exposes the shared typed
+  desktop status/events/delivery contract for floating-window show/hide,
+  Control+Option+Space quick action monitoring, clipboard copy, and best-effort
+  Command+V delivery back to the last active app.
+- macOS must not promise an IME. The expected equivalent is desktop quick
+  actions: hotkey -> overlay -> correction/dictation/snippet/clipboard action ->
+  clipboard or best-effort delivery into the active app.
+- Accessibility/input-monitoring prompts may affect global hotkey and synthetic
+  paste delivery. When macOS blocks either path, WinFlowz must keep the final
+  text recoverable in the clipboard.
+
+## Linux Desktop Overlay
+
+- Linux overlay is implemented as a first native host slice, with runner/manual
+  proof still required before any public parity claim.
+- The channel is `winflowz_app/linux_overlay`. It exposes the shared typed
+  desktop status/events/delivery contract for GTK keep-above show/hide,
+  clipboard copy, appearance state, and event draining.
+- Linux must not promise an IME. The expected equivalent is desktop quick
+  actions where the desktop environment permits them, with explicit degraded
+  states otherwise.
+- Linux global hotkeys and synthetic paste are compositor/window-manager
+  dependent. The current host reports the Ctrl+Alt+Space accelerator as scoped
+  to the GTK app and uses clipboard-only delivery until a portal, desktop
+  environment integration, or distro packaging decision is made.
 
 ## Direct AI Calls
 

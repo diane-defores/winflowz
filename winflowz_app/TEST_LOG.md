@@ -75,3 +75,16 @@
 - Bug pointer: none
 - Evidence pointer: shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md
 - Follow-up: /sf-test --local shipflow_data/workflow/verification/windows-desktop-overlay-hotkeys-parity-checklist.md
+
+## 2026-05-31 - macOS and Linux desktop overlay and hotkeys parity
+
+- Scope: spec macos-linux-desktop-overlay-hotkeys-parity
+- Environment: macos-desktop + linux-desktop
+- Tester: user
+- Source: sf-test
+- Status: not run
+- Confidence: medium
+- Result summary: Manual macOS/Linux checklist prepared for native launch, quick action/hotkey behavior, floating/keep-above overlay, clipboard fallback, best-effort paste delivery where available, permissions, Wayland/X11, multi-monitor/DPI, and diagnostic redaction.
+- Bug pointer: none
+- Evidence pointer: shipflow_data/workflow/verification/macos-linux-desktop-overlay-hotkeys-parity-checklist.md
+- Follow-up: /sf-test --local shipflow_data/workflow/verification/macos-linux-desktop-overlay-hotkeys-parity-checklist.md

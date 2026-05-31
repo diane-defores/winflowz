@@ -46,8 +46,8 @@ wrappers.
 Provider-specific repositories such as Supabase legacy or Firebase are adapters,
 not product contracts. OS-specific capabilities must be represented as platform
 hosts behind shared contracts: Android IME remains Android-only, Android overlay
-controls remain Android-only, and Windows desktop overlay/hotkeys must be a
-Windows host for the shared overlay product concept. Product parity is the
+controls remain Android-only, and Windows/macOS/Linux desktop overlay/hotkeys
+must be native hosts for the shared overlay product concept. Product parity is the
 default: a feature should be planned as cross-platform unless an OS, browser,
 security, store policy, or runtime limitation makes that unsafe or impossible.
 
@@ -57,6 +57,8 @@ security, store policy, or runtime limitation makes that unsafe or impossible.
 | --- | --- | --- |
 | `lib/core/platform/**` | Platform capability and native bridge wrappers | Keep native channel names stable and return typed models instead of raw maps. |
 | `windows/**` | Windows desktop host | Own global hotkeys, overlay window behavior, focus, clipboard and text delivery; do not duplicate product stores here. |
+| `macos/**` | macOS desktop host | Own floating window behavior, quick action monitoring, focus, clipboard and text delivery; do not duplicate product stores here. |
+| `linux/**` | Linux desktop host | Own GTK keep-above behavior, clipboard fallback and desktop-environment-specific limits; do not duplicate product stores here. |
 | `lib/core/router/app_router.dart` | App route table and auth/local-mode guard | Protected product routes must pass through the app shell and must not build without signed-in or explicit local fallback state. |
 | `lib/core/diagnostics/**` | Local diagnostics and redaction helpers | Redact secrets/tokens/password-like fields before support copy, breadcrumbs, or event details. |
 | `lib/features/auth/**` | Auth contracts, Firebase/Google adapters, auth gate, and sign-in UI | Keep SDK errors behind typed domain failures; UI should not parse raw Firebase/Google exceptions directly. |
@@ -86,13 +88,13 @@ Settings UI
 
 Shared overlay product surface
   -> Overlay host contract
-  -> Android foreground overlay service or Windows desktop overlay host
+  -> Android foreground overlay service or desktop overlay host
   -> clipboard fallback and best-effort text delivery
 
-Windows desktop overlay host
-  -> WindowsOverlayBridge (`winflowz_app/windows_overlay`)
-  -> Windows runner global hotkey and always-on-top window
-  -> clipboard copy plus best-effort paste delivery to the last foreground window
+Desktop overlay hosts
+  -> DesktopOverlayBridge (`winflowz_app/windows_overlay`, `winflowz_app/macos_overlay`, `winflowz_app/linux_overlay`)
+  -> native hotkey/quick-action and floating/keep-above window behavior
+  -> clipboard copy plus best-effort paste delivery where the OS permits it
   -> typed status, event queue, and delivery result models
 
 Keyboard corner editor / preview
@@ -188,6 +190,15 @@ flutter test
 - `lib/core/platform/**` changed -> verify native channel contract and Settings UI.
 - `windows/**` changed -> verify Windows runner/manual QA for hotkey, overlay
   window, focus, clipboard, delivery, multi-monitor and DPI behavior.
+- `macos/**` changed -> verify macOS runner/manual QA for quick action
+  monitoring, floating window, focus, clipboard, delivery, Spaces/fullscreen and
+  Retina behavior.
+- `linux/**` changed -> verify Linux runner/manual QA for GTK keep-above,
+  clipboard fallback, accelerator scope, Wayland/X11, multi-monitor and DPI
+  behavior.
+- `lib/core/platform/desktop_overlay_bridge.dart` changed -> run
+  `flutter test test/desktop_overlay_bridge_test.dart` and `flutter analyze`;
+  native runner proof is still required for OS behavior.
 - `lib/core/platform/windows_overlay_bridge.dart` changed -> run
   `flutter test test/windows_overlay_bridge_test.dart` and `flutter analyze`;
   Windows runner proof is still required for native behavior.
