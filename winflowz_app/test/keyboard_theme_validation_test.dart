@@ -39,6 +39,58 @@ void main() {
     },
   );
 
+  test('keeps preset palettes automatic after non-color overrides', () {
+    final lightWithRelief =
+        KeyboardThemePresetCatalog.configFor(
+          KeyboardThemePresetCatalog.glassMint,
+          brightness: Brightness.light,
+        ).copyWith(
+          keyReliefEnabled: true,
+          keyReliefDepth: 4,
+          keyboardOpacity: 0.72,
+          pressEffect: KeyboardThemePressEffect.keycapTilt,
+        );
+
+    final dark = KeyboardThemePresetCatalog.resolveVariantForBrightness(
+      lightWithRelief,
+      brightness: Brightness.dark,
+    );
+    final darkPreset = KeyboardThemePresetCatalog.configFor(
+      KeyboardThemePresetCatalog.glassMint,
+      brightness: Brightness.dark,
+    );
+
+    expect(dark.presetId, KeyboardThemePresetCatalog.glassMint);
+    expect(dark.backgroundStartColor, darkPreset.backgroundStartColor);
+    expect(dark.keyColor, darkPreset.keyColor);
+    expect(dark.textColor, darkPreset.textColor);
+    expect(dark.keyReliefEnabled, isTrue);
+    expect(dark.keyReliefDepth, 4);
+    expect(dark.keyboardOpacity, 0.72);
+    expect(dark.pressEffect, KeyboardThemePressEffect.keycapTilt);
+
+    final light = KeyboardThemePresetCatalog.resolveVariantForBrightness(
+      dark,
+      brightness: Brightness.light,
+    );
+    expect(light.backgroundStartColor, lightWithRelief.backgroundStartColor);
+    expect(light.keyReliefEnabled, isTrue);
+  });
+
+  test('does not replace custom palette colors with preset variants', () {
+    final custom = KeyboardThemePresetCatalog.configFor(
+      KeyboardThemePresetCatalog.glassMint,
+    ).copyWith(keyColor: 0xFF123456);
+
+    final resolved = KeyboardThemePresetCatalog.resolveVariantForBrightness(
+      custom,
+      brightness: Brightness.dark,
+    );
+
+    expect(resolved.keyColor, 0xFF123456);
+    expect(resolved.backgroundStartColor, custom.backgroundStartColor);
+  });
+
   test('all preset light and dark variants pass theme contrast validation', () {
     for (final preset in KeyboardThemePresetCatalog.presets) {
       for (final brightness in Brightness.values) {

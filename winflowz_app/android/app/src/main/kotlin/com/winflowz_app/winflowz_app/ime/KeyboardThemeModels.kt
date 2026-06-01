@@ -38,12 +38,43 @@ object KeyboardThemePresets {
     fun labelFor(presetId: String): String =
         all.firstOrNull { it.id == presetId }?.name ?: "Theme"
 
+    fun resolveVariantForMode(
+        config: KeyboardThemeConfig,
+        dark: Boolean,
+    ): KeyboardThemeConfig {
+        val presetId = normalizedPresetId(config.presetId)
+        if (presetId == SYSTEM || config.useImage || !isCatalogPreset(presetId)) {
+            return config
+        }
+        val lightPreset = configFor(presetId, dark = false)
+        val darkPreset = configFor(presetId, dark = true)
+        if (!matchesPresetPalette(config, lightPreset) && !matchesPresetPalette(config, darkPreset)) {
+            return config
+        }
+        val targetPreset = if (dark) darkPreset else lightPreset
+        return targetPreset.copy(
+            version = config.version,
+            keyboardOpacity = config.keyboardOpacity,
+            pressHighlightDurationMs = config.pressHighlightDurationMs,
+            cornerTextOpacity = config.cornerTextOpacity,
+            borderWidth = config.borderWidth,
+            keyReliefEnabled = config.keyReliefEnabled,
+            keyReliefDepth = config.keyReliefDepth,
+            keyRadius = config.keyRadius,
+            keyHorizontalGap = config.keyHorizontalGap,
+            rowVerticalGap = config.rowVerticalGap,
+            shadowBlur = config.shadowBlur,
+            shadowOffsetY = config.shadowOffsetY,
+            pressEffect = config.pressEffect,
+            effectIntensity = config.effectIntensity,
+            effectDurationMs = config.effectDurationMs,
+            effectEasing = config.effectEasing,
+        )
+    }
+
     fun configFor(presetId: String, dark: Boolean = false): KeyboardThemeConfig {
         val normalizedPresetId =
-            when (presetId) {
-                WINFLOWZ_LIGHT, WINFLOWZ_DARK -> WINFLOWZ
-                else -> presetId
-            }
+            normalizedPresetId(presetId)
         val base = KeyboardThemeConfig(presetId = normalizedPresetId, useImage = false, backgroundImagePath = null)
         if (dark) {
             return darkConfigFor(normalizedPresetId, base)
@@ -274,6 +305,34 @@ object KeyboardThemePresets {
                 )
             else -> KeyboardThemeConfig()
         }
+
+    private fun normalizedPresetId(presetId: String): String =
+        when (presetId) {
+            WINFLOWZ_LIGHT, WINFLOWZ_DARK -> WINFLOWZ
+            else -> presetId
+        }
+
+    private fun isCatalogPreset(presetId: String): Boolean =
+        all.any { it.id == presetId }
+
+    private fun matchesPresetPalette(
+        config: KeyboardThemeConfig,
+        preset: KeyboardThemeConfig,
+    ): Boolean =
+        normalizedPresetId(config.presetId) == preset.presetId &&
+            config.backgroundStartColor == preset.backgroundStartColor &&
+            config.backgroundEndColor == preset.backgroundEndColor &&
+            config.useGradient == preset.useGradient &&
+            config.gradientStyle == preset.gradientStyle &&
+            config.keyColor == preset.keyColor &&
+            config.specialKeyColor == preset.specialKeyColor &&
+            config.activeKeyColor == preset.activeKeyColor &&
+            config.pressedKeyColor == preset.pressedKeyColor &&
+            config.textColor == preset.textColor &&
+            config.cornerTextColor == preset.cornerTextColor &&
+            config.statusTextColor == preset.statusTextColor &&
+            config.borderColor == preset.borderColor &&
+            config.shadowColor == preset.shadowColor
 }
 
 data class KeyboardThemeConfig(

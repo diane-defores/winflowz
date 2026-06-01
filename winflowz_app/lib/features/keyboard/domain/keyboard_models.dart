@@ -278,6 +278,74 @@ class KeyboardThemePresetCatalog {
     };
   }
 
+  static KeyboardThemeConfig resolveVariantForBrightness(
+    KeyboardThemeConfig config, {
+    required Brightness brightness,
+  }) {
+    final presetId = _normalizedPresetId(config.presetId);
+    if (presetId == system || config.useImage || !_isCatalogPreset(presetId)) {
+      return config;
+    }
+    final lightPreset = configFor(presetId, brightness: Brightness.light);
+    final darkPreset = configFor(presetId, brightness: Brightness.dark);
+    if (!_matchesPresetPalette(config, lightPreset) &&
+        !_matchesPresetPalette(config, darkPreset)) {
+      return config;
+    }
+    final targetPreset = brightness == Brightness.dark
+        ? darkPreset
+        : lightPreset;
+    return targetPreset.copyWith(
+      version: config.version,
+      keyboardOpacity: config.keyboardOpacity,
+      pressHighlightDurationMs: config.pressHighlightDurationMs,
+      cornerTextOpacity: config.cornerTextOpacity,
+      borderWidth: config.borderWidth,
+      keyReliefEnabled: config.keyReliefEnabled,
+      keyReliefDepth: config.keyReliefDepth,
+      keyRadius: config.keyRadius,
+      keyHorizontalGap: config.keyHorizontalGap,
+      rowVerticalGap: config.rowVerticalGap,
+      shadowBlur: config.shadowBlur,
+      shadowOffsetY: config.shadowOffsetY,
+      pressEffect: config.pressEffect,
+      effectIntensity: config.effectIntensity,
+      effectDurationMs: config.effectDurationMs,
+      effectEasing: config.effectEasing,
+    );
+  }
+
+  static String _normalizedPresetId(String presetId) {
+    return switch (presetId) {
+      winflowzLight || winflowzDark => winflowz,
+      _ => presetId,
+    };
+  }
+
+  static bool _isCatalogPreset(String presetId) {
+    return presets.any((preset) => preset.id == presetId);
+  }
+
+  static bool _matchesPresetPalette(
+    KeyboardThemeConfig config,
+    KeyboardThemeConfig preset,
+  ) {
+    return _normalizedPresetId(config.presetId) == preset.presetId &&
+        config.backgroundStartColor == preset.backgroundStartColor &&
+        config.backgroundEndColor == preset.backgroundEndColor &&
+        config.useGradient == preset.useGradient &&
+        config.gradientStyle == preset.gradientStyle &&
+        config.keyColor == preset.keyColor &&
+        config.specialKeyColor == preset.specialKeyColor &&
+        config.activeKeyColor == preset.activeKeyColor &&
+        config.pressedKeyColor == preset.pressedKeyColor &&
+        config.textColor == preset.textColor &&
+        config.cornerTextColor == preset.cornerTextColor &&
+        config.statusTextColor == preset.statusTextColor &&
+        config.borderColor == preset.borderColor &&
+        config.shadowColor == preset.shadowColor;
+  }
+
   static KeyboardThemeConfig _darkConfigFor(
     String presetId,
     KeyboardThemeConfig base,

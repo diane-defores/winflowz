@@ -1524,7 +1524,10 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = widget.theme;
+    final theme = KeyboardThemePresetCatalog.resolveVariantForBrightness(
+      widget.theme,
+      brightness: Theme.of(context).brightness,
+    );
     final gradientColors = [
       Color(theme.backgroundStartColor),
       Color(theme.backgroundEndColor),

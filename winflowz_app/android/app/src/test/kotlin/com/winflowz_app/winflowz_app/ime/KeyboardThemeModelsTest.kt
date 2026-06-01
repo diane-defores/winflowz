@@ -81,6 +81,47 @@ class KeyboardThemeModelsTest {
     }
 
     @Test
+    fun `preset palette switches variants while preserving non color overrides`() {
+        val config =
+            KeyboardThemePresets
+                .configFor(KeyboardThemePresets.GLASS_MINT)
+                .copy(
+                    keyReliefEnabled = true,
+                    keyReliefDepth = 4f,
+                    keyboardOpacity = 0.72f,
+                    pressEffect = "keycapTilt",
+                )
+        val dark = KeyboardThemePresets.resolveVariantForMode(config, dark = true)
+        val darkPreset = KeyboardThemePresets.configFor(KeyboardThemePresets.GLASS_MINT, dark = true)
+
+        assertEquals(KeyboardThemePresets.GLASS_MINT, dark.presetId)
+        assertEquals(darkPreset.backgroundStartColor, dark.backgroundStartColor)
+        assertEquals(darkPreset.keyColor, dark.keyColor)
+        assertEquals(darkPreset.textColor, dark.textColor)
+        assertTrue(dark.keyReliefEnabled)
+        assertEquals(4f, dark.keyReliefDepth)
+        assertEquals(0.72f, dark.keyboardOpacity)
+        assertEquals("keycapTilt", dark.pressEffect)
+
+        val light = KeyboardThemePresets.resolveVariantForMode(dark, dark = false)
+        assertEquals(config.backgroundStartColor, light.backgroundStartColor)
+        assertTrue(light.keyReliefEnabled)
+    }
+
+    @Test
+    fun `custom palette does not get replaced by preset variant`() {
+        val config =
+            KeyboardThemePresets
+                .configFor(KeyboardThemePresets.GLASS_MINT)
+                .copy(keyColor = 0xFF123456.toInt())
+
+        val resolved = KeyboardThemePresets.resolveVariantForMode(config, dark = true)
+
+        assertEquals(0xFF123456.toInt(), resolved.keyColor)
+        assertEquals(config.backgroundStartColor, resolved.backgroundStartColor)
+    }
+
+    @Test
     fun `ignores legacy key width scale`() {
         val config = KeyboardThemeConfig.fromMap(mapOf("keyWidthScale" to 0.75))
 

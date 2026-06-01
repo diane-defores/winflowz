@@ -809,18 +809,7 @@ class WinFlowzKeyboardView(
     private fun resolvedThemeConfigForMode(
         config: KeyboardThemeConfig,
         darkMode: Boolean,
-    ): KeyboardThemeConfig {
-        if (config.presetId == "system" || config.useImage) {
-            return config
-        }
-        val lightPreset = KeyboardThemePresets.configFor(config.presetId, dark = false)
-        val darkPreset = KeyboardThemePresets.configFor(config.presetId, dark = true)
-        return if (config == lightPreset || config == darkPreset) {
-            if (darkMode) darkPreset else lightPreset
-        } else {
-            config
-        }
-    }
+    ): KeyboardThemeConfig = KeyboardThemePresets.resolveVariantForMode(config, dark = darkMode)
 
     private fun isSystemDark(): Boolean {
         return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
