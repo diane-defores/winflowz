@@ -571,6 +571,12 @@ class _KeyboardSettingsSection extends StatelessWidget {
     required this.onPreferenceChanged,
   });
 
+  static const _controlPadding = EdgeInsets.symmetric(
+    horizontal: AppSpacing.x1,
+    vertical: AppSpacing.x1,
+  );
+  static const _tilePadding = EdgeInsets.symmetric(horizontal: AppSpacing.x1);
+
   final AndroidKeyboardStatus? status;
   final bool busy;
   final VoidCallback onRefresh;
@@ -615,455 +621,508 @@ class _KeyboardSettingsSection extends StatelessWidget {
       subtitle:
           'Statut de la méthode de saisie Android, disposition, gestes et confidentialité.',
       leading: const Icon(Icons.keyboard_outlined),
-      child: Column(
-        children: [
-          ListTile(
-            title: const Text('État d’exécution'),
-            subtitle: Text(
-              'enabled=${status?.enabled ?? false} | '
-              'active=${status?.active ?? false} | '
-              'layout=${status?.layoutProfile.name ?? 'qwerty'} | '
-              'gestures=${status?.cornerModeEnabled ?? false} | '
-              'languages=$_enabledLanguages | '
-              'privacy=${status?.privacyMode.name ?? 'auto'}',
-            ),
-            trailing: busy
-                ? const SizedBox.square(
-                    dimension: AppIconMetrics.sm,
-                    child: CircularProgressIndicator(
-                      strokeWidth: AppIconMetrics.progressStroke,
-                    ),
-                  )
-                : IconButton(
-                    tooltip: 'Actualiser l’état du clavier',
-                    onPressed: onRefresh,
-                    icon: const Icon(Icons.refresh),
-                  ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.health_and_safety_outlined),
-            title: const Text('Diagnostics de reprise'),
-            subtitle: Text(
-              'recoveries=${status?.keyboardRecoveryCount ?? 0} | '
-              'last=${status?.lastKeyboardErrorAt ?? 'none'} | '
-              'sentry=${SentryBootstrap.isConfigured ? 'configured' : 'disabled'}',
-            ),
-          ),
-          if (status?.lastKeyboardError != null)
-            ExpansionTile(
-              tilePadding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.x4,
-              ),
-              title: const Text('Dernier incident clavier'),
-              subtitle: const Text('Diagnostic natif masqué'),
-              children: [
-                Padding(
-                  padding: AppInsets.keyboardPrivacy,
-                  child: SelectableText(status!.lastKeyboardError!),
-                ),
-              ],
-            ),
-          if (status?.enabled == false)
-            const ListTile(
-              leading: Icon(Icons.info_outline),
-              title: Text('Clavier non activé'),
+      child: ListTileTheme.merge(
+        dense: true,
+        visualDensity: VisualDensity.compact,
+        contentPadding: _tilePadding,
+        minLeadingWidth: AppIconMetrics.sm,
+        horizontalTitleGap: AppSpacing.x2,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ListTile(
+              title: const Text('État d’exécution'),
               subtitle: Text(
-                'Activez le clavier WinFlowz dans les paramètres de méthode de saisie Android, puis sélectionnez-le depuis n’importe quel champ texte.',
+                'enabled=${status?.enabled ?? false} | '
+                'active=${status?.active ?? false} | '
+                'layout=${status?.layoutProfile.name ?? 'qwerty'} | '
+                'gestures=${status?.cornerModeEnabled ?? false} | '
+                'languages=$_enabledLanguages | '
+                'privacy=${status?.privacyMode.name ?? 'auto'}',
+              ),
+              trailing: busy
+                  ? const SizedBox.square(
+                      dimension: AppIconMetrics.sm,
+                      child: CircularProgressIndicator(
+                        strokeWidth: AppIconMetrics.progressStroke,
+                      ),
+                    )
+                  : IconButton(
+                      tooltip: 'Actualiser l’état du clavier',
+                      onPressed: onRefresh,
+                      icon: const Icon(Icons.refresh),
+                    ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.health_and_safety_outlined),
+              title: const Text('Diagnostics de reprise'),
+              subtitle: Text(
+                'recoveries=${status?.keyboardRecoveryCount ?? 0} | '
+                'last=${status?.lastKeyboardErrorAt ?? 'none'} | '
+                'sentry=${SentryBootstrap.isConfigured ? 'configured' : 'disabled'}',
               ),
             ),
-          Padding(
-            padding: AppInsets.keyboardControls,
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: busy ? null : onOpenInputSettings,
-                    icon: const Icon(Icons.open_in_new),
-                    label: const Text('Paramètres de saisie'),
+            if (status?.lastKeyboardError != null)
+              ExpansionTile(
+                tilePadding: _tilePadding,
+                childrenPadding: _controlPadding,
+                title: const Text('Dernier incident clavier'),
+                subtitle: const Text('Diagnostic natif masqué'),
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SelectableText(status!.lastKeyboardError!),
                   ),
+                ],
+              ),
+            if (status?.enabled == false)
+              const ListTile(
+                leading: Icon(Icons.info_outline),
+                title: Text('Clavier non activé'),
+                subtitle: Text(
+                  'Activez le clavier WinFlowz dans les paramètres de méthode de saisie Android, puis sélectionnez-le depuis n’importe quel champ texte.',
                 ),
-                AppGaps.horizontalX2,
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: busy ? null : onShowPicker,
-                    icon: const Icon(Icons.keyboard),
-                    label: const Text('Changer de clavier'),
-                  ),
-                ),
-              ],
+              ),
+            Padding(
+              padding: _controlPadding,
+              child: _KeyboardSettingsActions(
+                busy: busy,
+                onOpenInputSettings: onOpenInputSettings,
+                onShowPicker: onShowPicker,
+                onOpenKeyboardThemeStudio: onOpenKeyboardThemeStudio,
+              ),
             ),
-          ),
-          Padding(
-            padding: AppInsets.keyboardControls,
-            child: Align(
-              alignment: Alignment.centerLeft,
+            Padding(
+              padding: _controlPadding,
+              child: _KeyboardThemeQuickPicker(
+                status: status,
+                busy: busy,
+                onThemePresetChanged: onThemePresetChanged,
+              ),
+            ),
+            SwitchListTile(
+              value: status?.themeKeyReliefEnabled ?? false,
+              onChanged: busy ? null : onReliefChanged,
+              title: const Text('Relief clavier'),
+              subtitle: const Text(
+                'Ajoute un contour de touche et une sensation de touche enfoncée au clavier natif.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.voiceEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(voiceEnabled: value),
+              title: const Text('Dictée clavier'),
+              subtitle: const Text(
+                'Utilise la reconnaissance vocale Android de l’IME quand la permission micro est accordée.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.clipboardSyncDesired ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(clipboardSyncDesired: value),
+              title: const Text('Synchronisation clavier presse-papiers'),
+              subtitle: const Text(
+                'Option de synchronisation cloud des éléments éligibles du presse-papiers clavier. L’historique local est géré séparément.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.clipboardSensitiveFieldHistoryEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(
+                      clipboardSensitiveFieldHistoryEnabled: value,
+                    ),
+              title: const Text('Historique dans champs sensibles'),
+              subtitle: const Text(
+                'Option avancée : le copier/coller des champs mot de passe, OTP ou privés peut apparaître dans l’historique du presse-papiers. Désactivé par défaut.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.mediaControlsEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(mediaControlsEnabled: value),
+              title: const Text('Lecture/pause média clavier'),
+              subtitle: const Text(
+                'Envoie une touche média Android générique sans lire les métadonnées.',
+              ),
+            ),
+            Padding(
+              padding: _controlPadding,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(child: Text('Pas de volume')),
+                      Text('${status?.mediaVolumeStepPercent ?? 5}%'),
+                    ],
+                  ),
+                  Slider(
+                    value: _mediaStepSliderValue(
+                      status?.mediaVolumeStepPercent ?? 5,
+                    ),
+                    min: 0,
+                    max: (_mediaStepPercentOptions.length - 1).toDouble(),
+                    divisions: _mediaStepPercentOptions.length - 1,
+                    semanticFormatterCallback: (value) =>
+                        'Pas de volume ${_mediaStepPercentForSliderValue(value)} pourcentage',
+                    onChanged: busy
+                        ? null
+                        : (value) => onPreferenceChanged(
+                            mediaVolumeStepPercent:
+                                _mediaStepPercentForSliderValue(value),
+                          ),
+                  ),
+                  Row(
+                    children: [
+                      const Expanded(child: Text('Pas de luminosité')),
+                      Text('${status?.mediaBrightnessStepPercent ?? 10}%'),
+                    ],
+                  ),
+                  Slider(
+                    value: _mediaStepSliderValue(
+                      status?.mediaBrightnessStepPercent ?? 10,
+                    ),
+                    min: 0,
+                    max: (_mediaStepPercentOptions.length - 1).toDouble(),
+                    divisions: _mediaStepPercentOptions.length - 1,
+                    semanticFormatterCallback: (value) =>
+                        'Pas de luminosité ${_mediaStepPercentForSliderValue(value)} pourcentage',
+                    onChanged: busy
+                        ? null
+                        : (value) => onPreferenceChanged(
+                            mediaBrightnessStepPercent:
+                                _mediaStepPercentForSliderValue(value),
+                          ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: _controlPadding,
+              child: DropdownButtonFormField<KeyboardLayoutProfile>(
+                initialValue:
+                    status?.layoutProfile ?? KeyboardLayoutProfile.qwerty,
+                decoration: const InputDecoration(
+                  labelText: 'Disposition des lettres',
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: KeyboardLayoutProfile.qwerty,
+                    child: Text('QWERTY'),
+                  ),
+                  DropdownMenuItem(
+                    value: KeyboardLayoutProfile.azerty,
+                    child: Text('AZERTY'),
+                  ),
+                ],
+                onChanged: busy
+                    ? null
+                    : (value) => onPreferenceChanged(
+                        layoutProfile: value ?? KeyboardLayoutProfile.qwerty,
+                      ),
+              ),
+            ),
+            SwitchListTile(
+              value: status?.cornerModeEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(cornerModeEnabled: value),
+              title: const Text('Gestes de glissement'),
+              subtitle: const Text(
+                'Quand activé, les glissements sur les touches déclenchent des raccourcis directionnels et d’angle.',
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.open_in_full_outlined),
+              title: const Text('Raccourcis de gestes'),
+              subtitle: Text(
+                'Préréglage=${status?.cornerPresetId ?? KeyboardCornerPresetCatalog.frenchAccents}. Configurez les actions par touche.',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: busy ? null : onOpenCornerShortcuts,
+            ),
+            SwitchListTile(
+              value: status?.frenchLanguageEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(frenchLanguageEnabled: value),
+              title: const Text('Suggestions françaises'),
+              subtitle: const Text(
+                'Active le dictionnaire de suggestions français intégré.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.englishLanguageEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(englishLanguageEnabled: value),
+              title: const Text('Suggestions anglaises'),
+              subtitle: const Text(
+                'Active le dictionnaire de suggestions anglais intégré.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.spellingSuggestionsEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(spellingSuggestionsEnabled: value),
+              title: const Text('Suggestions orthographiques'),
+              subtitle: const Text(
+                'Affiche des candidats de mots au-dessus du clavier natif. Les règles d’extension de texte restent séparées.',
+              ),
+            ),
+            Padding(
+              padding: _controlPadding,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(child: Text('Hauteur du clavier')),
+                      Text(
+                        '${((status?.keyboardHeightScale ?? 1) * 100).round()}%',
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: (status?.keyboardHeightScale ?? 1).clamp(0.85, 1.2),
+                    min: 0.85,
+                    max: 1.2,
+                    divisions: 12,
+                    semanticFormatterCallback: (value) =>
+                        'Hauteur du clavier ${(value * 100).round()} pourcentage',
+                    onChanged: busy
+                        ? null
+                        : (value) =>
+                              onPreferenceChanged(keyboardHeightScale: value),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: _controlPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Hauteur de la rangée d’action'),
+                  AppGaps.x1,
+                  SegmentedButton<double>(
+                    segments: const [
+                      ButtonSegment(
+                        value: 1,
+                        icon: Icon(Icons.crop_16_9_outlined),
+                        label: Text('Pleine'),
+                      ),
+                      ButtonSegment(
+                        value: 2 / 3,
+                        icon: Icon(Icons.crop_square_outlined),
+                        label: Text('Carrée'),
+                      ),
+                      ButtonSegment(
+                        value: 0.56,
+                        icon: Icon(Icons.density_small_outlined),
+                        label: Text('Mini'),
+                      ),
+                    ],
+                    selected: {_actionRowHeightScale},
+                    onSelectionChanged: busy
+                        ? null
+                        : (selection) => onPreferenceChanged(
+                            actionRowHeightScale: selection.single,
+                          ),
+                  ),
+                ],
+              ),
+            ),
+            SwitchListTile(
+              value: status?.compactModeEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(compactModeEnabled: value),
+              title: const Text('Mode clavier compact'),
+              subtitle: const Text(
+                'Utilise trois lignes de saisie denses lorsque vous avez besoin de la hauteur clavier la plus faible.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.autoCloseModesEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(autoCloseModesEnabled: value),
+              title: const Text('Fermeture automatique des modes'),
+              subtitle: const Text(
+                'Revient à ABC après une touche en mode chiffres, symboles, accents ou émoji.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.keyVibrationEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(keyVibrationEnabled: value),
+              title: const Text('Vibration des touches'),
+              subtitle: const Text(
+                'Active/désactive le retour haptique du clavier.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.keySoundEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(keySoundEnabled: value),
+              title: const Text('Son des touches'),
+              subtitle: const Text(
+                'Active/désactive le clic sonore des touches.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.specialKeyCornersEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(specialKeyCornersEnabled: value),
+              title: const Text(
+                'Raccourcis par glissement de touches spéciales',
+              ),
+              subtitle: const Text(
+                'Autorise les raccourcis de glissement sur les touches non alphabétiques quand les gestes de glissement sont activés.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.doubleSpacePeriodEnabled ?? true,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(doubleSpacePeriodEnabled: value),
+              title: const Text('Double espace vers point'),
+              subtitle: const Text(
+                'Transforme le double espace en point-espace dans les champs texte standards.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.punctuationAutoSpacingEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) => onPreferenceChanged(
+                      punctuationAutoSpacingEnabled: value,
+                    ),
+              title: const Text('Espacement automatique de ponctuation'),
+              subtitle: const Text(
+                'Ajoute un espacement basique autour de la ponctuation pour les champs texte standards.',
+              ),
+            ),
+            SwitchListTile(
+              value: status?.debugTouchOverlayEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(debugTouchOverlayEnabled: value),
+              title: const Text('Overlay de débogage tactile clavier'),
+              subtitle: const Text(
+                'Affiche les limites des touches et les diagnostics de classification des gestes sur le clavier natif.',
+              ),
+            ),
+            Padding(
+              padding: _controlPadding,
+              child: DropdownButtonFormField<KeyboardPrivacyMode>(
+                initialValue: status?.privacyMode ?? KeyboardPrivacyMode.auto,
+                decoration: const InputDecoration(
+                  labelText: 'Mode confidentialité clavier',
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: KeyboardPrivacyMode.auto,
+                    child: Text('Auto : détecter les champs sensibles'),
+                  ),
+                  DropdownMenuItem(
+                    value: KeyboardPrivacyMode.strict,
+                    child: Text('Strict : mode privé partout'),
+                  ),
+                  DropdownMenuItem(
+                    value: KeyboardPrivacyMode.standard,
+                    child: Text('Standard : champs normaux uniquement'),
+                  ),
+                ],
+                onChanged: busy
+                    ? null
+                    : (value) => onPreferenceChanged(
+                        privacyMode: value ?? KeyboardPrivacyMode.auto,
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _KeyboardSettingsActions extends StatelessWidget {
+  const _KeyboardSettingsActions({
+    required this.busy,
+    required this.onOpenInputSettings,
+    required this.onShowPicker,
+    required this.onOpenKeyboardThemeStudio,
+  });
+
+  final bool busy;
+  final VoidCallback onOpenInputSettings;
+  final VoidCallback onShowPicker;
+  final VoidCallback onOpenKeyboardThemeStudio;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : 360.0;
+        final columns = maxWidth >= 560
+            ? 3
+            : maxWidth >= 360
+            ? 2
+            : 1;
+        const spacing = AppSpacing.x1;
+        final itemWidth = (maxWidth - spacing * (columns - 1)) / columns;
+        final fullWidthLastAction = columns == 2;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            SizedBox(
+              width: itemWidth,
+              child: OutlinedButton.icon(
+                onPressed: busy ? null : onOpenInputSettings,
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Paramètres'),
+              ),
+            ),
+            SizedBox(
+              width: itemWidth,
+              child: FilledButton.icon(
+                onPressed: busy ? null : onShowPicker,
+                icon: const Icon(Icons.keyboard),
+                label: const Text('Changer'),
+              ),
+            ),
+            SizedBox(
+              width: fullWidthLastAction ? maxWidth : itemWidth,
               child: OutlinedButton.icon(
                 onPressed: busy ? null : onOpenKeyboardThemeStudio,
                 icon: const Icon(Icons.palette_outlined),
-                label: const Text('Studio de thème clavier'),
+                label: const Text('Thème'),
               ),
             ),
-          ),
-          Padding(
-            padding: AppInsets.keyboardControls,
-            child: _KeyboardThemeQuickPicker(
-              status: status,
-              busy: busy,
-              onThemePresetChanged: onThemePresetChanged,
-            ),
-          ),
-          SwitchListTile(
-            value: status?.themeKeyReliefEnabled ?? false,
-            onChanged: busy ? null : onReliefChanged,
-            title: const Text('Relief clavier'),
-            subtitle: const Text(
-              'Ajoute un contour de touche et une sensation de touche enfoncée au clavier natif.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.voiceEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(voiceEnabled: value),
-            title: const Text('Dictée clavier'),
-            subtitle: const Text(
-              'Utilise la reconnaissance vocale Android de l’IME quand la permission micro est accordée.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.clipboardSyncDesired ?? false,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(clipboardSyncDesired: value),
-            title: const Text('Synchronisation clavier presse-papiers'),
-            subtitle: const Text(
-              'Option de synchronisation cloud des éléments éligibles du presse-papiers clavier. L’historique local est géré séparément.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.clipboardSensitiveFieldHistoryEnabled ?? false,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(
-                    clipboardSensitiveFieldHistoryEnabled: value,
-                  ),
-            title: const Text('Historique dans champs sensibles'),
-            subtitle: const Text(
-              'Option avancée : le copier/coller des champs mot de passe, OTP ou privés peut apparaître dans l’historique du presse-papiers. Désactivé par défaut.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.mediaControlsEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(mediaControlsEnabled: value),
-            title: const Text('Lecture/pause média clavier'),
-            subtitle: const Text(
-              'Envoie une touche média Android générique sans lire les métadonnées.',
-            ),
-          ),
-          Padding(
-            padding: AppInsets.keyboardPrivacy,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Expanded(child: Text('Pas de volume')),
-                    Text('${status?.mediaVolumeStepPercent ?? 5}%'),
-                  ],
-                ),
-                Slider(
-                  value: _mediaStepSliderValue(
-                    status?.mediaVolumeStepPercent ?? 5,
-                  ),
-                  min: 0,
-                  max: (_mediaStepPercentOptions.length - 1).toDouble(),
-                  divisions: _mediaStepPercentOptions.length - 1,
-                  semanticFormatterCallback: (value) =>
-                      'Pas de volume ${_mediaStepPercentForSliderValue(value)} pourcentage',
-                  onChanged: busy
-                      ? null
-                      : (value) => onPreferenceChanged(
-                          mediaVolumeStepPercent:
-                              _mediaStepPercentForSliderValue(value),
-                        ),
-                ),
-                Row(
-                  children: [
-                    const Expanded(child: Text('Pas de luminosité')),
-                    Text('${status?.mediaBrightnessStepPercent ?? 10}%'),
-                  ],
-                ),
-                Slider(
-                  value: _mediaStepSliderValue(
-                    status?.mediaBrightnessStepPercent ?? 10,
-                  ),
-                  min: 0,
-                  max: (_mediaStepPercentOptions.length - 1).toDouble(),
-                  divisions: _mediaStepPercentOptions.length - 1,
-                  semanticFormatterCallback: (value) =>
-                      'Pas de luminosité ${_mediaStepPercentForSliderValue(value)} pourcentage',
-                  onChanged: busy
-                      ? null
-                      : (value) => onPreferenceChanged(
-                          mediaBrightnessStepPercent:
-                              _mediaStepPercentForSliderValue(value),
-                        ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: AppInsets.keyboardPrivacy,
-            child: DropdownButtonFormField<KeyboardLayoutProfile>(
-              initialValue:
-                  status?.layoutProfile ?? KeyboardLayoutProfile.qwerty,
-              decoration: const InputDecoration(
-                labelText: 'Disposition des lettres',
-              ),
-              items: const [
-                DropdownMenuItem(
-                  value: KeyboardLayoutProfile.qwerty,
-                  child: Text('QWERTY'),
-                ),
-                DropdownMenuItem(
-                  value: KeyboardLayoutProfile.azerty,
-                  child: Text('AZERTY'),
-                ),
-              ],
-              onChanged: busy
-                  ? null
-                  : (value) => onPreferenceChanged(
-                      layoutProfile: value ?? KeyboardLayoutProfile.qwerty,
-                    ),
-            ),
-          ),
-          SwitchListTile(
-            value: status?.cornerModeEnabled ?? false,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(cornerModeEnabled: value),
-            title: const Text('Gestes de glissement'),
-            subtitle: const Text(
-              'Quand activé, les glissements sur les touches déclenchent des raccourcis directionnels et d’angle.',
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.open_in_full_outlined),
-            title: const Text('Raccourcis de gestes'),
-            subtitle: Text(
-              'Préréglage=${status?.cornerPresetId ?? KeyboardCornerPresetCatalog.frenchAccents}. Configurez les actions par touche.',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: busy ? null : onOpenCornerShortcuts,
-          ),
-          SwitchListTile(
-            value: status?.frenchLanguageEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(frenchLanguageEnabled: value),
-            title: const Text('Suggestions françaises'),
-            subtitle: const Text(
-              'Active le dictionnaire de suggestions français intégré.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.englishLanguageEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(englishLanguageEnabled: value),
-            title: const Text('Suggestions anglaises'),
-            subtitle: const Text(
-              'Active le dictionnaire de suggestions anglais intégré.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.spellingSuggestionsEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) =>
-                      onPreferenceChanged(spellingSuggestionsEnabled: value),
-            title: const Text('Suggestions orthographiques'),
-            subtitle: const Text(
-              'Affiche des candidats de mots au-dessus du clavier natif. Les règles d’extension de texte restent séparées.',
-            ),
-          ),
-          Padding(
-            padding: AppInsets.keyboardPrivacy,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Expanded(child: Text('Hauteur du clavier')),
-                    Text(
-                      '${((status?.keyboardHeightScale ?? 1) * 100).round()}%',
-                    ),
-                  ],
-                ),
-                Slider(
-                  value: (status?.keyboardHeightScale ?? 1).clamp(0.85, 1.2),
-                  min: 0.85,
-                  max: 1.2,
-                  divisions: 12,
-                  semanticFormatterCallback: (value) =>
-                      'Hauteur du clavier ${(value * 100).round()} pourcentage',
-                  onChanged: busy
-                      ? null
-                      : (value) =>
-                            onPreferenceChanged(keyboardHeightScale: value),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: AppInsets.keyboardPrivacy,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Hauteur de la rangée d’action'),
-                AppGaps.x1,
-                SegmentedButton<double>(
-                  segments: const [
-                    ButtonSegment(
-                      value: 1,
-                      icon: Icon(Icons.crop_16_9_outlined),
-                      label: Text('Pleine'),
-                    ),
-                    ButtonSegment(
-                      value: 2 / 3,
-                      icon: Icon(Icons.crop_square_outlined),
-                      label: Text('Carrée'),
-                    ),
-                    ButtonSegment(
-                      value: 0.56,
-                      icon: Icon(Icons.density_small_outlined),
-                      label: Text('Mini'),
-                    ),
-                  ],
-                  selected: {_actionRowHeightScale},
-                  onSelectionChanged: busy
-                      ? null
-                      : (selection) => onPreferenceChanged(
-                          actionRowHeightScale: selection.single,
-                        ),
-                ),
-              ],
-            ),
-          ),
-          SwitchListTile(
-            value: status?.compactModeEnabled ?? false,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(compactModeEnabled: value),
-            title: const Text('Mode clavier compact'),
-            subtitle: const Text(
-              'Utilise trois lignes de saisie denses lorsque vous avez besoin de la hauteur clavier la plus faible.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.autoCloseModesEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(autoCloseModesEnabled: value),
-            title: const Text('Fermeture automatique des modes'),
-            subtitle: const Text(
-              'Revient à ABC après une touche en mode chiffres, symboles, accents ou émoji.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.keyVibrationEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(keyVibrationEnabled: value),
-            title: const Text('Vibration des touches'),
-            subtitle: const Text(
-              'Active/désactive le retour haptique du clavier.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.keySoundEnabled ?? false,
-            onChanged: busy
-                ? null
-                : (value) => onPreferenceChanged(keySoundEnabled: value),
-            title: const Text('Son des touches'),
-            subtitle: const Text(
-              'Active/désactive le clic sonore des touches.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.specialKeyCornersEnabled ?? false,
-            onChanged: busy
-                ? null
-                : (value) =>
-                      onPreferenceChanged(specialKeyCornersEnabled: value),
-            title: const Text('Raccourcis par glissement de touches spéciales'),
-            subtitle: const Text(
-              'Autorise les raccourcis de glissement sur les touches non alphabétiques quand les gestes de glissement sont activés.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.doubleSpacePeriodEnabled ?? true,
-            onChanged: busy
-                ? null
-                : (value) =>
-                      onPreferenceChanged(doubleSpacePeriodEnabled: value),
-            title: const Text('Double espace vers point'),
-            subtitle: const Text(
-              'Transforme le double espace en point-espace dans les champs texte standards.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.punctuationAutoSpacingEnabled ?? false,
-            onChanged: busy
-                ? null
-                : (value) =>
-                      onPreferenceChanged(punctuationAutoSpacingEnabled: value),
-            title: const Text('Espacement automatique de ponctuation'),
-            subtitle: const Text(
-              'Ajoute un espacement basique autour de la ponctuation pour les champs texte standards.',
-            ),
-          ),
-          SwitchListTile(
-            value: status?.debugTouchOverlayEnabled ?? false,
-            onChanged: busy
-                ? null
-                : (value) =>
-                      onPreferenceChanged(debugTouchOverlayEnabled: value),
-            title: const Text('Overlay de débogage tactile clavier'),
-            subtitle: const Text(
-              'Affiche les limites des touches et les diagnostics de classification des gestes sur le clavier natif.',
-            ),
-          ),
-          Padding(
-            padding: AppInsets.keyboardPrivacy,
-            child: DropdownButtonFormField<KeyboardPrivacyMode>(
-              initialValue: status?.privacyMode ?? KeyboardPrivacyMode.auto,
-              decoration: const InputDecoration(
-                labelText: 'Mode confidentialité clavier',
-              ),
-              items: const [
-                DropdownMenuItem(
-                  value: KeyboardPrivacyMode.auto,
-                  child: Text('Auto : détecter les champs sensibles'),
-                ),
-                DropdownMenuItem(
-                  value: KeyboardPrivacyMode.strict,
-                  child: Text('Strict : mode privé partout'),
-                ),
-                DropdownMenuItem(
-                  value: KeyboardPrivacyMode.standard,
-                  child: Text('Standard : champs normaux uniquement'),
-                ),
-              ],
-              onChanged: busy
-                  ? null
-                  : (value) => onPreferenceChanged(
-                      privacyMode: value ?? KeyboardPrivacyMode.auto,
-                    ),
-            ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }
@@ -1097,10 +1156,16 @@ class _KeyboardThemeQuickPicker extends StatelessWidget {
         AppGaps.x2,
         LayoutBuilder(
           builder: (context, constraints) {
-            const columns = 3;
+            final maxWidth = constraints.maxWidth.isFinite
+                ? constraints.maxWidth
+                : 320.0;
+            final columns = maxWidth >= 520
+                ? 3
+                : maxWidth >= 280
+                ? 2
+                : 1;
             const spacing = AppSpacing.x1;
-            final itemWidth =
-                (constraints.maxWidth - spacing * (columns - 1)) / columns;
+            final itemWidth = (maxWidth - spacing * (columns - 1)) / columns;
             return Wrap(
               spacing: spacing,
               runSpacing: spacing,
