@@ -384,7 +384,8 @@ class WinFlowzKeyboardView(
 
     private fun keyGap(): Float = dp(themeConfig.keyHorizontalGap)
 
-    private fun rowGap(): Float = dp(themeConfig.rowVerticalGap)
+    private fun rowGap(): Float =
+        dp(themeConfig.rowVerticalGap).coerceAtLeast(keyboardThemeMinimumRowGap())
 
     private fun keyWidthScale(): Float = 1f
 
@@ -754,18 +755,8 @@ class WinFlowzKeyboardView(
     }
 
     private fun restoreKeyBorderPaint() {
-        keyBorderPaint.color =
-            if (themeConfig.presetId == "system") {
-                Color.TRANSPARENT
-            } else {
-                keyboardLayerColor(themeConfig.borderColor, KEYBOARD_BORDER_OPACITY_BOOST)
-            }
-        keyBorderPaint.strokeWidth =
-            if (themeConfig.presetId == "system") {
-                0f
-            } else {
-                dp(themeConfig.borderWidth)
-            }
+        keyBorderPaint.color = keyboardLayerColor(themeConfig.borderColor, KEYBOARD_BORDER_OPACITY_BOOST)
+        keyBorderPaint.strokeWidth = dp(themeConfig.borderWidth)
     }
 
     private fun syncMaterialPressStarts() {
@@ -5126,12 +5117,37 @@ class WinFlowzKeyboardView(
     }
 
     private fun computedHorizontalPadding(availableWidth: Float): Float {
-        return (availableWidth * keyboardHorizontalPaddingScale).coerceAtLeast(0f)
+        return (availableWidth * keyboardHorizontalPaddingScale)
+            .coerceAtLeast(keyboardThemeBorderEdgePadding())
     }
 
     private fun computedVerticalPadding(availableWidth: Float): Float {
-        return (availableWidth * keyboardVerticalPaddingScale).coerceAtLeast(0f)
+        return (availableWidth * keyboardVerticalPaddingScale)
+            .coerceAtLeast(keyboardThemeBorderEdgePadding())
     }
+
+    private fun keyboardThemeBorderEdgePadding(): Float {
+        if (fieldPolicy.privateMode || keyBorderPaint.strokeWidth <= 0f || Color.alpha(keyBorderPaint.color) <= 0) {
+            return 0f
+        }
+        return (keyBorderPaint.strokeWidth + keyboardVisualHairline()).coerceAtLeast(0f)
+    }
+
+    private fun keyboardThemeMinimumRowGap(): Float {
+        if (fieldPolicy.privateMode) {
+            return 0f
+        }
+        var minimumGap = 0f
+        if (keyBorderPaint.strokeWidth > 0f && Color.alpha(keyBorderPaint.color) > 0) {
+            minimumGap = max(minimumGap, keyBorderPaint.strokeWidth + keyboardVisualHairline())
+        }
+        if (themeConfig.keyReliefEnabled && themeConfig.keyReliefDepth > 0f) {
+            minimumGap = max(minimumGap, dp(themeConfig.keyReliefDepth) + keyboardVisualHairline())
+        }
+        return minimumGap
+    }
+
+    private fun keyboardVisualHairline(): Float = 1f
 
     private fun updateKeyboardHorizontalPadding(delta: Float) {
         val next = (keyboardHorizontalPaddingScale + delta).coerceIn(
