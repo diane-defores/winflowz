@@ -7,17 +7,22 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.graphics.Color
 import android.graphics.PixelFormat
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.TextView
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 class OverlayForegroundService : Service() {
     companion object {
@@ -45,11 +50,14 @@ class OverlayForegroundService : Service() {
         private const val defaultCollapsedWidth = 50
         private const val initialRightInset = 72
         private const val preferencesName = "winflowz_app_overlay_prefs"
+        private const val keyOverlayEnabled = "overlay_enabled"
         private const val keyOverlaySizeScale = "overlay_size_scale"
         private const val keyOverlayOpacity = "overlay_opacity"
         private const val keyOverlayX = "overlay_x"
         private const val keyOverlayY = "overlay_y"
         private const val dragLongPressDelayMs = 320L
+        private const val dismissTargetSizeDp = 72f
+        private const val dismissTargetBottomInsetDp = 28f
 
         @Volatile
         private var running = false
@@ -69,9 +77,13 @@ class OverlayForegroundService : Service() {
 
     private var windowManager: WindowManager? = null
     private var overlayView: OverlayView? = null
+    private var dismissTargetView: TextView? = null
     private var layoutParams: WindowManager.LayoutParams? = null
+    private var dismissTargetParams: WindowManager.LayoutParams? = null
     private var isShowing = false
     private var isDragging = false
+    private var isDismissTargetShowing = false
+    private var isDismissTargetHot = false
     private var initialX = 0
     private var initialY = 0
     private var initialTouchX = 0f
@@ -349,6 +361,7 @@ class OverlayForegroundService : Service() {
 
     private fun hideOverlay() {
         if (!isShowing) {
+            hideDismissTarget()
             return
         }
         longPressRunnable?.let { runnable ->
@@ -356,6 +369,7 @@ class OverlayForegroundService : Service() {
             longPressRunnable = null
         }
         overlayView?.setDragHandleTouchListener(null)
+        overlayView?.setBubbleTouchListener(null)
         overlayView?.setOnTouchListener(null)
         try {
             windowManager?.removeView(overlayView)
@@ -371,6 +385,7 @@ class OverlayForegroundService : Service() {
         overlayView = null
         layoutParams = null
         isShowing = false
+        hideDismissTarget()
     }
 
     private fun attachTouchListener() {
@@ -381,17 +396,19 @@ class OverlayForegroundService : Service() {
                 requireLongPressToDrag = false,
             )
         }
-        overlayView?.setOnTouchListener { _, event ->
+        val collapsedBubbleTouchListener = View.OnTouchListener { _, event ->
             val state = overlayView?.getCurrentState() ?: "collapsed"
             if (state != "collapsed") {
-                return@setOnTouchListener false
+                return@OnTouchListener false
             }
             handleDragTouch(
                 event,
                 triggerTapOnRelease = true,
-                requireLongPressToDrag = true,
+                requireLongPressToDrag = false,
             )
         }
+        overlayView?.setOnTouchListener(collapsedBubbleTouchListener)
+        overlayView?.setBubbleTouchListener(collapsedBubbleTouchListener)
         overlayView?.setDragHandleTouchListener(dragHandleTouchListener)
     }
 
@@ -450,6 +467,8 @@ class OverlayForegroundService : Service() {
                 if (!isDragging && (abs(dx) > dragSlop || abs(dy) > dragSlop)) {
                     isDragging = true
                     longPressRunnable?.let { overlayView?.removeCallbacks(it) }
+                    performOverlayHaptic(HapticFeedbackConstants.LONG_PRESS)
+                    showDismissTarget()
                 }
                 if (isDragging) {
                     params.x = initialX + dx.toInt()
@@ -459,21 +478,33 @@ class OverlayForegroundService : Service() {
                     } catch (_: Exception) {
                         // Keep touch handling stable if this transiently fails.
                     }
+                    updateDismissTargetState()
                 }
                 true
             }
             MotionEvent.ACTION_UP,
             MotionEvent.ACTION_CANCEL -> {
                 longPressRunnable?.let { overlayView?.removeCallbacks(it) }
+                val released = event.actionMasked == MotionEvent.ACTION_UP
 
                 if (isDragging) {
-                    clampToScreen()
-                    savePositionPreference()
+                    if (released && isOverlayOverDismissTarget()) {
+                        performOverlayHaptic(HapticFeedbackConstants.VIRTUAL_KEY)
+                        dismissOverlayFromDrag()
+                    } else if (released) {
+                        performOverlayHaptic(HapticFeedbackConstants.VIRTUAL_KEY)
+                        clampToScreen()
+                        savePositionPreference()
+                        hideDismissTarget()
+                    } else {
+                        clampToScreen()
+                        hideDismissTarget()
+                    }
                 } else if (
                     triggerTapOnRelease &&
-                    event.actionMasked == MotionEvent.ACTION_UP &&
-                    !isDragArmed &&
-                    !hasMovedPastTapSlop
+                    released &&
+                    !hasMovedPastTapSlop &&
+                    (!requireLongPressToDrag || !isDragArmed)
                 ) {
                     overlayView?.performClick()
                 }
@@ -482,9 +513,150 @@ class OverlayForegroundService : Service() {
                 hasMovedPastTapSlop = false
                 longPressRunnable = null
                 overlayView?.parent?.requestDisallowInterceptTouchEvent(false)
+                if (event.actionMasked == MotionEvent.ACTION_CANCEL) {
+                    hideDismissTarget()
+                }
                 true
             }
             else -> false
+        }
+    }
+
+    private fun showDismissTarget() {
+        if (isDismissTargetShowing) {
+            return
+        }
+        val manager = windowManager ?: return
+        val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            @Suppress("DEPRECATION")
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+        val targetSize = dpToPx(dismissTargetSizeDp)
+        dismissTargetView = TextView(this).apply {
+            text = "X"
+            textSize = 26f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            contentDescription = "Drop here to hide the WinFlowz overlay."
+            elevation = dpToPx(16f).toFloat()
+            background = dismissTargetBackground(active = false)
+            alpha = 0.92f
+        }
+        dismissTargetParams = WindowManager.LayoutParams(
+            targetSize,
+            targetSize,
+            type,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            PixelFormat.TRANSLUCENT,
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+            x = (resources.displayMetrics.widthPixels - targetSize) / 2
+            y = resources.displayMetrics.heightPixels -
+                targetSize -
+                dpToPx(dismissTargetBottomInsetDp)
+            alpha = 0.92f
+        }
+        try {
+            manager.addView(dismissTargetView, dismissTargetParams)
+            isDismissTargetShowing = true
+            isDismissTargetHot = false
+            OverlayEventQueue.enqueue("overlayDismissTarget", mapOf("state" to "shown"))
+        } catch (error: Exception) {
+            dismissTargetView = null
+            dismissTargetParams = null
+            OverlayEventQueue.enqueue(
+                "serviceError",
+                mapOf(
+                    "code" to "OVERLAY_DISMISS_TARGET_ADD_FAILED",
+                    "detail" to (error.message ?: error.javaClass.simpleName),
+                ),
+            )
+        }
+    }
+
+    private fun hideDismissTarget() {
+        if (!isDismissTargetShowing) {
+            dismissTargetView = null
+            dismissTargetParams = null
+            isDismissTargetHot = false
+            return
+        }
+        try {
+            windowManager?.removeView(dismissTargetView)
+        } catch (_: Exception) {
+            // Keep overlay teardown stable if the target is already detached.
+        }
+        dismissTargetView = null
+        dismissTargetParams = null
+        isDismissTargetShowing = false
+        isDismissTargetHot = false
+    }
+
+    private fun updateDismissTargetState() {
+        val active = isOverlayOverDismissTarget()
+        if (active == isDismissTargetHot) {
+            return
+        }
+        isDismissTargetHot = active
+        dismissTargetView?.background = dismissTargetBackground(active)
+        dismissTargetView
+            ?.animate()
+            ?.scaleX(if (active) 1.12f else 1f)
+            ?.scaleY(if (active) 1.12f else 1f)
+            ?.setDuration(120L)
+            ?.start()
+        if (active) {
+            overlayView?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        }
+        OverlayEventQueue.enqueue(
+            "overlayDismissTarget",
+            mapOf("state" to if (active) "armed" else "shown"),
+        )
+    }
+
+    private fun performOverlayHaptic(feedbackConstant: Int) {
+        overlayView?.performHapticFeedback(feedbackConstant)
+    }
+
+    private fun isOverlayOverDismissTarget(): Boolean {
+        val overlayParams = layoutParams ?: return false
+        val targetParams = dismissTargetParams ?: return false
+        val targetSize = dismissTargetView?.width?.takeIf { it > 0 }
+            ?: dpToPx(dismissTargetSizeDp)
+        val overlayWidth = overlayView?.width?.takeIf { it > 0 } ?: defaultCollapsedWidth
+        val overlayHeight = overlayView?.height?.takeIf { it > 0 } ?: defaultCollapsedWidth
+        val overlayCenterX = overlayParams.x + overlayWidth / 2
+        val overlayCenterY = overlayParams.y + overlayHeight / 2
+        return overlayCenterX in targetParams.x..(targetParams.x + targetSize) &&
+            overlayCenterY in targetParams.y..(targetParams.y + targetSize)
+    }
+
+    private fun dismissOverlayFromDrag() {
+        val state = overlayView?.getCurrentState() ?: pendingState
+        OverlayEventQueue.enqueue("overlayDismiss", mapOf("source" to "drag_target"))
+        if (state in setOf("recording", "paused", "processing")) {
+            OverlayEventQueue.enqueue("recordCancel")
+        }
+        getSharedPreferences(preferencesName, MODE_PRIVATE)
+            .edit()
+            .putBoolean(keyOverlayEnabled, false)
+            .apply()
+        OverlayEventQueue.enqueue("overlayPreference", mapOf("enabled" to false))
+        hideDismissTarget()
+        handleStop()
+    }
+
+    private fun dismissTargetBackground(active: Boolean): GradientDrawable {
+        val fillColor = if (active) Color.parseColor("#dc2626") else Color.parseColor("#111827")
+        val strokeColor = if (active) Color.parseColor("#fecaca") else Color.parseColor("#475569")
+        return GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(fillColor)
+            setStroke(dpToPx(if (active) 3f else 2f), strokeColor)
         }
     }
 
@@ -584,6 +756,14 @@ class OverlayForegroundService : Service() {
         } catch (_: Exception) {
             // ignore
         }
+    }
+
+    private fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics,
+        ).roundToInt()
     }
 
     private fun startForegroundCompat(notification: Notification) {

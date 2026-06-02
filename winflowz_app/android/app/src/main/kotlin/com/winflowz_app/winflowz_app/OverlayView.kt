@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
@@ -28,10 +29,11 @@ class OverlayView(context: Context) : FrameLayout(context) {
     private val handler = android.os.Handler(android.os.Looper.getMainLooper())
 
     private val fabSize = dpToPx(50f)
-    private val expandedWidth = dpToPx(292f)
+    private val expandedWidth = dpToPx(220f)
     private val expandedHeight = dpToPx(58f)
     private val buttonSize = dpToPx(30f)
     private val dragHandleWidth = dpToPx(20f)
+    private val waveformWidth = dpToPx(64f)
     private val cornerRadius = dpToPx(26f)
 
     private val primaryColor = Color.parseColor("#2563eb")
@@ -64,7 +66,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
             visibility = VISIBLE
             setPadding(0, 0, 0, 0)
             letterSpacing = 0.08f
-            contentDescription = "WinFlowz overlay. Tap to start dictation. Long press and drag to move."
+            contentDescription = "WinFlowz overlay. Tap to start dictation. Drag to move."
             elevation = dpToPx(8f).toFloat()
         }
         fabView.background = BubbleDrawable(primaryColor, surfaceStrokeColor)
@@ -107,7 +109,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
                     dragHandleWidth,
                     LinearLayout.LayoutParams.MATCH_PARENT,
                 ).apply {
-                    setMargins(0, 0, dpToPx(8f), 0)
+                    setMargins(0, 0, dpToPx(6f), 0)
                 }
             contentDescription = "Drag handle. Drag to move the overlay."
         }
@@ -115,7 +117,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
 
         cancelButton = TextView(context).apply {
             layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize).apply {
-                setMargins(0, 0, dpToPx(8f), 0)
+                setMargins(0, 0, dpToPx(6f), 0)
             }
             text = "X"
             textSize = 14f
@@ -124,19 +126,20 @@ class OverlayView(context: Context) : FrameLayout(context) {
             background = CircleDrawable(dangerColor)
             contentDescription = "Cancel recording"
             setOnClickListener {
+                performOverlayHaptic()
                 onRecordCancel?.invoke()
             }
         }
         expandedContainer.addView(cancelButton)
 
         waveformView = WaveformView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f)
+            layoutParams = LinearLayout.LayoutParams(waveformWidth, LinearLayout.LayoutParams.MATCH_PARENT)
         }
         expandedContainer.addView(waveformView)
 
         pauseButton = TextView(context).apply {
             layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize).apply {
-                setMargins(dpToPx(8f), 0, 0, 0)
+                setMargins(dpToPx(6f), 0, 0, 0)
             }
             text = "II"
             textSize = 12f
@@ -145,6 +148,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
             background = CircleDrawable(pausedColor)
             contentDescription = "Pause recording"
             setOnClickListener {
+                performOverlayHaptic()
                 if (currentState == "paused") {
                     onRecordResume?.invoke()
                 } else {
@@ -156,7 +160,7 @@ class OverlayView(context: Context) : FrameLayout(context) {
 
         doneButton = TextView(context).apply {
             layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize).apply {
-                setMargins(dpToPx(8f), 0, 0, 0)
+                setMargins(dpToPx(6f), 0, 0, 0)
             }
             text = "OK"
             textSize = 12f
@@ -165,13 +169,17 @@ class OverlayView(context: Context) : FrameLayout(context) {
             background = CircleDrawable(successColor)
             contentDescription = "Finish recording"
             setOnClickListener {
+                performOverlayHaptic()
                 onRecordStop?.invoke()
             }
         }
         expandedContainer.addView(doneButton)
         addView(expandedContainer)
 
-        fabView.setOnClickListener { onBubbleTap?.invoke() }
+        fabView.setOnClickListener {
+            performOverlayHaptic()
+            onBubbleTap?.invoke()
+        }
     }
 
     fun getCurrentState(): String = currentState
@@ -285,12 +293,14 @@ class OverlayView(context: Context) : FrameLayout(context) {
     override fun performClick(): Boolean {
         super.performClick()
         if (currentState == "collapsed") {
+            performOverlayHaptic()
             onBubbleTap?.invoke()
         }
         return true
     }
 
     fun emitLongPress() {
+        performOverlayHaptic(HapticFeedbackConstants.LONG_PRESS)
         onBubbleLongPress?.invoke()
     }
 
@@ -298,9 +308,19 @@ class OverlayView(context: Context) : FrameLayout(context) {
         dragHandle.setOnTouchListener(listener)
     }
 
+    fun setBubbleTouchListener(listener: View.OnTouchListener?) {
+        fabView.setOnTouchListener(listener)
+    }
+
     override fun onDetachedFromWindow() {
         recordingChromeView.stop()
         super.onDetachedFromWindow()
+    }
+
+    private fun performOverlayHaptic(
+        feedbackConstant: Int = HapticFeedbackConstants.VIRTUAL_KEY,
+    ) {
+        performHapticFeedback(feedbackConstant)
     }
 
     private fun normalizeState(state: String): String {
