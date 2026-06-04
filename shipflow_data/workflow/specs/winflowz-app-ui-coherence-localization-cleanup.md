@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-05-28"
 created_at: "2026-05-28 19:36:12 UTC"
 updated: "2026-06-01"
-updated_at: "2026-06-01 20:54:06 UTC"
+updated_at: "2026-06-01 22:59:07 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -325,6 +325,7 @@ None.
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
+| 2026-06-01 22:59:07 UTC | sf-browser | GPT-5.5 Codex + Chromium/CDP fallback | Rechecked deployed Flutter web after user push. `https://winflowz-app.vercel.app/` still returned Vercel `404 DEPLOYMENT_NOT_FOUND`. `https://app.winflowz.com/` returned 200 and rendered the WinFlowz sign-in screen in Chromium/CDP, but served `index/main.dart.js` from 2026-05-30 (`x-vercel-cache: HIT`) and Vercel CLI showed the new 2026-06-01 production deployment belongs to project `winflowz`, not `winflowz_app`. | partial | Redeploy or alias the Flutter app deployment, then rerun `sf-browser` on the confirmed app URL. |
 | 2026-06-01 20:54:06 UTC | sf-build | gpt-5.3-codex subagent + Codex integration | Closed the remaining UI-coherence implementation slice for token provenance and density on Voice, Clipboard, Snippets, and Dictionary: clarified TubeFlow seed naming as historical while mapping semantics to WinFlowz, reduced excess vertical/card spacing, added responsive two-column form grouping where width allows, and reused `AppActionRail` for compact action groups. Local proof: `flutter analyze`, targeted UI/domain tests, full `flutter test`, and `git diff --check` passed. | implemented | /sf-end shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md |
 | 2026-06-01 20:43:47 UTC | sf-verify | GPT-5 Codex | Verified the density slice against the spec contract: reviewed shared UI diff, added missing component documentation for `AppActionRail`/48dp baseline, reran `flutter analyze`, targeted toolbar/search widget tests, full `flutter test`, diff whitespace check, and metadata lint. Hosted Vercel smoke remains deferred until ship/prod because the current patch is unshipped and no APK handoff is requested. | verified | /sf-end shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md |
 | 2026-06-01 09:34:33 UTC | sf-start | gpt-5.3-codex-spark subagent + Codex integration | Implemented a density slice: tightened shared screen/card/button spacing, raised common button targets to 48dp, added responsive `AppActionRail`, reduced Home card nesting, and compacted Settings action groups. Local proof: `flutter analyze`, `flutter test test/app_page_action_bar_test.dart test/page_scoped_search_test.dart`, and full `flutter test` passed. | implemented | /sf-verify shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md |
@@ -347,5 +348,5 @@ None.
 | sf-ready | ready | Repaired spec passed readiness on 2026-05-28. | Start implementation. |
 | sf-start | complete | Density and coherence slices implemented for shared spacing, action rails, Home/Settings grouping, token provenance, and Voice/Clipboard/Snippets/Dictionary density; `flutter analyze`, targeted tests, and full `flutter test` passed on 2026-06-01. | Run `/sf-end shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md`. |
 | sf-verify | complete | Latest local verification on 2026-06-01 passed with `flutter analyze`, targeted UI/domain tests, full `flutter test` (268 tests), `git diff --check`, metadata lint, and docs coherence repair in `docs/COMPONENTS.md`. Hosted Vercel smoke remains deferred until ship/prod because this patch is unshipped and no APK handoff is requested. | Run `/sf-end shipflow_data/workflow/specs/winflowz-app-ui-coherence-localization-cleanup.md`. |
-| sf-end | pending | Implementation and local verification are complete; closure is pending final bookkeeping/acceptance and any ship-scoped visual smoke decision. | Close when this UI-coherence scope is accepted or explicitly split. |
-| sf-ship | pending | Not shipped; worktree also contains an unrelated dirty governance spec outside this slice. | Ship only with explicit bounded staging scope. |
+| sf-end | pending | Implementation and local verification are complete; deployed Flutter web smoke is blocked because the documented app domain returns deployment-not-found and `app.winflowz.com` is still serving the 2026-05-30 build. | Close after a confirmed Flutter app deployment URL is smoke-checked or explicitly accept local-only proof. |
+| sf-ship | pending | User pushed, but Vercel CLI shows the fresh production deployment is project `winflowz`, not `winflowz_app`; `app.winflowz.com` has not picked up the 2026-06-01 app build. | Redeploy or alias the Flutter app deployment before product web sign-off. |

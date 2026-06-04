@@ -144,6 +144,19 @@ function resolveCommerceIdentityBySourceRef(
   })()
 }
 
+async function getClerkIdentityAccountIdForGlobalUser(
+  ctx: MutationCtx,
+  globalUserDocId: Id<'globalUsers'>
+): Promise<string | null> {
+  const accounts = await ctx.db
+    .query('identityAccounts')
+    .withIndex('by_globalUserId', (q) => q.eq('globalUserId', globalUserDocId))
+    .collect()
+
+  const clerkAccount = accounts.find((account) => account.provider === 'clerk')
+  return clerkAccount?.providerAccountId ?? null
+}
+
 async function upsertSocialGlowzCommerceEntitlement(
   ctx: MutationCtx,
   args: {
@@ -1079,6 +1092,9 @@ export const upsertFirebaseIdentity = mutation({
         plan: entry.plan,
       }))
 
+    const replayGlowzProductUserId =
+      (await getClerkIdentityAccountIdForGlobalUser(ctx, globalUserDocId)) ?? null
+
     return {
       status: 'ok' as const,
       globalUserId: globalUser.globalUserId,
@@ -1090,6 +1106,9 @@ export const upsertFirebaseIdentity = mutation({
           ),
         },
       ],
+      replayGlowzProductUserId,
+      replayGlowzProductUserIdSource:
+        replayGlowzProductUserId ? ('clerk' as const) : null,
       entitlements,
     }
   },

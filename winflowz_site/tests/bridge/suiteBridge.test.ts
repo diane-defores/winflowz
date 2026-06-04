@@ -1,10 +1,14 @@
 import {
   buildFirestoreSuiteAccessMirror,
+  buildReplayGlowzProductToken,
   getBridgeEndpointSecret,
   getConvexBridgeSecret,
   getBearerTokenFromAuthorizationHeader,
+  getReplayGlowzProductJwtAudience,
+  getReplayGlowzProductJwtIssuer,
   getSocialGlowzBridgeSecret,
   getSuiteEntitlementVerifySecret,
+  getReplayGlowzProductTokenJwks,
   hasActiveEntitlement,
   isActiveAccessStatus,
   isAllowedSocialGlowzPlan,
@@ -16,6 +20,68 @@ import {
   resolveReplayGlowzEntitlementSnapshot,
   resolveSocialGlowzEntitlementSnapshot,
 } from '@/lib/suiteBridge'
+import { createPublicKey, generateKeyPairSync } from 'node:crypto'
+
+function decodeBase64Url(value: string): Uint8Array {
+  const padded = value + '='.repeat((4 - (value.length % 4)) % 4)
+  const base64 = padded.replace(/-/g, '+').replace(/_/g, '/')
+  return new Uint8Array(Buffer.from(base64, 'base64'))
+}
+
+function toPemBytes(pem: string): Uint8Array {
+  const base64 = pem
+    .replace(/-----BEGIN [^-]+-----/g, '')
+    .replace(/-----END [^-]+-----/g, '')
+    .replace(/\s/g, '')
+  return new Uint8Array(Buffer.from(base64, 'base64'))
+}
+
+function decodeJwt(token: string) {
+  const parts = token.split('.')
+  expect(parts).toHaveLength(3)
+  const header = JSON.parse(
+    Buffer.from(parts[0].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString()
+  ) as { alg: string; kid: string; typ: string }
+  const payload = JSON.parse(
+    Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString()
+  ) as {
+    sub: string
+    globalUserId: string
+    productId: string
+    matchedProductId: string
+    reasonCode: string
+    productUserId: string
+    productUserIdSource: string
+    iat: number
+    exp: number
+    iss: string
+    aud: string
+  }
+
+  return {
+    header,
+    payload,
+    signature: parts[2],
+    signingInput: `${parts[0]}.${parts[1]}`,
+  }
+}
+
+function buildJwtRsaKeys() {
+  const pair = generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+      type: 'spki',
+      format: 'pem',
+    },
+    privateKeyEncoding: {
+      type: 'pkcs8',
+      format: 'pem',
+    },
+  })
+
+  const publicJwk = createPublicKey(pair.publicKey).export({ format: 'jwk' })
+  return { ...pair, publicJwk }
+}
 
 describe('suiteBridge helpers', () => {
   test('extracts bearer token from authorization header', () => {
@@ -318,5 +384,118 @@ describe('suiteBridge helpers', () => {
         'winflowz-prod'
       )
     ).toBe(false)
+  })
+
+  test('builds a RS256 product token for ReplayGlowz with valid claims and signature', async () => {
+    const keys = buildJwtRsaKeys()
+    const env = {
+      REPLAYGLOWZ_PRODUCT_JWT_PRIVATE_KEY_PEM: keys.privateKey,
+      REPLAYGLOWZ_PRODUCT_JWT_KEY_ID: 'replayglowz-suite-2026-06-02',
+      REPLAYGLOWZ_PRODUCT_JWT_ISSUER: 'https://winflowz.com',
+      REPLAYGLOWZ_PRODUCT_JWT_AUDIENCE: 'replayglowz-convex',
+    }
+
+    const now = Date.UTC(2026, 5, 2, 12, 0, 0)
+    const token = await buildReplayGlowzProductToken(
+      {
+        globalUserId: 'gu_123',
+        productUserId: 'clerk_abc',
+        productUserIdSource: 'clerk',
+        matchedProductId: 'replayglowz',
+        reasonCode: 'active_entitlement',
+        issuer: getReplayGlowzProductJwtIssuer(env),
+        audience: getReplayGlowzProductJwtAudience(env),
+        now,
+      },
+      env
+    )
+
+    expect(token).not.toBeNull()
+    if (!token) {
+      return
+    }
+
+    const { header, payload, signature, signingInput } = decodeJwt(token)
+    expect(header).toMatchObject({
+      alg: 'RS256',
+      kid: 'replayglowz-suite-2026-06-02',
+    })
+    expect(payload).toMatchObject({
+      sub: 'clerk_abc',
+      globalUserId: 'gu_123',
+      productId: 'replayglowz',
+      matchedProductId: 'replayglowz',
+      reasonCode: 'active_entitlement',
+      productUserId: 'clerk_abc',
+      productUserIdSource: 'clerk',
+      iss: 'https://winflowz.com',
+      aud: 'replayglowz-convex',
+    })
+    expect(payload.iat).toBe(Math.floor(now / 1000))
+    expect(payload.exp).toBe(Math.floor(now / 1000) + 600)
+
+    const verifyKey = await globalThis.crypto.subtle.importKey(
+      'spki',
+      toPemBytes(keys.publicKey),
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256',
+      },
+      false,
+      ['verify']
+    )
+    const valid = await globalThis.crypto.subtle.verify(
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+      },
+      verifyKey,
+      decodeBase64Url(signature),
+      new TextEncoder().encode(signingInput)
+    )
+
+    expect(valid).toBe(true)
+  })
+
+  test('builds ReplayGlowz JWKS from public JWK env', async () => {
+    const keys = buildJwtRsaKeys()
+    const env = {
+      REPLAYGLOWZ_PRODUCT_JWT_PUBLIC_KEY_JWK: JSON.stringify(keys.publicJwk),
+      REPLAYGLOWZ_PRODUCT_JWT_KEY_ID: 'replayglowz-suite-2026-06-02',
+    }
+
+    const jwks = await getReplayGlowzProductTokenJwks(env)
+
+    expect(jwks).toHaveLength(1)
+    expect(jwks[0]).toMatchObject({
+      kty: 'RSA',
+      use: 'sig',
+      alg: 'RS256',
+      kid: 'replayglowz-suite-2026-06-02',
+    })
+    expect(jwks[0]).not.toHaveProperty('d')
+    expect(jwks[0]).toHaveProperty('n')
+  })
+
+  test('builds ReplayGlowz JWKS from public key PEM fallback', async () => {
+    const keys = buildJwtRsaKeys()
+    const env = {
+      REPLAYGLOWZ_PRODUCT_JWT_PUBLIC_KEY_PEM: keys.publicKey,
+      REPLAYGLOWZ_PRODUCT_JWT_KEY_ID: 'replayglowz-suite-2026-06-02',
+    }
+
+    const jwks = await getReplayGlowzProductTokenJwks(env)
+
+    expect(jwks).toHaveLength(1)
+    expect(jwks[0]).toMatchObject({
+      kty: 'RSA',
+      use: 'sig',
+      alg: 'RS256',
+      kid: 'replayglowz-suite-2026-06-02',
+    })
+  })
+
+  test('returns no ReplayGlowz JWKS when public key material is missing', async () => {
+    const jwks = await getReplayGlowzProductTokenJwks({})
+    expect(jwks).toHaveLength(0)
   })
 })

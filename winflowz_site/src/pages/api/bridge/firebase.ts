@@ -5,15 +5,156 @@ import { getFirebaseAdminState } from "@/lib/firebaseAdmin";
 import { getServerEnv } from "@/lib/serverEnv";
 import {
   buildFirestoreSuiteAccessMirror,
+  buildReplayGlowzProductToken,
   getBearerTokenFromAuthorizationHeader,
   getConvexBridgeSecret,
+  getReplayGlowzProductJwtAudience,
+  getReplayGlowzProductJwtIssuer,
   isTrustedFirebaseIdTokenClaims,
   resolveBridgeEnvironment,
+  resolveReplayGlowzEntitlementSnapshot,
+  type ReplayGlowzEntitlementReasonCode,
+  type ReplayGlowzProductUserIdSource,
 } from "@/lib/suiteBridge";
 
 export const prerender = false;
 
 const JSON_HEADERS = { "Content-Type": "application/json" };
+const PRODUCT_TOKEN_NOT_CONFIGURED = "product_token_not_configured";
+
+type BridgeAccount = {
+  provider: string;
+  providerAccountId?: string;
+  providerAccountIdMasked?: string;
+  email?: string;
+};
+
+type BridgeSnapshot = {
+  status: string;
+  globalUserId: string | null;
+  accounts: BridgeAccount[];
+  entitlements: Array<{
+    productId: string;
+    status: string;
+    plan?: string | null;
+  }>;
+  replayGlowzProductUserId: string | null;
+  replayGlowzProductUserIdSource: ReplayGlowzProductUserIdSource | null;
+};
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function parseNullableString(value: unknown): string | null {
+  return isNonEmptyString(value) ? value.trim() : null;
+}
+
+function parseReplayGlowzJwtSource(
+  value: unknown
+): ReplayGlowzProductUserIdSource | null {
+  if (value === "clerk") {
+    return "clerk";
+  }
+  if (value === "globalUserId") {
+    return "globalUserId";
+  }
+  return null;
+}
+
+function parseBridgeAccounts(value: unknown): BridgeAccount[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry) => entry && typeof entry === "object")
+    .map((entry) => {
+      const raw = entry as Record<string, unknown>;
+      const provider = parseNullableString(raw.provider) ?? "unknown";
+      return {
+        provider,
+        providerAccountId: parseNullableString(raw.providerAccountId) ?? undefined,
+        providerAccountIdMasked:
+          parseNullableString(raw.providerAccountIdMasked) ?? undefined,
+        email: parseNullableString(raw.email) ?? undefined,
+      };
+    })
+    .filter((entry) => isNonEmptyString(entry.provider));
+}
+
+function parseBridgeEntitlements(value: unknown): {
+  productId: string;
+  status: string;
+  plan?: string | null;
+}[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry) => entry && typeof entry === "object")
+    .map((entry) => {
+      const raw = entry as {
+        productId?: unknown;
+        status?: unknown;
+        plan?: unknown;
+      };
+      return {
+        productId: parseNullableString(raw.productId) ?? "",
+        status: parseNullableString(raw.status) ?? "",
+        plan: parseNullableString(raw.plan),
+      };
+    })
+    .filter((entry) => entry.productId && entry.status);
+}
+
+function parseBridgeSnapshot(value: unknown): BridgeSnapshot {
+  const raw = value as Record<string, unknown>;
+
+  return {
+    status: parseNullableString(raw.status) ?? "ok",
+    globalUserId: parseNullableString(raw.globalUserId),
+    accounts: parseBridgeAccounts(raw.accounts),
+    entitlements: parseBridgeEntitlements(raw.entitlements),
+    replayGlowzProductUserId: parseNullableString(
+      raw.replayGlowzProductUserId
+    ),
+    replayGlowzProductUserIdSource: parseReplayGlowzJwtSource(
+      raw.replayGlowzProductUserIdSource
+    ),
+  };
+}
+
+function buildReplayGlowzClientSnapshot(
+  snapshot: BridgeSnapshot,
+  replayGlowz: {
+    hasAccess: boolean;
+    globalUserId: string | null;
+    matchedProductId: string | null;
+    reasonCode: ReplayGlowzEntitlementReasonCode;
+  }
+) {
+  const productUserId =
+    replayGlowz.hasAccess && snapshot.replayGlowzProductUserId
+      ? snapshot.replayGlowzProductUserId
+      : snapshot.globalUserId;
+  const productUserIdSource: ReplayGlowzProductUserIdSource =
+    replayGlowz.hasAccess &&
+    snapshot.replayGlowzProductUserId &&
+    snapshot.replayGlowzProductUserIdSource === "clerk"
+      ? "clerk"
+      : "globalUserId";
+
+  return {
+    hasAccess: replayGlowz.hasAccess,
+    globalUserId: replayGlowz.globalUserId,
+    matchedProductId: replayGlowz.matchedProductId,
+    reasonCode: replayGlowz.reasonCode,
+    productUserId,
+    productUserIdSource,
+  };
+}
 
 export const POST: APIRoute = async ({ request }) => {
   const env = getServerEnv();
@@ -82,7 +223,7 @@ export const POST: APIRoute = async ({ request }) => {
   const convex = new ConvexHttpClient(convexUrl);
 
   try {
-    const snapshot = await convex.mutation(
+    const rawSnapshot = await convex.mutation(
       "bridge:upsertFirebaseIdentity" as never,
       {
         firebaseUid: decodedToken.uid,
@@ -93,11 +234,64 @@ export const POST: APIRoute = async ({ request }) => {
       } as never
     );
 
+    if (!rawSnapshot || typeof rawSnapshot !== "object") {
+      return new Response(
+        JSON.stringify({ status: "error", error: "invalid_bridge_snapshot" }),
+        { status: 502, headers: JSON_HEADERS }
+      );
+    }
+
+    const snapshot = parseBridgeSnapshot(rawSnapshot);
+    if (!snapshot.globalUserId || snapshot.globalUserId.trim() === "") {
+      return new Response(
+        JSON.stringify({ status: "error", error: "invalid_bridge_snapshot" }),
+        { status: 502, headers: JSON_HEADERS }
+      );
+    }
+
+    const replayGlowzSnapshot = resolveReplayGlowzEntitlementSnapshot({
+      globalUserId: snapshot.globalUserId,
+      entitlements: snapshot.entitlements,
+    });
+
+    const replayGlowzForClient = buildReplayGlowzClientSnapshot(
+      snapshot,
+      replayGlowzSnapshot
+    );
+    const replayGlowzGlobalUserId = snapshot.globalUserId;
+    const replayGlowzProductUserId = replayGlowzForClient.productUserId
+      ? replayGlowzForClient.productUserId
+      : replayGlowzGlobalUserId;
+
+    const productTokenPayload = replayGlowzSnapshot.hasAccess
+      ? {
+          globalUserId: replayGlowzGlobalUserId,
+          productUserId: replayGlowzProductUserId,
+          productUserIdSource: replayGlowzForClient.productUserIdSource,
+          matchedProductId:
+            replayGlowzSnapshot.matchedProductId ?? "replayglowz",
+          reasonCode: replayGlowzSnapshot.reasonCode,
+          issuer: getReplayGlowzProductJwtIssuer(env),
+          audience: getReplayGlowzProductJwtAudience(env),
+        }
+      : null;
+
+    let productToken: string | null = null;
+    let productTokenIssue: string | null = null;
+
+    if (productTokenPayload && productTokenPayload.productUserId) {
+      productToken = await buildReplayGlowzProductToken(
+        productTokenPayload,
+        env
+      );
+      if (!productToken) {
+        productTokenIssue = PRODUCT_TOKEN_NOT_CONFIGURED;
+      }
+    }
+
     const mirror = buildFirestoreSuiteAccessMirror({
-      globalUserId: (snapshot as { globalUserId: string }).globalUserId,
-      entitlements: (snapshot as {
-        entitlements: { productId: string; status: string; plan?: string | null }[];
-      }).entitlements,
+      globalUserId: snapshot.globalUserId,
+      entitlements: snapshot.entitlements,
     });
 
     await firebaseAdmin.firestore
@@ -112,7 +306,17 @@ export const POST: APIRoute = async ({ request }) => {
         { merge: true }
       );
 
-    return new Response(JSON.stringify(snapshot), {
+    const response = {
+      status: snapshot.status,
+      globalUserId: snapshot.globalUserId,
+      accounts: snapshot.accounts,
+      entitlements: snapshot.entitlements,
+      replayGlowz: replayGlowzForClient,
+      ...(productToken ? { productToken, product_token: productToken } : {}),
+      ...(productTokenIssue ? { productTokenIssue } : {}),
+    };
+
+    return new Response(JSON.stringify(response), {
       status: 200,
       headers: JSON_HEADERS,
     });

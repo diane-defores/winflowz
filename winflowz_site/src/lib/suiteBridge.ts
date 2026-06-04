@@ -9,6 +9,12 @@ export const SUITE_PRODUCT_ALLOWLIST = [
 export const REPLAYGLOWZ_PRODUCT_ID = 'replayglowz'
 export const SOCIALGLOWZ_PRODUCT_ID = 'socialglowz'
 export const REPLAYGLOWZ_LEGACY_PRODUCT_IDS = ['tubeflow'] as const
+export const REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_KEY_ID =
+  'replayglowz-suite-2026-06-02'
+export const REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_ISSUER = 'https://winflowz.com'
+export const REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_AUDIENCE =
+  'replayglowz-convex'
+export const REPLAYGLOWZ_PRODUCT_JWT_TTL_SECONDS = 10 * 60
 export const SOCIALGLOWZ_DEFAULT_PLAN = 'lifetime_deal' as const
 export const SOCIALGLOWZ_ALLOWED_PLANS = [
   'lifetime_deal',
@@ -55,6 +61,29 @@ export type ReplayGlowzEntitlementSnapshot = {
   reasonCode: ReplayGlowzEntitlementReasonCode
 }
 
+export type ReplayGlowzProductUserIdSource = 'clerk' | 'globalUserId'
+
+export type ReplayGlowzProductJwtPayload = {
+  sub: string
+  globalUserId: string
+  productId: typeof REPLAYGLOWZ_PRODUCT_ID
+  matchedProductId: string
+  reasonCode: ReplayGlowzEntitlementReasonCode
+  productUserId: string
+  productUserIdSource: ReplayGlowzProductUserIdSource
+  iat: number
+  exp: number
+  iss: string
+  aud: string
+}
+
+type ReplayGlowzProductTokenConfig = {
+  privateKeyPem: string
+  keyId: string
+  issuer: string
+  audience: string
+}
+
 export type SocialGlowzEntitlementReasonCode =
   | 'active_entitlement'
   | 'account_not_found'
@@ -77,6 +106,301 @@ export type SocialGlowzEntitlementSnapshot = {
 
 const SOCIALGLOWZ_SOURCE_SET = new Set<string>(SOCIALGLOWZ_ALLOWED_SOURCES)
 const SOCIALGLOWZ_PLAN_SET = new Set<string>(SOCIALGLOWZ_ALLOWED_PLANS)
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+function base64UrlEncode(value: Uint8Array): string {
+  let output = ''
+  for (const byte of value) {
+    output += String.fromCharCode(byte)
+  }
+  return btoa(output).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+function parseJsonWebKey(value: string | undefined): JsonWebKey | null {
+  if (!isNonEmptyString(value)) {
+    return null
+  }
+
+  try {
+    const parsed = JSON.parse(value) as JsonWebKey
+    return typeof parsed === 'object' &&
+      parsed !== null &&
+      parsed.kty === 'RSA' &&
+      typeof parsed.n === 'string' &&
+      typeof parsed.e === 'string'
+      ? parsed
+      : null
+  } catch {
+    return null
+  }
+}
+
+function normalizePem(value: string | undefined): string | null {
+  const trimmed = value?.trim()
+  if (!trimmed) {
+    return null
+  }
+  return trimmed.replace(/\\n/g, '\n')
+}
+
+function toPemBytes(pem: string): ArrayBuffer {
+  const trimmed = pem
+    .replace(/-----BEGIN [^-]+-----/g, '')
+    .replace(/-----END [^-]+-----/g, '')
+    .replace(/\s/g, '')
+  const binary = atob(trimmed)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes.buffer
+}
+
+async function importReplayGlowzProductSigningKey(
+  privateKeyPem: string
+): Promise<CryptoKey | null> {
+  const subtle = globalThis.crypto?.subtle
+  if (!subtle) {
+    return null
+  }
+
+  try {
+    const keyData = toPemBytes(privateKeyPem)
+    return await subtle.importKey(
+      'pkcs8',
+      keyData,
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256',
+      },
+      false,
+      ['sign']
+    )
+  } catch {
+    return null
+  }
+}
+
+async function importReplayGlowzProductVerificationKey(
+  publicKeyPem: string
+): Promise<CryptoKey | null> {
+  const subtle = globalThis.crypto?.subtle
+  if (!subtle) {
+    return null
+  }
+
+  try {
+    const keyData = toPemBytes(publicKeyPem)
+    return await subtle.importKey(
+      'spki',
+      keyData,
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256',
+      },
+      true,
+      ['verify']
+    )
+  } catch {
+    return null
+  }
+}
+
+function stripPrivateFields(jwk: JsonWebKey): JsonWebKey {
+  const {
+    d,
+    p,
+    q,
+    dp,
+    dq,
+    qi,
+    oth,
+    ...publicFields
+  } = jwk as Record<string, unknown>
+  return publicFields as JsonWebKey
+}
+
+function buildReplayGlowzProductTokenConfig(env: Record<string, string | undefined>) {
+  const privateKeyPem = normalizePem(env.REPLAYGLOWZ_PRODUCT_JWT_PRIVATE_KEY_PEM)
+  const keyId = isNonEmptyString(env.REPLAYGLOWZ_PRODUCT_JWT_KEY_ID)
+    ? env.REPLAYGLOWZ_PRODUCT_JWT_KEY_ID!.trim()
+    : REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_KEY_ID
+  const issuer = isNonEmptyString(env.REPLAYGLOWZ_PRODUCT_JWT_ISSUER)
+    ? env.REPLAYGLOWZ_PRODUCT_JWT_ISSUER!.trim()
+    : REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_ISSUER
+  const audience = isNonEmptyString(env.REPLAYGLOWZ_PRODUCT_JWT_AUDIENCE)
+    ? env.REPLAYGLOWZ_PRODUCT_JWT_AUDIENCE!.trim()
+    : REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_AUDIENCE
+
+  if (!privateKeyPem) {
+    return null
+  }
+
+  return {
+    privateKeyPem,
+    keyId,
+    issuer,
+    audience,
+  } as ReplayGlowzProductTokenConfig
+}
+
+export function getReplayGlowzProductJwtPrivateKeyPem(
+  env: Record<string, string | undefined>
+): string | null {
+  return normalizePem(env.REPLAYGLOWZ_PRODUCT_JWT_PRIVATE_KEY_PEM)
+}
+
+export function getReplayGlowzProductJwtPublicKeyJwk(
+  env: Record<string, string | undefined>
+): JsonWebKey | null {
+  const publicKeyJwk = parseJsonWebKey(
+    env.REPLAYGLOWZ_PRODUCT_JWT_PUBLIC_KEY_JWK
+  )
+  if (publicKeyJwk) {
+    return publicKeyJwk
+  }
+  return null
+}
+
+export async function getReplayGlowzProductJwtPublicKeyJwkOrNull(
+  env: Record<string, string | undefined>
+): Promise<JsonWebKey | null> {
+  const direct = getReplayGlowzProductJwtPublicKeyJwk(env)
+  if (direct) {
+    return direct
+  }
+
+  const publicKeyPem = normalizePem(env.REPLAYGLOWZ_PRODUCT_JWT_PUBLIC_KEY_PEM)
+  if (!publicKeyPem) {
+    return null
+  }
+
+  const key = await importReplayGlowzProductVerificationKey(publicKeyPem)
+  if (!key) {
+    return null
+  }
+
+  try {
+    const jwk = (await globalThis.crypto!.subtle.exportKey('jwk', key)) as
+      | JsonWebKey
+      | undefined
+    return jwk ? stripPrivateFields(jwk) : null
+  } catch {
+    return null
+  }
+}
+
+export function getReplayGlowzProductJwtKeyId(env: Record<string, string | undefined>) {
+  return isNonEmptyString(env.REPLAYGLOWZ_PRODUCT_JWT_KEY_ID)
+    ? env.REPLAYGLOWZ_PRODUCT_JWT_KEY_ID!.trim()
+    : REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_KEY_ID
+}
+
+export function getReplayGlowzProductJwtIssuer(env: Record<string, string | undefined>) {
+  return isNonEmptyString(env.REPLAYGLOWZ_PRODUCT_JWT_ISSUER)
+    ? env.REPLAYGLOWZ_PRODUCT_JWT_ISSUER!.trim()
+    : REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_ISSUER
+}
+
+export function getReplayGlowzProductJwtAudience(env: Record<string, string | undefined>) {
+  return isNonEmptyString(env.REPLAYGLOWZ_PRODUCT_JWT_AUDIENCE)
+    ? env.REPLAYGLOWZ_PRODUCT_JWT_AUDIENCE!.trim()
+    : REPLAYGLOWZ_PRODUCT_JWT_DEFAULT_AUDIENCE
+}
+
+export async function buildReplayGlowzProductToken(
+  args: {
+    globalUserId: string
+    productUserId: string
+    productUserIdSource: ReplayGlowzProductUserIdSource
+    matchedProductId: string
+    reasonCode: ReplayGlowzEntitlementReasonCode
+    issuer: string
+    audience: string
+    now?: number
+  },
+  env: Record<string, string | undefined>
+): Promise<string | null> {
+  const config = buildReplayGlowzProductTokenConfig(env)
+  if (!config) {
+    return null
+  }
+
+  const key = await importReplayGlowzProductSigningKey(config.privateKeyPem)
+  if (!key) {
+    return null
+  }
+
+  const issueTime = Math.floor((args.now ?? Date.now()) / 1000)
+  const expiresAt = issueTime + REPLAYGLOWZ_PRODUCT_JWT_TTL_SECONDS
+  const header = { alg: 'RS256', kid: config.keyId, typ: 'JWT' }
+  const issuer = isNonEmptyString(args.issuer) ? args.issuer : config.issuer
+  const audience = isNonEmptyString(args.audience) ? args.audience : config.audience
+  const payload: ReplayGlowzProductJwtPayload = {
+    sub: args.productUserId,
+    globalUserId: args.globalUserId,
+    productId: REPLAYGLOWZ_PRODUCT_ID,
+    matchedProductId: args.matchedProductId,
+    reasonCode: args.reasonCode,
+    productUserId: args.productUserId,
+    productUserIdSource: args.productUserIdSource,
+    iat: issueTime,
+    exp: expiresAt,
+    iss: issuer,
+    aud: audience,
+  }
+
+  const tokenParts = `${base64UrlEncode(
+    new TextEncoder().encode(JSON.stringify(header))
+  )}.${base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)))}`
+  try {
+    const signature = new Uint8Array(
+      await globalThis.crypto!.subtle.sign(
+        {
+          name: 'RSASSA-PKCS1-v1_5',
+        },
+        key,
+        new TextEncoder().encode(tokenParts)
+      )
+    )
+
+    return `${tokenParts}.${base64UrlEncode(signature)}`
+  } catch {
+    return null
+  }
+}
+
+function buildReplayGlowzProductTokenJwks(
+  jwk: JsonWebKey,
+  keyId: string
+): JsonWebKey {
+  return {
+    ...stripPrivateFields(jwk),
+    use: 'sig',
+    kid: keyId,
+    alg: 'RS256',
+  } as JsonWebKey
+}
+
+export async function getReplayGlowzProductTokenJwks(
+  env: Record<string, string | undefined>
+): Promise<JsonWebKey[]> {
+  const keyId = getReplayGlowzProductJwtKeyId(env)
+  const direct = getReplayGlowzProductJwtPublicKeyJwk(env)
+  if (direct) {
+    return [buildReplayGlowzProductTokenJwks(direct, keyId)]
+  }
+
+  const fromPublicPem = await getReplayGlowzProductJwtPublicKeyJwkOrNull(env)
+  if (fromPublicPem) {
+    return [buildReplayGlowzProductTokenJwks(fromPublicPem, keyId)]
+  }
+
+  return []
+}
 
 export function isAllowedSuiteProduct(productId: string): boolean {
   return ALLOWED_PRODUCT_SET.has(productId)
@@ -259,10 +583,6 @@ type FirebaseIdTokenClaimsLike = {
   iss?: unknown
   sub?: unknown
   uid?: unknown
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0
 }
 
 export function isTrustedFirebaseIdTokenClaims(
