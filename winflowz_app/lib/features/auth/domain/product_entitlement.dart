@@ -1,7 +1,6 @@
 enum ProductId {
   winflowzFormation('winflowz_formation'),
-  winflowzApp('winflowz_app'),
-  tubeflow('tubeflow');
+  winflowzApp('winflowz_app');
 
   const ProductId(this.value);
 

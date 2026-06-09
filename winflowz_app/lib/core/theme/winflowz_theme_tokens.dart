@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// Tokens seed partagés entre la base web TubeFlow et l'UI WinFlowz.
+/// Tokens source de l'UI WinFlowz.
 ///
-/// Le nom de cette classe reste historique pour préserver la compatibilité.
-/// Source initiale: `tubeflow_site/src/styles/global.css` et
-/// `assets/theme_reference/tubeflow_site`.
-/// Propriété produit/implémentation active: WinFlowz via
-/// `core/theme/app_theme.dart`.
-class TubeflowSiteThemeTokens {
+/// Cette classe expose la couche stable utilisée par `core/theme/app_theme.dart`.
+/// Les noms et commentaires restent volontairement centrés sur WinFlowz pour
+/// éviter de réintroduire des marques historiques dans l'app.
+class WinFlowzThemeTokens {
   // Typography
   static const fontSans = 'Manrope';
   static const fontDisplay = 'Cal Sans';
@@ -171,7 +169,7 @@ class TubeflowSiteThemeTokens {
   static const Color surfaceRaisedDark = siteCard;
   static const Color surfaceOverlayDark = siteSecondary;
 
-  // Ombres plus proches du rendu TubeFlow: profondes mais neutres.
+  // Ombres profondes mais neutres pour les surfaces WinFlowz.
   static const Color shadowSoft = Color(0x18000000);
   static const Color shadowCard = Color(0x26000000);
   static const Color shadowCardHover = Color(0x33000000);

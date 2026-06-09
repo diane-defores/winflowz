@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:winflowz_app/core/theme/tubeflow_site_theme_tokens.dart';
+import 'package:winflowz_app/core/theme/winflowz_theme_tokens.dart';
 
 enum AppThemeMode {
   system(ThemeMode.system, 'System'),
@@ -21,95 +21,90 @@ enum AppThemeMode {
 
 class AppColors {
   // Brand primitives exposés pour WinFlowz.
-  // Mapping: seed tokens historiques (TubeFlow) -> sémantique app WinFlowz.
-  static const primary = TubeflowSiteThemeTokens.brandPrimary;
-  static const primaryDark = TubeflowSiteThemeTokens.brandPrimaryDark;
-  static const secondary = TubeflowSiteThemeTokens.brandSecondary;
+  static const primary = WinFlowzThemeTokens.brandPrimary;
+  static const primaryDark = WinFlowzThemeTokens.brandPrimaryDark;
+  static const secondary = WinFlowzThemeTokens.brandSecondary;
   static const accent = secondary;
 
   // Neutral primitives (site theme base + app continuity).
-  static const dark = TubeflowSiteThemeTokens.appLightText;
-  static const gray = TubeflowSiteThemeTokens.siteMutedForeground;
+  static const dark = WinFlowzThemeTokens.appLightText;
+  static const gray = WinFlowzThemeTokens.siteMutedForeground;
   static const neutral = gray;
   static const slate = gray;
-  static const lightGray = TubeflowSiteThemeTokens.lightGray;
-  static const lightBlue = TubeflowSiteThemeTokens.brandSecondary;
-  static const white = TubeflowSiteThemeTokens.white;
-  static const black = TubeflowSiteThemeTokens.black;
+  static const lightGray = WinFlowzThemeTokens.lightGray;
+  static const lightBlue = WinFlowzThemeTokens.brandSecondary;
+  static const white = WinFlowzThemeTokens.white;
+  static const black = WinFlowzThemeTokens.black;
   static const transparent = Colors.transparent;
 
   // Semantic surfaces and text.
   static const textPrimary = dark;
-  static const siteBackground = TubeflowSiteThemeTokens.siteBackground;
-  static const siteForeground = TubeflowSiteThemeTokens.siteForeground;
+  static const siteBackground = WinFlowzThemeTokens.siteBackground;
+  static const siteForeground = WinFlowzThemeTokens.siteForeground;
   static const textMuted = gray;
-  static const surfaceBase = TubeflowSiteThemeTokens.appLightBackground;
-  static const surfaceRaised = TubeflowSiteThemeTokens.appLightCard;
-  static const surfaceOverlay = TubeflowSiteThemeTokens.appLightSurface;
-  static const surfaceSunken = TubeflowSiteThemeTokens.surfaceSunken;
+  static const surfaceBase = WinFlowzThemeTokens.appLightBackground;
+  static const surfaceRaised = WinFlowzThemeTokens.appLightCard;
+  static const surfaceOverlay = WinFlowzThemeTokens.appLightSurface;
+  static const surfaceSunken = WinFlowzThemeTokens.surfaceSunken;
   static const surfaceSubtle = lightGray;
-  static const surfaceTint = TubeflowSiteThemeTokens.appLightMuted;
+  static const surfaceTint = WinFlowzThemeTokens.appLightMuted;
   static const surfaceCard = surfaceRaised;
   static const surfaceBaseDark = siteBackground;
-  static const surfaceRaisedDark = TubeflowSiteThemeTokens.surfaceRaisedDark;
-  static const surfaceOverlayDark = TubeflowSiteThemeTokens.surfaceOverlayDark;
-  static const surfaceSunkenDark = TubeflowSiteThemeTokens.surfaceSunkenDark;
-  static const overlayDark = TubeflowSiteThemeTokens.siteWhiteSubtle;
+  static const surfaceRaisedDark = WinFlowzThemeTokens.surfaceRaisedDark;
+  static const surfaceOverlayDark = WinFlowzThemeTokens.surfaceOverlayDark;
+  static const surfaceSunkenDark = WinFlowzThemeTokens.surfaceSunkenDark;
+  static const overlayDark = WinFlowzThemeTokens.siteWhiteSubtle;
   static const textOnDark = siteForeground;
-  static const textOnDarkMuted = TubeflowSiteThemeTokens.siteTextOnDarkMuted;
-  static const codeText = TubeflowSiteThemeTokens.siteCodeText;
-  static const badgeBg = TubeflowSiteThemeTokens.siteBadgeBg;
-  static const badgeText = TubeflowSiteThemeTokens.siteBadgeText;
+  static const textOnDarkMuted = WinFlowzThemeTokens.siteTextOnDarkMuted;
+  static const codeText = WinFlowzThemeTokens.siteCodeText;
+  static const badgeBg = WinFlowzThemeTokens.siteBadgeBg;
+  static const badgeText = WinFlowzThemeTokens.siteBadgeText;
 
   // Borders and overlays.
-  static const borderSubtle = TubeflowSiteThemeTokens.appLightBorderSubtle;
-  static const borderLight = TubeflowSiteThemeTokens.appLightBorder;
-  static const borderDarkSubtle = TubeflowSiteThemeTokens.siteBorderDarkSubtle;
-  static const overlayScrim = TubeflowSiteThemeTokens.siteScrim;
+  static const borderSubtle = WinFlowzThemeTokens.appLightBorderSubtle;
+  static const borderLight = WinFlowzThemeTokens.appLightBorder;
+  static const borderDarkSubtle = WinFlowzThemeTokens.siteBorderDarkSubtle;
+  static const overlayScrim = WinFlowzThemeTokens.siteScrim;
 
   // Support colors.
-  static const success = TubeflowSiteThemeTokens.brandSuccess;
-  static const warning = TubeflowSiteThemeTokens.brandWarning;
-  static const danger = TubeflowSiteThemeTokens.brandDanger;
-  static const dangerLight = TubeflowSiteThemeTokens.brandDangerLight;
+  static const success = WinFlowzThemeTokens.brandSuccess;
+  static const warning = WinFlowzThemeTokens.brandWarning;
+  static const danger = WinFlowzThemeTokens.brandDanger;
+  static const dangerLight = WinFlowzThemeTokens.brandDangerLight;
   static const info = accent;
 
   // Keyboard preview surface-specific tokens (copied from pages de debug).
-  static const keyboardPrivateFrame =
-      TubeflowSiteThemeTokens.keyboardPrivateFrame;
-  static const keyboardDefaultFrame =
-      TubeflowSiteThemeTokens.keyboardDefaultFrame;
-  static const keyboardStatusText = TubeflowSiteThemeTokens.keyboardStatusText;
-  static const keyboardKeyActive = TubeflowSiteThemeTokens.keyboardKeyActive;
-  static const keyboardKeySpecial = TubeflowSiteThemeTokens.keyboardKeySpecial;
-  static const keyboardKeyDisabled =
-      TubeflowSiteThemeTokens.keyboardKeyDisabled;
+  static const keyboardPrivateFrame = WinFlowzThemeTokens.keyboardPrivateFrame;
+  static const keyboardDefaultFrame = WinFlowzThemeTokens.keyboardDefaultFrame;
+  static const keyboardStatusText = WinFlowzThemeTokens.keyboardStatusText;
+  static const keyboardKeyActive = WinFlowzThemeTokens.keyboardKeyActive;
+  static const keyboardKeySpecial = WinFlowzThemeTokens.keyboardKeySpecial;
+  static const keyboardKeyDisabled = WinFlowzThemeTokens.keyboardKeyDisabled;
   static const keyboardKeyForeground =
-      TubeflowSiteThemeTokens.keyboardKeyForeground;
-  static const keyboardCornerLabel =
-      TubeflowSiteThemeTokens.keyboardCornerLabel;
+      WinFlowzThemeTokens.keyboardKeyForeground;
+  static const keyboardCornerLabel = WinFlowzThemeTokens.keyboardCornerLabel;
 }
 
 class AppTypography {
-  static const fontFamily = TubeflowSiteThemeTokens.fontSans;
-  static const fontFallback = TubeflowSiteThemeTokens.fontFallback;
+  static const fontFamily = WinFlowzThemeTokens.fontSans;
+  static const fontFallback = WinFlowzThemeTokens.fontFallback;
 
   // WinFlowz scale (cohérente avec le thème site, bornée à un set court).
-  static const xs = TubeflowSiteThemeTokens.typographyXs;
-  static const sm = TubeflowSiteThemeTokens.typographySm;
+  static const xs = WinFlowzThemeTokens.typographyXs;
+  static const sm = WinFlowzThemeTokens.typographySm;
   static const base = 14.0;
   static const lg = 17.0;
   static const h3 = 22.0;
   static const h2 = 28.0;
   static const h1 = 34.0;
 
-  static const leadingTight = TubeflowSiteThemeTokens.lineHeightTight;
-  static const leadingSnug = TubeflowSiteThemeTokens.lineHeightSnug;
-  static const leadingNormal = TubeflowSiteThemeTokens.lineHeightNormal;
+  static const leadingTight = WinFlowzThemeTokens.lineHeightTight;
+  static const leadingSnug = WinFlowzThemeTokens.lineHeightSnug;
+  static const leadingNormal = WinFlowzThemeTokens.lineHeightNormal;
   static const leadingRelaxed = 1.8;
 
-  static const trackingWide = TubeflowSiteThemeTokens.trackingWide;
-  static const trackingWider = TubeflowSiteThemeTokens.trackingWider;
+  static const trackingWide = WinFlowzThemeTokens.trackingWide;
+  static const trackingWider = WinFlowzThemeTokens.trackingWider;
 }
 
 class AppFontWeights {
@@ -122,18 +117,18 @@ class AppFontWeights {
 }
 
 class AppSpacing {
-  static const x1 = TubeflowSiteThemeTokens.spacing1;
-  static const x2 = TubeflowSiteThemeTokens.spacing2;
-  static const x3 = TubeflowSiteThemeTokens.spacing3;
-  static const x4 = TubeflowSiteThemeTokens.spacing4;
-  static const x5 = TubeflowSiteThemeTokens.spacing5;
-  static const x6 = TubeflowSiteThemeTokens.spacing6;
-  static const x8 = TubeflowSiteThemeTokens.spacing8;
-  static const x10 = TubeflowSiteThemeTokens.spacing10;
-  static const x12 = TubeflowSiteThemeTokens.spacing12;
-  static const x16 = TubeflowSiteThemeTokens.spacing16;
-  static const x20 = TubeflowSiteThemeTokens.spacing20;
-  static const x24 = TubeflowSiteThemeTokens.spacing24;
+  static const x1 = WinFlowzThemeTokens.spacing1;
+  static const x2 = WinFlowzThemeTokens.spacing2;
+  static const x3 = WinFlowzThemeTokens.spacing3;
+  static const x4 = WinFlowzThemeTokens.spacing4;
+  static const x5 = WinFlowzThemeTokens.spacing5;
+  static const x6 = WinFlowzThemeTokens.spacing6;
+  static const x8 = WinFlowzThemeTokens.spacing8;
+  static const x10 = WinFlowzThemeTokens.spacing10;
+  static const x12 = WinFlowzThemeTokens.spacing12;
+  static const x16 = WinFlowzThemeTokens.spacing16;
+  static const x20 = WinFlowzThemeTokens.spacing20;
+  static const x24 = WinFlowzThemeTokens.spacing24;
 }
 
 class AppInsets {
@@ -245,60 +240,58 @@ class AppLayoutMetrics {
 }
 
 class AppBreakpoints {
-  static const double navigationRail =
-      TubeflowSiteThemeTokens.navRailBreakpoint;
+  static const double navigationRail = WinFlowzThemeTokens.navRailBreakpoint;
   static const double navigationRailExtended =
-      TubeflowSiteThemeTokens.navRailExtendedBreakpoint;
+      WinFlowzThemeTokens.navRailExtendedBreakpoint;
 }
 
 class AppKeyboardPreview {
   static const double maxWidth =
-      TubeflowSiteThemeTokens.keyboardPreviewFrameMaxWidth;
+      WinFlowzThemeTokens.keyboardPreviewFrameMaxWidth;
   static const double dropdownWidth = 188.0;
   static const double statusHeight =
-      TubeflowSiteThemeTokens.keyboardPreviewStatusHeight;
+      WinFlowzThemeTokens.keyboardPreviewStatusHeight;
   static const double rowHeightTiny =
-      TubeflowSiteThemeTokens.keyboardPreviewRowHeightMini;
+      WinFlowzThemeTokens.keyboardPreviewRowHeightMini;
   static const double rowHeightMini = rowHeightTiny;
   static const double rowHeightCompact =
-      TubeflowSiteThemeTokens.keyboardPreviewRowHeightCompact;
+      WinFlowzThemeTokens.keyboardPreviewRowHeightCompact;
   static const double rowHeightRegular =
-      TubeflowSiteThemeTokens.keyboardPreviewRowHeight;
+      WinFlowzThemeTokens.keyboardPreviewRowHeight;
   static const double rowHeightControl =
-      TubeflowSiteThemeTokens.keyboardPreviewControlHeight;
+      WinFlowzThemeTokens.keyboardPreviewControlHeight;
   static const double keyBorderWidth =
-      TubeflowSiteThemeTokens.keyboardKeyBorderWidth;
+      WinFlowzThemeTokens.keyboardKeyBorderWidth;
   static const double keyDebugBorderWidth =
-      TubeflowSiteThemeTokens.keyboardKeyDebugBorderWidth;
+      WinFlowzThemeTokens.keyboardKeyDebugBorderWidth;
   static const double cornerLabelPadding =
-      TubeflowSiteThemeTokens.keyboardCornerLabelPadding;
-  static const double keyWeightScale =
-      TubeflowSiteThemeTokens.keyboardWeightScale;
+      WinFlowzThemeTokens.keyboardCornerLabelPadding;
+  static const double keyWeightScale = WinFlowzThemeTokens.keyboardWeightScale;
 }
 
 class AppSliders {
   static const double overlayBubbleSizeMin =
-      TubeflowSiteThemeTokens.overlayBubbleSizeMin;
+      WinFlowzThemeTokens.overlayBubbleSizeMin;
   static const double overlayBubbleSizeMax =
-      TubeflowSiteThemeTokens.overlayBubbleSizeMax;
+      WinFlowzThemeTokens.overlayBubbleSizeMax;
   static const int overlaySizeDivisions =
-      TubeflowSiteThemeTokens.overlaySizeDivisions;
+      WinFlowzThemeTokens.overlaySizeDivisions;
   static const double overlayBubbleOpacityMin =
-      TubeflowSiteThemeTokens.overlayBubbleOpacityMin;
+      WinFlowzThemeTokens.overlayBubbleOpacityMin;
   static const double overlayBubbleOpacityMax =
-      TubeflowSiteThemeTokens.overlayBubbleOpacityMax;
+      WinFlowzThemeTokens.overlayBubbleOpacityMax;
   static const int overlayOpacityDivisions =
-      TubeflowSiteThemeTokens.overlayOpacityDivisions;
+      WinFlowzThemeTokens.overlayOpacityDivisions;
   static const double overlayDefaultSize =
-      TubeflowSiteThemeTokens.overlayBubbleDefaultSize;
+      WinFlowzThemeTokens.overlayBubbleDefaultSize;
   static const double overlayDefaultOpacity =
-      TubeflowSiteThemeTokens.overlayBubbleDefaultOpacity;
+      WinFlowzThemeTokens.overlayBubbleDefaultOpacity;
 }
 
 class AppElevation {
-  static const overlay = TubeflowSiteThemeTokens.elevationOverlay;
-  static const cardLight = TubeflowSiteThemeTokens.cardElevationLight;
-  static const cardDark = TubeflowSiteThemeTokens.cardElevationDark;
+  static const overlay = WinFlowzThemeTokens.elevationOverlay;
+  static const cardLight = WinFlowzThemeTokens.cardElevationLight;
+  static const cardDark = WinFlowzThemeTokens.cardElevationDark;
 }
 
 class AppGradients {
@@ -308,9 +301,9 @@ class AppGradients {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          TubeflowSiteThemeTokens.siteBackground,
+          WinFlowzThemeTokens.siteBackground,
           Color(0xFF1F1F1F),
-          TubeflowSiteThemeTokens.siteCard,
+          WinFlowzThemeTokens.siteCard,
         ],
         stops: [0, 0.48, 1],
       );
@@ -320,8 +313,8 @@ class AppGradients {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: [
-        TubeflowSiteThemeTokens.appLightBackground,
-        TubeflowSiteThemeTokens.appLightSurface,
+        WinFlowzThemeTokens.appLightBackground,
+        WinFlowzThemeTokens.appLightSurface,
         Color(0xFFEDEBE3),
       ],
       stops: [0, 0.52, 1],
@@ -330,18 +323,18 @@ class AppGradients {
 }
 
 class AppRadii {
-  static const sm = TubeflowSiteThemeTokens.siteRadiusSm;
+  static const sm = WinFlowzThemeTokens.siteRadiusSm;
   static const md = 10.0;
-  static const lg = TubeflowSiteThemeTokens.siteRadiusLg;
-  static const xl = TubeflowSiteThemeTokens.siteRadiusXl;
-  static const x2l = TubeflowSiteThemeTokens.siteRadius2xl;
+  static const lg = WinFlowzThemeTokens.siteRadiusLg;
+  static const xl = WinFlowzThemeTokens.siteRadiusXl;
+  static const x2l = WinFlowzThemeTokens.siteRadius2xl;
   static const pill = 9999.0;
 }
 
 class AppShadows {
   static const sm = [
     BoxShadow(
-      color: TubeflowSiteThemeTokens.shadowSoft,
+      color: WinFlowzThemeTokens.shadowSoft,
       blurRadius: 8,
       offset: Offset(0, 2),
     ),
@@ -349,7 +342,7 @@ class AppShadows {
 
   static const card = [
     BoxShadow(
-      color: TubeflowSiteThemeTokens.shadowCard,
+      color: WinFlowzThemeTokens.shadowCard,
       blurRadius: 20,
       offset: Offset(0, 4),
     ),
@@ -357,7 +350,7 @@ class AppShadows {
 
   static const cardHover = [
     BoxShadow(
-      color: TubeflowSiteThemeTokens.shadowCardHover,
+      color: WinFlowzThemeTokens.shadowCardHover,
       blurRadius: 30,
       offset: Offset(0, 8),
     ),
@@ -365,7 +358,7 @@ class AppShadows {
 
   static const cardLarge = [
     BoxShadow(
-      color: TubeflowSiteThemeTokens.shadowCardLarge,
+      color: WinFlowzThemeTokens.shadowCardLarge,
       blurRadius: 40,
       offset: Offset(0, 12),
     ),
@@ -373,7 +366,7 @@ class AppShadows {
 
   static const primary = [
     BoxShadow(
-      color: TubeflowSiteThemeTokens.shadowPrimary,
+      color: WinFlowzThemeTokens.shadowPrimary,
       blurRadius: 15,
       offset: Offset(0, 4),
     ),
@@ -381,13 +374,13 @@ class AppShadows {
 }
 
 class AppMotion {
-  static const instant = TubeflowSiteThemeTokens.motionInstant;
-  static const fast = TubeflowSiteThemeTokens.motionFast;
-  static const base = TubeflowSiteThemeTokens.motionBase;
-  static const slow = TubeflowSiteThemeTokens.motionSlow;
-  static const standardCurve = TubeflowSiteThemeTokens.motionStandard;
+  static const instant = WinFlowzThemeTokens.motionInstant;
+  static const fast = WinFlowzThemeTokens.motionFast;
+  static const base = WinFlowzThemeTokens.motionBase;
+  static const slow = WinFlowzThemeTokens.motionSlow;
+  static const standardCurve = WinFlowzThemeTokens.motionStandard;
   static const outCurve = Curves.easeOut;
-  static const springCurve = TubeflowSiteThemeTokens.motionSpring;
+  static const springCurve = WinFlowzThemeTokens.motionSpring;
 }
 
 class AppTheme {
@@ -404,7 +397,7 @@ class AppTheme {
       onSecondary: AppColors.white,
       secondaryContainer: const Color(0xFFE7E4DA),
       onSecondaryContainer: const Color(0xFF2A342E),
-      tertiary: TubeflowSiteThemeTokens.siteRing,
+      tertiary: WinFlowzThemeTokens.siteRing,
       onTertiary: AppColors.white,
       error: AppColors.danger,
       surface: const Color(0xFFF2F1EC),
@@ -431,7 +424,7 @@ class AppTheme {
       onSecondary: const Color(0xFFE7F3EB),
       secondaryContainer: const Color(0xFF1F2924),
       onSecondaryContainer: const Color(0xFFDBF4E3),
-      tertiary: TubeflowSiteThemeTokens.siteRing,
+      tertiary: WinFlowzThemeTokens.siteRing,
       onTertiary: const Color(0xFFF4F4F2),
       error: AppColors.dangerLight,
       surface: const Color(0xFF121815),
@@ -461,7 +454,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        scrolledUnderElevation: TubeflowSiteThemeTokens.appBarElevation,
+        scrolledUnderElevation: WinFlowzThemeTokens.appBarElevation,
         backgroundColor: colorScheme.surface.withValues(alpha: 0.98),
         foregroundColor: colorScheme.onSurface,
         surfaceTintColor: AppColors.transparent,
@@ -720,12 +713,12 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: isDark
-            ? TubeflowSiteThemeTokens.siteForeground
-            : TubeflowSiteThemeTokens.siteBackground,
+            ? WinFlowzThemeTokens.siteForeground
+            : WinFlowzThemeTokens.siteBackground,
         contentTextStyle: textTheme.bodyMedium?.copyWith(
           color: isDark
-              ? TubeflowSiteThemeTokens.sitePrimaryForeground
-              : TubeflowSiteThemeTokens.siteForeground,
+              ? WinFlowzThemeTokens.sitePrimaryForeground
+              : WinFlowzThemeTokens.siteForeground,
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -824,7 +817,7 @@ class AppTheme {
         height: AppTypography.leadingNormal,
         letterSpacing: 0,
         color: colorScheme.onSurface.withValues(
-          alpha: TubeflowSiteThemeTokens.surfaceSubtleAlpha,
+          alpha: WinFlowzThemeTokens.surfaceSubtleAlpha,
         ),
       ),
       labelLarge: TextStyle(

@@ -45,9 +45,7 @@ This inventory separates:
 
 - `AppTheme`:
   shared color, typography, spacing, radius, motion, and interaction metrics.
-  Token provenance is explicit: historical seed values may come from TubeFlow
-  site references, while naming and semantic mapping in Flutter are owned by
-  WinFlowz.
+  Token naming and semantic mapping in Flutter are owned by WinFlowz.
   Common touch targets should stay at a 48dp baseline for frequent actions;
   visual density should be improved through layout, spacing, and grouping
   before shrinking interactive targets.

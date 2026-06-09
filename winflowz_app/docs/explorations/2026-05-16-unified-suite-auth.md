@@ -16,7 +16,7 @@ docs_impact: yes
 linked_systems:
   - "winflows.com / WinFlowz site"
   - "WinFlowz Flutter app"
-  - "TubeFlow / YouTube app"
+  - "Legacy video app"
   - "VoiceFlowz historical tracker, now legacy naming for WinFlowz app"
   - "Clerk"
   - "Firebase Auth"
@@ -41,7 +41,7 @@ next_step: "/sf-spec unified-suite-authentication"
 ## Starting Question
 
 Should the product suite use one shared customer identity across WinFlowz,
-WinFlowz app, TubeFlow/YouTube app, and related products, with per-product
+WinFlowz app, Legacy video app, and related products, with per-product
 access controlled separately, instead of keeping isolated authentication
 domains?
 
@@ -141,7 +141,7 @@ can exist globally and have zero entitlements for most products.
 ### Option D: Identity Platform Tenants Per Product
 
 - Summary: One Google Identity Platform project with tenants such as winflowz,
-  tubeflow, socialflow.
+  legacy_video_app, socialflow.
 - Pros: Centralized admin with isolated user silos/config.
 - Cons: Tenants are separate user silos, which contradicts the "one customer
   account across products" goal unless used for true B2B customer isolation.
@@ -164,7 +164,7 @@ WinFlowz Android app until the native/mobile path is proven.**
 Reasoning:
 
 - WinFlowz Formation already has Clerk/Convex/Polar traces and production work.
-- TubeFlow has Clerk/Convex/YouTube OAuth traces, so Clerk minimizes web-side
+- Legacy video app has Clerk/Convex/YouTube OAuth traces, so Clerk minimizes web-side
   migration.
 - Clerk now documents OIDC/OAuth IdP behavior and a first-party Convex
   integration, which fits the current web/backend footprint.
@@ -214,7 +214,7 @@ Global Identity
   email / providers / MFA / profile
 
 Entitlements
-  product_id: winflowz_training | winflowz_app | tubeflow | socialflow
+  product_id: winflowz_training | winflowz_app | legacy_video_app | socialflow
   plan: free | pro | lifetime | bundle | trial
   status: active | inactive | refunded | expired
   source: polar | app_store | manual | legacy
@@ -245,7 +245,7 @@ Product Data
 ## Risks And Unknowns
 
 - Existing provider split: current WinFlowz app uses Firebase direction; older
-  WinFlowz site and TubeFlow references use Clerk/Convex. A provider decision or
+  WinFlowz site and legacy video-app references use Clerk/Convex. A provider decision or
   token-bridge plan is required.
 - Account linking: existing users with same email across systems need safe merge
   rules, not silent merging.

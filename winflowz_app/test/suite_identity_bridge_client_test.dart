@@ -34,7 +34,7 @@ void main() {
             ],
             "entitlements": [
               {"productId": "winflowz_app", "status": "active"},
-              {"productId": "tubeflow", "status": "trialing"},
+              {"productId": "legacy_video_app", "status": "trialing"},
               {"productId": "unknown_product", "status": "active"}
             ]
           }
@@ -55,10 +55,10 @@ void main() {
 
       expect(identity.status, SuiteAccountStatus.recognized);
       expect(identity.globalUserId, 'global_123');
-      expect(identity.entitlements, hasLength(2));
+      expect(identity.entitlements, hasLength(1));
       expect(
         identity.entitlements.map((item) => item.productId),
-        containsAll([ProductId.winflowzApp, ProductId.tubeflow]),
+        containsAll([ProductId.winflowzApp]),
       );
       expect(
         identity.statusFor(ProductId.winflowzApp),
