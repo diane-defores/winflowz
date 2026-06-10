@@ -220,6 +220,10 @@ class AppButtonMetrics {
   static const compactMinHeight = 40.0;
 }
 
+class AppInputMetrics {
+  static const minHeight = 48.0;
+}
+
 class AppNavigationMetrics {
   static const bottomBarHeight = 58.0;
   static const bottomBarShadowBlur = 14.0;
@@ -484,7 +488,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         isDense: true,
-        constraints: const BoxConstraints(minHeight: 40),
+        constraints: const BoxConstraints(minHeight: AppInputMetrics.minHeight),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
           borderSide: BorderSide(color: colorScheme.outlineVariant, width: 1),
@@ -617,6 +621,10 @@ class AppTheme {
           side: WidgetStateProperty.all(BorderSide(color: colorScheme.outline)),
         ),
         inputDecorationTheme: InputDecorationTheme(
+          isDense: true,
+          constraints: const BoxConstraints(
+            minHeight: AppInputMetrics.minHeight,
+          ),
           contentPadding: AppInsets.input,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadii.md),

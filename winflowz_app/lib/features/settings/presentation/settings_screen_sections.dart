@@ -56,16 +56,21 @@ class _AccountCloudSection extends StatelessWidget {
         .where((status) => syncRelevantCategories.contains(status.category))
         .toList(growable: false);
 
-    final syncedCategories = syncRelevantStatuses
+    final primarySyncCategories = syncRelevantStatuses
         .where((status) => status.isRemoteVisible)
         .toList(growable: false);
+    final attentionCategories = syncRelevantStatuses
+        .where((status) => status.requiresAttention)
+        .toList(growable: false);
     final localCategories = syncRelevantStatuses
-        .where((status) => !status.isRemoteVisible)
+        .where((status) => !status.isRemoteVisible && !status.requiresAttention)
         .toList(growable: false);
 
     final localOnlyCategories = cloudSyncOverview.categories
         .where((status) => status.category == CloudSyncCategory.localKeys)
         .toList(growable: false);
+    final compactLocalCategories = [...localCategories, ...localOnlyCategories];
+    final visibleSyncCards = [...primarySyncCategories, ...attentionCategories];
 
     final requiresAttention = cloudSyncOverview.categories
         .where((status) => status.requiresAttention)
@@ -86,37 +91,21 @@ class _AccountCloudSection extends StatelessWidget {
     return AppSectionCard(
       title: 'Compte & cloud',
       subtitle: remoteAuthConfigured
-          ? 'État vérifié du compte, de l’accès et des données synchronisables.'
+          ? 'Compte, accès et données synchronisables.'
           : 'L’authentification distante n’est pas configurée sur cette version.',
       leading: const Icon(Icons.cloud_sync_outlined),
       stretch: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppStatusCard(
-            icon: accountStatus.icon,
-            title: accountStatus.title,
-            subtitle: '${accountStatus.stateLabel} · ${accountStatus.detail}',
-            trailing: authAsync.when(
-              loading: () => const SizedBox.square(
-                dimension: AppIconMetrics.sm,
-                child: CircularProgressIndicator(
-                  strokeWidth: AppIconMetrics.progressStroke,
-                ),
-              ),
-              error: (error, _) => IconButton(
-                tooltip: 'Erreur de compte cloud',
-                onPressed: null,
-                icon: const Icon(Icons.error_outline),
-              ),
-              data: (_) => null,
-            ),
-          ),
-          AppGaps.x1,
-          AppStatusCard(
-            icon: suiteStatus.icon,
-            title: suiteStatus.title,
-            subtitle: '${suiteStatus.stateLabel} · ${suiteStatus.detail}',
+          _AccountAccessCard(
+            accountStatus: accountStatus,
+            suiteStatus: suiteStatus,
+            authAsync: authAsync,
+            remoteAuthConfigured: remoteAuthConfigured,
+            isRemoteSignedIn: isRemoteSignedIn,
+            onConnectCloudAccount: onConnectCloudAccount,
+            onSignOut: onSignOut,
           ),
           if (postAuthMessage != null) ...[
             AppGaps.x3,
@@ -139,36 +128,15 @@ class _AccountCloudSection extends StatelessWidget {
             ),
           ],
           AppGaps.x3,
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilledButton.icon(
-                key: const Key('settings-connect-cloud-account'),
-                onPressed: remoteAuthConfigured && !isRemoteSignedIn
-                    ? onConnectCloudAccount
-                    : null,
-                icon: const Icon(Icons.login_outlined),
-                label: const Text('Connecter le compte cloud'),
-              ),
-              if (isRemoteSignedIn)
-                OutlinedButton.icon(
-                  onPressed: onSignOut,
-                  icon: const Icon(Icons.logout_outlined),
-                  label: const Text('Se déconnecter'),
-                ),
-            ],
-          ),
-          AppGaps.x3,
           const Text(
             'Ce qui est synchronisé',
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           AppGaps.x2,
-          if (syncedCategories.isEmpty)
-            const Text('Aucune donnée synchronisée pour le moment.')
+          if (visibleSyncCards.isEmpty)
+            const _SyncEmptyState()
           else
-            ...syncedCategories.map(
+            ...visibleSyncCards.map(
               (status) => AppStatusCard(
                 icon: status.icon,
                 title: status.title,
@@ -181,23 +149,7 @@ class _AccountCloudSection extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           AppGaps.x2,
-          ...localCategories.map(
-            (status) => AppStatusCard(
-              icon: status.icon,
-              title: status.title,
-              subtitle: '${status.stateLabel} · ${status.detail}',
-            ),
-          ),
-          if (localOnlyCategories.isNotEmpty) ...[
-            AppGaps.x2,
-            ...localOnlyCategories.map(
-              (status) => AppStatusCard(
-                icon: status.icon,
-                title: status.title,
-                subtitle: '${status.stateLabel} · ${status.detail}',
-              ),
-            ),
-          ],
+          _CompactSyncStatusWrap(statuses: compactLocalCategories),
           AppGaps.x3,
           const Text(
             'Profil clavier Android',
@@ -208,6 +160,238 @@ class _AccountCloudSection extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _SyncEmptyState extends StatelessWidget {
+  const _SyncEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Text(
+      'Aucune synchronisation active.',
+      style: Theme.of(
+        context,
+      ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+    );
+  }
+}
+
+class _CompactSyncStatusWrap extends StatelessWidget {
+  const _CompactSyncStatusWrap({required this.statuses});
+
+  final List<CloudSyncCategoryStatus> statuses;
+
+  @override
+  Widget build(BuildContext context) {
+    if (statuses.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Wrap(
+      spacing: AppSpacing.x2,
+      runSpacing: AppSpacing.x2,
+      children: statuses
+          .map(_CompactSyncStatusPill.new)
+          .toList(growable: false),
+    );
+  }
+}
+
+class _CompactSyncStatusPill extends StatelessWidget {
+  const _CompactSyncStatusPill(this.status);
+
+  final CloudSyncCategoryStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final foregroundColor = status.isUnavailable
+        ? colorScheme.onSurfaceVariant
+        : colorScheme.onSurface;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.42),
+        border: Border.all(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(AppRadii.pill),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.x2,
+          vertical: AppSpacing.x1,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(status.icon, size: AppIconMetrics.sm, color: foregroundColor),
+            AppGaps.horizontalX2,
+            Text(
+              '${_compactSyncCategoryLabel(status.category)} · '
+              '${status.stateLabel}',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: foregroundColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _compactSyncCategoryLabel(CloudSyncCategory category) =>
+    switch (category) {
+      CloudSyncCategory.settings => 'Apparence',
+      CloudSyncCategory.clipboard => 'Papiers',
+      CloudSyncCategory.snippets => 'Snippets',
+      CloudSyncCategory.dictionary => 'Dico',
+      CloudSyncCategory.transcriptions => 'Voix',
+      CloudSyncCategory.keyboardProfile => 'Clavier',
+      CloudSyncCategory.localKeys => 'Clés IA',
+      CloudSyncCategory.account => 'Compte',
+      CloudSyncCategory.suiteAccess => 'Accès',
+    };
+
+class _AccountAccessCard extends StatelessWidget {
+  const _AccountAccessCard({
+    required this.accountStatus,
+    required this.suiteStatus,
+    required this.authAsync,
+    required this.remoteAuthConfigured,
+    required this.isRemoteSignedIn,
+    required this.onConnectCloudAccount,
+    required this.onSignOut,
+  });
+
+  final CloudSyncCategoryStatus accountStatus;
+  final CloudSyncCategoryStatus suiteStatus;
+  final AsyncValue<AuthSessionSnapshot> authAsync;
+  final bool remoteAuthConfigured;
+  final bool isRemoteSignedIn;
+  final VoidCallback onConnectCloudAccount;
+  final VoidCallback onSignOut;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final accentColor = suiteStatus.requiresAttention
+        ? colorScheme.error
+        : colorScheme.primary;
+    final icon = suiteStatus.requiresAttention
+        ? suiteStatus.icon
+        : accountStatus.icon;
+    final stateLabel = _stateLabel;
+    final detail = _detail;
+    final statusTrailing = authAsync.when<Widget?>(
+      loading: () => const SizedBox.square(
+        dimension: AppIconMetrics.sm,
+        child: CircularProgressIndicator(
+          strokeWidth: AppIconMetrics.progressStroke,
+        ),
+      ),
+      error: (error, _) => IconButton(
+        tooltip: 'Erreur de compte cloud',
+        onPressed: null,
+        icon: const Icon(Icons.error_outline),
+      ),
+      data: (_) => null,
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.42),
+        border: Border.all(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(AppRadii.md),
+      ),
+      child: Padding(
+        padding: AppInsets.compactCard,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: accentColor),
+            AppGaps.horizontalX3,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Compte & synchronisation',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  AppGaps.x1,
+                  Text(
+                    '$stateLabel · $detail',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  AppGaps.x2,
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      if (!isRemoteSignedIn)
+                        FilledButton.icon(
+                          key: const Key('settings-connect-cloud-account'),
+                          onPressed: remoteAuthConfigured
+                              ? onConnectCloudAccount
+                              : null,
+                          icon: const Icon(Icons.login_outlined),
+                          label: const Text('Connecter le compte'),
+                        )
+                      else
+                        OutlinedButton.icon(
+                          onPressed: onSignOut,
+                          icon: const Icon(Icons.logout_outlined),
+                          label: const Text('Se déconnecter'),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (statusTrailing != null) ...[
+              AppGaps.horizontalX2,
+              statusTrailing,
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String get _stateLabel {
+    if (!remoteAuthConfigured) {
+      return accountStatus.stateLabel;
+    }
+    if (!isRemoteSignedIn) {
+      return 'Mode local';
+    }
+    if (suiteStatus.state == CloudSyncCategoryState.synced) {
+      return 'Compte connecté · Accès actif';
+    }
+    if (suiteStatus.state == CloudSyncCategoryState.checking) {
+      return 'Compte connecté · Accès en vérification';
+    }
+    if (suiteStatus.requiresAttention) {
+      return 'Compte connecté · ${suiteStatus.stateLabel}';
+    }
+    return 'Compte connecté · Accès inactif';
+  }
+
+  String get _detail {
+    if (!remoteAuthConfigured) {
+      return accountStatus.detail;
+    }
+    if (!isRemoteSignedIn) {
+      return 'Connecte ton compte pour activer la synchronisation de données.';
+    }
+    if (suiteStatus.state == CloudSyncCategoryState.synced) {
+      return 'Les données compatibles peuvent être synchronisées.';
+    }
+    return suiteStatus.detail;
   }
 }
 

@@ -848,7 +848,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.textContaining('Compte de secours actif'), findsOneWidget);
+      expect(find.text('Compte & synchronisation'), findsOneWidget);
+      expect(find.textContaining('Connecte ton compte'), findsOneWidget);
+      expect(find.text('Compte WinFlowz'), findsNothing);
+      expect(find.text('Accès WinFlowz'), findsNothing);
       await _tapVisible(
         tester,
         find.byKey(const Key('settings-connect-cloud-account')),
@@ -993,12 +996,23 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Ce qui est synchronisé'), findsOneWidget);
+      expect(find.text('Aucune synchronisation active.'), findsOneWidget);
       expect(
         find.text('Aucune donnée synchronisée pour le moment.'),
+        findsNothing,
+      );
+      expect(find.text('Apparence · Accès WinFlowz inactif'), findsOneWidget);
+      expect(find.text('Papiers · Accès WinFlowz inactif'), findsOneWidget);
+      expect(find.text('Dico · Accès WinFlowz inactif'), findsOneWidget);
+      expect(find.text('Voix · Accès WinFlowz inactif'), findsOneWidget);
+      expect(find.text('Clés IA · Local uniquement'), findsOneWidget);
+      expect(
+        find.textContaining('Compte connecté · Accès inactif'),
         findsOneWidget,
       );
-      expect(find.textContaining('Transcription'), findsOneWidget);
-      expect(find.textContaining('Accès WinFlowz inactif'), findsWidgets);
+      expect(find.text('Compte & synchronisation'), findsOneWidget);
+      expect(find.text('Compte WinFlowz'), findsNothing);
+      expect(find.text('Accès WinFlowz'), findsNothing);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
