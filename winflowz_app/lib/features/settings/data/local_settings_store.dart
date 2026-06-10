@@ -31,6 +31,10 @@ class LocalSettingsStore implements SettingsStore {
       'settings_onboarding_brightness_skipped';
   static const _onboardingOverlaySkippedKey =
       'settings_onboarding_overlay_skipped';
+  static const _localSpeechNoticeDismissedForeverKey =
+      'settings_local_speech_notice_dismissed_forever';
+  static const _overlayNoticeDismissedForeverKey =
+      'settings_overlay_notice_dismissed_forever';
 
   final FlutterSecureStorage _storage;
   final _controller = StreamController<UserSettingsSnapshot>.broadcast();
@@ -88,6 +92,14 @@ class LocalSettingsStore implements SettingsStore {
       await _read(_onboardingOverlaySkippedKey),
       fallback: false,
     );
+    final localSpeechNoticeDismissedForever = _boolFromValue(
+      await _read(_localSpeechNoticeDismissedForeverKey),
+      fallback: false,
+    );
+    final overlayNoticeDismissedForever = _boolFromValue(
+      await _read(_overlayNoticeDismissedForeverKey),
+      fallback: false,
+    );
 
     return UserSettingsSnapshot.defaults().copyWith(
       themeMode: themeMode,
@@ -104,6 +116,8 @@ class LocalSettingsStore implements SettingsStore {
       onboardingMediaAccessSkipped: onboardingMediaAccessSkipped,
       onboardingBrightnessSkipped: onboardingBrightnessSkipped,
       onboardingOverlaySkipped: onboardingOverlaySkipped,
+      localSpeechNoticeDismissedForever: localSpeechNoticeDismissedForever,
+      overlayNoticeDismissedForever: overlayNoticeDismissedForever,
     );
   }
 
@@ -152,6 +166,14 @@ class LocalSettingsStore implements SettingsStore {
     await _write(
       _onboardingOverlaySkippedKey,
       settings.onboardingOverlaySkipped.toString(),
+    );
+    await _write(
+      _localSpeechNoticeDismissedForeverKey,
+      settings.localSpeechNoticeDismissedForever.toString(),
+    );
+    await _write(
+      _overlayNoticeDismissedForeverKey,
+      settings.overlayNoticeDismissedForever.toString(),
     );
     _controller.add(settings);
   }

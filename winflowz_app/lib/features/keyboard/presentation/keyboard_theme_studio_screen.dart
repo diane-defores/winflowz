@@ -15,6 +15,18 @@ import '../domain/keyboard_theme_validation.dart';
 
 enum _SaveButtonFeedback { idle, saving, success, failure }
 
+class _KeyboardThemeStudioMetrics {
+  static const double sliderLabelWidth = 82.0;
+  static const double sliderValueWidth = 62.0;
+  static const double importExportDialogWidth = 420.0;
+  static const double colorFieldPicker = 52.0;
+  static const double colorFieldPickerIcon = 24.0;
+  static const double previewPanelHeight = 74.0;
+  static const double colorChannelWidth = 24.0;
+  static const double colorValueWidth = 42.0;
+  static const double fieldCornerRadius = 5.0;
+}
+
 class KeyboardThemeStudioScreen extends ConsumerStatefulWidget {
   const KeyboardThemeStudioScreen({super.key});
 
@@ -306,7 +318,7 @@ class _KeyboardThemeStudioScreenState
             pinned: true,
             delegate: _StickyPreviewHeaderDelegate(
               theme: _draft,
-              topPadding: 8,
+              topPadding: AppSpacing.x2,
               dirty: _dirty,
               saving: _saving,
               saveFeedback: saveFeedback,
@@ -327,7 +339,12 @@ class _KeyboardThemeStudioScreenState
             ),
           ),
           SliverPadding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 16 + safeBottomPadding),
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.x4,
+              AppSpacing.x2,
+              AppSpacing.x4,
+              AppSpacing.x4 + safeBottomPadding,
+            ),
             sliver: SliverList.list(
               children: [
                 _StudioSection(
@@ -391,7 +408,7 @@ class _KeyboardThemeStudioScreenState
                       ),
                       if (_draft.backgroundImagePath != null)
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.only(bottom: AppSpacing.x2),
                           child: Text(
                             'Image : ${_draft.backgroundImagePath}',
                             style: Theme.of(context).textTheme.bodySmall,
@@ -681,7 +698,7 @@ class _KeyboardThemeStudioScreenState
                           );
                         },
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.x2),
                       DropdownButtonFormField<KeyboardThemeEffectEasing>(
                         key: ValueKey(
                           'theme-easing-${_draft.effectEasing.name}',
@@ -706,7 +723,7 @@ class _KeyboardThemeStudioScreenState
                           );
                         },
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.x2),
                       _SliderField(
                         label: 'Intensité',
                         value: _draft.effectIntensity,
@@ -778,7 +795,7 @@ class _KeyboardThemeStudioScreenState
                 SizedBox(height: AppSectionMetrics.sectionGap),
                 _ValidationPanel(validation: _validation),
                 if (_message != null) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.x3),
                   Text(_message!),
                 ],
               ],
@@ -849,7 +866,12 @@ class _StudioSection extends StatelessWidget {
         onExpansionChanged: (value) => onExpansionChanged(id, value),
         title: Text(title),
         subtitle: Text(subtitle),
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        childrenPadding: const EdgeInsets.fromLTRB(
+          AppSpacing.x4,
+          0,
+          AppSpacing.x4,
+          AppSpacing.x4,
+        ),
         children: [child],
       ),
     );
@@ -921,7 +943,12 @@ class _StickyPreviewHeaderDelegate extends SliverPersistentHeaderDelegate {
     return ColoredBox(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(16, topPadding, 16, 6),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.x4,
+          topPadding,
+          AppSpacing.x4,
+          AppSpacing.x1,
+        ),
         child: Align(
           alignment: Alignment.topCenter,
           child: SizedBox(
@@ -982,7 +1009,12 @@ class _PreviewSectionCard extends StatelessWidget {
     final subtitleStyle = Theme.of(context).textTheme.bodySmall;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.x4,
+          AppSpacing.x3,
+          AppSpacing.x4,
+          AppSpacing.x3,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -992,7 +1024,7 @@ class _PreviewSectionCard extends StatelessWidget {
                 Text('Aperçu', style: Theme.of(context).textTheme.titleSmall),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 12),
+                    padding: const EdgeInsets.only(left: AppSpacing.x3),
                     child: DropdownButtonFormField<String>(
                       key: ValueKey('theme-preset-${theme.presetId}'),
                       initialValue: theme.presetId,
@@ -1014,18 +1046,18 @@ class _PreviewSectionCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.x2),
             Flexible(
               fit: FlexFit.loose,
               child: _ThemeDraftPreview(theme: theme),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.x2),
             Text(
               'Simulation du brouillon avant l’enregistrement natif.',
               textAlign: TextAlign.left,
               style: subtitleStyle,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.x2),
             _PreviewActionRow(
               dirty: dirty,
               saving: saving,
@@ -1075,12 +1107,12 @@ class _PreviewActionRow extends StatelessWidget {
               onPressed: dirty ? onDiscard : null,
               child: const Text('Annuler'),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.x2),
             OutlinedButton(
               onPressed: saving ? null : onReset,
               child: const Text('Réinitialiser'),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.x2),
             _AnimatedSaveButton(
               feedback: saveFeedback,
               onPressed: saving || !validation.canSave ? null : onSave,
@@ -1105,7 +1137,7 @@ class _AnimatedSaveButton extends StatelessWidget {
       key: const Key('keyboard-theme-save-button'),
       onPressed: onPressed,
       style: FilledButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x2),
         backgroundColor: switch (feedback) {
           _SaveButtonFeedback.failure => colorScheme.error,
           _SaveButtonFeedback.success => colorScheme.primary,
@@ -1125,7 +1157,7 @@ class _AnimatedSaveButton extends StatelessWidget {
             dimension: 18,
             child: Center(child: _SaveFeedbackIcon(feedback: feedback)),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpacing.x1),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 180),
             switchInCurve: Curves.easeOutCubic,
@@ -1251,7 +1283,10 @@ class _SliderField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SizedBox(width: 82, child: Text(label)),
+        SizedBox(
+          width: _KeyboardThemeStudioMetrics.sliderLabelWidth,
+          child: Text(label),
+        ),
         Expanded(
           child: Slider(
             value: value.clamp(min, max),
@@ -1262,7 +1297,10 @@ class _SliderField extends StatelessWidget {
             onChanged: onChanged,
           ),
         ),
-        SizedBox(width: 62, child: Text(valueLabel, textAlign: TextAlign.end)),
+        SizedBox(
+          width: _KeyboardThemeStudioMetrics.sliderValueWidth,
+          child: Text(valueLabel, textAlign: TextAlign.end),
+        ),
       ],
     );
   }
@@ -1328,7 +1366,7 @@ class _ColorFieldState extends State<_ColorField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.x2),
       child: Row(
         children: [
           Expanded(
@@ -1342,10 +1380,10 @@ class _ColorFieldState extends State<_ColorField> {
               onFieldSubmitted: _applyHex,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.x2),
           SizedBox(
-            width: 52,
-            height: 52,
+            width: _KeyboardThemeStudioMetrics.colorFieldPicker,
+            height: _KeyboardThemeStudioMetrics.colorFieldPicker,
             child: IconButton(
               key: ValueKey('keyboard-theme-color-picker-${widget.label}'),
               onPressed: _openPicker,
@@ -1353,12 +1391,17 @@ class _ColorFieldState extends State<_ColorField> {
               icon: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Color(widget.value),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(
+                    _KeyboardThemeStudioMetrics.fieldCornerRadius,
+                  ),
                   border: Border.all(
                     color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
-                child: const SizedBox(width: 24, height: 24),
+                child: const SizedBox(
+                  width: _KeyboardThemeStudioMetrics.colorFieldPickerIcon,
+                  height: _KeyboardThemeStudioMetrics.colorFieldPickerIcon,
+                ),
               ),
             ),
           ),
@@ -1409,7 +1452,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
     return AlertDialog(
       title: Text('Choisir ${widget.label}'),
       content: SizedBox(
-        width: 420,
+        width: _KeyboardThemeStudioMetrics.importExportDialogWidth,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1421,9 +1464,12 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                   color: Theme.of(context).colorScheme.outline,
                 ),
               ),
-              child: const SizedBox(height: 74, width: double.infinity),
+              child: const SizedBox(
+                height: _KeyboardThemeStudioMetrics.previewPanelHeight,
+                width: double.infinity,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.x3),
             _ColorChannelSlider(
               label: 'A',
               value: _alpha,
@@ -1447,7 +1493,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               color: Colors.blue,
               onChanged: (value) => setState(() => _blue = value),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.x2),
             SelectableText(
               (_value & 0xFFFFFFFF)
                   .toRadixString(16)
@@ -1488,7 +1534,10 @@ class _ColorChannelSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SizedBox(width: 24, child: Text(label)),
+        SizedBox(
+          width: _KeyboardThemeStudioMetrics.colorChannelWidth,
+          child: Text(label),
+        ),
         Expanded(
           child: Slider(
             value: value.toDouble(),
@@ -1500,7 +1549,10 @@ class _ColorChannelSlider extends StatelessWidget {
             onChanged: (next) => onChanged(next.round()),
           ),
         ),
-        SizedBox(width: 42, child: Text(value.toString().padLeft(3))),
+        SizedBox(
+          width: _KeyboardThemeStudioMetrics.colorValueWidth,
+          child: Text(value.toString().padLeft(3)),
+        ),
       ],
     );
   }
@@ -1578,7 +1630,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
         key: const Key('keyboard-theme-studio-preview'),
         decoration: background,
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.x2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

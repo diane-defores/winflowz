@@ -1413,7 +1413,7 @@ class _KeyboardThemePresetChip extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _KeyboardThemeSwatch(config: config),
-          const SizedBox(height: 3),
+          const SizedBox(height: AppSpacing.x1),
           Text(
             preset.name,
             maxLines: 1,
@@ -1461,13 +1461,13 @@ class _KeyboardThemeSwatch extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(3),
+              padding: const EdgeInsets.all(AppSpacing.x1),
               child: Row(
                 children: [
                   _KeyboardThemeMiniKey(color: Color(config.keyColor)),
-                  const SizedBox(width: 3),
+                  const SizedBox(width: AppSpacing.x1),
                   _KeyboardThemeMiniKey(color: Color(config.specialKeyColor)),
-                  const SizedBox(width: 3),
+                  const SizedBox(width: AppSpacing.x1),
                   Expanded(
                     child: DecoratedBox(
                       decoration: BoxDecoration(

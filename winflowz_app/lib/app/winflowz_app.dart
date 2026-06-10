@@ -29,26 +29,38 @@ class AppThemeModeController extends Notifier<AppThemeMode> {
     state = value;
     _syncKeyboardThemeMode(value);
     Future<void>.microtask(() async {
-      final localStore = ref.read(localSettingsStoreProvider);
-      final activeStore = ref.read(settingsStoreProvider);
-      final stores = <SettingsStore>[localStore];
-      if (activeStore is! LocalSettingsStore) {
-        stores.add(activeStore);
+      if (!ref.mounted) {
+        return;
       }
-      for (final store in stores) {
-        try {
-          await _saveThemeMode(store, value);
-        } catch (_) {
-          // Appearance changes apply immediately; persistence failures are
-          // surfaced by the Settings sync/status work rather than blocking UI.
-        }
-      }
+      await _saveThemeModeToConfiguredStores(value);
     });
   }
 
   void previewMode(AppThemeMode value) {
     state = value;
     _syncKeyboardThemeMode(value);
+  }
+
+  Future<void> syncFromKeyboardThemeMode() async {
+    final keyboardThemeMode = await _readThemeModeFromKeyboard();
+    if (!ref.mounted) {
+      return;
+    }
+    if (keyboardThemeMode == null) {
+      return;
+    }
+    await _syncThemeModeFromKeyboard(keyboardThemeMode);
+  }
+
+  Future<void> syncFromKeyboardThemeModeValue(String themeModeValue) async {
+    final keyboardThemeMode = _parseKeyboardThemeMode(themeModeValue);
+    if (!ref.mounted) {
+      return;
+    }
+    if (keyboardThemeMode == null) {
+      return;
+    }
+    await _syncThemeModeFromKeyboard(keyboardThemeMode);
   }
 
   Future<void> _saveThemeMode(SettingsStore store, AppThemeMode value) async {
@@ -62,10 +74,67 @@ class AppThemeModeController extends Notifier<AppThemeMode> {
   }
 
   Future<void> _load() async {
+    if (!ref.mounted) {
+      return;
+    }
     final settings = await ref.read(settingsStoreProvider).load();
+    if (!ref.mounted) {
+      return;
+    }
     final loadedMode = AppThemeMode.fromThemeMode(settings.themeMode);
-    state = loadedMode;
-    _syncKeyboardThemeMode(loadedMode);
+    final keyboardThemeMode = await _readThemeModeFromKeyboard();
+    if (!ref.mounted) {
+      return;
+    }
+    final effectiveMode = keyboardThemeMode ?? loadedMode;
+    if (state != effectiveMode) {
+      state = effectiveMode;
+    }
+    if (keyboardThemeMode != null && keyboardThemeMode != loadedMode) {
+      if (!ref.mounted) {
+        return;
+      }
+      await _saveThemeModeToConfiguredStores(keyboardThemeMode);
+      if (!ref.mounted) {
+        return;
+      }
+    }
+    _syncKeyboardThemeMode(effectiveMode);
+  }
+
+  Future<void> _saveThemeModeToConfiguredStores(AppThemeMode value) async {
+    if (!ref.mounted) {
+      return;
+    }
+    final localStore = ref.read(localSettingsStoreProvider);
+    final activeStore = ref.read(settingsStoreProvider);
+    final stores = <SettingsStore>[localStore];
+    if (activeStore is! LocalSettingsStore) {
+      stores.add(activeStore);
+    }
+    for (final store in stores) {
+      if (!ref.mounted) {
+        return;
+      }
+      try {
+        await _saveThemeMode(store, value);
+      } catch (_) {
+        // Appearance changes apply immediately; persistence failures are
+        // surfaced by the Settings sync/status work rather than blocking UI.
+      }
+    }
+  }
+
+  Future<AppThemeMode?> _readThemeModeFromKeyboard() async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      return null;
+    }
+    try {
+      final status = await AndroidKeyboardBridge.getStatus();
+      return _parseKeyboardThemeMode(status.themeMode);
+    } catch (_) {
+      return null;
+    }
   }
 
   void _syncKeyboardThemeMode(AppThemeMode value) {
@@ -80,6 +149,25 @@ class AppThemeModeController extends Notifier<AppThemeMode> {
         // or not reachable yet. Settings status refresh will surface failures.
       }
     });
+  }
+
+  AppThemeMode? _parseKeyboardThemeMode(String? rawThemeMode) {
+    if (rawThemeMode == null) {
+      return null;
+    }
+    final normalized = rawThemeMode.toLowerCase();
+    return AppThemeMode.values.firstWhere(
+      (mode) => mode.name == normalized,
+      orElse: () => AppThemeMode.system,
+    );
+  }
+
+  Future<void> _syncThemeModeFromKeyboard(AppThemeMode themeMode) async {
+    if (themeMode == state) {
+      return;
+    }
+    state = themeMode;
+    await _saveThemeModeToConfiguredStores(themeMode);
   }
 }
 

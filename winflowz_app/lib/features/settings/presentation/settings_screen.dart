@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -102,6 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _loading = true;
   bool _onboardingLoading = true;
   bool _saving = false;
+  bool _onboardingTileDismissed = false;
   static const _onboardingOverlayFallback = AndroidOverlayStatus(
     enabled: false,
     requestedEnabled: false,
@@ -197,6 +200,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         setState(() => _onboardingLoading = false);
       }
     }
+  }
+
+  void _dismissOnboardingTile() {
+    setState(() {
+      _onboardingTileDismissed = true;
+    });
   }
 
   Future<void> _setConfirmDestructiveActions(bool value) async {
@@ -467,6 +476,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         return;
       }
       setState(() => _keyboardStatus = status);
+      unawaited(
+        ref
+            .read(appThemeModeProvider.notifier)
+            .syncFromKeyboardThemeModeValue(status.themeMode),
+      );
     } on AndroidKeyboardBridgeException catch (error) {
       if (!mounted) {
         return;
@@ -592,6 +606,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         return;
       }
       setState(() => _keyboardStatus = status);
+      unawaited(
+        ref
+            .read(appThemeModeProvider.notifier)
+            .syncFromKeyboardThemeModeValue(status.themeMode),
+      );
     } on AndroidKeyboardBridgeException catch (error) {
       if (!mounted) {
         return;
@@ -1453,11 +1472,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final onboardingReadiness = _onboardingReadiness();
     final onboardingTile = widget.onResumeOnboarding == null
         ? null
-        : _OnboardingSettingsTile(
-            onResume: widget.onResumeOnboarding!,
-            readiness: onboardingReadiness,
-            highlightResume: widget.highlightOnboardingResume,
-          );
+        : (_onboardingTileDismissed
+              ? null
+              : _OnboardingSettingsTile(
+                  onResume: widget.onResumeOnboarding!,
+                  readiness: onboardingReadiness,
+                  highlightResume: widget.highlightOnboardingResume,
+                  onDismiss: _dismissOnboardingTile,
+                ));
     final moveOnboardingTileToEnd =
         onboardingReadiness.onboardingCompleted &&
         onboardingReadiness.steps.isNotEmpty &&
@@ -1618,11 +1640,13 @@ class _OnboardingSettingsTile extends StatefulWidget {
     required this.onResume,
     required this.readiness,
     required this.highlightResume,
+    required this.onDismiss,
   });
 
   final VoidCallback onResume;
   final OnboardingReadiness readiness;
   final bool highlightResume;
+  final VoidCallback onDismiss;
 
   @override
   State<_OnboardingSettingsTile> createState() =>
@@ -1694,13 +1718,18 @@ class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>
         ? '$pending accès encore disponible${pending == 1 ? '' : 's'}'
         : 'Onboarding terminé';
 
-    final tile = AppStatusCard(
+    final tile = AppNotificationCard(
       icon: Icons.flag_outlined,
       title: 'Onboarding permissions',
-      subtitle: subtitle,
-      trailing: TextButton(
+      message: subtitle,
+      onDismiss: widget.onDismiss,
+      primaryAction: TextButton(
         onPressed: widget.onResume,
         child: Text(actionLabel),
+      ),
+      secondaryAction: TextButton(
+        onPressed: widget.onDismiss,
+        child: const Text('Plus tard'),
       ),
     );
 

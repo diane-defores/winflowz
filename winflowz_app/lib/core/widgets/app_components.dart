@@ -474,9 +474,12 @@ class ProductSummaryStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visibleChildren = children.where((child) {
-      return !(child is AppLocalModeStatusPill && FirebaseBootstrap.isConfigured);
-    }).toList(growable: false);
+    final visibleChildren = children
+        .where((child) {
+          return !(child is AppLocalModeStatusPill &&
+              FirebaseBootstrap.isConfigured);
+        })
+        .toList(growable: false);
     if (visibleChildren.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -865,6 +868,102 @@ class AppBannerCard extends StatelessWidget {
               ),
             ),
             if (action != null) ...[AppGaps.horizontalX2, action!],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AppNotificationCard extends StatelessWidget {
+  const AppNotificationCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.primaryAction,
+    this.secondaryAction,
+    this.onDismiss,
+    this.accentColor,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final Widget? primaryAction;
+  final Widget? secondaryAction;
+  final VoidCallback? onDismiss;
+  final Color? accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final effectiveAccent = accentColor ?? colorScheme.primary;
+    final actionWidgets = <Widget>[];
+    if (secondaryAction != null) {
+      actionWidgets.add(secondaryAction!);
+    }
+    if (primaryAction != null) {
+      if (actionWidgets.isNotEmpty) {
+        actionWidgets.add(AppGaps.horizontalX2);
+      }
+      actionWidgets.add(primaryAction!);
+    }
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLowest.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: AppInsets.compactCard,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, size: AppIconMetrics.sm, color: effectiveAccent),
+                AppGaps.horizontalX3,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      AppGaps.x1,
+                      Text(
+                        message,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (onDismiss != null)
+                  IconButton(
+                    onPressed: onDismiss,
+                    tooltip: 'Masquer cette notification',
+                    icon: const Icon(Icons.close_outlined),
+                    visualDensity: VisualDensity.compact,
+                  ),
+              ],
+            ),
+            if (actionWidgets.isNotEmpty) ...[
+              AppGaps.x2,
+              Wrap(
+                spacing: AppSpacing.x2,
+                runSpacing: AppSpacing.x1,
+                alignment: WrapAlignment.end,
+                children: actionWidgets,
+              ),
+            ],
           ],
         ),
       ),

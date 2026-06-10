@@ -23,6 +23,7 @@ class KeyboardCornerShortcutsScreen extends ConsumerStatefulWidget {
 
 class _KeyboardCornerShortcutsScreenState
     extends ConsumerState<KeyboardCornerShortcutsScreen> {
+  static const _jsonDialogWidth = 560.0;
   static const _directionSlots = [
     KeyboardCornerSlot.up,
     KeyboardCornerSlot.right,
@@ -321,7 +322,10 @@ class _KeyboardCornerShortcutsScreenState
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Export gesture config'),
-        content: SizedBox(width: 560, child: SelectableText(encoded)),
+        content: SizedBox(
+          width: _jsonDialogWidth,
+          child: SelectableText(encoded),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -339,7 +343,7 @@ class _KeyboardCornerShortcutsScreenState
       builder: (context) => AlertDialog(
         title: const Text('Import gesture config'),
         content: SizedBox(
-          width: 560,
+          width: _jsonDialogWidth,
           child: TextField(
             key: const Key('corner-import-json-field'),
             controller: _importController,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:winflowz_app/app/winflowz_app.dart';
@@ -8,7 +10,17 @@ import 'package:winflowz_app/features/settings/data/local_settings_store.dart';
 import 'package:winflowz_app/features/settings/domain/settings_store.dart';
 import 'package:winflowz_app/features/settings/domain/user_retention_policy.dart';
 
+const _keyboardChannel = MethodChannel('winflowz_app/keyboard');
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  tearDown(() {
+    debugDefaultTargetPlatformOverride = null;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_keyboardChannel, null);
+  });
+
   test('setMode preserves existing local and remote settings fields', () async {
     final localInitial = UserSettingsSnapshot.defaults().copyWith(
       themeMode: ThemeMode.dark,
@@ -54,6 +66,73 @@ void main() {
     expect(remoteStore.snapshot.onboardingCompleted, isTrue);
     expect(remoteStore.snapshot.onboardingCurrentStep, 2);
     expect(remoteStore.snapshot.onboardingMicrophoneSkipped, isTrue);
+  });
+
+  test('loads theme from keyboard status to stay in sync with IME', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final initial = UserSettingsSnapshot.defaults().copyWith(
+      themeMode: ThemeMode.light,
+      clipboardAutoSync: true,
+    );
+    final localStore = _MemoryLocalSettingsStore(initial);
+    final remoteStore = _MemorySettingsStore(initial);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_keyboardChannel, (call) async {
+          if (call.method == 'getKeyboardStatus') {
+            return <String, Object?>{'supported': true, 'themeMode': 'dark'};
+          }
+          if (call.method == 'setKeyboardThemeMode') {
+            return const <String, Object?>{};
+          }
+          return null;
+        });
+
+    final container = ProviderContainer(
+      overrides: [
+        initialAppThemeModeProvider.overrideWithValue(AppThemeMode.light),
+        localSettingsStoreProvider.overrideWithValue(localStore),
+        settingsStoreProvider.overrideWithValue(remoteStore),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(appThemeModeProvider);
+
+    await _waitUntil(
+      () =>
+          localStore.snapshot.themeMode == ThemeMode.dark &&
+          remoteStore.snapshot.themeMode == ThemeMode.dark,
+    );
+
+    expect(container.read(appThemeModeProvider), AppThemeMode.dark);
+  });
+
+  test('syncFromKeyboardThemeModeValue updates providers and persists', () async {
+    final localStore = _MemoryLocalSettingsStore(
+      const UserSettingsSnapshot.defaults(),
+    );
+    final remoteStore = _MemorySettingsStore(
+      const UserSettingsSnapshot.defaults(),
+    );
+
+    final container = ProviderContainer(
+      overrides: [
+        initialAppThemeModeProvider.overrideWithValue(AppThemeMode.light),
+        localSettingsStoreProvider.overrideWithValue(localStore),
+        settingsStoreProvider.overrideWithValue(remoteStore),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await container
+        .read(appThemeModeProvider.notifier)
+        .syncFromKeyboardThemeModeValue('dark');
+    await _waitUntil(
+      () =>
+          localStore.snapshot.themeMode == ThemeMode.dark &&
+          remoteStore.snapshot.themeMode == ThemeMode.dark,
+    );
+
+    expect(container.read(appThemeModeProvider), AppThemeMode.dark);
   });
 }
 
