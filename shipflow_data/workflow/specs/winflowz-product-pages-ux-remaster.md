@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-06-10"
 created_at: "2026-06-10 15:32:15 UTC"
 updated: "2026-06-10"
-updated_at: "2026-06-10 16:39:19 UTC"
+updated_at: "2026-06-10 18:24:57 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -63,12 +63,12 @@ evidence:
   - "Component audit 2026-06-10 found repeated private metric pill implementations in voice_screen.dart, clipboard_screen.dart, snippets_screen.dart, and dictionary_screen.dart."
   - "Component audit 2026-06-10 found large page widgets and no shared product-page frame beyond AppSectionCard, AppPageToolbar, AppSyncStatusAction, AppEntityCard, and AppEmptyStateCard."
   - "Code search 2026-06-10 confirmed duplicated metric/status primitives and parallel sync display concepts: AppSyncStatus, CloudSyncOverview, and LocalCloudSyncState."
-next_step: "/sf-ship shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md"
+next_step: "/sf-prod https://winflowz-app.vercel.app/"
 ---
 
 # Spec: WinFlowz Product Pages UX Remaster
 
-🟡 [WinFlowzApp] spec: WinFlowz Product Pages UX Remaster | status: partial-verified | path: shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md | next: /sf-ship shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md | id: wfz-product-pages-ux-remaster
+🟡 [WinFlowzApp] spec: WinFlowz Product Pages UX Remaster | status: shipped-pending-prod-smoke | path: shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md | next: /sf-prod https://winflowz-app.vercel.app/ | id: wfz-product-pages-ux-remaster
 
 ## Title
 
@@ -76,7 +76,7 @@ WinFlowz Product Pages UX Remaster
 
 ## Status
 
-Partially verified. Created on 2026-06-10 from user feedback, the product-pages exploration report, and the component-system audit. Passed readiness review on 2026-06-10 after tightening the proof contract and resolving non-blocking implementation choices. Implemented through `sf-start` on 2026-06-10 with local Flutter checks passing. `sf-verify` on 2026-06-10 confirmed local implementation, tests, docs, and status-source coherence, but final product verification still needs Vercel Flutter web smoke on a deployed build containing these changes. The next lifecycle gate is `/sf-ship shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md`.
+Shipped pending production smoke. Created on 2026-06-10 from user feedback, the product-pages exploration report, and the component-system audit. Passed readiness review on 2026-06-10 after tightening the proof contract and resolving non-blocking implementation choices. Implemented through `sf-start` on 2026-06-10 with local Flutter checks passing. `sf-verify` on 2026-06-10 confirmed local implementation, tests, docs, and status-source coherence. `sf-ship` on 2026-06-10 confirmed the remaster is already included in pushed commit `134ee64` on `origin/main`. Final product verification still needs Vercel Flutter web smoke on the deployed build containing these changes. The next lifecycle gate is `/sf-prod https://winflowz-app.vercel.app/`.
 
 ## User Story
 
@@ -394,6 +394,7 @@ Implementation decision: primary creation and capture actions stay visible by de
 | 2026-06-10 15:38:54 UTC | sf-ready | GPT-5 Codex | Resolved status-source contract, local-mode handling, viewport proof rules, dependencies, and open primary-action decision | ready | `/sf-start shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md` |
 | 2026-06-10 16:30:49 UTC | sf-start | GPT-5 Codex | Implemented shared product-page scaffold, summary/status primitives, four page migrations, docs update, and focused/full Flutter tests | implemented | `/sf-verify shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md` |
 | 2026-06-10 16:39:19 UTC | sf-verify | GPT-5 Codex | Verified local code, tests, docs, status-source contract, and Flutter proof ladder through automated checks | partial: Vercel Flutter web smoke still required on deployed build | `/sf-ship shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md` |
+| 2026-06-10 18:24:57 UTC | sf-ship | GPT-5 Codex | Confirmed remaster files are included in commit `134ee64`, already pushed to `origin/main`; unrelated business-file edits left untouched | shipped: code already on remote; production/web smoke still required | `/sf-prod https://winflowz-app.vercel.app/`, then manual product-page smoke |
 
 ## Current Chantier Flow
 
@@ -401,7 +402,8 @@ Implementation decision: primary creation and capture actions stay visible by de
 - sf-ready: done, ready.
 - sf-start: done, implemented locally.
 - sf-verify: partial, local implementation verified; deployed web smoke missing.
-- sf-end: not launched.
-- sf-ship: not launched.
+- sf-end: not required in quick ship flow.
+- sf-ship: shipped, commit `134ee64` already on `origin/main`; no current chantier code changes remained dirty.
 
-Prochaine etape: `/sf-ship shipflow_data/workflow/specs/winflowz-product-pages-ux-remaster.md`, then `/sf-prod` for Vercel target confirmation, then `sf-browser` or `sf-test --preview` for scenarios `WFZ-PAGES-001` to `WFZ-PAGES-007`.
+Reste a faire: Vercel Flutter web smoke for scenarios `WFZ-PAGES-001` to `WFZ-PAGES-007`, then Diane product-feel review.
+Prochaine etape: `/sf-prod https://winflowz-app.vercel.app/`, then manual smoke for scenarios `WFZ-PAGES-001` to `WFZ-PAGES-007`.
