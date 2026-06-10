@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "1.0.0"
 project: winflowz
 created: "2026-05-24"
-updated: "2026-05-24"
+updated: "2026-06-10"
 status: draft
 source_skill: sf-content
 scope: project-competitors-and-inspirations
@@ -65,12 +65,14 @@ WinFlowz est centré sur la formation et les contenus Windows-first autour de `W
 
 | Source | Type | Observation | Inference WinFlowz | Inspiration exploitable | Statut preuve |
 |---|---|---|---|---|---|
+| [Blip AI](https://www.blipai.app/) | Concurrent indirect / inspiration produit | Outil de dictée IA cross-platform déclenché par raccourci clavier pour insérer du texte propre dans n'importe quelle app. | Concurrent direct de la promesse voice-first de l'app WinFlowz, surtout sur desktop et workflows de rédaction rapide. | Benchmarker UX de déclenchement, qualité de nettoyage, limites mensuelles, onboarding AppSumo et promesse "parler au lieu de taper". | À vérifier avant citation publique |
 | [Trigr](https://usetrigr.com/) | Concurrent indirect / inspiration produit | Outil Windows positionné sur hotkeys visuels, macros et text expansion sans scripting. | Signal fort que le marché cherche une couche d'automatisation Windows plus accessible qu'AutoHotkey. Concurrent indirect de la promesse "workflow Windows plus rapide", surtout pour les utilisateurs no-code. | Alimenter le module Automatisation, surveiller l'UX no-code, benchmarker le futur angle `Workflow Automation Builder`. | À vérifier avant citation publique |
 
 ## À transformer en contenu ou benchmark
 
 | Lien | Type | Score | Usage concret |
 |---|---:|:---:|---|
+| [Blip AI](https://www.blipai.app/) | Benchmark concurrent app / dictée IA | 8/10 | À comparer à l'app WinFlowz sur raccourci global, insertion dans les apps, nettoyage IA, historique, pricing et limites d'usage. |
 | [Trigr](https://usetrigr.com/) | Benchmark concurrent / contenu formation | 8/10 | Déjà ajouté au module Automatisation comme passerelle no-code pour hotkeys, macros et text expansion. À creuser pour un futur comparatif "AutoHotkey vs outils no-code d'automatisation Windows". |
 
 ## Règle de passage vers contenu public

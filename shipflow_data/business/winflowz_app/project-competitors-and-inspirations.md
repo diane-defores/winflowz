@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.3.0"
 project: "WinFlowz"
 created: "2026-03-18"
-updated: "2026-05-11"
+updated: "2026-06-10"
 status: "draft"
 source_skill: "sf-docs"
 scope: "project-competitors-and-inspirations"
@@ -59,6 +59,9 @@ Benchmark de dictée native Android pour la latence et l'expérience de dictée 
 ### Apple Dictation
 Benchmark de dictée native iOS pour l'intégration système et la fluidité d'usage.
 
+### Blip AI
+Concurrent/inspiration pour la dictée IA cross-platform: raccourci global, parole vers texte propre, insertion dans n'importe quelle app, limites d'usage mensuelles et acquisition via AppSumo. À benchmarker contre WinFlowz App sur déclenchement clavier/overlay, nettoyage IA, historique, confidentialité et mode local-first.
+
 ## Audio et voix
 
 ### Descript
@@ -74,6 +77,9 @@ Inspiration pour le traitement audio en amont de la transcription.
 
 ### Microsoft Copilot
 Référence de positionnement pour la voix comme interface de productivité.
+
+### Trigr
+Concurrent indirect/inspiration pour les workflows Windows sans scripting: hotkeys visuels, macros et text expansion. Pertinent pour l'app WinFlowz si les raccourcis, snippets, overlays et actions rapides deviennent une surface de productivité desktop au-delà de la dictée.
 
 ## Veille productivité IA — 2026-05-11
 
@@ -93,4 +99,3 @@ Référence de positionnement pour la voix comme interface de productivité.
 - Faut-il séparer explicitement les inspirations "mobile", "desktop" et "workflow éducatif" ?
 
 https://appsumo.com/products/amical
-
