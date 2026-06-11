@@ -19,7 +19,11 @@ import android.graphics.Shader
 import android.graphics.Typeface
 import android.media.AudioManager
 import android.media.ToneGenerator
+import android.os.Build
 import android.os.SystemClock
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.text.TextPaint
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -255,6 +259,14 @@ class WinFlowzKeyboardView(
     private var cornerModeEnabled = KeyboardStateStore.DEFAULT_CORNER_MODE_ENABLED
     private var debugTouchOverlayEnabled = false
     private var keyVibrationIntensity = KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM
+    private val vibrator: Vibrator? by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            context.getSystemService(VibratorManager::class.java)?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        }
+    }
     private var keyVibrationEnabled: Boolean
         get() = keyVibrationIntensity != KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF
         set(value) {
@@ -4872,20 +4884,11 @@ class WinFlowzKeyboardView(
         if (!keyVibrationEnabled) {
             return
         }
-        when (keyVibrationIntensity) {
-            KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> {
-                performKeyboardHapticFeedback(feedbackConstant)
-            }
-            KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> {
-                performKeyboardHapticFeedback(feedbackConstant)
-            }
-            KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> {
-                performKeyboardHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            }
-            else -> {
-                performKeyboardHapticFeedback(feedbackConstant)
-            }
+        val durationMs = vibrationModeDurationMs()
+        if (durationMs > 0 && performDirectKeyboardVibration(durationMs)) {
+            return
         }
+        performKeyboardHapticFeedback(feedbackConstant)
     }
 
     private fun performKeyboardHapticFeedback(feedbackConstant: Int) {
@@ -4896,13 +4899,42 @@ class WinFlowzKeyboardView(
         )
     }
 
+    private fun performDirectKeyboardVibration(durationMs: Long): Boolean {
+        val activeVibrator = vibrator ?: return false
+        if (!activeVibrator.hasVibrator()) {
+            return false
+        }
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                activeVibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        durationMs,
+                        VibrationEffect.DEFAULT_AMPLITUDE,
+                    ),
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                activeVibrator.vibrate(durationMs)
+            }
+            true
+        } catch (_: SecurityException) {
+            false
+        }
+    }
+
+    private fun vibrationModeDurationMs(): Long {
+        return when (keyVibrationIntensity) {
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> 12L
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> 24L
+            KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> 40L
+            else -> 0L
+        }
+    }
+
     private fun vibrationModeStatusText(): String {
         return when (keyVibrationIntensity) {
             KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF -> "Key vibration off"
-            KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> "Key vibration short"
-            KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> "Key vibration medium"
-            KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> "Key vibration long"
-            else -> if (keyVibrationEnabled) "Key vibration on" else "Key vibration off"
+            else -> "Key vibration ${vibrationModeDurationMs()} ms"
         }
     }
 

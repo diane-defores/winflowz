@@ -40,6 +40,7 @@ void main() {
         'cornerModeEnabled': false,
         'debugTouchOverlayEnabled': false,
         'keyVibrationEnabled': true,
+        'keyVibrationIntensity': 3,
         'keySoundEnabled': false,
         'spellingSuggestionsEnabled': true,
         'specialKeyCornersEnabled': false,
@@ -73,6 +74,7 @@ void main() {
       expect(status.privacyMode, KeyboardPrivacyMode.strict);
       expect(status.autoCloseModesEnabled, isFalse);
       expect(status.voiceEnabled, isTrue);
+      expect(status.keyVibrationIntensity, 3);
       expect(calls.single.method, 'setKeyboardPreferences');
       expect(calls.single.arguments, containsPair('layoutProfile', 'azerty'));
       expect(
@@ -92,6 +94,7 @@ void main() {
         calls.single.arguments,
         containsPair('mediaBrightnessStepPercent', 20),
       );
+      expect(calls.single.arguments, containsPair('keyVibrationIntensity', 3));
       expect(
         calls.single.arguments,
         containsPair('actionRowHeightScale', closeTo(2 / 3, 0.0001)),
@@ -144,6 +147,21 @@ void main() {
     expect(status.lastKeyboardError, isNot(contains('abc123')));
     expect(status.lastKeyboardErrorAt, '2026-05-16T08:05:00Z');
     expect(status.keyboardRecoveryCount, 3);
+  });
+
+  test('AndroidKeyboardStatus preserves vibration intensity', () {
+    final status = AndroidKeyboardStatus.fromMap({
+      'supported': true,
+      'keyVibrationEnabled': true,
+      'keyVibrationIntensity': 3,
+    });
+
+    expect(status.keyVibrationEnabled, isTrue);
+    expect(status.keyVibrationIntensity, 3);
+    expect(
+      status.toPreferencesMap()['keyVibrationIntensity'],
+      3,
+    );
   });
 
   test('AndroidKeyboardStatus parses device profile fields', () {

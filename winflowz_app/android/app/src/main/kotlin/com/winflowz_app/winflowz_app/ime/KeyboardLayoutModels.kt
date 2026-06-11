@@ -1004,9 +1004,10 @@ object KeyboardLayoutBuilder {
                             id = "setting-vibration",
                             label = when (request.keyVibrationIntensity) {
                                 KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF -> "Vibe off"
-                                KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> "Vibe short"
-                                KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> "Vibe long"
-                                else -> "Vibe med"
+                                KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> "Vibe 12ms"
+                                KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> "Vibe 24ms"
+                                KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> "Vibe 40ms"
+                                else -> "Vibe 24ms"
                             },
                             action = KeyboardKeyAction.ToggleKeyVibration,
                             active = request.keyVibrationIntensity != KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF,

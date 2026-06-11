@@ -1894,6 +1894,7 @@ class AndroidKeyboardStatus {
     required this.cornerPresetId,
     required this.debugTouchOverlayEnabled,
     required this.keyVibrationEnabled,
+    required this.keyVibrationIntensity,
     required this.keySoundEnabled,
     required this.spellingSuggestionsEnabled,
     required this.specialKeyCornersEnabled,
@@ -1949,6 +1950,7 @@ class AndroidKeyboardStatus {
   final String cornerPresetId;
   final bool debugTouchOverlayEnabled;
   final bool keyVibrationEnabled;
+  final int keyVibrationIntensity;
   final bool keySoundEnabled;
   final bool spellingSuggestionsEnabled;
   final bool specialKeyCornersEnabled;
@@ -2005,6 +2007,7 @@ class AndroidKeyboardStatus {
       cornerPresetId: KeyboardCornerPresetCatalog.frenchAccents,
       debugTouchOverlayEnabled: false,
       keyVibrationEnabled: true,
+      keyVibrationIntensity: 2,
       keySoundEnabled: false,
       spellingSuggestionsEnabled: true,
       specialKeyCornersEnabled: false,
@@ -2077,6 +2080,9 @@ class AndroidKeyboardStatus {
       debugTouchOverlayEnabled:
           map['debugTouchOverlayEnabled'] as bool? ?? false,
       keyVibrationEnabled: map['keyVibrationEnabled'] as bool? ?? true,
+      keyVibrationIntensity: _normalizeKeyVibrationIntensity(
+        (map['keyVibrationIntensity'] as num?)?.toInt(),
+      ),
       keySoundEnabled: map['keySoundEnabled'] as bool? ?? false,
       spellingSuggestionsEnabled:
           map['spellingSuggestionsEnabled'] as bool? ?? true,
@@ -2156,6 +2162,7 @@ class AndroidKeyboardStatus {
     bool? cornerModeEnabled,
     bool? debugTouchOverlayEnabled,
     bool? keyVibrationEnabled,
+    int? keyVibrationIntensity,
     bool? keySoundEnabled,
     bool? spellingSuggestionsEnabled,
     bool? specialKeyCornersEnabled,
@@ -2185,6 +2192,9 @@ class AndroidKeyboardStatus {
       'debugTouchOverlayEnabled':
           debugTouchOverlayEnabled ?? this.debugTouchOverlayEnabled,
       'keyVibrationEnabled': keyVibrationEnabled ?? this.keyVibrationEnabled,
+      'keyVibrationIntensity': _normalizeKeyVibrationIntensity(
+        keyVibrationIntensity ?? this.keyVibrationIntensity,
+      ),
       'keySoundEnabled': keySoundEnabled ?? this.keySoundEnabled,
       'spellingSuggestionsEnabled':
           spellingSuggestionsEnabled ?? this.spellingSuggestionsEnabled,
@@ -2214,5 +2224,17 @@ class AndroidKeyboardStatus {
       return 2 / 3;
     }
     return 1;
+  }
+
+  static int _normalizeKeyVibrationIntensity(int? value) {
+    switch (value) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+        return value!;
+      default:
+        return 2;
+    }
   }
 }

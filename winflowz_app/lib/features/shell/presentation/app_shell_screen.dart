@@ -465,6 +465,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
           cornerModeEnabled: status.cornerModeEnabled,
           debugTouchOverlayEnabled: status.debugTouchOverlayEnabled,
           keyVibrationEnabled: status.keyVibrationEnabled,
+          keyVibrationIntensity: status.keyVibrationIntensity,
           keySoundEnabled: status.keySoundEnabled,
           spellingSuggestionsEnabled: status.spellingSuggestionsEnabled,
           specialKeyCornersEnabled: status.specialKeyCornersEnabled,

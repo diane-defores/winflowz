@@ -885,9 +885,9 @@ class WinFlowzInputMethodService :
         showStatus(
             when (level) {
                 KeyboardStateStore.KEY_VIBRATION_INTENSITY_OFF -> "Key vibration off"
-                KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> "Key vibration short"
-                KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> "Key vibration medium"
-                KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> "Key vibration long"
+                KeyboardStateStore.KEY_VIBRATION_INTENSITY_SHORT -> "Key vibration 12 ms"
+                KeyboardStateStore.KEY_VIBRATION_INTENSITY_MEDIUM -> "Key vibration 24 ms"
+                KeyboardStateStore.KEY_VIBRATION_INTENSITY_LONG -> "Key vibration 40 ms"
                 else -> if (stateStore.keyVibrationEnabled) "Key vibration enabled" else "Key vibration disabled"
             },
         )

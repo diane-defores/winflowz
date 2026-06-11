@@ -516,6 +516,9 @@ class MainActivity : FlutterActivity() {
                         call.argument<Boolean>("keyVibrationEnabled")?.let {
                             keyboardState.keyVibrationEnabled = it
                         }
+                        call.argument<Int>("keyVibrationIntensity")?.let {
+                            keyboardState.keyVibrationIntensity = it
+                        }
                         call.argument<Boolean>("keySoundEnabled")?.let {
                             keyboardState.keySoundEnabled = it
                         }

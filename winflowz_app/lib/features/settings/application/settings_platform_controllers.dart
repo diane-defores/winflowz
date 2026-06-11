@@ -121,6 +121,7 @@ class SettingsKeyboardController {
       debugTouchOverlayEnabled:
           debugTouchOverlayEnabled ?? current.debugTouchOverlayEnabled,
       keyVibrationEnabled: keyVibrationEnabled ?? current.keyVibrationEnabled,
+      keyVibrationIntensity: current.keyVibrationIntensity,
       keySoundEnabled: keySoundEnabled ?? current.keySoundEnabled,
       spellingSuggestionsEnabled:
           spellingSuggestionsEnabled ?? current.spellingSuggestionsEnabled,
