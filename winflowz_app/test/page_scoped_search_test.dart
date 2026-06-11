@@ -69,6 +69,12 @@ void main() {
     expect(find.byType(AppPageToolbar), findsOneWidget);
     expect(find.byType(AppSearchField), findsOneWidget);
     expect(find.widgetWithText(OutlinedButton, 'Actualiser'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.widgetWithText(TextField, 'Déclencheur')).dy,
+      tester
+          .getTopLeft(find.widgetWithText(TextField, 'Libellé (optionnel)'))
+          .dy,
+    );
 
     await tester.enterText(find.byKey(const Key('app-search-field')), 'lilas');
     await tester.pump();
@@ -113,6 +119,12 @@ void main() {
     expect(find.byType(AppPageToolbar), findsOneWidget);
     expect(find.byType(AppSearchField), findsOneWidget);
     expect(find.widgetWithText(OutlinedButton, 'Actualiser'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.widgetWithText(TextField, 'Terme').first).dy,
+      tester
+          .getTopLeft(find.widgetWithText(TextField, 'Remplacement').first)
+          .dy,
+    );
 
     await tester.enterText(find.byKey(const Key('app-search-field')), 'rendez');
     await tester.pump();
@@ -159,6 +171,14 @@ void main() {
     expect(find.text('Mode local'), findsOneWidget);
     expect(find.byType(AppPageToolbar), findsOneWidget);
     expect(find.widgetWithText(OutlinedButton, 'En attente'), findsOneWidget);
+    expect(
+      tester
+          .getSize(
+            find.byType(DropdownButtonFormField<ClipboardCanonicalSource>),
+          )
+          .height,
+      greaterThanOrEqualTo(AppInputMetrics.minHeight),
+    );
 
     await tester.enterText(find.byKey(const Key('app-search-field')), 'beta');
     await tester.pump();

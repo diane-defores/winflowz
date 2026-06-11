@@ -54,4 +54,43 @@ void main() {
       greaterThanOrEqualTo(AppInputMetrics.minHeight),
     );
   });
+
+  testWidgets('text inputs keep harmonized height with or without icons', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 260,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    key: Key('plain-input'),
+                    decoration: InputDecoration(labelText: 'Email'),
+                  ),
+                  AppGaps.x2,
+                  TextField(
+                    key: Key('icon-input'),
+                    decoration: InputDecoration(
+                      labelText: 'Recherche',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byKey(const Key('plain-input'))).height,
+      tester.getSize(find.byKey(const Key('icon-input'))).height,
+    );
+  });
 }

@@ -755,7 +755,10 @@ void main() {
       expect(find.text('Apparence'), findsWidgets);
       expect(find.text('Onboarding mis en pause'), findsNothing);
 
-      final resumeButton = find.widgetWithText(TextButton, 'Reprendre');
+      final resumeButton = find.descendant(
+        of: find.byKey(const Key('settings-onboarding-persistent-entry')),
+        matching: find.widgetWithText(TextButton, 'Reprendre'),
+      );
       await tester.scrollUntilVisible(
         resumeButton,
         500,
@@ -1436,6 +1439,117 @@ void main() {
           .toList(growable: false);
       expect(
         visibleTexts.indexOf('Onboarding permissions'),
+        greaterThan(visibleTexts.indexOf('Android Overlay')),
+      );
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    }
+  });
+
+  testWidgets('dismissed incomplete onboarding remains resumable in settings', (
+    tester,
+  ) async {
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _useLargeViewport(tester);
+    _installAndroidBridgeMocks();
+    var resumeCalls = 0;
+    final settingsStore = _MemorySettingsStore(
+      UserSettingsSnapshot.defaults().copyWith(
+        onboardingCompleted: false,
+        onboardingNoticeDismissedForever: true,
+      ),
+    );
+
+    try {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [settingsStoreProvider.overrideWithValue(settingsStore)],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            home: SettingsScreen(onResumeOnboarding: () => resumeCalls += 1),
+          ),
+        ),
+      );
+      await _pumpNavigationFrame(tester);
+
+      expect(find.text('Onboarding permissions'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('settings-onboarding-persistent-entry')),
+          matching: find.widgetWithText(TextButton, 'Reprendre'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.widgetWithText(TextButton, 'Plus tard'), findsNothing);
+
+      final visibleTexts = tester
+          .widgetList<Text>(find.byType(Text))
+          .map((widget) => widget.data ?? widget.textSpan?.toPlainText() ?? '')
+          .toList(growable: false);
+      expect(
+        visibleTexts.indexOf('Onboarding permissions'),
+        greaterThan(visibleTexts.indexOf('Android Overlay')),
+      );
+
+      await tester.tap(find.widgetWithText(TextButton, 'Reprendre'));
+      await tester.pump();
+
+      expect(resumeCalls, 1);
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    }
+  });
+
+  testWidgets('incomplete onboarding keeps persistent settings entry', (
+    tester,
+  ) async {
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _useLargeViewport(tester);
+    _installAndroidBridgeMocks();
+    final settingsStore = _MemorySettingsStore(
+      const UserSettingsSnapshot.defaults(),
+    );
+
+    try {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [settingsStoreProvider.overrideWithValue(settingsStore)],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            home: SettingsScreen(onResumeOnboarding: () {}),
+          ),
+        ),
+      );
+      await _pumpNavigationFrame(tester);
+
+      expect(find.text('Onboarding permissions'), findsNWidgets(2));
+      expect(find.widgetWithText(TextButton, 'Reprendre'), findsNWidgets(2));
+      expect(
+        find.byKey(const Key('settings-onboarding-top-reminder')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('settings-onboarding-persistent-entry')),
+        findsOneWidget,
+      );
+      expect(find.widgetWithText(TextButton, 'Plus tard'), findsOneWidget);
+
+      final visibleTexts = tester
+          .widgetList<Text>(find.byType(Text))
+          .map((widget) => widget.data ?? widget.textSpan?.toPlainText() ?? '')
+          .toList(growable: false);
+      expect(
+        visibleTexts.lastIndexOf('Onboarding permissions'),
         greaterThan(visibleTexts.indexOf('Android Overlay')),
       );
     } finally {

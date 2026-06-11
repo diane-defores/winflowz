@@ -125,6 +125,34 @@ Widget _testWidget(AuthSessionStore store) {
 }
 
 void main() {
+  testWidgets('auth fields keep harmonized tokenized geometry', (tester) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final store = _ThrowingAuthSessionStore();
+    await tester.pumpWidget(_testWidget(store));
+
+    final emailField = find.byKey(const ValueKey('auth-email-field'));
+    final passwordField = find.byKey(const ValueKey('auth-password-field'));
+
+    expect(
+      tester.getSize(emailField).height,
+      tester.getSize(passwordField).height,
+    );
+
+    await tester.enterText(emailField, 'email-invalide');
+    await tester.enterText(passwordField, '123');
+    await tester.tap(find.text('Se connecter'));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getSize(emailField).height,
+      tester.getSize(passwordField).height,
+    );
+  });
+
   testWidgets('auth fields expose password-manager autofill metadata', (
     tester,
   ) async {
@@ -191,10 +219,7 @@ void main() {
     await tester.tap(find.text('Créer un compte'));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Création de compte impossible'),
-      findsOneWidget,
-    );
+    expect(find.text('Création de compte impossible'), findsOneWidget);
     expect(
       find.text(
         'La configuration Firebase de cette version est invalide. Le détail technique peut être copié pour correction.',

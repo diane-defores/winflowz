@@ -1023,10 +1023,29 @@ class AppModalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 8,
+      elevation: AppElevation.overlay,
       shadowColor: AppColors.black.withValues(alpha: 0.16),
       clipBehavior: Clip.antiAlias,
       child: Padding(padding: padding, child: child),
+    );
+  }
+}
+
+class AppFieldRow extends StatelessWidget {
+  const AppFieldRow({super.key, required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var index = 0; index < children.length; index++) ...[
+          if (index > 0) AppGaps.horizontalX2,
+          Expanded(child: children[index]),
+        ],
+      ],
     );
   }
 }

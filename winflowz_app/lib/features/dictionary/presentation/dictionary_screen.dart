@@ -306,34 +306,19 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final useColumn = constraints.maxWidth < 560;
-                    final termField = TextField(
+                AppFieldRow(
+                  children: [
+                    TextField(
                       controller: _termController,
                       decoration: const InputDecoration(labelText: 'Terme'),
-                    );
-                    final replacementField = TextField(
+                    ),
+                    TextField(
                       controller: _replacementController,
                       decoration: const InputDecoration(
                         labelText: 'Remplacement',
                       ),
-                    );
-                    if (useColumn) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [termField, AppGaps.x2, replacementField],
-                      );
-                    }
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: termField),
-                        AppGaps.horizontalX2,
-                        Expanded(child: replacementField),
-                      ],
-                    );
-                  },
+                    ),
+                  ],
                 ),
                 AppGaps.x2,
                 SwitchListTile(

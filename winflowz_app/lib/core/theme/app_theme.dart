@@ -148,8 +148,8 @@ class AppInsets {
     vertical: AppSpacing.x1,
   );
   static const input = EdgeInsets.symmetric(
-    horizontal: AppSpacing.x2,
-    vertical: AppSpacing.x1 / 2,
+    horizontal: AppSpacing.x3,
+    vertical: AppSpacing.x2,
   );
   static const onboarding = EdgeInsets.fromLTRB(
     AppSpacing.x4,
@@ -222,6 +222,7 @@ class AppButtonMetrics {
 
 class AppInputMetrics {
   static const minHeight = 48.0;
+  static const iconMinSize = 48.0;
 }
 
 class AppNavigationMetrics {
@@ -422,7 +423,8 @@ class AppTheme {
           WinFlowzThemeTokens.themeLightSurfaceContainerLowest,
       surfaceContainerLow: WinFlowzThemeTokens.themeLightSurfaceContainerLow,
       surfaceContainer: WinFlowzThemeTokens.themeLightSurfaceContainer,
-      surfaceContainerHighest: WinFlowzThemeTokens.themeLightSurfaceContainerHighest,
+      surfaceContainerHighest:
+          WinFlowzThemeTokens.themeLightSurfaceContainerHighest,
       outline: WinFlowzThemeTokens.themeLightOutline,
       outlineVariant: WinFlowzThemeTokens.themeLightOutlineVariant,
     ),
@@ -446,10 +448,12 @@ class AppTheme {
       error: AppColors.dangerLight,
       surface: WinFlowzThemeTokens.themeDarkSurface,
       onSurface: AppColors.textOnDark,
-      surfaceContainerLowest: WinFlowzThemeTokens.themeDarkSurfaceContainerLowest,
+      surfaceContainerLowest:
+          WinFlowzThemeTokens.themeDarkSurfaceContainerLowest,
       surfaceContainerLow: WinFlowzThemeTokens.themeDarkSurfaceContainerLow,
       surfaceContainer: WinFlowzThemeTokens.themeDarkSurfaceContainer,
-      surfaceContainerHighest: WinFlowzThemeTokens.themeDarkSurfaceContainerHighest,
+      surfaceContainerHighest:
+          WinFlowzThemeTokens.themeDarkSurfaceContainerHighest,
       outline: WinFlowzThemeTokens.themeDarkOutline,
       outlineVariant: WinFlowzThemeTokens.themeDarkOutlineVariant,
     ),
@@ -502,6 +506,14 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         isDense: true,
         constraints: const BoxConstraints(minHeight: AppInputMetrics.minHeight),
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: AppInputMetrics.iconMinSize,
+          minHeight: AppInputMetrics.minHeight,
+        ),
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: AppInputMetrics.iconMinSize,
+          minHeight: AppInputMetrics.minHeight,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
           borderSide: BorderSide(color: colorScheme.outlineVariant, width: 1),
@@ -636,6 +648,14 @@ class AppTheme {
         inputDecorationTheme: InputDecorationTheme(
           isDense: true,
           constraints: const BoxConstraints(
+            minHeight: AppInputMetrics.minHeight,
+          ),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: AppInputMetrics.iconMinSize,
+            minHeight: AppInputMetrics.minHeight,
+          ),
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: AppInputMetrics.iconMinSize,
             minHeight: AppInputMetrics.minHeight,
           ),
           contentPadding: AppInsets.input,

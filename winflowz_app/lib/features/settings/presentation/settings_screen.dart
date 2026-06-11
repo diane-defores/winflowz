@@ -1634,19 +1634,39 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final onboardingSettings = _onboardingSettings;
     final onboardingNoticeDismissedForever =
         onboardingSettings?.onboardingNoticeDismissedForever == true;
-    final onboardingTile = widget.onResumeOnboarding == null
-        ? null
-        : (onboardingNoticeDismissedForever || _onboardingTileDismissed
-              ? null
-              : _OnboardingSettingsTile(
-                  onResume: widget.onResumeOnboarding!,
-                  readiness: onboardingReadiness,
-                  highlightResume: widget.highlightOnboardingResume,
-                  onDismiss: _dismissOnboardingTile,
-                ));
+    final onboardingTileDismissed =
+        onboardingNoticeDismissedForever || _onboardingTileDismissed;
+    _OnboardingSettingsTile? buildOnboardingTile({
+      required bool canDismiss,
+      required Key key,
+    }) {
+      final onResume = widget.onResumeOnboarding;
+      if (onResume == null) {
+        return null;
+      }
+      return _OnboardingSettingsTile(
+        key: key,
+        onResume: onResume,
+        readiness: onboardingReadiness,
+        highlightResume: widget.highlightOnboardingResume,
+        onDismiss: canDismiss ? _dismissOnboardingTile : null,
+      );
+    }
+
+    final topOnboardingTile =
+        !onboardingReadiness.onboardingCompleted && !onboardingTileDismissed
+        ? buildOnboardingTile(
+            canDismiss: true,
+            key: const Key('settings-onboarding-top-reminder'),
+          )
+        : null;
+    final bottomOnboardingTile = buildOnboardingTile(
+      canDismiss: false,
+      key: const Key('settings-onboarding-persistent-entry'),
+    );
     final notificationStack = _notificationStack([
       ..._compatibilityNotices(),
-      ?onboardingTile,
+      ?topOnboardingTile,
     ]);
     if (_loading || _onboardingLoading) {
       return _settingsList(
@@ -1793,6 +1813,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ],
           ),
         ),
+        ?bottomOnboardingTile,
       ],
     );
   }
@@ -1800,16 +1821,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
 class _OnboardingSettingsTile extends StatefulWidget {
   const _OnboardingSettingsTile({
+    super.key,
     required this.onResume,
     required this.readiness,
     required this.highlightResume,
-    required this.onDismiss,
+    this.onDismiss,
   });
 
   final VoidCallback onResume;
   final OnboardingReadiness readiness;
   final bool highlightResume;
-  final VoidCallback onDismiss;
+  final VoidCallback? onDismiss;
 
   @override
   State<_OnboardingSettingsTile> createState() =>
@@ -1890,10 +1912,12 @@ class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>
         onPressed: widget.onResume,
         child: Text(actionLabel),
       ),
-      secondaryAction: TextButton(
-        onPressed: widget.onDismiss,
-        child: const Text('Plus tard'),
-      ),
+      secondaryAction: widget.onDismiss == null
+          ? null
+          : TextButton(
+              onPressed: widget.onDismiss,
+              child: const Text('Plus tard'),
+            ),
     );
 
     return AnimatedBuilder(

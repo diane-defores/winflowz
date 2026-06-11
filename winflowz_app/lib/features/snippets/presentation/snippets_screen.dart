@@ -335,36 +335,21 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final useColumn = constraints.maxWidth < 560;
-                    final triggerField = TextField(
+                AppFieldRow(
+                  children: [
+                    TextField(
                       controller: _triggerController,
                       decoration: const InputDecoration(
                         labelText: 'Déclencheur',
                       ),
-                    );
-                    final labelField = TextField(
+                    ),
+                    TextField(
                       controller: _labelController,
                       decoration: const InputDecoration(
                         labelText: 'Libellé (optionnel)',
                       ),
-                    );
-                    if (useColumn) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [triggerField, AppGaps.x2, labelField],
-                      );
-                    }
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: triggerField),
-                        AppGaps.horizontalX2,
-                        Expanded(child: labelField),
-                      ],
-                    );
-                  },
+                    ),
+                  ],
                 ),
                 AppGaps.x2,
                 TextField(

@@ -290,15 +290,20 @@ class _CustomActionButtonsPanelState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                key: const Key('custom-button-title-field'),
-                controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Nom du bouton'),
-              ),
-              AppGaps.x2,
-              _ActionKindSelector(
-                selected: _selectedKind,
-                onSelected: _selectActionKind,
+              AppFieldRow(
+                children: [
+                  TextField(
+                    key: const Key('custom-button-title-field'),
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nom du bouton',
+                    ),
+                  ),
+                  _ActionKindSelector(
+                    selected: _selectedKind,
+                    onSelected: _selectActionKind,
+                  ),
+                ],
               ),
               AppGaps.x2,
               _ActionValueField(
@@ -479,6 +484,7 @@ class _ActionKindSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<CustomActionKind>(
+      key: const Key('custom-button-action-kind-field'),
       initialValue: selected,
       decoration: const InputDecoration(labelText: 'Action du bouton'),
       items: [

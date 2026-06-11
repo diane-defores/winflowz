@@ -31,6 +31,13 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 200));
 
+    expect(
+      tester.getTopLeft(find.byKey(const Key('custom-button-title-field'))).dy,
+      tester
+          .getTopLeft(find.byKey(const Key('custom-button-action-kind-field')))
+          .dy,
+    );
+
     await tester.enterText(
       find.byKey(const Key('custom-button-title-field')),
       'Fenêtre suivante',
