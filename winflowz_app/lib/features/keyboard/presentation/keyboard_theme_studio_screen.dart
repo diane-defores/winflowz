@@ -35,7 +35,7 @@ class _KeyboardThemeStudioScreenState
   String? _message;
   String? _expandedStudioSectionId;
 
-  bool get _dirty => _saved.toMap().toString() != _draft.toMap().toString();
+  bool get _dirty => _saved != _draft;
   KeyboardThemeValidationResult get _validation =>
       KeyboardThemeValidator.validate(_draft);
 
@@ -672,6 +672,10 @@ class _KeyboardThemeStudioScreenState
                           labelText: 'Effet d’appui',
                         ),
                         items: KeyboardThemePressEffect.values
+                            .where(
+                              (effect) =>
+                                  effect != KeyboardThemePressEffect.glow,
+                            )
                             .map(
                               (effect) => DropdownMenuItem(
                                 value: effect,
@@ -802,7 +806,8 @@ String _effectLabel(KeyboardThemePressEffect effect) {
     KeyboardThemePressEffect.pulse => 'Impulsion',
     KeyboardThemePressEffect.shake => 'Secousse',
     KeyboardThemePressEffect.ripple => 'Ondulation',
-    KeyboardThemePressEffect.glow => 'Lueur',
+    KeyboardThemePressEffect.garland => 'Guirlande',
+    KeyboardThemePressEffect.glow => 'Guirlande',
     KeyboardThemePressEffect.electricArc => 'Arc électrique',
     KeyboardThemePressEffect.specularSweep => 'Reflet balayé',
     KeyboardThemePressEffect.inkPress => 'Encre',
@@ -1735,6 +1740,7 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
       KeyboardThemePressEffect.edgeCompression => pressed ? 0.985 : 1,
       KeyboardThemePressEffect.none ||
       KeyboardThemePressEffect.ripple ||
+      KeyboardThemePressEffect.garland ||
       KeyboardThemePressEffect.glow ||
       KeyboardThemePressEffect.electricArc ||
       KeyboardThemePressEffect.specularSweep ||
@@ -2125,6 +2131,11 @@ Gradient? _previewKeyGradient(
   final active = _weightedThemeColor(Color(theme.activeKeyColor), theme);
   final surface = _weightedThemeColor(base, theme);
   return switch (theme.pressEffect) {
+    KeyboardThemePressEffect.garland => RadialGradient(
+      center: Alignment.topLeft,
+      radius: 1.25,
+      colors: [active.withValues(alpha: 0.34), surface],
+    ),
     KeyboardThemePressEffect.glow => RadialGradient(
       center: Alignment.topLeft,
       radius: 1.25,
@@ -2190,7 +2201,8 @@ List<BoxShadow>? _previewKeyShadows({
     boost: _keyboardSurfaceOpacityBoost,
   );
   if (pressed &&
-      (effect == KeyboardThemePressEffect.glow ||
+      (effect == KeyboardThemePressEffect.garland ||
+          effect == KeyboardThemePressEffect.glow ||
           effect == KeyboardThemePressEffect.electricArc) &&
       reliefDepth <= 0) {
     shadows.add(
@@ -2548,6 +2560,7 @@ class _PreviewPressEffectPainter extends CustomPainter {
       case KeyboardThemePressEffect.scale:
       case KeyboardThemePressEffect.pulse:
       case KeyboardThemePressEffect.shake:
+      case KeyboardThemePressEffect.garland:
       case KeyboardThemePressEffect.glow:
       case KeyboardThemePressEffect.electricArc:
       case KeyboardThemePressEffect.specularSweep:

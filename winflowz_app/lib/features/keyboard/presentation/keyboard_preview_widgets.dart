@@ -1387,7 +1387,7 @@ class KeyboardPreviewSnapshot {
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightCompact,
             keys: [
-              KeyboardPreviewKey(label: '😁', output: '😁'),
+              _modeKey('ABC', KeyboardPreviewMode.letters),
               KeyboardPreviewKey(label: '😍', output: '😍'),
               KeyboardPreviewKey(label: '😎', output: '😎'),
               KeyboardPreviewKey(label: '😭', output: '😭'),
@@ -1632,6 +1632,7 @@ class KeyboardPreviewSnapshot {
           KeyboardPreviewRow(
             height: AppKeyboardPreview.rowHeightCompact,
             keys: [
+              _modeKey('ABC', KeyboardPreviewMode.letters),
               KeyboardPreviewKey(
                 label: corners ? 'Gestures on' : 'Gestures off',
                 special: true,

@@ -11,7 +11,6 @@ internal object KeyboardEmojiCatalog {
     const val visibleColumnsPerRow: Int = 10
     const val expandedVisibleEmojiRows: Int = 8
     const val compactVisibleEmojiRows: Int = 5
-    const val recentFallbackCount: Int = expandedVisibleEmojiRows * visibleColumnsPerRow
 
     val Smileys: List<String> = listOf(
         "😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂",

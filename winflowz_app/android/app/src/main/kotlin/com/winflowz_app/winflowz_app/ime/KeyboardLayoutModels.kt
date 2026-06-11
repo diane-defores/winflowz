@@ -691,7 +691,6 @@ object KeyboardLayoutBuilder {
         val recents =
             (request.recentEmojis.filter { isEmojiCandidate(it) } + KeyboardEmojiCatalog.Smileys)
                 .distinct()
-                .take(KeyboardEmojiCatalog.recentFallbackCount)
         val selectedRaw =
             when (request.emojiCategory) {
                 KeyboardEmojiCategory.Recents -> recents
@@ -714,8 +713,14 @@ object KeyboardLayoutBuilder {
         val emojiRows =
             (0 until visibleRows).map { rowIndex ->
                 val rowValues = selected.filterIndexed { index, _ -> index % visibleRows == rowIndex }
+                val rowKeys = rowValues.map { textKey(label = it, output = it, weight = 1f) }
                 KeyboardRowSpec(
-                    keys = rowValues.map { textKey(label = it, output = it, weight = 1f) },
+                    keys =
+                        if (rowIndex == visibleRows - 1) {
+                            listOf(modeKey("ABC", KeyboardKeyAction.ModeLetters, false)) + rowKeys.drop(1)
+                        } else {
+                            rowKeys
+                        },
                     horizontalScrollable = rowValues.size > emojiChunkSize,
                     pagedHorizontalScrollable = rowValues.size > emojiChunkSize,
                     visiblePageKeyCount = emojiChunkSize.takeIf { rowValues.size > emojiChunkSize },
@@ -1134,6 +1139,7 @@ object KeyboardLayoutBuilder {
             KeyboardRowSpec(
                 keys =
                     listOf(
+                        modeKey("ABC", KeyboardKeyAction.ModeLetters, false),
                         KeyboardKeySpec(
                             id = "setting-corners",
                             label = if (request.cornerModeEnabled) "Gestures on" else "Gestures off",

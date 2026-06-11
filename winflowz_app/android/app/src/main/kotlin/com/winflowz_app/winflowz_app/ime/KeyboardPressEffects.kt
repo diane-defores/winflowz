@@ -27,6 +27,7 @@ object KeyboardPressEffectPolicy {
             "pulse",
             "shake",
             "ripple",
+            "garland",
             "glow",
             "electricArc",
             "specularSweep",
@@ -196,7 +197,9 @@ class KeyboardPressEffects(
             "pulse" -> drawPulse(canvas, effect, progress, keyRadius, accentColor)
             "shake" -> drawShake(canvas, effect, progress, keyRadius, accentColor)
             "ripple" -> drawRipple(canvas, effect, progress, accentColor)
-            "glow" -> drawGlow(canvas, effect, progress, keyRadius, accentColor)
+            "garland",
+            "glow",
+            -> drawGlow(canvas, effect, progress, keyRadius, accentColor)
             "confettiLite",
             "waterSplash",
             "emberBurst",

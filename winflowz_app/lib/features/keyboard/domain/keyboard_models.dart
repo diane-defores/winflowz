@@ -31,6 +31,7 @@ enum KeyboardThemePressEffect {
   pulse,
   shake,
   ripple,
+  garland,
   glow,
   electricArc,
   specularSweep,
@@ -45,6 +46,9 @@ enum KeyboardThemePressEffect {
   spiderTrail;
 
   static KeyboardThemePressEffect fromName(String value) {
+    if (value == 'glow') {
+      return KeyboardThemePressEffect.garland;
+    }
     return KeyboardThemePressEffect.values.firstWhere(
       (effect) => effect.name == value,
       orElse: () => KeyboardThemePressEffect.none,
@@ -186,7 +190,7 @@ class KeyboardThemePresetCatalog {
         borderColor: 0xFF00A76E,
         shadowColor: 0x8800F5A0,
         shadowBlur: 7,
-        pressEffect: KeyboardThemePressEffect.glow,
+        pressEffect: KeyboardThemePressEffect.garland,
       ),
       glassMint => base.copyWith(
         backgroundStartColor: 0xFFDFFAF0,
@@ -934,6 +938,82 @@ class KeyboardThemeConfig {
       effectEasing: effectEasing ?? this.effectEasing,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is KeyboardThemeConfig &&
+        other.version == version &&
+        other.presetId == presetId &&
+        other.backgroundStartColor == backgroundStartColor &&
+        other.backgroundEndColor == backgroundEndColor &&
+        other.useGradient == useGradient &&
+        other.gradientStyle == gradientStyle &&
+        other.useImage == useImage &&
+        other.backgroundImagePath == backgroundImagePath &&
+        other.keyboardOpacity == keyboardOpacity &&
+        other.keyColor == keyColor &&
+        other.specialKeyColor == specialKeyColor &&
+        other.activeKeyColor == activeKeyColor &&
+        other.pressedKeyColor == pressedKeyColor &&
+        other.pressHighlightDurationMs == pressHighlightDurationMs &&
+        other.textColor == textColor &&
+        other.cornerTextColor == cornerTextColor &&
+        other.cornerTextOpacity == cornerTextOpacity &&
+        other.statusTextColor == statusTextColor &&
+        other.borderColor == borderColor &&
+        other.borderWidth == borderWidth &&
+        other.keyReliefEnabled == keyReliefEnabled &&
+        other.keyReliefDepth == keyReliefDepth &&
+        other.keyRadius == keyRadius &&
+        other.keyHorizontalGap == keyHorizontalGap &&
+        other.rowVerticalGap == rowVerticalGap &&
+        other.keyWidthScale == keyWidthScale &&
+        other.shadowColor == shadowColor &&
+        other.shadowBlur == shadowBlur &&
+        other.shadowOffsetY == shadowOffsetY &&
+        other.pressEffect == pressEffect &&
+        other.effectIntensity == effectIntensity &&
+        other.effectDurationMs == effectDurationMs &&
+        other.effectEasing == effectEasing;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    version,
+    presetId,
+    backgroundStartColor,
+    backgroundEndColor,
+    useGradient,
+    gradientStyle,
+    useImage,
+    backgroundImagePath,
+    keyboardOpacity,
+    keyColor,
+    specialKeyColor,
+    activeKeyColor,
+    pressedKeyColor,
+    pressHighlightDurationMs,
+    textColor,
+    cornerTextColor,
+    cornerTextOpacity,
+    statusTextColor,
+    borderColor,
+    borderWidth,
+    keyReliefEnabled,
+    keyReliefDepth,
+    keyRadius,
+    keyHorizontalGap,
+    rowVerticalGap,
+    keyWidthScale,
+    shadowColor,
+    shadowBlur,
+    shadowOffsetY,
+    pressEffect,
+    effectIntensity,
+    effectDurationMs,
+    effectEasing,
+  ]);
 }
 
 enum KeyboardCornerSlot {

@@ -745,9 +745,11 @@ class KeyboardLayoutBuilderTest {
         assertEquals(10, categoryLabels.size)
         assertEquals(1 + KeyboardEmojiCatalog.expandedVisibleEmojiRows, snapshot.panelRowCount)
         assertTrue(emojiRows.all { it.horizontalScrollable && it.pagedHorizontalScrollable && it.visiblePageKeyCount == 10 })
+        assertEquals("ABC", emojiRows.last().keys.first().label)
+        assertEquals(KeyboardKeyAction.ModeLetters, emojiRows.last().keys.first().action)
         assertEquals("🔥", emojiLabels.first())
         assertTrue(emojiLabels.contains("😀"))
-        assertEquals(KeyboardEmojiCatalog.recentFallbackCount, emojiLabels.size)
+        assertTrue(emojiLabels.size > KeyboardEmojiCatalog.expandedVisibleEmojiRows * KeyboardEmojiCatalog.visibleColumnsPerRow)
         assertTrue(emojiLabels.all { it.isNotBlank() })
         assertFalse(snapshot.rows.drop(1 + snapshot.panelRowCount).any { row ->
             row.keys.any { it.label == "q" }
@@ -1034,6 +1036,8 @@ class KeyboardLayoutBuilderTest {
         assertTrue(actions.contains(KeyboardKeyAction.ToggleDoubleSpacePeriod))
         assertTrue(actions.contains(KeyboardKeyAction.TogglePunctuationAutoSpacing))
         assertTrue(actions.contains(KeyboardKeyAction.ToggleDebugTouchOverlay))
+        assertEquals("ABC", panelRows.last().keys.first().label)
+        assertEquals(KeyboardKeyAction.ModeLetters, panelRows.last().keys.first().action)
         assertTrue(labels.containsAll(listOf("Keyboard", "App", "Theme", "QWERTY", "Vibe med", "Sound off", "Suggest on", "FR on", "EN on", "H-", "Compact", "Auto close on", "H+", "H 05%", "V 5%", "Special G off", "Gestures on", "2sp on", "Punc on", "Debug off")))
         assertTrue(snapshot.rows.drop(1 + snapshot.panelRowCount).none { row ->
             row.keys.any { it.action == KeyboardKeyAction.Text || it.action == KeyboardKeyAction.KeyValue }

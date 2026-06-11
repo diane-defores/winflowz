@@ -1049,6 +1049,18 @@ class WinFlowzKeyboardView(
         } ?: drawRecoveredFallback(canvas)
     }
 
+    override fun onSizeChanged(
+        w: Int,
+        h: Int,
+        oldw: Int,
+        oldh: Int,
+    ) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if ((w != oldw || h != oldh) && themeImagePath != null) {
+            themeBitmap = decodeThemeBitmap(themeImagePath, w, h)
+        }
+    }
+
     private fun drawKeyboard(canvas: Canvas) {
         keyFrames.clear()
         activePointerPressedKeyIds = pointerTracker.activeKeyIds()
@@ -1214,7 +1226,7 @@ class WinFlowzKeyboardView(
                     highlightProgress = null,
                 )
             }
-            "scale", "glow", "pulse" -> {
+            "scale", "garland", "glow", "pulse" -> {
                 drawSwipeRibbonPath(
                     canvas,
                     startX,
@@ -1226,7 +1238,7 @@ class WinFlowzKeyboardView(
                     accentColor,
                     intensity,
                     phase,
-                    waveScale = if (effectSpec.effect == "glow") 1f else 0.62f,
+                    waveScale = if (effectSpec.effect == "garland" || effectSpec.effect == "glow") 1f else 0.62f,
                     highlightProgress = if (effectSpec.effect == "pulse") progress else null,
                 )
                 drawSwipeEndpointBubbles(
@@ -1447,7 +1459,7 @@ class WinFlowzKeyboardView(
                     y + normalY * offset * dp(1.8f) * intensity * sin((phase + t * 12f).toDouble()).toFloat(),
                 )
             } else {
-                val wave = if (effectSpec.effect == "glow") {
+                val wave = if (effectSpec.effect == "garland" || effectSpec.effect == "glow") {
                     sin((phase + t * 8f).toDouble()).toFloat() * dp(1.2f) * intensity * eased
                 } else {
                     0f
@@ -1463,7 +1475,7 @@ class WinFlowzKeyboardView(
                 dp(2.6f * longPressSwipeStrokeThicknessScale) * intensity
             } else if (effectSpec.effect == "pulse") {
                 dp(2.2f * longPressSwipeStrokeThicknessScale) * intensity
-            } else if (effectSpec.effect == "glow") {
+            } else if (effectSpec.effect == "garland" || effectSpec.effect == "glow") {
                 dp(2.8f * longPressSwipeStrokeThicknessScale) * intensity
             } else if (wobble) {
                 dp(1.9f * longPressSwipeStrokeThicknessScale) * intensity
@@ -2961,12 +2973,62 @@ class WinFlowzKeyboardView(
         }
     }
 
-    private fun decodeThemeBitmap(path: String?): Bitmap? {
+    private fun decodeThemeBitmap(
+        path: String?,
+        targetWidth: Int = width,
+        targetHeight: Int = height,
+    ): Bitmap? {
         val source = path?.trim().orEmpty()
         if (source.isEmpty()) {
             return null
         }
-        return runCatching { BitmapFactory.decodeFile(source) }.getOrNull()
+        return runCatching {
+            val boundsOptions =
+                BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+            BitmapFactory.decodeFile(source, boundsOptions)
+            if (boundsOptions.outWidth <= 0 || boundsOptions.outHeight <= 0) {
+                return@runCatching null
+            }
+
+            val safeTargetWidth = targetWidth.coerceAtLeast(1080)
+            val safeTargetHeight = targetHeight.coerceAtLeast(480)
+            val sampleSize =
+                calculateInSampleSize(
+                    boundsOptions.outWidth,
+                    boundsOptions.outHeight,
+                    safeTargetWidth,
+                    safeTargetHeight,
+                )
+            BitmapFactory.decodeFile(
+                source,
+                BitmapFactory.Options().apply {
+                    inSampleSize = sampleSize
+                    inPreferredConfig = Bitmap.Config.ARGB_8888
+                },
+            )
+        }.getOrNull()
+    }
+
+    private fun calculateInSampleSize(
+        sourceWidth: Int,
+        sourceHeight: Int,
+        targetWidth: Int,
+        targetHeight: Int,
+    ): Int {
+        var sampleSize = 1
+        if (sourceHeight <= targetHeight && sourceWidth <= targetWidth) {
+            return sampleSize
+        }
+        var halfHeight = sourceHeight / 2
+        var halfWidth = sourceWidth / 2
+        while (halfHeight / sampleSize >= targetHeight &&
+            halfWidth / sampleSize >= targetWidth
+        ) {
+            sampleSize *= 2
+        }
+        return sampleSize.coerceAtLeast(1)
     }
 
     private fun drawStatus(
@@ -3682,6 +3744,7 @@ class WinFlowzKeyboardView(
             "scale",
             "pulse",
             "shake",
+            "garland",
             "glow",
             "electricArc",
             "specularSweep",
@@ -3744,6 +3807,7 @@ class WinFlowzKeyboardView(
                 drawRect.offset(0f, dp(1.2f) * intensity * settle)
                 if (progress < 1f) materialPressEffectAnimating = true
             }
+            "garland",
             "glow",
             "electricArc",
             "specularSweep",
@@ -3775,11 +3839,11 @@ class WinFlowzKeyboardView(
         effect: String,
         progress: Float,
     ) {
-        if (effect != "glow" && effect != "pulse" && effect != "electricArc") return
+        if (effect != "garland" && effect != "glow" && effect != "pulse" && effect != "electricArc") return
         val intensity = themeConfig.effectIntensity.coerceIn(0.25f, 1f)
         val settle = easeOutPress(progress)
         val strength =
-            if (effect == "glow") {
+            if (effect == "garland" || effect == "glow") {
                 0.08f + 0.10f * settle * intensity
             } else if (effect == "electricArc") {
                 0.06f + 0.08f * (1f - settle) * intensity
@@ -3805,7 +3869,7 @@ class WinFlowzKeyboardView(
         val settle = easeOutPress(progress)
         keyEffectFillPaint.shader = null
         keyEffectStrokePaint.pathEffect = null
-        if (effect == "glow") {
+        if (effect == "garland" || effect == "glow") {
             keyEffectFillPaint.color = colorWithOpacity(adjustColor(geometry.baseColor, 1.16f), 0.10f + 0.14f * settle * intensity)
             canvas.drawRoundRect(geometry.surfaceRect, geometry.radius, geometry.radius, keyEffectFillPaint)
             drawMaterialFaceTint(canvas, geometry, adjustColor(geometry.baseColor, 1.08f), 0.08f + 0.12f * settle * intensity)
@@ -3840,7 +3904,8 @@ class WinFlowzKeyboardView(
             drawElectricArc(canvas, geometry, progress, intensity)
         }
         if (
-            effect == "glow" ||
+            effect == "garland" ||
+                effect == "glow" ||
                 effect == "pulse" ||
                 effect == "scale" ||
                 effect == "electricArc" ||
@@ -5232,6 +5297,7 @@ class WinFlowzKeyboardView(
             spec.effect == "scale" ||
                 spec.effect == "pulse" ||
                 spec.effect == "shake" ||
+                spec.effect == "garland" ||
                 spec.effect == "glow" ||
                 spec.effect == "electricArc" ||
                 spec.effect == "specularSweep" ||

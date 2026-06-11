@@ -147,6 +147,13 @@ void main() {
     expect(parsed.effectEasing, KeyboardThemeEffectEasing.spring);
   });
 
+  test('maps legacy glow effect to garland', () {
+    final parsed = KeyboardThemeConfig.fromMap({'pressEffect': 'glow'});
+
+    expect(parsed.pressEffect, KeyboardThemePressEffect.garland);
+    expect(parsed.toMap()['pressEffect'], KeyboardThemePressEffect.garland.name);
+  });
+
   test('round-trips expressive press effects', () {
     for (final effect in [
       KeyboardThemePressEffect.waterSplash,

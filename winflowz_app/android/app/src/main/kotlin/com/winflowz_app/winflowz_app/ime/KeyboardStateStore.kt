@@ -424,6 +424,7 @@ class KeyboardStateStore(private val context: Context) {
             "pulse",
             "shake",
             "glow",
+            "garland",
             "electricArc",
             "specularSweep",
             "inkPress",

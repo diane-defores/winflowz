@@ -97,7 +97,7 @@ object KeyboardThemePresets {
                     borderColor = Color.parseColor("#00A76E"),
                     shadowColor = 0x8800F5A0.toInt(),
                     shadowBlur = 7f,
-                    pressEffect = "glow",
+                    pressEffect = "garland",
                 )
             GLASS_MINT ->
                 base.copy(
@@ -433,7 +433,7 @@ data class KeyboardThemeConfig(
             pressHighlightDurationMs = pressHighlightDurationMs.coerceIn(0, 1200),
             cornerTextOpacity = cornerTextOpacity.coerceIn(0f, 0.85f),
             effectDurationMs = effectDurationMs.coerceIn(80, 600),
-            pressEffect = if (pressEffect in allowedEffects) pressEffect else "none",
+            pressEffect = normalizedPressEffect(pressEffect),
             effectEasing = if (effectEasing in allowedEasings) effectEasing else "easeOut",
             useImage = useImage && normalizedPath != null,
             backgroundImagePath = normalizedPath,
@@ -449,6 +449,7 @@ data class KeyboardThemeConfig(
                 "pulse",
                 "shake",
                 "ripple",
+                "garland",
                 "glow",
                 "electricArc",
                 "specularSweep",
@@ -462,6 +463,14 @@ data class KeyboardThemeConfig(
                 "dragonTrail",
                 "spiderTrail",
             )
+        private fun normalizedPressEffect(effect: String): String {
+            val normalized =
+                when (effect) {
+                    "glow" -> "garland"
+                    else -> effect
+                }
+            return if (normalized in allowedEffects) normalized else "none"
+        }
         private val allowedGradientStyles = setOf("linear", "radial")
         private val allowedEasings = setOf("easeOut", "linear", "spring")
 
