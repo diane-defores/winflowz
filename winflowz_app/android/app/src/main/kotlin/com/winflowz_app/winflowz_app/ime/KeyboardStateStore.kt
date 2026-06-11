@@ -377,6 +377,27 @@ class KeyboardStateStore(private val context: Context) {
             .apply()
     }
 
+    private fun pressEffectRenderingMode(theme: KeyboardThemeConfig): String {
+        return when (theme.pressEffect) {
+            "none" -> "none"
+            "ripple",
+            "confettiLite",
+            "fireworksLite",
+            -> "material_surface_with_anchored_emission"
+            "scale",
+            "pulse",
+            "shake",
+            "glow",
+            "electricArc",
+            "specularSweep",
+            "inkPress",
+            "keycapTilt",
+            "edgeCompression",
+            -> "material_surface"
+            else -> "fallback_none"
+        }
+    }
+
     fun buildStatusMap(): Map<String, Any> {
         val theme = themeConfig()
         val rawThemeConfig = preferences.getString(KEY_THEME_CONFIG, null)
@@ -412,7 +433,9 @@ class KeyboardStateStore(private val context: Context) {
             "themeMode" to themeMode,
             "themePresetId" to theme.presetId,
             "themePressEffect" to theme.pressEffect,
+            "themePressEffectRenderingMode" to pressEffectRenderingMode(theme),
             "themeKeyReliefEnabled" to theme.keyReliefEnabled,
+            "themeKeyReliefDepth" to theme.keyReliefDepth,
             "themeBackgroundSource" to backgroundSource,
             "themeConfigSize" to themeConfigSize,
             "themeFallbackStatus" to fallbackStatus,

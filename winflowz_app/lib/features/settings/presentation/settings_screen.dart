@@ -1681,7 +1681,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             syncStateLabel: _appearanceSyncLabel(authAsync),
             syncStateDetail: _appearanceSyncDetail(authAsync),
             syncActionStatus: _appearanceSyncStatus,
-            onOpenKeyboardThemeStudio: _openKeyboardThemeStudio,
             onSyncOrRefresh: () {
               _retryAppearanceFromStatus();
             },

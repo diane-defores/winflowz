@@ -417,7 +417,7 @@ class _KeyboardThemeStudioScreenState
                           ),
                         ),
                       _SliderField(
-                        label: 'Opacité',
+                        label: 'Opacité des touches',
                         value: _draft.keyboardOpacity,
                         min: 0.25,
                         max: 1,
@@ -506,7 +506,7 @@ class _KeyboardThemeStudioScreenState
                         ),
                       ),
                       _SliderField(
-                        label: 'Opacité',
+                        label: 'Opacité du texte d’angle',
                         value: _draft.cornerTextOpacity,
                         min: 0,
                         max: 0.85,
@@ -1758,6 +1758,10 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
         1.5 * theme.effectIntensity.clamp(0.35, 1),
       _ => 0.0,
     };
+    final animatedTiltAngle =
+        pressed && theme.pressEffect == KeyboardThemePressEffect.keycapTilt
+        ? -0.018 * theme.effectIntensity.clamp(0.35, 1)
+        : 0.0;
     final reliefDepth = theme.keyReliefEnabled
         ? theme.keyReliefDepth.clamp(0.0, 6.0)
         : 0.0;
@@ -1783,50 +1787,43 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
         curve: Curves.easeOut,
         height: keyHeight,
         transform: Matrix4.translationValues(animatedOffsetX, 0, 0),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            if (reliefDepth > 0)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: CustomPaint(
-                    painter: _PreviewKeyReliefPainter(
-                      baseColor: Color(bg),
-                      theme: theme,
-                      radius: theme.keyRadius,
-                      pressed: pressed,
-                      reliefDepth: reliefDepth,
+        child: AnimatedScale(
+          scale: animatedScale,
+          duration: Duration(
+            milliseconds: (theme.effectDurationMs * 0.4).round().clamp(60, 200),
+          ),
+          curve: Curves.easeOut,
+          child: Transform.rotate(
+            angle: animatedTiltAngle,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                if (reliefDepth > 0)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _PreviewKeyReliefPainter(
+                          baseColor: Color(bg),
+                          theme: theme,
+                          radius: theme.keyRadius,
+                          pressed: pressed,
+                          reliefDepth: reliefDepth,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            AnimatedPositioned(
-              duration: Duration(
-                milliseconds: (theme.effectDurationMs * 0.45).round().clamp(
-                  60,
-                  220,
-                ),
-              ),
-              curve: Curves.easeOut,
-              left: reliefSideDepth,
-              top: reliefTravel,
-              right: reliefSideDepth,
-              height: reliefSurfaceHeight,
-              child: Transform.rotate(
-                angle:
-                    pressed &&
-                        theme.pressEffect == KeyboardThemePressEffect.keycapTilt
-                    ? -0.018 * theme.effectIntensity.clamp(0.35, 1)
-                    : 0,
-                child: AnimatedScale(
-                  scale: animatedScale,
+                AnimatedPositioned(
                   duration: Duration(
-                    milliseconds: (theme.effectDurationMs * 0.4).round().clamp(
+                    milliseconds: (theme.effectDurationMs * 0.45).round().clamp(
                       60,
-                      200,
+                      220,
                     ),
                   ),
                   curve: Curves.easeOut,
+                  left: reliefSideDepth,
+                  top: reliefTravel,
+                  right: reliefSideDepth,
+                  height: reliefSurfaceHeight,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -1905,9 +1902,9 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -2198,20 +2195,21 @@ List<BoxShadow>? _previewKeyShadows({
   );
   if (pressed &&
       (effect == KeyboardThemePressEffect.glow ||
-          effect == KeyboardThemePressEffect.electricArc)) {
+          effect == KeyboardThemePressEffect.electricArc) &&
+      reliefDepth <= 0) {
     shadows.add(
       BoxShadow(
         color: Color(theme.activeKeyColor).withValues(
           alpha:
-              (effect == KeyboardThemePressEffect.electricArc ? 0.30 : 0.42) *
+              (effect == KeyboardThemePressEffect.electricArc ? 0.16 : 0.22) *
               opacity,
         ),
         blurRadius:
-            (effect == KeyboardThemePressEffect.electricArc ? 7 : 12) +
-            theme.effectIntensity * 16,
+            (effect == KeyboardThemePressEffect.electricArc ? 4 : 6) +
+            theme.effectIntensity * 8,
         spreadRadius:
-            (effect == KeyboardThemePressEffect.electricArc ? 0.5 : 1.5) +
-            theme.effectIntensity * 3,
+            (effect == KeyboardThemePressEffect.electricArc ? 0.0 : 0.5) +
+            theme.effectIntensity * 1.2,
       ),
     );
   } else if (pressed && effect == KeyboardThemePressEffect.pulse) {
@@ -2469,17 +2467,22 @@ class _PreviewPressEffectPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final accent = Color(theme.activeKeyColor);
-    final center = Offset(size.width / 2, size.height / 2);
+    final bounds = Offset.zero & size;
+    final anchor = Offset(size.width * 0.76, size.height * 0.24);
     final paint = Paint()..isAntiAlias = true;
+    canvas.save();
+    canvas.clipRect(bounds);
     switch (theme.pressEffect) {
       case KeyboardThemePressEffect.ripple:
         paint
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 3
-          ..color = accent.withValues(alpha: 0.75);
-        canvas.drawCircle(
-          center,
-          math.max(size.width, size.height) * 0.42,
+          ..strokeWidth = 2.2
+          ..color = accent.withValues(alpha: 0.58);
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            bounds.deflate(1.4),
+            Radius.circular(math.min(size.width, size.height) * 0.28),
+          ),
           paint,
         );
       case KeyboardThemePressEffect.confettiLite:
@@ -2501,7 +2504,7 @@ class _PreviewPressEffectPainter extends CustomPainter {
             ..style = PaintingStyle.fill
             ..color = colors[i % colors.length];
           canvas.drawCircle(
-            center +
+            anchor +
                 Offset(math.cos(angle) * distance, math.sin(angle) * distance),
             2.8,
             paint,
@@ -2519,6 +2522,7 @@ class _PreviewPressEffectPainter extends CustomPainter {
       case KeyboardThemePressEffect.edgeCompression:
         break;
     }
+    canvas.restore();
   }
 
   @override

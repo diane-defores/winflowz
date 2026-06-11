@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,12 +49,54 @@ Widget _routerWidget(
   );
 }
 
+Widget _streamRouterWidget(
+  Stream<AuthSessionSnapshot> stream,
+  void Function(GoRouter) bind,
+) {
+  return ProviderScope(
+    overrides: [authSessionProvider.overrideWith((ref) => stream)],
+    child: Consumer(
+      builder: (context, ref, _) {
+        final router = ref.watch(appRouterProvider);
+        bind(router);
+        return MaterialApp.router(routerConfig: router);
+      },
+    ),
+  );
+}
+
 Future<void> _pumpRouter(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 100));
 }
 
 void main() {
+  testWidgets('settings route is preserved while auth state is loading', (
+    tester,
+  ) async {
+    final controller = StreamController<AuthSessionSnapshot>();
+    late GoRouter router;
+
+    await tester.pumpWidget(
+      _streamRouterWidget(controller.stream, (value) => router = value),
+    );
+    await _pumpRouter(tester);
+
+    router.go('/settings');
+    await _pumpRouter(tester);
+
+    expect(router.routeInformationProvider.value.uri.path, '/settings');
+    expect(find.text('Vérification de la session en cours.'), findsOneWidget);
+
+    controller.add(const AuthSessionSnapshot.localFallback());
+    await _pumpRouter(tester);
+
+    expect(router.routeInformationProvider.value.uri.path, '/settings');
+    expect(find.text('Réglages'), findsAtLeastNWidgets(1));
+
+    await controller.close();
+  });
+
   testWidgets('signed-out direct product routes redirect to auth gate', (
     tester,
   ) async {

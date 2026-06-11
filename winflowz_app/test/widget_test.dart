@@ -313,6 +313,16 @@ String _simulatedStatusText(WidgetTester tester) {
   return status.data ?? '';
 }
 
+Finder _selectableTextContaining(String pattern) {
+  return find.byWidgetPredicate((widget) {
+    if (widget is! SelectableText) {
+      return false;
+    }
+    final text = widget.data ?? widget.textSpan?.toPlainText() ?? '';
+    return text.contains(pattern);
+  });
+}
+
 Future<void> _pumpNavigationFrame(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 300));
@@ -872,7 +882,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(cloudAuthStore.emailPasswordCalls, 1);
-      expect(find.text('Compte & cloud'), findsWidgets);
+      expect(find.text('Compte & cloud'), findsOneWidget);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
@@ -1052,12 +1062,197 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('Compte & cloud'), findsWidgets);
+      expect(find.text('Compte & cloud'), findsOneWidget);
       expect(find.byType(SettingsScreen), findsOneWidget);
       expect(
         find.textContaining('Clavier Android indisponible sur'),
         findsOneWidget,
       );
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    }
+  });
+
+  testWidgets('settings hides keyboard raw diagnostics until expanded', (
+    tester,
+  ) async {
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _useLargeViewport(tester);
+    _installAndroidBridgeMocks(keyboardEnabled: true, keyboardActive: true);
+
+    try {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            remoteAuthConfiguredProvider.overrideWithValue(true),
+            authSessionProvider.overrideWith(
+              (ref) => Stream.value(const AuthSessionSnapshot.localFallback()),
+            ),
+            settingsStoreProvider.overrideWithValue(
+              _MemorySettingsStore(const UserSettingsSnapshot.defaults()),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            home: const SettingsScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final keyboardSection = find.text('Clavier WinFlowz').first;
+      await tester.scrollUntilVisible(
+        keyboardSection,
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(keyboardSection, warnIfMissed: false);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(find.text('Clavier WinFlowz'), findsOneWidget);
+      expect(find.text('État du clavier'), findsOneWidget);
+      expect(find.textContaining('enabled='), findsNothing);
+      expect(find.textContaining('active='), findsNothing);
+      expect(find.textContaining('recoveries='), findsNothing);
+      expect(find.textContaining('sentry='), findsNothing);
+      expect(find.text('Diagnostic tactile'), findsNothing);
+
+      await tester.tap(find.text('Diagnostics avancés').first);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(_selectableTextContaining('enabled='), findsOneWidget);
+      expect(_selectableTextContaining('recoveries='), findsOneWidget);
+      expect(find.text('Diagnostic tactile'), findsOneWidget);
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    }
+  });
+
+  testWidgets('settings keeps voice debug actions under support disclosure', (
+    tester,
+  ) async {
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _useLargeViewport(tester);
+    _installAndroidBridgeMocks(keyboardEnabled: true, keyboardActive: true);
+
+    try {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            remoteAuthConfiguredProvider.overrideWithValue(true),
+            authSessionProvider.overrideWith(
+              (ref) => Stream.value(const AuthSessionSnapshot.localFallback()),
+            ),
+            settingsStoreProvider.overrideWithValue(
+              _MemorySettingsStore(const UserSettingsSnapshot.defaults()),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            home: const SettingsScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final voiceSection = find.text('Reconnaissance vocale locale').first;
+      await tester.scrollUntilVisible(
+        voiceSection,
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(voiceSection, warnIfMissed: false);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(find.text('État vocal'), findsOneWidget);
+      expect(find.textContaining('runtime='), findsNothing);
+      expect(find.text('Marquer mise à jour'), findsNothing);
+      expect(find.text('Marquer corrompu'), findsNothing);
+      expect(find.text('Simuler mise à jour'), findsNothing);
+      expect(find.text('Simuler corruption'), findsNothing);
+
+      await tester.tap(find.text('Support avancé').first);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(find.text('Simuler mise à jour'), findsWidgets);
+      expect(find.text('Simuler corruption'), findsWidgets);
+      expect(_selectableTextContaining('runtime='), findsOneWidget);
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatform;
+      _clearAndroidBridgeMocks();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    }
+  });
+
+  testWidgets('settings hides overlay raw service fields until diagnostics', (
+    tester,
+  ) async {
+    final previousPlatform = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    _useLargeViewport(tester);
+    _installAndroidBridgeMocks(
+      overlayPermissionGranted: true,
+      overlayEnabled: true,
+      accessibilityPermissionGranted: true,
+    );
+
+    try {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            remoteAuthConfiguredProvider.overrideWithValue(true),
+            authSessionProvider.overrideWith(
+              (ref) => Stream.value(const AuthSessionSnapshot.localFallback()),
+            ),
+            settingsStoreProvider.overrideWithValue(
+              _MemorySettingsStore(const UserSettingsSnapshot.defaults()),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            home: const SettingsScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final overlaySection = find.text('Overlay Android').first;
+      await tester.scrollUntilVisible(
+        overlaySection,
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(overlaySection, warnIfMissed: false);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(find.text('État de la bulle'), findsOneWidget);
+      expect(find.text('Bulle active, service en cours.'), findsOneWidget);
+      expect(find.textContaining('enabled='), findsNothing);
+      expect(find.textContaining('service='), findsNothing);
+
+      await tester.tap(find.text('Diagnostics avancés').first);
+      await tester.pumpAndSettle(const Duration(milliseconds: 300));
+
+      expect(_selectableTextContaining('enabled='), findsOneWidget);
+      expect(_selectableTextContaining('service='), findsOneWidget);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;
       _clearAndroidBridgeMocks();
@@ -1410,7 +1605,7 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.settings_outlined).last);
       await _pumpNavigationFrame(tester);
-      expect(find.text('Studio de thème clavier'), findsOneWidget);
+      expect(find.byType(SettingsScreen), findsOneWidget);
 
       final backendSection = find.text('Maintenance et diagnostics').first;
       await tester.scrollUntilVisible(
@@ -1421,7 +1616,7 @@ void main() {
       await tester.tap(backendSection, warnIfMissed: false);
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
       await tester.scrollUntilVisible(
-        find.text('Journaux et diagnostic'),
+        find.text('Journaux de support'),
         500,
         scrollable: find.byType(Scrollable).first,
       );
@@ -1430,7 +1625,7 @@ void main() {
         find.byKey(const Key('backend-diagnostic-log-text')),
         findsOneWidget,
       );
-      expect(find.text('Journaux et diagnostic'), findsOneWidget);
+      expect(find.text('Journaux de support'), findsOneWidget);
       expect(tester.takeException(), isNull);
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatform;

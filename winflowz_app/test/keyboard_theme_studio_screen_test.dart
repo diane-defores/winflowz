@@ -224,7 +224,7 @@ void main() {
 
     await openStudioSection(tester, 'Touches');
 
-    expect(find.text('Opacité'), findsOneWidget);
+    expect(find.text('Opacité du texte d’angle'), findsOneWidget);
     expect(find.text('85%'), findsOneWidget);
   });
 
@@ -258,7 +258,7 @@ void main() {
     await openStudioSection(tester, 'Fond');
 
     expect(find.text('Image de fond'), findsOneWidget);
-    expect(find.text('Opacité'), findsOneWidget);
+    expect(find.text('Opacité des touches'), findsOneWidget);
     expect(find.text('100%'), findsOneWidget);
   });
 

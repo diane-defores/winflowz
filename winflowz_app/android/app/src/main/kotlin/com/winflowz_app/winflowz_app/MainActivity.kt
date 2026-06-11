@@ -40,6 +40,16 @@ class MainActivity : FlutterActivity() {
     private val keyOpenRoute = "openRoute"
     private val requestPickThemeImage = 4607
     private var pendingKeyboardImageResult: MethodChannel.Result? = null
+    private var consumedInitialOpenRoute: String? = null
+
+    override fun getInitialRoute(): String? {
+        val route = openRouteFromIntent(intent)
+        if (route.isNotEmpty()) {
+            consumedInitialOpenRoute = route
+            return route
+        }
+        return super.getInitialRoute()
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -742,11 +752,19 @@ class MainActivity : FlutterActivity() {
         intent: Intent?,
         engine: FlutterEngine,
     ) {
-        val route = intent?.getStringExtra(keyOpenRoute)?.trim().orEmpty()
+        val route = openRouteFromIntent(intent)
         if (route.isEmpty()) {
             return
         }
+        if (route == consumedInitialOpenRoute) {
+            consumedInitialOpenRoute = null
+            return
+        }
         engine.navigationChannel.pushRoute(route)
+    }
+
+    private fun openRouteFromIntent(intent: Intent?): String {
+        return intent?.getStringExtra(keyOpenRoute)?.trim().orEmpty()
     }
 
     private fun keyboardTextRulesFromArgument(argument: Any?): List<KeyboardTextRule> {

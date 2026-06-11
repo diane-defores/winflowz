@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -8,12 +9,22 @@ import '../../features/keyboard/presentation/keyboard_theme_studio_screen.dart';
 import '../../features/shell/presentation/app_shell_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authSessionProvider);
+  final authStateNotifier = ValueNotifier(ref.read(authSessionProvider));
+  ref.listen(authSessionProvider, (_, next) {
+    authStateNotifier.value = next;
+  });
+  ref.onDispose(authStateNotifier.dispose);
+
   return GoRouter(
     observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
+    refreshListenable: authStateNotifier,
     redirect: (context, state) {
       final path = state.uri.path;
       final authPath = path == '/' || path.isEmpty;
+      final authState = authStateNotifier.value;
+      if (!authPath && authState.isLoading) {
+        return null;
+      }
       final hasAccess = authState.maybeWhen(
         data: (session) => session.isSignedIn || session.isLocalFallback,
         orElse: () => false,

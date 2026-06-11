@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: "WinFlowz"
 created: "2026-05-04"
-updated: "2026-05-26"
+updated: "2026-06-11"
 status: draft
 source_skill: sf-docs
 scope: "android-native"
@@ -28,6 +28,7 @@ evidence:
   - "Mapped before Android IME native implementation."
   - "Updated for stable grid/touch geometry implementation."
   - "Updated for account-backed keyboard sync profile export/import V1 contract."
+  - "Updated for materialized IME press effects with relief-aware rendering."
 next_review: "2026-06-04"
 next_step: "/sf-docs technical audit"
 ---
@@ -98,11 +99,12 @@ Keyboard clipboard action
 - Keyboard theme authoring lives in Flutter `KeyboardThemeStudioScreen` and is pushed to native with `getKeyboardThemeConfig`, `setKeyboardThemeConfig`, and `resetKeyboardThemeConfig` on `winflowz_app/keyboard`. The studio ships the v1 preset catalog (`System`, `WinFlowz Light`, `WinFlowz Dark`, `Neon Terminal`, `Glass Mint`, `Sunset Gradient`, `Midnight Aurora`, `Paper Ink`, `Pixel Candy`, `Minimal Contrast`), collapsible editing sections, and JSON import/export without image bytes.
 - Native IME `onThemeSettings()` opens Flutter route `/keyboard/theme` through `MainActivity` intent extra `openRoute`.
 - Theme saves are blocked in Flutter when key/status contrast falls below the readable threshold or when image mode has no imported local image. Heavy shadows, thick borders, high effect intensity, and long particle effects produce warnings.
-- Native rendering supports solid, linear gradient, radial gradient, app-private image backgrounds, key border/radius/shadow values, custom key/status/corner text colors, and bounded press effects. Private fields suppress custom image/gradient/effect surfaces.
-- Native press effects are handled by `KeyboardPressEffects`: `scale`, `pulse`, `shake`, `ripple`, `glow`, `confettiLite`, and `fireworksLite` are short-lived, queue-capped, and disabled for private fields or system animation scale `0`.
+- Native rendering supports solid, linear gradient, radial gradient, app-private image backgrounds, key border/radius/shadow values, custom key/status/corner text colors, relief key faces, and bounded press effects. Private fields suppress custom image/gradient/effect surfaces.
+- Native press effects are split by rendering contract. `scale`, `pulse`, `shake`, `glow`, `electricArc`, `specularSweep`, `inkPress`, `keycapTilt`, and `edgeCompression` must render through the key surface geometry in `WinFlowzKeyboardView`; they must move or tint the physical key body instead of drawing an independent overlay. `ripple`, `confettiLite`, and `fireworksLite` may use `KeyboardPressEffects`, but only as queue-capped emissions clipped or anchored to the pressed key. Effects are disabled for private fields or system animation scale `0`.
+- Keyboard diagnostics expose `themePressEffectRenderingMode` and `themeKeyReliefDepth` with no typed content, clipboard content, snippets, dictation content, tokens, prompts, or private image paths.
 - Theme image import uses a system image picker, decodes/downsamples to a bounded PNG in app-private storage, and rejects non-image or oversized output; no broad storage permission is required and the IME renders only the private path.
 - Replacing or resetting a theme cleans up superseded app-private theme images under `filesDir/keyboard_themes` to avoid orphaned files.
-- Keyboard diagnostics now expose `themePresetId`, `themePressEffect`, `themeBackgroundSource`, `themeConfigSize`, and `themeFallbackStatus` without exposing private image paths.
+- Keyboard diagnostics now expose `themePresetId`, `themePressEffect`, `themePressEffectRenderingMode`, `themeKeyReliefDepth`, `themeBackgroundSource`, `themeConfigSize`, and `themeFallbackStatus` without exposing private image paths.
 - Keyboard sync/recovery bridge methods are `exportKeyboardSyncProfile` and `applyKeyboardSyncProfile`. Flutter must validate checksum/schema before apply; native apply is atomic-or-recoverable and must never claim cloud success on unsupported platforms.
 - Keyboard sync V1 stays local-first: the IME keeps working even if cloud sync fails. Cloud payload excludes image bytes/private paths, sensitive shortcuts, clipboard/history content, dictation raw content, recents, diagnostics, tokens, and secrets.
 - Account-backed keyboard sync/recovery requires Blacksmith/GitHub Actions Android build proof plus Diane device QA for IME-native behavior (restore while keyboard is active, permissions, lifecycle). Do not validate this slice with local Android/Gradle builds on the shared VM.
@@ -169,7 +171,7 @@ clipboard, dictation, media keys, and OEM behavior.
 - Clipboard event queue changed -> recheck no provider credentials/imports in native code and that sensitive clips are not enqueued.
 - Media controller changed -> recheck no metadata permission is introduced silently.
 - `KeyboardCornerShortcuts.kt`, `KeyboardLayoutModels.kt`, `WinFlowzKeyboardView.kt`, or `KeyboardStateStore.kt` changed -> recheck Smart French defaults, override precedence, private-field suppression, special-key toggle, directional/corner rendering, space slider priority, scroll row priority, and corrupt JSON fallback.
-- `KeyboardPressEffects.kt` or theme validation changed -> recheck fast typing, private/password fields, system reduce-motion, and unreadable theme rejection.
+- `KeyboardPressEffects.kt`, `WinFlowzKeyboardView.kt` material effect geometry, or theme validation changed -> recheck fast typing, private/password fields, relief mode, system reduce-motion, and unreadable theme rejection.
 
 ## Maintenance Rule
 

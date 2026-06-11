@@ -89,7 +89,6 @@ class _AccountCloudSection extends StatelessWidget {
     );
 
     return AppSectionCard(
-      title: 'Compte & cloud',
       subtitle: remoteAuthConfigured
           ? 'Compte, accès et données synchronisables.'
           : 'L’authentification distante n’est pas configurée sur cette version.',
@@ -402,7 +401,6 @@ class _AppearanceSection extends StatelessWidget {
     required this.syncStateLabel,
     required this.syncStateDetail,
     required this.syncActionStatus,
-    required this.onOpenKeyboardThemeStudio,
     required this.onSyncOrRefresh,
     required this.onConfirmDestructiveActionsChanged,
     required this.onChanged,
@@ -413,7 +411,6 @@ class _AppearanceSection extends StatelessWidget {
   final String syncStateLabel;
   final String syncStateDetail;
   final AppSyncStatus syncActionStatus;
-  final VoidCallback onOpenKeyboardThemeStudio;
   final VoidCallback onSyncOrRefresh;
   final ValueChanged<bool> onConfirmDestructiveActionsChanged;
   final ValueChanged<AppThemeMode> onChanged;
@@ -421,7 +418,6 @@ class _AppearanceSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Apparence',
       subtitle:
           'Utilise la palette WinFlowz et les tokens d’interface partagés. '
           '$syncStateLabel',
@@ -468,15 +464,6 @@ class _AppearanceSection extends StatelessWidget {
               'Demander confirmation avant de supprimer l’historique, les snippets et les termes du dictionnaire.',
             ),
           ),
-          AppGaps.x2,
-          Align(
-            alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
-              onPressed: onOpenKeyboardThemeStudio,
-              icon: const Icon(Icons.palette_outlined),
-              label: const Text('Studio de thème clavier'),
-            ),
-          ),
         ],
       ),
     );
@@ -501,7 +488,7 @@ class _BackendProviderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Fournisseur backend',
+      title: 'Backend et support',
       subtitle: summary,
       leading: const Icon(Icons.storage_outlined),
       stretch: false,
@@ -511,7 +498,7 @@ class _BackendProviderSection extends StatelessWidget {
           Text(detail, style: Theme.of(context).textTheme.bodySmall),
           AppGaps.x3,
           Text(
-            'Journaux et diagnostic',
+            'Journaux de support',
             style: Theme.of(context).textTheme.titleSmall,
           ),
           AppGaps.x2,
@@ -618,7 +605,6 @@ class _SecretsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Clés IA locales',
       subtitle:
           'Stockées sur cet appareil et exclues des préférences synchronisées.',
       leading: const Icon(Icons.key_outlined),
@@ -695,12 +681,12 @@ class _PlatformCapabilitiesSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Plateforme détectée: ${PlatformCapabilities.currentPlatformLabel}',
+          'Appareil: ${PlatformCapabilities.currentPlatformLabel}',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         AppGaps.x1,
         Text(
-          'Capacités de la plateforme',
+          'Capacités appareil',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         AppGaps.x2,
@@ -793,10 +779,54 @@ class _KeyboardSettingsSection extends StatelessWidget {
     return 1;
   }
 
+  String get _keyboardStateSummary {
+    final current = status;
+    if (current == null) {
+      return 'État clavier en cours de lecture.';
+    }
+    if (!current.supported) {
+      return 'Clavier natif indisponible sur cette plateforme.';
+    }
+    if (!current.enabled) {
+      return 'Clavier à activer dans Android.';
+    }
+    if (current.active) {
+      return 'Clavier actif et prêt dans les champs texte.';
+    }
+    return 'Clavier activé, mais pas sélectionné comme méthode de saisie.';
+  }
+
+  String get _keyboardConfigSummary {
+    final current = status;
+    if (current == null) {
+      return 'Disposition et préférences non chargées.';
+    }
+    final layout = current.layoutProfile == KeyboardLayoutProfile.azerty
+        ? 'AZERTY'
+        : 'QWERTY';
+    final gestures = current.cornerModeEnabled
+        ? 'gestes activés'
+        : 'gestes désactivés';
+    final privacy = switch (current.privacyMode) {
+      KeyboardPrivacyMode.auto => 'confidentialité auto',
+      KeyboardPrivacyMode.strict => 'privé partout',
+      KeyboardPrivacyMode.standard => 'standard',
+    };
+    return '$layout, $gestures, $_enabledLanguages, $privacy.';
+  }
+
+  String get _keyboardDiagnosticsSummary {
+    final recoveries = status?.keyboardRecoveryCount ?? 0;
+    if (recoveries == 0 && status?.lastKeyboardError == null) {
+      return 'Aucun incident récent signalé.';
+    }
+    final last = status?.lastKeyboardErrorAt ?? 'date inconnue';
+    return '$recoveries reprise(s), dernier signalement: $last.';
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Clavier WinFlowz',
       subtitle:
           'Statut de la méthode de saisie Android, disposition, gestes et confidentialité.',
       leading: const Icon(Icons.keyboard_outlined),
@@ -810,15 +840,8 @@ class _KeyboardSettingsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListTile(
-              title: const Text('État d’exécution'),
-              subtitle: Text(
-                'enabled=${status?.enabled ?? false} | '
-                'active=${status?.active ?? false} | '
-                'layout=${status?.layoutProfile.name ?? 'qwerty'} | '
-                'gestures=${status?.cornerModeEnabled ?? false} | '
-                'languages=$_enabledLanguages | '
-                'privacy=${status?.privacyMode.name ?? 'auto'}',
-              ),
+              title: const Text('État du clavier'),
+              subtitle: Text(_keyboardStateSummary),
               trailing: busy
                   ? const SizedBox.square(
                       dimension: AppIconMetrics.sm,
@@ -833,27 +856,10 @@ class _KeyboardSettingsSection extends StatelessWidget {
                     ),
             ),
             ListTile(
-              leading: const Icon(Icons.health_and_safety_outlined),
-              title: const Text('Diagnostics de reprise'),
-              subtitle: Text(
-                'recoveries=${status?.keyboardRecoveryCount ?? 0} | '
-                'last=${status?.lastKeyboardErrorAt ?? 'none'} | '
-                'sentry=${SentryBootstrap.isConfigured ? 'configured' : 'disabled'}',
-              ),
+              leading: const Icon(Icons.tune_outlined),
+              title: const Text('Configuration'),
+              subtitle: Text(_keyboardConfigSummary),
             ),
-            if (status?.lastKeyboardError != null)
-              ExpansionTile(
-                tilePadding: _tilePadding,
-                childrenPadding: _controlPadding,
-                title: const Text('Dernier incident clavier'),
-                subtitle: const Text('Diagnostic natif masqué'),
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SelectableText(status!.lastKeyboardError!),
-                  ),
-                ],
-              ),
             if (status?.enabled == false)
               const ListTile(
                 leading: Icon(Icons.info_outline),
@@ -1196,17 +1202,6 @@ class _KeyboardSettingsSection extends StatelessWidget {
                 'Ajoute un espacement basique autour de la ponctuation pour les champs texte standards.',
               ),
             ),
-            SwitchListTile(
-              value: status?.debugTouchOverlayEnabled ?? false,
-              onChanged: busy
-                  ? null
-                  : (value) =>
-                        onPreferenceChanged(debugTouchOverlayEnabled: value),
-              title: const Text('Overlay de débogage tactile clavier'),
-              subtitle: const Text(
-                'Affiche les limites des touches et les diagnostics de classification des gestes sur le clavier natif.',
-              ),
-            ),
             Padding(
               padding: _controlPadding,
               child: DropdownButtonFormField<KeyboardPrivacyMode>(
@@ -1234,6 +1229,48 @@ class _KeyboardSettingsSection extends StatelessWidget {
                         privacyMode: value ?? KeyboardPrivacyMode.auto,
                       ),
               ),
+            ),
+            ExpansionTile(
+              tilePadding: _tilePadding,
+              childrenPadding: _controlPadding,
+              leading: const Icon(Icons.health_and_safety_outlined),
+              title: const Text('Diagnostics avancés'),
+              subtitle: Text(_keyboardDiagnosticsSummary),
+              children: [
+                SwitchListTile(
+                  value: status?.debugTouchOverlayEnabled ?? false,
+                  onChanged: busy
+                      ? null
+                      : (value) => onPreferenceChanged(
+                          debugTouchOverlayEnabled: value,
+                        ),
+                  title: const Text('Diagnostic tactile'),
+                  subtitle: const Text(
+                    'Affiche les limites des touches et la classification des gestes pour les tests support.',
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: SelectableText(
+                    'enabled=${status?.enabled ?? false} | '
+                    'active=${status?.active ?? false} | '
+                    'layout=${status?.layoutProfile.name ?? 'qwerty'} | '
+                    'gestures=${status?.cornerModeEnabled ?? false} | '
+                    'languages=$_enabledLanguages | '
+                    'privacy=${status?.privacyMode.name ?? 'auto'}\n'
+                    'recoveries=${status?.keyboardRecoveryCount ?? 0} | '
+                    'last=${status?.lastKeyboardErrorAt ?? 'none'} | '
+                    'sentry=${SentryBootstrap.isConfigured ? 'configured' : 'disabled'}',
+                  ),
+                ),
+                if (status?.lastKeyboardError != null) ...[
+                  AppGaps.x2,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SelectableText(status!.lastKeyboardError!),
+                  ),
+                ],
+              ],
             ),
           ],
         ),
@@ -1527,11 +1564,28 @@ class _OnDeviceSpeechSection extends StatelessWidget {
   final bool Function(LanguagePackCatalogEntry entry) onMarkCorrupted;
   final ValueChanged<LanguagePackCatalogEntry> onRemove;
 
+  String get _voiceRuntimeSummary {
+    final status = keyboardStatus;
+    if (status == null) {
+      return 'État vocal en cours de lecture.';
+    }
+    final language = status.voiceLanguageTag == 'und'
+        ? 'langue non choisie'
+        : status.voiceLanguageTag;
+    final mode = switch (status.voiceRuntimeMode) {
+      'local' => 'pack local actif',
+      'android_fallback' => 'fallback Android',
+      'cloud_fallback' => 'fallback cloud',
+      'unavailable' => 'dictée locale indisponible',
+      _ => status.voiceRuntimeMode,
+    };
+    return '$mode, $language.';
+  }
+
   @override
   Widget build(BuildContext context) {
     final entries = state.catalog.entries;
     return AppSectionCard(
-      title: 'Reconnaissance vocale locale',
       subtitle:
           'Installez uniquement les packs locaux dont vous avez besoin. Le fallback Android ou cloud est toujours explicitement indiqué.',
       leading: const Icon(Icons.record_voice_over_outlined),
@@ -1540,14 +1594,8 @@ class _OnDeviceSpeechSection extends StatelessWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('État d’exécution'),
-            subtitle: Text(
-              'runtime=${keyboardStatus?.voiceRuntimeMode ?? 'unavailable'} | '
-              'language=${keyboardStatus?.voiceLanguageTag ?? 'und'} | '
-              'pack=${keyboardStatus?.voicePackId ?? 'none'} | '
-              'engine=${keyboardStatus?.voiceEngine ?? 'unavailable'} | '
-              'fallback=${keyboardStatus?.voiceFallbackReason ?? 'unsupported_language'}',
-            ),
+            title: const Text('État vocal'),
+            subtitle: Text(_voiceRuntimeSummary),
             trailing: IconButton(
               tooltip: 'Actualiser le catalogue vocal',
               onPressed: onRefresh,
@@ -1590,6 +1638,24 @@ class _OnDeviceSpeechSection extends StatelessWidget {
             ),
             AppGaps.x2,
           ],
+          ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            childrenPadding: const EdgeInsets.only(top: AppSpacing.x1),
+            title: const Text('Diagnostics avancés'),
+            subtitle: const Text('Runtime vocal, moteur et fallback support.'),
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SelectableText(
+                  'runtime=${keyboardStatus?.voiceRuntimeMode ?? 'unavailable'} | '
+                  'language=${keyboardStatus?.voiceLanguageTag ?? 'und'} | '
+                  'pack=${keyboardStatus?.voicePackId ?? 'none'} | '
+                  'engine=${keyboardStatus?.voiceEngine ?? 'unavailable'} | '
+                  'fallback=${keyboardStatus?.voiceFallbackReason ?? 'unsupported_language'}',
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -1619,19 +1685,49 @@ class _LanguagePackTile extends StatelessWidget {
   final bool Function() onMarkCorrupted;
   final VoidCallback onRemove;
 
+  static String _languagePackStatusLine(
+    LanguagePackCatalogEntry entry,
+    InstalledLanguagePack installed,
+  ) {
+    final state = switch (installed.installState) {
+      InstalledLanguagePackState.notInstalled => 'Non installé',
+      InstalledLanguagePackState.queued => 'En attente',
+      InstalledLanguagePackState.downloading => 'Téléchargement en cours',
+      InstalledLanguagePackState.pausedInsufficientStorage =>
+        'En pause: stockage insuffisant',
+      InstalledLanguagePackState.verifying => 'Vérification en cours',
+      InstalledLanguagePackState.installed => 'Installé',
+      InstalledLanguagePackState.updateAvailable => 'Mise à jour disponible',
+      InstalledLanguagePackState.failedDownload => 'Téléchargement échoué',
+      InstalledLanguagePackState.failedVerification => 'Vérification échouée',
+      InstalledLanguagePackState.blockedIncompatibleDevice =>
+        'Appareil incompatible',
+      InstalledLanguagePackState.blockedInsufficientStorage =>
+        'Stockage insuffisant',
+      InstalledLanguagePackState.corrupted => 'Pack à restaurer',
+      InstalledLanguagePackState.removed => 'Supprimé',
+    };
+    return '$state · ${entry.downloadSizeMb} Mo à télécharger · ${entry.installedSizeMb} Mo installés.';
+  }
+
+  static String _languagePackFallbackLine(
+    LanguagePackCatalogEntry entry,
+    bool allowCloudFallback,
+  ) {
+    final offline = entry.supportsOffline
+        ? 'fonctionne hors ligne'
+        : 'connexion requise';
+    final cloud = allowCloudFallback
+        ? 'fallback cloud autorisé'
+        : 'fallback cloud désactivé';
+    return '$offline · $cloud.';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statusLine = [
-      'engine=${entry.engine.wireName}',
-      'quality=${entry.qualityTier.wireName}',
-      'runtime=${entry.runtimeMode.wireName}',
-      'fallback=${entry.fallbackPolicy.wireName}',
-      'license=${entry.licenseId}',
-      'download=${entry.downloadSizeMb}MB',
-      'installed=${entry.installedSizeMb}MB',
-      'state=${installed.installState.wireName}',
-    ].join(' | ');
+    final statusLine = _languagePackStatusLine(entry, installed);
+    final fallbackLine = _languagePackFallbackLine(entry, allowCloudFallback);
     final canRemove =
         installed.installState != InstalledLanguagePackState.notInstalled &&
         installed.installState != InstalledLanguagePackState.removed;
@@ -1665,15 +1761,7 @@ class _LanguagePackTile extends StatelessWidget {
             AppGaps.x1,
             Text(statusLine, style: theme.textTheme.bodySmall),
             AppGaps.x1,
-            Text(
-              'benchmark=${entry.benchmarkStatus.wireName} | offline=${entry.supportsOffline} | cloud_auto_allowed=$allowCloudFallback',
-              style: theme.textTheme.bodySmall,
-            ),
-            AppGaps.x1,
-            Text(
-              'progress=${installed.downloadProgress}% | retries=$retriesUsed/3 | checksum=${installed.checksumVerified}',
-              style: theme.textTheme.bodySmall,
-            ),
+            Text(fallbackLine, style: theme.textTheme.bodySmall),
             if (installed.installState ==
                 InstalledLanguagePackState.blockedInsufficientStorage) ...[
               AppGaps.x1,
@@ -1759,33 +1847,63 @@ class _LanguagePackTile extends StatelessWidget {
                   label: const Text('Réessayer'),
                 ),
                 OutlinedButton.icon(
-                  onPressed:
-                      installed.installState ==
-                          InstalledLanguagePackState.installed
-                      ? () {
-                          onMarkUpdateAvailable();
-                        }
-                      : null,
-                  icon: const Icon(Icons.system_update_alt_outlined),
-                  label: const Text('Marquer mise à jour'),
-                ),
-                OutlinedButton.icon(
-                  onPressed:
-                      installed.installState ==
-                              InstalledLanguagePackState.installed ||
-                          installed.installState ==
-                              InstalledLanguagePackState.updateAvailable
-                      ? () {
-                          onMarkCorrupted();
-                        }
-                      : null,
-                  icon: const Icon(Icons.warning_amber_outlined),
-                  label: const Text('Marquer corrompu'),
-                ),
-                OutlinedButton.icon(
                   onPressed: canRemove ? onRemove : null,
                   icon: const Icon(Icons.delete_outline),
                   label: Text(removeLabel),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: EdgeInsets.zero,
+              title: const Text('Support avancé'),
+              subtitle: Text(
+                'progression ${installed.downloadProgress}%, essais $retriesUsed/3, checksum ${installed.checksumVerified ? 'validé' : 'non validé'}.',
+              ),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: SelectableText(
+                    'engine=${entry.engine.wireName} | '
+                    'quality=${entry.qualityTier.wireName} | '
+                    'runtime=${entry.runtimeMode.wireName} | '
+                    'fallback=${entry.fallbackPolicy.wireName} | '
+                    'license=${entry.licenseId} | '
+                    'download=${entry.downloadSizeMb}MB | '
+                    'installed=${entry.installedSizeMb}MB | '
+                    'state=${installed.installState.wireName}',
+                  ),
+                ),
+                AppGaps.x1,
+                Wrap(
+                  spacing: AppSpacing.x2,
+                  runSpacing: AppSpacing.x2,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed:
+                          installed.installState ==
+                              InstalledLanguagePackState.installed
+                          ? () {
+                              onMarkUpdateAvailable();
+                            }
+                          : null,
+                      icon: const Icon(Icons.system_update_alt_outlined),
+                      label: const Text('Simuler mise à jour'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed:
+                          installed.installState ==
+                                  InstalledLanguagePackState.installed ||
+                              installed.installState ==
+                                  InstalledLanguagePackState.updateAvailable
+                          ? () {
+                              onMarkCorrupted();
+                            }
+                          : null,
+                      icon: const Icon(Icons.warning_amber_outlined),
+                      label: const Text('Simuler corruption'),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1856,10 +1974,42 @@ class _OverlaySettingsSection extends StatelessWidget {
   final VoidCallback onStop;
   final VoidCallback onCancel;
 
+  String get _overlayStateSummary {
+    final current = status;
+    if (current == null) {
+      return 'État overlay en cours de lecture.';
+    }
+    if (!current.overlayPermissionGranted) {
+      return 'Permission de bulle requise avant activation.';
+    }
+    if (current.running) {
+      return 'Bulle active, service en cours.';
+    }
+    if (current.enabled) {
+      return 'Bulle autorisée et activée, service prêt à démarrer.';
+    }
+    return 'Bulle autorisée, mais désactivée.';
+  }
+
+  String get _overlayDeliverySummary {
+    final current = status;
+    if (current == null) {
+      return 'Mode de livraison non chargé.';
+    }
+    if (!current.accessibilityPermissionGranted) {
+      return 'Transfert limité au presse-papiers tant que l’accessibilité est désactivée.';
+    }
+    return switch (current.deliveryMode) {
+      OverlayDeliveryMode.injectionAndClipboard =>
+        'Injection directe disponible, avec copie presse-papiers en secours.',
+      OverlayDeliveryMode.clipboardOnly =>
+        'Résultat copié dans le presse-papiers.',
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppSectionCard(
-      title: 'Overlay Android',
       subtitle:
           'Permissions de bulle flottante, exécution d’enregistrement et mode de livraison.',
       leading: const Icon(Icons.bubble_chart_outlined),
@@ -1880,20 +2030,13 @@ class _OverlaySettingsSection extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: const Text('État d’exécution de l’overlay'),
-            subtitle: Text(
-              'enabled=${status?.enabled ?? false} | '
-              'requested=${status?.requestedEnabled ?? false} | '
-              'running=${status?.running ?? false} | '
-              'service=${status?.serviceState ?? 'unknown'} | '
-              'delivery=${status?.deliveryMode.name ?? 'clipboardOnly'}',
-            ),
+            title: const Text('État de la bulle'),
+            subtitle: Text(_overlayStateSummary),
           ),
-          if ((status?.lastNativeEvent ?? 'none') != 'none')
-            ListTile(
-              title: const Text('Dernier évènement overlay natif'),
-              subtitle: Text(status?.lastNativeEvent ?? 'none'),
-            ),
+          ListTile(
+            title: const Text('Transmission du résultat'),
+            subtitle: Text(_overlayDeliverySummary),
+          ),
           if (status?.accessibilityPermissionGranted == false)
             const ListTile(
               leading: Icon(Icons.info_outline),
@@ -1994,6 +2137,31 @@ class _OverlaySettingsSection extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          ExpansionTile(
+            tilePadding: const EdgeInsets.symmetric(horizontal: AppSpacing.x1),
+            childrenPadding: AppInsets.keyboardPrivacy,
+            title: const Text('Diagnostics avancés'),
+            subtitle: const Text('État du service natif et dernier événement.'),
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SelectableText(
+                  'enabled=${status?.enabled ?? false} | '
+                  'requested=${status?.requestedEnabled ?? false} | '
+                  'running=${status?.running ?? false} | '
+                  'service=${status?.serviceState ?? 'unknown'} | '
+                  'delivery=${status?.deliveryMode.name ?? 'clipboardOnly'}',
+                ),
+              ),
+              if ((status?.lastNativeEvent ?? 'none') != 'none') ...[
+                AppGaps.x2,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: SelectableText(status?.lastNativeEvent ?? 'none'),
+                ),
+              ],
+            ],
           ),
         ],
       ),

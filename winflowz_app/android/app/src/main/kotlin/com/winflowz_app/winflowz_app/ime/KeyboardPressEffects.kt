@@ -65,6 +65,8 @@ class KeyboardPressEffects(
     private data class ActiveEffect(
         val keyId: String,
         val rect: RectF,
+        val anchorX: Float,
+        val anchorY: Float,
         val spec: KeyboardPressEffectSpec,
         val startedAtMs: Long,
         val particles: List<Particle>,
@@ -97,6 +99,8 @@ class KeyboardPressEffects(
             ActiveEffect(
                 keyId = keyId,
                 rect = RectF(rect),
+                anchorX = rect.right - rect.width() * 0.24f,
+                anchorY = rect.top + rect.height() * 0.22f,
                 spec = spec,
                 startedAtMs = clock(),
                 particles = particlesFor(spec),
@@ -202,9 +206,13 @@ class KeyboardPressEffects(
         accentColor: Int,
     ) {
         strokePaint.color = alphaColor(accentColor, (220 * (1f - progress)).toInt())
-        strokePaint.strokeWidth = max(2f * density, 6f * density * (1f - progress))
-        val radius = max(effect.rect.width(), effect.rect.height()) * (0.2f + progress * 0.65f)
-        canvas.drawCircle(effect.rect.centerX(), effect.rect.centerY(), radius, strokePaint)
+        strokePaint.strokeWidth = max(1.4f * density, 3.6f * density * (1f - progress))
+        val save = canvas.save()
+        canvas.clipRect(effect.rect)
+        val inset = -effect.rect.width() * 0.10f * progress
+        val rect = RectF(effect.rect).apply { inset(inset, inset * 0.55f) }
+        canvas.drawRoundRect(rect, 8f * density, 8f * density, strokePaint)
+        canvas.restoreToCount(save)
     }
 
     private fun drawGlow(
@@ -224,16 +232,19 @@ class KeyboardPressEffects(
         effect: ActiveEffect,
         progress: Float,
     ) {
+        val save = canvas.save()
+        canvas.clipRect(effect.rect)
         effect.particles.forEach { particle ->
-            val distance = particle.speed * density * easedProgress(effect.spec, progress)
+            val distance = particle.speed * density * easedProgress(effect.spec, progress) * 0.42f
             fillPaint.color = alphaColor(particle.color, (180 * (1f - progress)).toInt())
             canvas.drawCircle(
-                effect.rect.centerX() + cos(particle.angle) * distance,
-                effect.rect.centerY() + sin(particle.angle) * distance,
+                effect.anchorX + cos(particle.angle) * distance,
+                effect.anchorY + sin(particle.angle) * distance,
                 3.8f * density * (1f - progress * 0.45f),
                 fillPaint,
             )
         }
+        canvas.restoreToCount(save)
     }
 
     private fun particlesFor(spec: KeyboardPressEffectSpec): List<Particle> {

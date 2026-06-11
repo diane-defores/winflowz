@@ -5,8 +5,8 @@ artifact_version: "1.0.0"
 project: "WinFlowz"
 created: "2026-06-10"
 created_at: "2026-06-10 20:45:30 UTC"
-updated: "2026-06-10"
-updated_at: "2026-06-10 21:10:22 UTC"
+updated: "2026-06-11"
+updated_at: "2026-06-11 01:33:48 UTC"
 status: ready
 source_skill: sf-spec
 source_model: "GPT-5 Codex"
@@ -50,7 +50,7 @@ evidence:
   - "Audit 2026-06-10: Keyboard Theme Studio is reachable from both Appearance and Keyboard sections, creating duplicate entry points in lib/features/settings/presentation/settings_screen_sections.dart:390 and :1212."
   - "Audit 2026-06-10: Maintenance mixes backend diagnostics and platform capabilities in lib/features/settings/presentation/settings_screen.dart:1589."
   - "User clarification 2026-06-10: Account & cloud shows too many large local/sync category cards such as Apparence et paramètres, Clipboard, Snippets; when everything is local, compact pills or inline rows are enough."
-next_step: "/sf-start WinFlowz Settings Page UX Remaster"
+next_step: "/005-sf-ship -> /405-sf-prod -> /108-sf-browser settings-web-smoke"
 ---
 
 # Title
@@ -198,73 +198,73 @@ Remaster the Settings information architecture without changing underlying featu
 
 ## Implementation Tasks
 
-- [ ] Task 1: Define the Settings section content contract
+- [x] Task 1: Define the Settings section content contract
   - Files: `lib/features/settings/presentation/settings_screen.dart`, `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Remove duplicated inner section titles where the parent `ExpansionTile` already names the section, and make expanded content start with status/controls.
   - User story link: reduces repeated titles and card noise.
   - Validate with: widget test asserting expanded sections do not show duplicate titles as separate headers.
 
-- [ ] Task 2: Finalize account/cloud summary UX
+- [x] Task 2: Finalize account/cloud summary UX
   - Files: `lib/features/settings/presentation/settings_screen_sections.dart`, optionally `lib/core/sync/cloud_sync_overview.dart`
   - Action: Keep one account/sync summary with contextual connect/sign-out actions, concise inactive/active/checking states, and no duplicated "Compte WinFlowz" / "Accès WinFlowz" cards.
   - User story link: makes account and access understandable as one concept for users.
   - Validate with: local fallback, remote signed-in active, remote signed-in inactive, checking, and error widget tests.
 
-- [ ] Task 3: Compact sync/local category lists
+- [x] Task 3: Compact sync/local category lists
   - Files: `lib/features/settings/presentation/settings_screen_sections.dart`, optionally `lib/core/widgets/app_components.dart`
   - Action: Replace repeated large `AppStatusCard` rows for low-priority local-only categories with compact pills or inline rows. Keep large cards only for categories that are synced, pending, failed, conflicted, unavailable for a meaningful reason, or require attention.
   - User story link: avoids wasting visual space on "everything is local" category repetition.
   - Validate with: widget tests for all-local mode, mixed synced/local mode, and attention-required mode.
 
-- [ ] Task 4: Simplify Appearance section
+- [x] Task 4: Simplify Appearance section
   - File: `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Keep global theme selector, save/sync status, and destructive confirmation; remove or demote duplicate keyboard theme entry if Keyboard owns customization.
   - User story link: separates app appearance from keyboard-specific customization.
   - Validate with: existing appearance sync/status tests plus assertion for one primary keyboard theme entry point.
 
-- [ ] Task 5: Remaster Keyboard section default view
+- [x] Task 5: Remaster Keyboard section default view
   - File: `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Replace raw execution/debug `ListTile` copy with readable status summaries and group normal settings into coherent subsections: activation, appearance, input behavior, suggestions/language, privacy, feedback/media, advanced.
   - User story link: lets users configure the keyboard without reading runtime dumps.
   - Validate with: widget tests for enabled/disabled/active status summaries and absence of raw `enabled=` strings in default view.
 
-- [ ] Task 6: Add advanced diagnostics disclosure for Keyboard
+- [x] Task 6: Add advanced diagnostics disclosure for Keyboard
   - File: `lib/features/settings/presentation/settings_screen_sections.dart`, optionally `lib/core/widgets/app_components.dart`
   - Action: Move recovery counts, Sentry state, last native error, raw layout/gesture/privacy fields, and debug touch overlay wording behind an explicit "Diagnostics avancés" disclosure.
   - User story link: preserves support power without polluting default settings.
   - Validate with: widget test that raw diagnostics are hidden by default and visible after expanding advanced diagnostics.
 
-- [ ] Task 7: Remaster local voice recognition section
+- [x] Task 7: Remaster local voice recognition section
   - File: `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Convert runtime and pack metadata into readable pack cards with primary status, offline/fallback meaning, size, install/remove/retry actions, and concise warnings.
   - User story link: makes voice packs understandable as a user feature instead of a debug catalog.
   - Validate with: widget tests for not installed, installed, update available, corrupted, incompatible, and fallback disabled states.
 
-- [ ] Task 8: Hide voice pack debug simulation actions by default
+- [x] Task 8: Hide voice pack debug simulation actions by default
   - File: `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Move "Marquer mise à jour" and "Marquer corrompu" into an advanced/support disclosure or debug-only area with explicit wording.
   - User story link: avoids presenting QA controls as normal user actions.
   - Validate with: widget tests that debug actions are absent by default and reachable in advanced/support disclosure.
 
-- [ ] Task 9: Clarify Overlay section
+- [x] Task 9: Clarify Overlay section
   - File: `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Replace raw overlay execution fields with readable permission/running/delivery summaries, keep bubble sliders and permission actions contextual, and move last native event/raw service state behind diagnostics.
   - User story link: keeps overlay setup understandable without losing support data.
   - Validate with: widget tests for permission missing, permission granted inactive, running, and accessibility missing states.
 
-- [ ] Task 10: Split or relabel Maintenance and platform capabilities
+- [x] Task 10: Split or relabel Maintenance and platform capabilities
   - File: `lib/features/settings/presentation/settings_screen.dart`, `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Separate backend diagnostics from device/platform capabilities or clearly label the whole area as advanced support; keep copy/copy-clear actions inside backend diagnostics.
   - User story link: avoids mixing support logs with normal capability settings.
   - Validate with: widget test for maintenance labels and diagnostic actions.
 
-- [ ] Task 11: Shorten and harden mobile labels
+- [x] Task 11: Shorten and harden mobile labels
   - File: `lib/features/settings/presentation/settings_screen_sections.dart`
   - Action: Review long French labels and replace with shorter labels plus helper text where needed.
   - User story link: prevents truncation and makes actions scannable.
   - Validate with: widget tests or golden/smoke layout checks for narrow width where feasible.
 
-- [ ] Task 12: Update tests and manual QA proof
+- [x] Task 12: Update tests and manual QA proof
   - Files: `test/widget_test.dart` or new `test/settings_screen_ux_test.dart`, optional `shipflow_data/workflow/test-checklists/winflowz-settings-page-ux-remaster.md`
   - Action: Add focused tests for the new Settings contract and document manual QA if implementation scope requires it.
   - User story link: protects the remaster from regression.
@@ -272,20 +272,20 @@ Remaster the Settings information architecture without changing underlying featu
 
 ## Acceptance Criteria
 
-- [ ] CA 1: Given a Settings section is expanded, when the parent accordion title is visible, then the expanded content does not repeat the same title as a second card/header.
-- [ ] CA 2: Given local fallback account mode, when Account & cloud is expanded, then the user sees one account/sync summary and one contextual connect action.
-- [ ] CA 3: Given a remote signed-in account with inactive suite access, when Account & cloud is expanded, then the UI explains that data remains local without showing separate "Compte WinFlowz" and "Accès WinFlowz" cards.
-- [ ] CA 4: Given no data category is synchronized yet, when Account & cloud is expanded, then local domains such as Apparence et paramètres, Clipboard, Snippets, Dictionnaire, Transcriptions, Profil clavier and Clés IA locales appear as compact pills/rows rather than seven large cards.
-- [ ] CA 5: Given at least one sync category is synced, pending, failed, conflicted, or needs attention, when Account & cloud is expanded, then only those meaningful states receive card-level visual weight.
-- [ ] CA 6: Given Appearance is expanded, when Keyboard section also exists, then keyboard theme customization has one clear primary home or a clearly secondary cross-link, not two equivalent buttons.
-- [ ] CA 7: Given Keyboard is expanded in default view, then raw strings like `enabled=`, `active=`, `recoveries=`, `sentry=`, and `privacy=` are not visible.
-- [ ] CA 8: Given Keyboard advanced diagnostics is expanded, then raw native/runtime diagnostics needed for support are visible and redacted where applicable.
-- [ ] CA 9: Given Voice/local recognition is expanded, then each language pack shows readable user status and primary actions without raw metadata dominating the card.
-- [ ] CA 10: Given Voice/local recognition default view, then "Marquer mise à jour" and "Marquer corrompu" are not presented as normal user actions.
-- [ ] CA 11: Given Overlay is expanded, then permission/running/accessibility state is described in user language and raw service/native event fields are behind diagnostics.
-- [ ] CA 12: Given Maintenance is expanded, then backend diagnostics and platform/device capability summaries are visually and semantically separated or clearly marked advanced.
-- [ ] CA 13: Given narrow Flutter web/mobile width, then primary Settings buttons and labels fit, wrap professionally, or use concise labels without truncating important action text.
-- [ ] CA 14: Given a setting save/sync error, then the page shows one coherent recoverable message or action, not multiple contradictory banners.
+- [x] CA 1: Given a Settings section is expanded, when the parent accordion title is visible, then the expanded content does not repeat the same title as a second card/header.
+- [x] CA 2: Given local fallback account mode, when Account & cloud is expanded, then the user sees one account/sync summary and one contextual connect action.
+- [x] CA 3: Given a remote signed-in account with inactive suite access, when Account & cloud is expanded, then the UI explains that data remains local without showing separate "Compte WinFlowz" and "Accès WinFlowz" cards.
+- [x] CA 4: Given no data category is synchronized yet, when Account & cloud is expanded, then local domains such as Apparence et paramètres, Clipboard, Snippets, Dictionnaire, Transcriptions, Profil clavier and Clés IA locales appear as compact pills/rows rather than seven large cards.
+- [x] CA 5: Given at least one sync category is synced, pending, failed, conflicted, or needs attention, when Account & cloud is expanded, then only those meaningful states receive card-level visual weight.
+- [x] CA 6: Given Appearance is expanded, when Keyboard section also exists, then keyboard theme customization has one clear primary home or a clearly secondary cross-link, not two equivalent buttons.
+- [x] CA 7: Given Keyboard is expanded in default view, then raw strings like `enabled=`, `active=`, `recoveries=`, `sentry=`, and `privacy=` are not visible.
+- [x] CA 8: Given Keyboard advanced diagnostics is expanded, then raw native/runtime diagnostics needed for support are visible and redacted where applicable.
+- [x] CA 9: Given Voice/local recognition is expanded, then each language pack shows readable user status and primary actions without raw metadata dominating the card.
+- [x] CA 10: Given Voice/local recognition default view, then "Marquer mise à jour" and "Marquer corrompu" are not presented as normal user actions.
+- [x] CA 11: Given Overlay is expanded, then permission/running/accessibility state is described in user language and raw service/native event fields are behind diagnostics.
+- [x] CA 12: Given Maintenance is expanded, then backend diagnostics and platform/device capability summaries are visually and semantically separated or clearly marked advanced.
+- [x] CA 13: Given narrow Flutter web/mobile width, then primary Settings buttons and labels fit, wrap professionally, or use concise labels without truncating important action text.
+- [x] CA 14: Given a setting save/sync error, then the page shows one coherent recoverable message or action, not multiple contradictory banners.
 
 ## Test Strategy
 
@@ -328,6 +328,8 @@ Remaster the Settings information architecture without changing underlying featu
 | 2026-06-10 20:45:30 UTC | sf-spec | GPT-5 Codex | Created Settings page UX remaster spec from Diane's direct request and focused audit evidence | Draft spec created | `/sf-ready shipflow_data/workflow/specs/winflowz-settings-page-ux-remaster.md` |
 | 2026-06-10 20:50:30 UTC | sf-spec | GPT-5 Codex | Added explicit Account & cloud sync/local category compaction requirement after Diane clarified that seven large local-only cards are excessive | Draft spec updated | `/sf-ready shipflow_data/workflow/specs/winflowz-settings-page-ux-remaster.md` |
 | 2026-06-10 21:10:22 UTC | sf-ready | GPT-5 Codex | Validated structure, user-story fit, proof contract, adversarial gaps, security posture, language doctrine, and dependency alignment | ready | `/sf-start WinFlowz Settings Page UX Remaster` |
+| 2026-06-11 01:30:00 UTC | sf-start | GPT-5 Codex | Implemented Settings UX remaster in Flutter: de-duplicated inner section titles, kept account/cloud compact work, moved keyboard/voice/overlay raw diagnostics behind disclosures, clarified maintenance labels, and added focused widget tests | implemented | `/sf-verify shipflow_data/workflow/specs/winflowz-settings-page-ux-remaster.md` |
+| 2026-06-11 01:33:48 UTC | 103-sf-verify | GPT-5 Codex | Verified local implementation evidence: `flutter analyze`, targeted Settings widget tests, and targeted spec metadata lint passed; hosted Flutter web smoke remains missing because changes are not deployed yet | partial | `/005-sf-ship -> /405-sf-prod -> /108-sf-browser settings-web-smoke` |
 
 ## Current Chantier Flow
 
@@ -335,7 +337,7 @@ Remaster the Settings information architecture without changing underlying featu
 |------|--------|-------|
 | sf-spec | completed | Draft spec created on 2026-06-10. |
 | sf-ready | completed | Ready verdict recorded on 2026-06-10. |
-| sf-start | next | Implement in small batches with targeted Flutter widget tests and `flutter analyze`. |
-| sf-verify | pending | Verify local checks, web smoke, and any required Android QA scope. |
+| sf-start | completed | Implemented on 2026-06-11 with `flutter analyze` and targeted Settings widget tests passing. |
+| sf-verify | partial | Local checks pass; hosted Flutter web smoke is still required after deployment. |
 | sf-end | pending | Close docs/checklists and summarize completion. |
-| sf-ship | pending | Ship only after verification and Diane's approval/ShipFlow flow. |
+| sf-ship | next | Ship the local Settings changes, then route `405-sf-prod` to confirm deployment and `108-sf-browser` to smoke Settings on `https://app.winflowz.com/`. |

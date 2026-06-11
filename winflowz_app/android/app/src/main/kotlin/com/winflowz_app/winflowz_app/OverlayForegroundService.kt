@@ -370,6 +370,7 @@ class OverlayForegroundService : Service() {
         }
         overlayView?.setDragHandleTouchListener(null)
         overlayView?.setBubbleTouchListener(null)
+        overlayView?.setOverlayTouchListener(null)
         overlayView?.setOnTouchListener(null)
         try {
             windowManager?.removeView(overlayView)
@@ -389,32 +390,20 @@ class OverlayForegroundService : Service() {
     }
 
     private fun attachTouchListener() {
-        val dragHandleTouchListener = View.OnTouchListener { _, event ->
+        val overlayDragTouchListener = View.OnTouchListener { view, event ->
             handleDragTouch(
                 event,
-                triggerTapOnRelease = false,
+                tapTarget = view,
                 requireLongPressToDrag = false,
             )
         }
-        val collapsedBubbleTouchListener = View.OnTouchListener { _, event ->
-            val state = overlayView?.getCurrentState() ?: "collapsed"
-            if (state != "collapsed") {
-                return@OnTouchListener false
-            }
-            handleDragTouch(
-                event,
-                triggerTapOnRelease = true,
-                requireLongPressToDrag = false,
-            )
-        }
-        overlayView?.setOnTouchListener(collapsedBubbleTouchListener)
-        overlayView?.setBubbleTouchListener(collapsedBubbleTouchListener)
-        overlayView?.setDragHandleTouchListener(dragHandleTouchListener)
+        overlayView?.setOverlayTouchListener(overlayDragTouchListener)
+        overlayView?.setDragHandleTouchListener(null)
     }
 
     private fun handleDragTouch(
         event: MotionEvent,
-        triggerTapOnRelease: Boolean,
+        tapTarget: View?,
         requireLongPressToDrag: Boolean,
     ): Boolean {
         return when (event.actionMasked) {
@@ -487,6 +476,7 @@ class OverlayForegroundService : Service() {
                 longPressRunnable?.let { overlayView?.removeCallbacks(it) }
                 val released = event.actionMasked == MotionEvent.ACTION_UP
 
+                val consumed = isDragging || hasMovedPastTapSlop
                 if (isDragging) {
                     if (released && isOverlayOverDismissTarget()) {
                         performOverlayHaptic(HapticFeedbackConstants.VIRTUAL_KEY)
@@ -500,13 +490,8 @@ class OverlayForegroundService : Service() {
                         clampToScreen()
                         hideDismissTarget()
                     }
-                } else if (
-                    triggerTapOnRelease &&
-                    released &&
-                    !hasMovedPastTapSlop &&
-                    (!requireLongPressToDrag || !isDragArmed)
-                ) {
-                    overlayView?.performClick()
+                } else if (released && !hasMovedPastTapSlop) {
+                    tapTarget?.performClick()
                 }
                 isDragging = false
                 isDragArmed = false
@@ -516,7 +501,7 @@ class OverlayForegroundService : Service() {
                 if (event.actionMasked == MotionEvent.ACTION_CANCEL) {
                     hideDismissTarget()
                 }
-                true
+                consumed
             }
             else -> false
         }

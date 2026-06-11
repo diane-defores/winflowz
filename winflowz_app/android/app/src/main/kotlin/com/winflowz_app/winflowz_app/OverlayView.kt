@@ -32,7 +32,6 @@ class OverlayView(context: Context) : FrameLayout(context) {
     private val expandedWidth = dpToPx(220f)
     private val expandedHeight = dpToPx(58f)
     private val buttonSize = dpToPx(30f)
-    private val dragHandleWidth = dpToPx(20f)
     private val waveformWidth = dpToPx(64f)
     private val cornerRadius = dpToPx(26f)
 
@@ -45,12 +44,10 @@ class OverlayView(context: Context) : FrameLayout(context) {
     private val processingColor = Color.parseColor("#818cf8")
     private val surfaceColor = Color.parseColor("#111827")
     private val surfaceStrokeColor = Color.parseColor("#334155")
-    private val handleColor = Color.parseColor("#94a3b8")
 
     private val fabView: TextView
     private val recordingChromeView: RecordingChromeView
     private val expandedContainer: LinearLayout
-    private val dragHandle: DragHandleView
     private val cancelButton: TextView
     private val waveformView: WaveformView
     private val pauseButton: TextView
@@ -102,18 +99,6 @@ class OverlayView(context: Context) : FrameLayout(context) {
             elevation = dpToPx(12f).toFloat()
             contentDescription = "WinFlowz recording controls."
         }
-
-        dragHandle = DragHandleView(context, handleColor).apply {
-            layoutParams =
-                LinearLayout.LayoutParams(
-                    dragHandleWidth,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                ).apply {
-                    setMargins(0, 0, dpToPx(6f), 0)
-                }
-            contentDescription = "Drag handle. Drag to move the overlay."
-        }
-        expandedContainer.addView(dragHandle)
 
         cancelButton = TextView(context).apply {
             layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize).apply {
@@ -304,12 +289,21 @@ class OverlayView(context: Context) : FrameLayout(context) {
         onBubbleLongPress?.invoke()
     }
 
-    fun setDragHandleTouchListener(listener: View.OnTouchListener?) {
-        dragHandle.setOnTouchListener(listener)
-    }
+    fun setDragHandleTouchListener(listener: View.OnTouchListener?) = Unit
 
     fun setBubbleTouchListener(listener: View.OnTouchListener?) {
         fabView.setOnTouchListener(listener)
+    }
+
+    fun setOverlayTouchListener(listener: View.OnTouchListener?) {
+        setOnTouchListener(listener)
+        fabView.setOnTouchListener(listener)
+        recordingChromeView.setOnTouchListener(listener)
+        expandedContainer.setOnTouchListener(listener)
+        cancelButton.setOnTouchListener(listener)
+        waveformView.setOnTouchListener(listener)
+        pauseButton.setOnTouchListener(listener)
+        doneButton.setOnTouchListener(listener)
     }
 
     override fun onDetachedFromWindow() {
@@ -337,47 +331,6 @@ class OverlayView(context: Context) : FrameLayout(context) {
             dp,
             resources.displayMetrics,
         ).roundToInt()
-    }
-
-    private class DragHandleView(context: Context, private val color: Int) : View(context) {
-        private val paint =
-            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                this.color = color
-                style = Paint.Style.FILL
-            }
-        private val barWidth =
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3f, resources.displayMetrics)
-        private val barHeight =
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 18f, resources.displayMetrics)
-        private val barGap =
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4f, resources.displayMetrics)
-        private val radius = barWidth / 2f
-
-        override fun onDraw(canvas: Canvas) {
-            super.onDraw(canvas)
-            val totalWidth = barWidth * 2f + barGap
-            val startX = (width - totalWidth) / 2f
-            val top = (height - barHeight) / 2f
-            canvas.drawRoundRect(
-                startX,
-                top,
-                startX + barWidth,
-                top + barHeight,
-                radius,
-                radius,
-                paint,
-            )
-            val secondX = startX + barWidth + barGap
-            canvas.drawRoundRect(
-                secondX,
-                top,
-                secondX + barWidth,
-                top + barHeight,
-                radius,
-                radius,
-                paint,
-            )
-        }
     }
 
     private class RecordingChromeView(
