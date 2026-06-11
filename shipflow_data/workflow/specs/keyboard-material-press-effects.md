@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-06-11"
 created_at: "2026-06-11 02:31:09 UTC"
 updated: "2026-06-11"
-updated_at: "2026-06-11 03:08:12 UTC"
+updated_at: "2026-06-11 12:48:08 UTC"
 status: active
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -53,6 +53,11 @@ evidence:
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt currently draws material effects in drawMaterialPressBackdrop and drawMaterialPressSurface, including some effects as independent fills/strokes."
   - "android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardPressEffects.kt currently emits ripple/confetti/fireworks as separate active effects over key rects."
   - "lib/features/keyboard/presentation/keyboard_theme_studio_screen.dart currently simulates some press effects with gradients, shadows and transforms in the preview."
+  - "User request 2026-06-11: add hidden expressive keyboard effects including water splash, fire, and a small moving mascot trail such as a dragon or spider that follows the last pressed key."
+  - "User request 2026-06-11: dragon mascot should leave sparkles and spider mascot should weave a web-like trail."
+  - "User request 2026-06-11: mascot movement over 3D keys should add a light key press and a shadow so the mascot feels physically present."
+  - "Official Android documentation checked 2026-06-11: custom View animation should keep drawing work lean, avoid allocations during active drawing, and invalidate only when needed."
+  - "Official Flutter documentation checked 2026-06-11: CustomPainter can repaint from a Listenable without forcing build/layout, supporting lightweight preview painters."
 next_step: "/103-sf-verify shipflow_data/workflow/specs/keyboard-material-press-effects.md"
 ---
 
@@ -62,7 +67,7 @@ Keyboard Material Press Effects
 
 ## Status
 
-Implemented locally, pending native verification. `/101-sf-ready` validated the user story, scope, proof gates, security posture, documentation impact, and effect compatibility decisions on 2026-06-11. `/102-sf-start` implemented the local renderer, preview, diagnostics, documentation, and checklist changes on 2026-06-11. The next lifecycle step is `/103-sf-verify shipflow_data/workflow/specs/keyboard-material-press-effects.md`.
+Implemented locally, pending native verification. `/101-sf-ready` validated the user story, scope, proof gates, security posture, documentation impact, and effect compatibility decisions on 2026-06-11. `/102-sf-start` implemented the local renderer, preview, diagnostics, documentation, and checklist changes on 2026-06-11. `001-sf-build` extended the chantier on 2026-06-11 with expressive hidden effects: `waterSplash`, `emberBurst`, `dragonTrail`, and `spiderTrail`; then refined dragon/spider trails with sparkles, web strands, mascot shadows, and light 3D key pressure. The next lifecycle step is `/103-sf-verify shipflow_data/workflow/specs/keyboard-material-press-effects.md`.
 
 ## User Story
 
@@ -82,6 +87,11 @@ When a user presses a key in the Android IME or its Flutter preview, the selecte
 - Given `scale`, `pulse`, `keycapTilt` or `edgeCompression` is selected, when the key is pressed, the transform applies to the same geometry model used for the base key and relief.
 - Given `specularSweep` or `inkPress` is selected, when the key is pressed, the gradient is clipped to the top surface and respects the relief faces instead of painting over unrelated areas.
 - Given `ripple`, `confettiLite` or `fireworksLite` is selected, when the key is pressed, the effect starts from a key edge/surface anchor after a material key reaction. If the effect cannot remain attached and professional, it is reduced or disabled in relief mode.
+- Given `waterSplash` or `emberBurst` is selected, when the key is pressed, the key surface reacts first and a bounded anchored particle burst suggests water or embers without obscuring neighboring keys.
+- Given `dragonTrail` is selected, when the user taps successive keys, a small persistent dragon moves toward the latest key target, changes direction immediately on the next tap, and leaves a short trail with fading ember sparkles.
+- Given `spiderTrail` is selected, when the user taps successive keys, a small persistent spider moves toward the latest key target, changes direction immediately on the next tap, and leaves a fine web-like trail with subtle cross strands.
+- Given a mascot crosses or arrives on a relief-enabled key, when it overlaps the key surface, the key depresses only slightly as a hover/weight cue, without changing text input state or looking like a user tap.
+- Given a mascot is visible, when it moves across 2D or 3D keys, it draws a small shadow under the mascot so it reads as present on the keyboard surface.
 - Given the user previews the theme in Flutter Studio, when a key is pressed, the preview follows the same material effect semantics as the native keyboard even if it is not pixel-perfect.
 - Given a key is near another key, when an effect animates, it does not hide the neighbor's top border or draw through neighboring key surfaces.
 - Given private/sensitive field policy is active, when a key is pressed, decorative material effects are reduced or disabled without changing input behavior.
@@ -111,6 +121,8 @@ Introduce a material-aware key press effect pipeline. The native renderer first 
 - Refactor `WinFlowzKeyboardView.drawKey` so base key rendering and press effect rendering use the same geometry object.
 - Replace detached native `glow`, `electricArc`, `shake`, `scale`, `pulse`, `specularSweep`, `inkPress`, `keycapTilt`, and `edgeCompression` behavior with material-aware implementations.
 - Rework `KeyboardPressEffects.kt` so emitted effects are edge/surface anchored and secondary, or disabled/degraded where they cannot remain material-attached.
+- Add bounded expressive effect modes: water splash, ember/fire burst, dragon trail, and spider trail.
+- Keep mascot effects in the existing advanced/collapsed effects area rather than adding prominent onboarding or marketing UI.
 - Ensure all effects compose with key relief and with relief disabled.
 - Ensure text, corner glyphs, pinned badges, active state, disabled state, special/action keys, scrollable rows and private mode remain correct.
 - Update Flutter `KeyboardThemeStudioScreen` preview to use the same semantics for surface, border, relief and effect families.
@@ -124,6 +136,7 @@ Introduce a material-aware key press effect pipeline. The native renderer first 
 - No new third-party animation, shader, physics or particle engine unless `/101-sf-ready` explicitly approves it after official documentation review.
 - No full redesign of keyboard layout, row geometry, hit testing, corner shortcuts, snippets, clipboard, suggestions, voice, media controls, or text dispatch.
 - No new user-facing effect names unless implementation proves an existing effect cannot be remastered under its current semantics.
+- No snow/holiday effect in this batch.
 - No marketplace, cloud sync, theme sharing, or remote effect packs.
 - No GPU renderer, 3D engine, OpenGL, Compose migration, or custom shader pipeline in this chantier.
 - No Android build/install/Gradle validation on this VM; Android compile/build proof must use allowed CI/Blacksmith or operator device workflow.
@@ -163,7 +176,11 @@ Introduce a material-aware key press effect pipeline. The native renderer first 
   - `KMP-007`: `ripple`, `confettiLite`, and `fireworksLite` are edge/surface anchored or gracefully degraded in relief mode.
   - `KMP-008`: private field policy reduces or disables decorative effects while preserving normal input.
   - `KMP-009`: fast typing does not create stuck animations, unbounded effect queues, or frame jank obvious to the user.
-  - `KMP-010`: Flutter preview communicates the same material effect semantics as the native IME.
+- `KMP-010`: Flutter preview communicates the same material effect semantics as the native IME.
+- `KMP-011`: `waterSplash` and `emberBurst` remain anchored, bounded, finite, and readable during fast typing.
+- `KMP-012`: `dragonTrail` and `spiderTrail` move toward the latest pressed key, retarget on rapid taps, and fade their trail without stuck animation.
+- `KMP-013`: `dragonTrail` leaves short ember sparkles and `spiderTrail` leaves web-like cross strands without hiding labels or neighbor borders.
+- `KMP-014`: mascot overlap gives relief-enabled keys a subtle partial press and draws a mascot shadow without changing input state.
 - Required results:
   - The implementation can prove that non-decorative press effects use shared key material geometry rather than detached overlay rectangles.
   - The implementation can prove that decorative emitted effects are either edge/surface anchored or intentionally degraded in relief mode.
@@ -321,6 +338,13 @@ Introduce a material-aware key press effect pipeline. The native renderer first 
   - Depends on : Tâches 1-10.
   - Validate with : Documentation review and metadata check if governance docs are touched.
 
+- [x] Tâche 12 : Add expressive splash/fire and mascot trail effects
+  - Fichiers : `lib/features/keyboard/domain/keyboard_models.dart`, `lib/features/keyboard/domain/keyboard_theme_validation.dart`, `lib/features/keyboard/presentation/keyboard_theme_studio_screen.dart`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardThemeModels.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardPressEffects.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/WinFlowzKeyboardView.kt`, `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/KeyboardStateStore.kt`
+  - Action : Add `waterSplash`, `emberBurst`, `dragonTrail`, and `spiderTrail` as saved-theme-compatible effects, with bounded native rendering, preview rendering, diagnostics classification, private-mode fallback, and validation warnings.
+  - User story link : Gives Diane hidden expressive keyboard effects without adding heavy renderer dependencies or risking typed-content privacy.
+  - Depends on : Tâches 1-11.
+  - Validate with : `flutter analyze`, focused Flutter tests, native parser tests through allowed CI/Blacksmith, and physical Android IME QA.
+
 ## Acceptance Criteria
 
 - Native key press effects use shared material geometry instead of independent overlay rectangles for all non-decorative effects.
@@ -378,6 +402,9 @@ None.
 | 2026-06-11 02:31:09 UTC | 100-sf-spec | GPT-5 Codex | Created spec from Diane's request to remaster keyboard press effects as material/geometry-aware interactions. | Draft spec written. | /101-sf-ready shipflow_data/workflow/specs/keyboard-material-press-effects.md |
 | 2026-06-11 02:53:38 UTC | 101-sf-ready | GPT-5 Codex | Validated readiness, tightened proof results, and resolved emitted-effect compatibility decision. | Ready. | /102-sf-start shipflow_data/workflow/specs/keyboard-material-press-effects.md |
 | 2026-06-11 03:08:12 UTC | 102-sf-start | GPT-5 Codex | Implemented material key geometry, relief-aware native effects, anchored emitted effects, Flutter Studio preview parity, safe diagnostics, Android-native docs, and QA checklist. | Local Flutter proof passed; native Android compile/device proof still required by guardrails. | /103-sf-verify shipflow_data/workflow/specs/keyboard-material-press-effects.md |
+| 2026-06-11 12:12:25 UTC | 001-sf-build | GPT-5 Codex | Extended the material effects chantier with water splash, ember burst, dragon trail, and spider trail after official Android/Flutter rendering docs review. | Implemented locally; local checks pending in this run. | /103-sf-verify shipflow_data/workflow/specs/keyboard-material-press-effects.md |
+| 2026-06-11 12:20:29 UTC | 001-sf-build | GPT-5 Codex | Refined mascot trails so dragon leaves ember sparkles and spider leaves web-like cross strands in native rendering and Flutter preview. | Implemented locally; Flutter targeted tests, analyze, full Flutter test, and spec metadata lint passed. | /103-sf-verify shipflow_data/workflow/specs/keyboard-material-press-effects.md |
+| 2026-06-11 12:48:08 UTC | 001-sf-build | GPT-5 Codex | Added mascot shadow and subtle relief-key pressure when a mascot overlaps a 3D key surface. | Implemented locally; Flutter targeted tests, analyze, full Flutter test, and spec metadata lint passed. | /103-sf-verify shipflow_data/workflow/specs/keyboard-material-press-effects.md |
 
 ## Current Chantier Flow
 
@@ -386,6 +413,6 @@ None.
 | 100-sf-spec | done | Draft spec created on 2026-06-11. |
 | 101-sf-ready | done | Ready gate passed on 2026-06-11; proof results and emitted-effect compatibility decisions are explicit. |
 | 102-sf-start | done | Local implementation completed on 2026-06-11; `flutter analyze`, Studio test, and theme validation test passed. |
-| 103-sf-verify | next | Verify docs/metadata, Android CI/Blacksmith native proof, and Diane physical-device QA evidence. |
+| 103-sf-verify | next | Verify docs/metadata, local Flutter proof, Android CI/Blacksmith native proof, and Diane physical-device QA evidence including expressive effects. |
 | 104-sf-end | pending | Close chantier after verified implementation. |
 | 005-sf-ship | pending | Ship only after bug/risk gates and allowed deploy/build proof. |

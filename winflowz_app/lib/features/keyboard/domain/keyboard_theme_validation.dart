@@ -60,10 +60,10 @@ class KeyboardThemeValidator {
     if (config.borderWidth > 3) {
       warnings.add('Thick borders reduce available key label space.');
     }
-    if ((config.pressEffect == KeyboardThemePressEffect.confettiLite ||
-            config.pressEffect == KeyboardThemePressEffect.fireworksLite) &&
+    if ((_isParticleEffect(config.pressEffect) ||
+            _isMascotEffect(config.pressEffect)) &&
         config.effectDurationMs > 360) {
-      warnings.add('Particle effects are capped natively for performance.');
+      warnings.add('Expressive effects are capped natively for performance.');
     }
 
     return KeyboardThemeValidationResult(errors: errors, warnings: warnings);
@@ -86,5 +86,17 @@ class KeyboardThemeValidator {
     }
 
     return 0.2126 * channel(16) + 0.7152 * channel(8) + 0.0722 * channel(0);
+  }
+
+  static bool _isParticleEffect(KeyboardThemePressEffect effect) {
+    return effect == KeyboardThemePressEffect.confettiLite ||
+        effect == KeyboardThemePressEffect.fireworksLite ||
+        effect == KeyboardThemePressEffect.waterSplash ||
+        effect == KeyboardThemePressEffect.emberBurst;
+  }
+
+  static bool _isMascotEffect(KeyboardThemePressEffect effect) {
+    return effect == KeyboardThemePressEffect.dragonTrail ||
+        effect == KeyboardThemePressEffect.spiderTrail;
   }
 }

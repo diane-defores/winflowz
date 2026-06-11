@@ -147,6 +147,35 @@ void main() {
     expect(parsed.effectEasing, KeyboardThemeEffectEasing.spring);
   });
 
+  test('round-trips expressive press effects', () {
+    for (final effect in [
+      KeyboardThemePressEffect.waterSplash,
+      KeyboardThemePressEffect.emberBurst,
+      KeyboardThemePressEffect.dragonTrail,
+      KeyboardThemePressEffect.spiderTrail,
+    ]) {
+      final parsed = KeyboardThemeConfig.fromMap({'pressEffect': effect.name});
+
+      expect(parsed.pressEffect, effect);
+      expect(parsed.toMap()['pressEffect'], effect.name);
+    }
+  });
+
+  test('warns when expressive effects run too long', () {
+    final result = KeyboardThemeValidator.validate(
+      KeyboardThemeConfig.defaults().copyWith(
+        pressEffect: KeyboardThemePressEffect.dragonTrail,
+        effectDurationMs: 420,
+      ),
+    );
+
+    expect(result.errors, isEmpty);
+    expect(
+      result.warnings,
+      contains('Expressive effects are capped natively for performance.'),
+    );
+  });
+
   test('ignores legacy key width scale', () {
     final parsed = KeyboardThemeConfig.fromMap({'keyWidthScale': 0.75});
 

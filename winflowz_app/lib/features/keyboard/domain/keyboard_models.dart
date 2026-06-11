@@ -38,7 +38,11 @@ enum KeyboardThemePressEffect {
   keycapTilt,
   edgeCompression,
   confettiLite,
-  fireworksLite;
+  fireworksLite,
+  waterSplash,
+  emberBurst,
+  dragonTrail,
+  spiderTrail;
 
   static KeyboardThemePressEffect fromName(String value) {
     return KeyboardThemePressEffect.values.firstWhere(
@@ -986,16 +990,8 @@ class KeyboardConfigurableKeyCatalog {
     KeyboardLayoutProfile.azerty,
   );
 
-  static const _qwertyBase = [
-    'qwertyuiop',
-    'asdfghjkl;',
-    'zxcvbnm',
-  ];
-  static const _azertyBase = [
-    'azertyuiop',
-    'qsdfghjklm',
-    'wxcvbn',
-  ];
+  static const _qwertyBase = ['qwertyuiop', 'asdfghjkl;', 'zxcvbnm'];
+  static const _azertyBase = ['azertyuiop', 'qsdfghjklm', 'wxcvbn'];
 
   static List<KeyboardConfigurableKey> keysForProfile(
     KeyboardLayoutProfile profile,
@@ -1014,10 +1010,7 @@ class KeyboardConfigurableKeyCatalog {
     );
   }
 
-  static bool containsForProfile(
-    KeyboardLayoutProfile profile,
-    String id,
-  ) {
+  static bool containsForProfile(KeyboardLayoutProfile profile, String id) {
     return keysForProfile(profile).any((key) => key.id == id);
   }
 
@@ -1026,7 +1019,9 @@ class KeyboardConfigurableKeyCatalog {
   static List<KeyboardConfigurableKey> _buildKeysForProfile(
     KeyboardLayoutProfile profile,
   ) {
-    final rows = profile == KeyboardLayoutProfile.azerty ? _azertyBase : _qwertyBase;
+    final rows = profile == KeyboardLayoutProfile.azerty
+        ? _azertyBase
+        : _qwertyBase;
     final catalog = <KeyboardConfigurableKey>[];
 
     void addCharKey(String value) {
@@ -1039,12 +1034,24 @@ class KeyboardConfigurableKeyCatalog {
           ),
         );
       } else {
-        catalog.add(KeyboardConfigurableKey(id: 'letter-$value', label: value.toUpperCase(), row: 1));
+        catalog.add(
+          KeyboardConfigurableKey(
+            id: 'letter-$value',
+            label: value.toUpperCase(),
+            row: 1,
+          ),
+        );
       }
     }
 
     for (final top in rows[0].split('')) {
-      catalog.add(KeyboardConfigurableKey(id: 'letter-$top', label: top.toUpperCase(), row: 0));
+      catalog.add(
+        KeyboardConfigurableKey(
+          id: 'letter-$top',
+          label: top.toUpperCase(),
+          row: 0,
+        ),
+      );
     }
     for (final middle in rows[1].split('')) {
       addCharKey(middle);
@@ -1058,7 +1065,13 @@ class KeyboardConfigurableKeyCatalog {
       ),
     );
     for (final bottom in rows[2].split('')) {
-      catalog.add(KeyboardConfigurableKey(id: 'letter-$bottom', label: bottom.toUpperCase(), row: 2));
+      catalog.add(
+        KeyboardConfigurableKey(
+          id: 'letter-$bottom',
+          label: bottom.toUpperCase(),
+          row: 2,
+        ),
+      );
     }
     catalog.add(
       const KeyboardConfigurableKey(
@@ -1069,55 +1082,56 @@ class KeyboardConfigurableKeyCatalog {
       ),
     );
 
-    catalog.addAll(
-      [
-        const KeyboardConfigurableKey(
-          id: 'modifier-ctrl',
-          label: 'Ctrl',
-          row: 3,
-          special: true,
-        ),
-        const KeyboardConfigurableKey(
-          id: 'modifier-alt',
-          label: 'Alt',
-          row: 3,
-          special: true,
-        ),
-        const KeyboardConfigurableKey(
-          id: 'modifier-fn',
-          label: 'Fn',
-          row: 3,
-          special: true,
-        ),
-        const KeyboardConfigurableKey(
-          id: 'text-comma',
-          label: ',',
-          row: 3,
-          special: true,
-        ),
-        const KeyboardConfigurableKey(id: 'space', label: 'Space', row: 3, special: true),
-        const KeyboardConfigurableKey(
-          id: 'text-period',
-          label: '.',
-          row: 3,
-          special: true,
-        ),
-        const KeyboardConfigurableKey(id: 'enter', label: 'Enter', row: 3, special: true),
-      ],
-    );
+    catalog.addAll([
+      const KeyboardConfigurableKey(
+        id: 'modifier-ctrl',
+        label: 'Ctrl',
+        row: 3,
+        special: true,
+      ),
+      const KeyboardConfigurableKey(
+        id: 'modifier-alt',
+        label: 'Alt',
+        row: 3,
+        special: true,
+      ),
+      const KeyboardConfigurableKey(
+        id: 'modifier-fn',
+        label: 'Fn',
+        row: 3,
+        special: true,
+      ),
+      const KeyboardConfigurableKey(
+        id: 'text-comma',
+        label: ',',
+        row: 3,
+        special: true,
+      ),
+      const KeyboardConfigurableKey(
+        id: 'space',
+        label: 'Space',
+        row: 3,
+        special: true,
+      ),
+      const KeyboardConfigurableKey(
+        id: 'text-period',
+        label: '.',
+        row: 3,
+        special: true,
+      ),
+      const KeyboardConfigurableKey(
+        id: 'enter',
+        label: 'Enter',
+        row: 3,
+        special: true,
+      ),
+    ]);
 
     final prefix = _legacyKeysV2.take(11);
     if (profile == KeyboardLayoutProfile.azerty) {
-      return [
-        ...prefix,
-        ...catalog.take(16),
-        ...catalog.skip(16),
-      ];
+      return [...prefix, ...catalog.take(16), ...catalog.skip(16)];
     }
-    return [
-      ...prefix,
-      ...catalog,
-    ];
+    return [...prefix, ...catalog];
   }
 
   static const _legacyKeysV2 = [
@@ -1270,10 +1284,8 @@ class KeyboardConfigurableKeyCatalog {
     return byIdForProfile(KeyboardLayoutProfile.qwerty, id);
   }
 
-  static bool contains(String id) => containsForProfile(
-    KeyboardLayoutProfile.qwerty,
-    id,
-  );
+  static bool contains(String id) =>
+      containsForProfile(KeyboardLayoutProfile.qwerty, id);
 }
 
 class AndroidKeyboardCornerShortcut {
@@ -1432,11 +1444,7 @@ class KeyboardGuidedAction {
 class KeyboardGuidedActionCatalog {
   const KeyboardGuidedActionCatalog._();
 
-  static const accents = [
-    'é',
-    'è',
-    'ç',
-  ];
+  static const accents = ['é', 'è', 'ç'];
 
   static const punctuation = [
     '?',

@@ -331,6 +331,12 @@ object KeyboardCornerPresets {
     private fun frenchAccentShortcuts(): List<KeyboardCornerShortcut> {
         return listOf(
             shortcut(
+                "letter-a",
+                KeyboardCornerSlot.TopLeft,
+                "à",
+                layoutProfiles = setOf(KeyboardLayoutProfile.AZERTY),
+            ),
+            shortcut(
                 "letter-e",
                 KeyboardCornerSlot.TopLeft,
                 "é",
@@ -377,6 +383,10 @@ object KeyboardCornerPresets {
             shortcut("letter-c", KeyboardCornerSlot.Up, "8"),
             shortcut("letter-v", KeyboardCornerSlot.Up, "9"),
             shortcut("letter-b", KeyboardCornerSlot.Up, "0"),
+            shortcut("letter-a", KeyboardCornerSlot.TopRight, "@"),
+            shortcut("letter-p", KeyboardCornerSlot.TopLeft, "action:PasteClipboard", label = "Paste"),
+            shortcut("letter-p", KeyboardCornerSlot.BottomRight, "/", label = "/"),
+            shortcut("letter-r", KeyboardCornerSlot.Down, "action:NavigateLineEnd", label = "Fin"),
             shortcut(
                 "letter-e",
                 KeyboardCornerSlot.Up,
@@ -401,10 +411,13 @@ object KeyboardCornerPresets {
             shortcut(
                 "letter-u",
                 KeyboardCornerSlot.Down,
-                "action:NavigateLineDown",
-                label = "↓",
-                layoutProfiles = setOf(KeyboardLayoutProfile.AZERTY),
+                "action:NavigateLineStart",
+                label = "Début",
             ),
+            shortcut("letter-o", KeyboardCornerSlot.Left, "action:NavigateWordLeft", label = "Word←"),
+            shortcut("letter-o", KeyboardCornerSlot.Right, "action:DeleteWordAfter", label = "DelW→"),
+            shortcut("letter-z", KeyboardCornerSlot.Left, "action:DeleteWordBefore", label = "DelW←"),
+            shortcut("letter-z", KeyboardCornerSlot.Right, "action:NavigateWordRight", label = "Word→"),
             shortcut(
                 "letter-z",
                 KeyboardCornerSlot.BottomLeft,

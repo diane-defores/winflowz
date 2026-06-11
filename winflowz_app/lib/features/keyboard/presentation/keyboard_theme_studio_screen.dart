@@ -822,6 +822,10 @@ String _effectLabel(KeyboardThemePressEffect effect) {
     KeyboardThemePressEffect.edgeCompression => 'Compression des bords',
     KeyboardThemePressEffect.confettiLite => 'Confettis légers',
     KeyboardThemePressEffect.fireworksLite => 'Feu d’artifice léger',
+    KeyboardThemePressEffect.waterSplash => 'Splash d’eau',
+    KeyboardThemePressEffect.emberBurst => 'Brasier léger',
+    KeyboardThemePressEffect.dragonTrail => 'Dragon discret',
+    KeyboardThemePressEffect.spiderTrail => 'Araignée discrète',
   };
 }
 
@@ -1749,7 +1753,11 @@ class _ThemeDraftPreviewState extends State<_ThemeDraftPreview> {
       KeyboardThemePressEffect.inkPress ||
       KeyboardThemePressEffect.keycapTilt ||
       KeyboardThemePressEffect.confettiLite ||
-      KeyboardThemePressEffect.fireworksLite => 1,
+      KeyboardThemePressEffect.fireworksLite ||
+      KeyboardThemePressEffect.waterSplash ||
+      KeyboardThemePressEffect.emberBurst ||
+      KeyboardThemePressEffect.dragonTrail ||
+      KeyboardThemePressEffect.spiderTrail => 1,
     };
     final animatedOffsetX = switch (theme.pressEffect) {
       KeyboardThemePressEffect.shake when pressed =>
@@ -2236,7 +2244,11 @@ List<BoxShadow>? _previewKeyShadows({
 bool _usesEmittedPressEffect(KeyboardThemePressEffect effect) {
   return effect == KeyboardThemePressEffect.ripple ||
       effect == KeyboardThemePressEffect.confettiLite ||
-      effect == KeyboardThemePressEffect.fireworksLite;
+      effect == KeyboardThemePressEffect.fireworksLite ||
+      effect == KeyboardThemePressEffect.waterSplash ||
+      effect == KeyboardThemePressEffect.emberBurst ||
+      effect == KeyboardThemePressEffect.dragonTrail ||
+      effect == KeyboardThemePressEffect.spiderTrail;
 }
 
 double _weightedKeyboardOpacity(
@@ -2464,6 +2476,25 @@ class _PreviewPressEffectPainter extends CustomPainter {
 
   final KeyboardThemeConfig theme;
 
+  static const _celebrationPalette = <Color>[
+    Color(0xFF36B384),
+    Color(0xFFFFD166),
+    Color(0xFFEF476F),
+    Color(0xFF4CC9F0),
+  ];
+  static const _waterPalette = <Color>[
+    Color(0xFF4CC9F0),
+    Color(0xFF90E0EF),
+    Color(0xFFCAF0F8),
+    Color(0xFF48CAE4),
+  ];
+  static const _emberPalette = <Color>[
+    Color(0xFFFFD166),
+    Color(0xFFFF8C42),
+    Color(0xFFEF476F),
+    Color(0xFFFFF1A8),
+  ];
+
   @override
   void paint(Canvas canvas, Size size) {
     final accent = Color(theme.activeKeyColor);
@@ -2487,29 +2518,44 @@ class _PreviewPressEffectPainter extends CustomPainter {
         );
       case KeyboardThemePressEffect.confettiLite:
       case KeyboardThemePressEffect.fireworksLite:
+      case KeyboardThemePressEffect.waterSplash:
+      case KeyboardThemePressEffect.emberBurst:
         final count =
             theme.pressEffect == KeyboardThemePressEffect.fireworksLite
             ? 16
+            : theme.pressEffect == KeyboardThemePressEffect.waterSplash
+            ? 12
             : 10;
-        final colors = <Color>[
-          const Color(0xFF36B384),
-          const Color(0xFFFFD166),
-          const Color(0xFFEF476F),
-          const Color(0xFF4CC9F0),
-        ];
+        final colors = switch (theme.pressEffect) {
+          KeyboardThemePressEffect.waterSplash => _waterPalette,
+          KeyboardThemePressEffect.emberBurst => _emberPalette,
+          _ => _celebrationPalette,
+        };
         for (var i = 0; i < count; i++) {
           final angle = math.pi * 2 * i / count;
-          final distance = 18 + (i % 4) * 5 + theme.effectIntensity * 16;
+          final distance =
+              14 +
+              (i % 4) * 5 +
+              theme.effectIntensity *
+                  (theme.pressEffect == KeyboardThemePressEffect.emberBurst
+                      ? 20
+                      : 16);
           paint
             ..style = PaintingStyle.fill
             ..color = colors[i % colors.length];
           canvas.drawCircle(
             anchor +
                 Offset(math.cos(angle) * distance, math.sin(angle) * distance),
-            2.8,
+            theme.pressEffect == KeyboardThemePressEffect.waterSplash
+                ? 2.2
+                : 2.8,
             paint,
           );
         }
+      case KeyboardThemePressEffect.dragonTrail:
+        _drawMascotTrail(canvas, size, accent, spider: false);
+      case KeyboardThemePressEffect.spiderTrail:
+        _drawMascotTrail(canvas, size, accent, spider: true);
       case KeyboardThemePressEffect.none:
       case KeyboardThemePressEffect.scale:
       case KeyboardThemePressEffect.pulse:
@@ -2523,6 +2569,166 @@ class _PreviewPressEffectPainter extends CustomPainter {
         break;
     }
     canvas.restore();
+  }
+
+  void _drawMascotTrail(
+    Canvas canvas,
+    Size size,
+    Color accent, {
+    required bool spider,
+  }) {
+    final path = Path()
+      ..moveTo(size.width * .18, size.height * .70)
+      ..quadraticBezierTo(
+        size.width * .42,
+        size.height * .30,
+        size.width * .70,
+        size.height * .42,
+      )
+      ..lineTo(size.width * .82, size.height * .30);
+    final strokePaint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = spider ? 1.4 : 2.4
+      ..color = (spider ? Colors.white : accent).withValues(alpha: .70);
+    canvas.drawPath(path, strokePaint);
+    if (spider) {
+      _drawPreviewWebThreads(canvas, size);
+    } else {
+      _drawPreviewDragonSparks(canvas, size);
+    }
+
+    final center = Offset(size.width * .82, size.height * .30);
+    _drawPreviewMascotShadow(canvas, center, accent, spider: spider);
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    if (spider) {
+      _drawPreviewSpider(canvas, math.min(size.width, size.height) * .15);
+    } else {
+      _drawPreviewDragon(
+        canvas,
+        math.min(size.width, size.height) * .16,
+        accent,
+      );
+    }
+    canvas.restore();
+  }
+
+  void _drawPreviewMascotShadow(
+    Canvas canvas,
+    Offset center,
+    Color accent, {
+    required bool spider,
+  }) {
+    final paint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.fill
+      ..color =
+          (spider
+                  ? Colors.black
+                  : Color.lerp(Colors.black, accent, .26) ?? Colors.black)
+              .withValues(alpha: spider ? .30 : .34);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: center.translate(0, 4.4),
+        width: spider ? 9.5 : 13.0,
+        height: spider ? 3.4 : 4.2,
+      ),
+      paint,
+    );
+  }
+
+  void _drawPreviewDragonSparks(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.fill;
+    final points = <Offset>[
+      Offset(size.width * .24, size.height * .62),
+      Offset(size.width * .38, size.height * .44),
+      Offset(size.width * .54, size.height * .38),
+      Offset(size.width * .66, size.height * .42),
+    ];
+    for (var index = 0; index < points.length; index++) {
+      paint.color = _emberPalette[index % _emberPalette.length].withValues(
+        alpha: .80 - index * .10,
+      );
+      canvas.drawCircle(points[index], 1.7 + (index % 2) * .6, paint);
+    }
+  }
+
+  void _drawPreviewWebThreads(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = .8
+      ..strokeCap = StrokeCap.round
+      ..color = Colors.white.withValues(alpha: .56);
+    final threads = <(Offset, Offset)>[
+      (
+        Offset(size.width * .34, size.height * .48),
+        Offset(size.width * .42, size.height * .56),
+      ),
+      (
+        Offset(size.width * .49, size.height * .36),
+        Offset(size.width * .58, size.height * .46),
+      ),
+      (
+        Offset(size.width * .65, size.height * .39),
+        Offset(size.width * .70, size.height * .50),
+      ),
+    ];
+    for (final thread in threads) {
+      canvas.drawLine(thread.$1, thread.$2, paint);
+    }
+  }
+
+  void _drawPreviewDragon(Canvas canvas, double size, Color accent) {
+    final paint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.fill
+      ..color = accent.withValues(alpha: .90);
+    final body = Path()
+      ..moveTo(size * 1.2, 0)
+      ..lineTo(-size * .8, -size * .55)
+      ..lineTo(-size * .32, 0)
+      ..lineTo(-size * .8, size * .55)
+      ..close();
+    canvas.drawPath(body, paint);
+    paint.color = Colors.white.withValues(alpha: .82);
+    canvas.drawCircle(Offset(size * .44, -size * .14), size * .12, paint);
+  }
+
+  void _drawPreviewSpider(Canvas canvas, double size) {
+    final strokePaint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1
+      ..color = Colors.white.withValues(alpha: .82);
+    for (var index = 0; index < 4; index++) {
+      final y = (-.45 + index * .30) * size;
+      canvas.drawLine(
+        Offset(-size * .14, y),
+        Offset(-size * .9, y - size * .25),
+        strokePaint,
+      );
+      canvas.drawLine(
+        Offset(size * .14, y),
+        Offset(size * .9, y - size * .25),
+        strokePaint,
+      );
+    }
+    final fillPaint = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF1E2421).withValues(alpha: .94);
+    canvas.drawOval(
+      Rect.fromLTRB(-size * .42, -size * .52, size * .42, size * .52),
+      fillPaint,
+    );
+    fillPaint.color = Colors.white.withValues(alpha: .88);
+    canvas.drawCircle(Offset(size * .16, -size * .16), size * .08, fillPaint);
+    canvas.drawCircle(Offset(size * .16, size * .16), size * .08, fillPaint);
   }
 
   @override

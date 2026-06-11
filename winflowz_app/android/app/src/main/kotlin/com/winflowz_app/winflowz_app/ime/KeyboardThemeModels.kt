@@ -457,6 +457,10 @@ data class KeyboardThemeConfig(
                 "edgeCompression",
                 "confettiLite",
                 "fireworksLite",
+                "waterSplash",
+                "emberBurst",
+                "dragonTrail",
+                "spiderTrail",
             )
         private val allowedGradientStyles = setOf("linear", "radial")
         private val allowedEasings = setOf("easeOut", "linear", "spring")

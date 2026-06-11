@@ -138,10 +138,10 @@ class KeyboardThemeModelsTest {
 
     @Test
     fun `private mode disables press effects`() {
-        val config = KeyboardThemeConfig(pressEffect = "fireworksLite")
+        val config = KeyboardThemeConfig(pressEffect = "spiderTrail")
 
         assertEquals("none", KeyboardPressEffectPolicy.resolve(config, privateMode = true).effect)
-        assertEquals("fireworksLite", KeyboardPressEffectPolicy.resolve(config, privateMode = false).effect)
+        assertEquals("spiderTrail", KeyboardPressEffectPolicy.resolve(config, privateMode = false).effect)
     }
 
     @Test

@@ -383,7 +383,12 @@ class KeyboardStateStore(private val context: Context) {
             "ripple",
             "confettiLite",
             "fireworksLite",
+            "waterSplash",
+            "emberBurst",
             -> "material_surface_with_anchored_emission"
+            "dragonTrail",
+            "spiderTrail",
+            -> "material_surface_with_mascot_trail"
             "scale",
             "pulse",
             "shake",

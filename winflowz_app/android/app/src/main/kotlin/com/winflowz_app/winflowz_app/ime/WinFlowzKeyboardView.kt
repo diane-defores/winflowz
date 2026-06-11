@@ -3216,13 +3216,26 @@ class WinFlowzKeyboardView(
         val drawRadius = resolvedKeyRadius * radiusScale.coerceIn(0.75f, 1f)
         val pressed =
             key.id in activePointerPressedKeyIds || key.id in lingeringPressedKeyIds || isLongPressSwipeHovered
+        val mascotPressFactor =
+            if (!fieldPolicy.privateMode && key.enabled) {
+                pressEffects.mascotPressFactor(rect)
+            } else {
+                0f
+            }
+        val reliefPressFactor =
+            if (pressed) {
+                1f
+            } else {
+                mascotPressFactor * MASCOT_KEY_PRESS_FACTOR
+            }
+        val reliefPressed = reliefPressFactor > 0.01f
         val materialEffect = materialPressEffect(pressed)
         val materialProgress = materialPressProgress(key.id)
         val reliefDepth = if (!fieldPolicy.privateMode && themeConfig.keyReliefEnabled) dp(themeConfig.keyReliefDepth) else 0f
         val footprintRect = materialPressRect(rect, materialEffect, materialProgress)
         val drawRect =
             if (reliefDepth > 0f) {
-                keyReliefSurfaceRect(footprintRect, reliefDepth, pressed)
+                keyReliefSurfaceRect(footprintRect, reliefDepth, reliefPressFactor)
             } else {
                 RectF(footprintRect)
             }
@@ -3232,7 +3245,7 @@ class WinFlowzKeyboardView(
                 surfaceRect = drawRect,
                 radius = drawRadius,
                 baseColor = paint.color,
-                pressed = pressed,
+                pressed = pressed || reliefPressed,
                 reliefDepth = reliefDepth,
             )
         if (!hideInactiveLongPressSwipeSurface && !fieldPolicy.privateMode && themeConfig.presetId != "system" && themeConfig.shadowBlur > 0f) {
@@ -3252,11 +3265,11 @@ class WinFlowzKeyboardView(
         if (!hideInactiveLongPressSwipeSurface) {
             drawMaterialPressBackdrop(canvas, materialGeometry, materialEffect, materialProgress)
             if (reliefDepth > 0f) {
-                drawKeyReliefSides(canvas, drawRect, footprintRect, drawRadius, paint.color, pressed)
+                drawKeyReliefSides(canvas, drawRect, footprintRect, drawRadius, paint.color, pressed || reliefPressed)
             }
             canvas.drawRoundRect(drawRect, drawRadius, drawRadius, paint)
             if (reliefDepth > 0f) {
-                drawKeyReliefSurface(canvas, drawRect, drawRadius, paint.color, pressed)
+                drawKeyReliefSurface(canvas, drawRect, drawRadius, paint.color, pressed || reliefPressed)
             }
             drawMaterialPressSurface(canvas, materialGeometry, materialEffect, materialProgress)
             if (!fieldPolicy.privateMode && keyBorderPaint.strokeWidth > 0f && Color.alpha(keyBorderPaint.color) > 0) {
@@ -3423,10 +3436,14 @@ class WinFlowzKeyboardView(
             "specularSweep",
             "inkPress",
             "keycapTilt",
-            "edgeCompression",
-            "ripple",
-            "confettiLite",
-            "fireworksLite",
+                "edgeCompression",
+                "ripple",
+                "confettiLite",
+                "fireworksLite",
+                "waterSplash",
+                "emberBurst",
+                "dragonTrail",
+                "spiderTrail",
             -> themeConfig.pressEffect
             else -> "none"
         }
@@ -3483,6 +3500,10 @@ class WinFlowzKeyboardView(
             "ripple",
             "confettiLite",
             "fireworksLite",
+            "waterSplash",
+            "emberBurst",
+            "dragonTrail",
+            "spiderTrail",
             -> {
                 if (progress < 1f) materialPressEffectAnimating = true
             }
@@ -3538,7 +3559,17 @@ class WinFlowzKeyboardView(
             canvas.drawRoundRect(geometry.surfaceRect, geometry.radius, geometry.radius, keyEffectFillPaint)
             drawMaterialFaceTint(canvas, geometry, adjustColor(geometry.baseColor, 1.08f), 0.08f + 0.12f * settle * intensity)
         }
-        if (effect == "pulse" || effect == "scale" || effect == "ripple" || effect == "confettiLite" || effect == "fireworksLite") {
+        if (
+            effect == "pulse" ||
+                effect == "scale" ||
+                effect == "ripple" ||
+                effect == "confettiLite" ||
+                effect == "fireworksLite" ||
+                effect == "waterSplash" ||
+                effect == "emberBurst" ||
+                effect == "dragonTrail" ||
+                effect == "spiderTrail"
+        ) {
             keyEffectFillPaint.color = colorWithOpacity(adjustColor(geometry.baseColor, 1.08f), 0.04f + 0.08f * (1f - settle) * intensity)
             canvas.drawRoundRect(geometry.surfaceRect, geometry.radius, geometry.radius, keyEffectFillPaint)
         }
@@ -3565,7 +3596,11 @@ class WinFlowzKeyboardView(
                 effect == "specularSweep" ||
                 effect == "ripple" ||
                 effect == "confettiLite" ||
-                effect == "fireworksLite"
+                effect == "fireworksLite" ||
+                effect == "waterSplash" ||
+                effect == "emberBurst" ||
+                effect == "dragonTrail" ||
+                effect == "spiderTrail"
         ) {
             keyEffectStrokePaint.color = colorWithOpacity(activeKeyPaint.color, 0.28f + 0.22f * intensity)
             keyEffectStrokePaint.strokeWidth = dp(1.2f)
@@ -3685,9 +3720,10 @@ class WinFlowzKeyboardView(
         return 1f - inverse * inverse * inverse
     }
 
-    private fun keyReliefVisibleDepth(depth: Float, pressed: Boolean): Float {
+    private fun keyReliefVisibleDepth(depth: Float, pressFactor: Float): Float {
         if (depth <= 0f) return 0f
-        val visibleDepth = if (pressed) max(dp(0.55f), depth * 0.20f) else depth
+        val pressedDepth = max(dp(0.55f), depth * 0.20f)
+        val visibleDepth = depth - (depth - pressedDepth) * pressFactor.coerceIn(0f, 1f)
         return visibleDepth.coerceIn(0f, depth)
     }
 
@@ -3699,12 +3735,12 @@ class WinFlowzKeyboardView(
     private fun keyReliefSurfaceRect(
         footprintRect: RectF,
         reliefDepth: Float,
-        pressed: Boolean,
+        pressFactor: Float,
     ): RectF {
         val surfaceRect = RectF(footprintRect)
         if (reliefDepth <= 0f) return surfaceRect
 
-        val visibleDepth = keyReliefVisibleDepth(reliefDepth, pressed)
+        val visibleDepth = keyReliefVisibleDepth(reliefDepth, pressFactor)
         val pressTravel = (reliefDepth - visibleDepth).coerceAtLeast(0f)
         val sideDepth = keyReliefSideDepth(reliefDepth)
         surfaceRect.top += pressTravel
@@ -4933,7 +4969,11 @@ class WinFlowzKeyboardView(
                 spec.effect == "edgeCompression" ||
                 spec.effect == "ripple" ||
                 spec.effect == "confettiLite" ||
-                spec.effect == "fireworksLite"
+                spec.effect == "fireworksLite" ||
+                spec.effect == "waterSplash" ||
+                spec.effect == "emberBurst" ||
+                spec.effect == "dragonTrail" ||
+                spec.effect == "spiderTrail"
         ) {
             postInvalidateOnAnimation()
         }
@@ -5650,6 +5690,7 @@ class WinFlowzKeyboardView(
         const val KEYBOARD_SHADOW_OPACITY_BOOST = 0f
         const val KEYBOARD_BORDER_OPACITY_BOOST = 0.48f
         const val KEYBOARD_TEXT_OPACITY_BOOST = 0.58f
+        const val MASCOT_KEY_PRESS_FACTOR = 0.36f
         const val MEDIA_NOW_PLAYING_REFRESH_DELAY_MS = 450L
     }
 }
