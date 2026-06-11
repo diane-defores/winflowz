@@ -35,7 +35,9 @@ void main() {
       find.byKey(const Key('custom-button-title-field')),
       'Fenêtre suivante',
     );
-    await tester.tap(find.text('Séquence'));
+    await tester.tap(find.text('Texte'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Séquence clavier').last);
     await tester.pump(const Duration(milliseconds: 200));
     await tester.enterText(
       find.byKey(const Key('custom-button-value-field')),

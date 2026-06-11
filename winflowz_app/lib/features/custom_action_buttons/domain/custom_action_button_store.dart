@@ -7,6 +7,8 @@ abstract class CustomActionButtonStore {
     required String title,
     required CustomActionButtonIcon icon,
     required CustomActionButtonAction action,
+    int rowIndex = 0,
+    int? orderIndex,
   });
 
   Future<void> update({
@@ -14,6 +16,8 @@ abstract class CustomActionButtonStore {
     required String title,
     required CustomActionButtonIcon icon,
     required CustomActionButtonAction action,
+    required int rowIndex,
+    required int orderIndex,
   });
 
   Future<void> softDelete(String id);

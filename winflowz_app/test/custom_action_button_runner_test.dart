@@ -36,7 +36,7 @@ void main() {
           title: 'Fenêtre suivante',
           icon: CustomActionButtonIcon.window,
           action: const CustomActionButtonAction(
-            type: CustomActionButtonType.desktopKeySequence,
+            kind: CustomActionKind.keySequence,
             value: 'Ctrl+W, N',
           ),
           createdAt: DateTime.utc(2026, 6, 11, 11),
@@ -78,7 +78,7 @@ void main() {
         title: 'Réponse',
         icon: CustomActionButtonIcon.spark,
         action: const CustomActionButtonAction(
-          type: CustomActionButtonType.textSnippet,
+          kind: CustomActionKind.insertText,
           value: 'Réponse prête',
         ),
         createdAt: DateTime.utc(2026, 6, 11, 11),
@@ -88,4 +88,43 @@ void main() {
     expect(result.success, isTrue);
     expect(result.message, 'Texte copié; collage direct indisponible.');
   });
+
+  test(
+    'runner sends clipboard command as a bounded desktop key sequence',
+    () async {
+      final previousPlatform = debugDefaultTargetPlatformOverride;
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      addTearDown(() => debugDefaultTargetPlatformOverride = previousPlatform);
+      MethodCall? capturedCall;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_windowsOverlayChannel, (call) async {
+            capturedCall = call;
+            if (call.method == 'deliverWindowsOverlayKeySequence') {
+              return {'status': 'delivered', 'sentSteps': 1};
+            }
+            return null;
+          });
+
+      final result = await const CustomActionButtonRunner().run(
+        CustomActionButtonRecord(
+          id: 'button-3',
+          title: 'Coller',
+          icon: CustomActionButtonIcon.clipboard,
+          action: const CustomActionButtonAction(
+            kind: CustomActionKind.clipboardCommand,
+            value: 'paste',
+          ),
+          createdAt: DateTime.utc(2026, 6, 11, 11),
+        ),
+      );
+
+      expect(result.success, isTrue);
+      expect(result.message, 'Coller envoyé.');
+      final arguments = capturedCall?.arguments as Map<Object?, Object?>?;
+      final steps = arguments?['steps'] as List<Object?>?;
+      final firstStep = steps!.first as Map<Object?, Object?>;
+      expect(firstStep['key'], 'V');
+      expect(firstStep['modifiers'], contains('ctrl'));
+    },
+  );
 }

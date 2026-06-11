@@ -18,16 +18,37 @@ class CustomActionButtonRunner {
   Future<CustomActionButtonRunResult> run(
     CustomActionButtonRecord record,
   ) async {
-    switch (record.action.type) {
-      case CustomActionButtonType.textSnippet:
+    switch (record.action.kind) {
+      case CustomActionKind.insertText:
         return _runText(record.action.trimmedValue);
-      case CustomActionButtonType.desktopKeySequence:
+      case CustomActionKind.keySequence:
         return _runDesktopSequence(record.action.trimmedValue);
-      case CustomActionButtonType.keyboardExpression:
+      case CustomActionKind.clipboardCommand:
+        return _runClipboardCommand(
+          CustomClipboardCommandPresentation.fromName(
+            record.action.trimmedValue,
+          ),
+        );
+      case CustomActionKind.mediaCommand:
+        final command = CustomMediaCommandPresentation.fromName(
+          record.action.trimmedValue,
+        );
+        return CustomActionButtonRunResult(
+          success: false,
+          message:
+              '${command.label} est enregistré comme action média. Exécution directe non disponible depuis cet écran sur ${PlatformCapabilities.currentPlatformLabel}.',
+        );
+      case CustomActionKind.keyboardExpression:
         return CustomActionButtonRunResult(
           success: false,
           message:
               'Action clavier WinFlowz enregistrée. Exécution directe non disponible depuis cet écran sur ${PlatformCapabilities.currentPlatformLabel}.',
+        );
+      case CustomActionKind.macro:
+        return CustomActionButtonRunResult(
+          success: false,
+          message:
+              'Macro enregistrée. L’exécution multi-actions sera activée quand le moteur de macro sera branché.',
         );
     }
   }
@@ -96,6 +117,64 @@ class CustomActionButtonRunner {
       return CustomActionButtonRunResult(
         success: false,
         message: error.message,
+      );
+    } on DesktopOverlayBridgeException catch (error) {
+      return CustomActionButtonRunResult(
+        success: false,
+        message: error.message,
+      );
+    }
+  }
+
+  Future<CustomActionButtonRunResult> _runClipboardCommand(
+    CustomClipboardCommand command,
+  ) async {
+    final modifier = PlatformCapabilities.isMacOS
+        ? DesktopKeyModifier.meta
+        : DesktopKeyModifier.ctrl;
+    return _runDesktopKeyStrokes(
+      [
+        DesktopKeyStroke(key: command.key, modifiers: [modifier]),
+      ],
+      deliveredMessage: '${command.label} envoyé.',
+      unsupportedMessage:
+          '${command.label} nécessite l’hôte overlay desktop natif.',
+    );
+  }
+
+  Future<CustomActionButtonRunResult> _runDesktopKeyStrokes(
+    List<DesktopKeyStroke> steps, {
+    required String deliveredMessage,
+    required String unsupportedMessage,
+  }) async {
+    if (!PlatformCapabilities.desktopOverlaySupported) {
+      return CustomActionButtonRunResult(
+        success: false,
+        message: unsupportedMessage,
+      );
+    }
+    try {
+      final result = await DesktopOverlayBridge.deliverKeySequence(
+        steps
+            .map(
+              (step) => DesktopOverlayKeyStroke(
+                key: step.key,
+                modifiers: step.modifiers
+                    .map(DesktopOverlayKeyModifierFromDomain.fromDomain)
+                    .toList(growable: false),
+              ),
+            )
+            .toList(growable: false),
+      );
+      return CustomActionButtonRunResult(
+        success: result.status == DesktopOverlayCommandStatus.delivered,
+        message: switch (result.status) {
+          DesktopOverlayCommandStatus.delivered => deliveredMessage,
+          DesktopOverlayCommandStatus.unsupported =>
+            result.errorMessage ?? 'Commande non supportée sur cet hôte.',
+          DesktopOverlayCommandStatus.failed =>
+            result.errorMessage ?? 'Envoi de commande impossible.',
+        },
       );
     } on DesktopOverlayBridgeException catch (error) {
       return CustomActionButtonRunResult(

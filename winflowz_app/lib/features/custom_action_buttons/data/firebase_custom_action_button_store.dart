@@ -23,7 +23,8 @@ class FirebaseCustomActionButtonStore implements CustomActionButtonStore {
         .get();
     return snapshot.docs
         .map((doc) => _recordFromMap(doc.id, doc.data()))
-        .toList(growable: false);
+        .toList(growable: false)
+      ..sort(_compareButtons);
   }
 
   @override
@@ -31,6 +32,8 @@ class FirebaseCustomActionButtonStore implements CustomActionButtonStore {
     required String title,
     required CustomActionButtonIcon icon,
     required CustomActionButtonAction action,
+    int rowIndex = 0,
+    int? orderIndex,
   }) async {
     final normalized = _normalize(title: title, action: action);
     final now = DateTime.now().toUtc();
@@ -38,6 +41,8 @@ class FirebaseCustomActionButtonStore implements CustomActionButtonStore {
       'title': normalized.$1,
       'icon': icon.name,
       'action': normalized.$2.toMap(),
+      'rowIndex': rowIndex,
+      'orderIndex': orderIndex ?? now.millisecondsSinceEpoch,
       'createdAt': Timestamp.fromDate(now),
       'updatedAt': Timestamp.fromDate(now),
       'deletedAt': null,
@@ -50,12 +55,16 @@ class FirebaseCustomActionButtonStore implements CustomActionButtonStore {
     required String title,
     required CustomActionButtonIcon icon,
     required CustomActionButtonAction action,
+    required int rowIndex,
+    required int orderIndex,
   }) async {
     final normalized = _normalize(title: title, action: action);
     await _collection.doc(id).update({
       'title': normalized.$1,
       'icon': icon.name,
       'action': normalized.$2.toMap(),
+      'rowIndex': rowIndex,
+      'orderIndex': orderIndex,
       'updatedAt': Timestamp.fromDate(DateTime.now().toUtc()),
     });
   }
@@ -102,6 +111,8 @@ class FirebaseCustomActionButtonStore implements CustomActionButtonStore {
       ),
       action: CustomActionButtonAction.fromMap(actionMap),
       createdAt: _parseDateTime(row['createdAt']),
+      rowIndex: (row['rowIndex'] as num?)?.toInt() ?? 0,
+      orderIndex: (row['orderIndex'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -125,17 +136,34 @@ class FirebaseCustomActionButtonStore implements CustomActionButtonStore {
   }) {
     final normalizedTitle = title.trim();
     final normalizedAction = CustomActionButtonAction(
-      type: action.type,
+      kind: action.kind,
       value: action.trimmedValue,
     );
-    if (normalizedTitle.isEmpty || normalizedAction.value.isEmpty) {
+    if (normalizedTitle.isEmpty ||
+        (normalizedAction.kind.requiresFreeText &&
+            normalizedAction.value.isEmpty)) {
       throw const FormatException(
         'Le nom du bouton et son action sont obligatoires.',
       );
     }
-    if (normalizedAction.type == CustomActionButtonType.desktopKeySequence) {
+    if (normalizedAction.kind == CustomActionKind.keySequence) {
       DesktopKeySequence.parse(normalizedAction.value);
     }
     return (normalizedTitle, normalizedAction);
+  }
+
+  static int _compareButtons(
+    CustomActionButtonRecord current,
+    CustomActionButtonRecord next,
+  ) {
+    final row = current.rowIndex.compareTo(next.rowIndex);
+    if (row != 0) {
+      return row;
+    }
+    final order = current.orderIndex.compareTo(next.orderIndex);
+    if (order != 0) {
+      return order;
+    }
+    return current.createdAt.compareTo(next.createdAt);
   }
 }

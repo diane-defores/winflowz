@@ -12,7 +12,7 @@ class InMemoryCustomActionButtonStore implements CustomActionButtonStore {
   @override
   Future<List<CustomActionButtonRecord>> list() async {
     final items = List<CustomActionButtonRecord>.from(_items);
-    items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    items.sort(_compareButtons);
     return items;
   }
 
@@ -21,6 +21,8 @@ class InMemoryCustomActionButtonStore implements CustomActionButtonStore {
     required String title,
     required CustomActionButtonIcon icon,
     required CustomActionButtonAction action,
+    int rowIndex = 0,
+    int? orderIndex,
   }) async {
     final normalized = _normalize(title: title, action: action);
     _items.add(
@@ -30,6 +32,8 @@ class InMemoryCustomActionButtonStore implements CustomActionButtonStore {
         icon: icon,
         action: normalized.$2,
         createdAt: _clock().toUtc(),
+        rowIndex: rowIndex,
+        orderIndex: orderIndex ?? _items.length,
       ),
     );
   }
@@ -40,6 +44,8 @@ class InMemoryCustomActionButtonStore implements CustomActionButtonStore {
     required String title,
     required CustomActionButtonIcon icon,
     required CustomActionButtonAction action,
+    required int rowIndex,
+    required int orderIndex,
   }) async {
     final index = _indexOf(id);
     final existing = _items[index];
@@ -50,6 +56,8 @@ class InMemoryCustomActionButtonStore implements CustomActionButtonStore {
       icon: icon,
       action: normalized.$2,
       createdAt: existing.createdAt,
+      rowIndex: rowIndex,
+      orderIndex: orderIndex,
     );
   }
 
@@ -72,17 +80,34 @@ class InMemoryCustomActionButtonStore implements CustomActionButtonStore {
   }) {
     final normalizedTitle = title.trim();
     final normalizedAction = CustomActionButtonAction(
-      type: action.type,
+      kind: action.kind,
       value: action.trimmedValue,
     );
-    if (normalizedTitle.isEmpty || normalizedAction.value.isEmpty) {
+    if (normalizedTitle.isEmpty ||
+        (normalizedAction.kind.requiresFreeText &&
+            normalizedAction.value.isEmpty)) {
       throw const FormatException(
         'Le nom du bouton et son action sont obligatoires.',
       );
     }
-    if (normalizedAction.type == CustomActionButtonType.desktopKeySequence) {
+    if (normalizedAction.kind == CustomActionKind.keySequence) {
       DesktopKeySequence.parse(normalizedAction.value);
     }
     return (normalizedTitle, normalizedAction);
+  }
+
+  int _compareButtons(
+    CustomActionButtonRecord current,
+    CustomActionButtonRecord next,
+  ) {
+    final row = current.rowIndex.compareTo(next.rowIndex);
+    if (row != 0) {
+      return row;
+    }
+    final order = current.orderIndex.compareTo(next.orderIndex);
+    if (order != 0) {
+      return order;
+    }
+    return current.createdAt.compareTo(next.createdAt);
   }
 }

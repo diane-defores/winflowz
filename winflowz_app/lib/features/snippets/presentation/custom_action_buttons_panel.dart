@@ -27,8 +27,9 @@ class _CustomActionButtonsPanelState
   final _runner = const CustomActionButtonRunner();
 
   List<CustomActionButtonRecord> _items = const [];
-  CustomActionButtonType _selectedType = CustomActionButtonType.textSnippet;
+  CustomActionKind _selectedKind = CustomActionKind.insertText;
   CustomActionButtonIcon _selectedIcon = CustomActionButtonIcon.spark;
+  int _selectedRowIndex = 0;
   bool _busy = false;
   String? _message;
 
@@ -78,14 +79,16 @@ class _CustomActionButtonsPanelState
             title: _titleController.text,
             icon: _selectedIcon,
             action: CustomActionButtonAction(
-              type: _selectedType,
+              kind: _selectedKind,
               value: _valueController.text,
             ),
+            rowIndex: _selectedRowIndex,
           );
       _titleController.clear();
       _valueController.clear();
-      _selectedType = CustomActionButtonType.textSnippet;
+      _selectedKind = CustomActionKind.insertText;
       _selectedIcon = CustomActionButtonIcon.spark;
+      _selectedRowIndex = 0;
       await _load();
     } catch (error) {
       if (mounted) {
@@ -101,8 +104,9 @@ class _CustomActionButtonsPanelState
   Future<void> _edit(CustomActionButtonRecord item) async {
     final titleController = TextEditingController(text: item.title);
     final valueController = TextEditingController(text: item.action.value);
-    var type = item.action.type;
+    var kind = item.action.kind;
     var icon = item.icon;
+    var rowIndex = item.rowIndex;
     final submit = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -120,16 +124,29 @@ class _CustomActionButtonsPanelState
                       decoration: const InputDecoration(labelText: 'Nom'),
                     ),
                     AppGaps.x2,
-                    _TypeSelector(
-                      selected: type,
-                      onSelected: (next) => setLocalState(() => type = next),
+                    _ActionKindSelector(
+                      selected: kind,
+                      onSelected: (next) {
+                        setLocalState(() {
+                          kind = next;
+                          if (!next.requiresFreeText) {
+                            valueController.text = next.defaultValue;
+                          }
+                        });
+                      },
                     ),
                     AppGaps.x2,
-                    _ActionValueField(controller: valueController, type: type),
+                    _ActionValueField(controller: valueController, kind: kind),
                     AppGaps.x2,
                     _IconSelector(
                       selected: icon,
                       onSelected: (next) => setLocalState(() => icon = next),
+                    ),
+                    AppGaps.x2,
+                    _RowSelector(
+                      selected: rowIndex,
+                      onSelected: (next) =>
+                          setLocalState(() => rowIndex = next),
                     ),
                   ],
                 ),
@@ -165,9 +182,11 @@ class _CustomActionButtonsPanelState
             title: titleController.text,
             icon: icon,
             action: CustomActionButtonAction(
-              type: type,
+              kind: kind,
               value: valueController.text,
             ),
+            rowIndex: rowIndex,
+            orderIndex: item.orderIndex,
           );
       await _load();
     } catch (error) {
@@ -246,6 +265,11 @@ class _CustomActionButtonsPanelState
               value: _items.length > 1 ? 'boutons' : 'bouton',
             ),
             AppMetricPill(
+              icon: Icons.view_week_outlined,
+              label: '${CustomActionBarLayout.fromButtons(_items).rows.length}',
+              value: 'rangées',
+            ),
+            AppMetricPill(
               icon: Icons.desktop_windows_outlined,
               label: _desktopSupportLabel,
               value: 'exécution',
@@ -253,10 +277,16 @@ class _CustomActionButtonsPanelState
           ],
         ),
         AppGaps.x2,
+        _ActionBarPreview(
+          layout: CustomActionBarLayout.fromButtons(_items),
+          busy: _busy,
+          onRun: _run,
+        ),
+        AppGaps.x2,
         AppSectionCard(
           title: 'Nouveau bouton',
           subtitle:
-              'Crée un bouton exécutable avec icône et action typée. Les séquences desktop acceptent par exemple `Ctrl+W, N`.',
+              'Crée un bouton de barre d’action avec icône, rangée et action typée.',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -266,19 +296,24 @@ class _CustomActionButtonsPanelState
                 decoration: const InputDecoration(labelText: 'Nom du bouton'),
               ),
               AppGaps.x2,
-              _TypeSelector(
-                selected: _selectedType,
-                onSelected: (next) => setState(() => _selectedType = next),
+              _ActionKindSelector(
+                selected: _selectedKind,
+                onSelected: _selectActionKind,
               ),
               AppGaps.x2,
               _ActionValueField(
                 controller: _valueController,
-                type: _selectedType,
+                kind: _selectedKind,
               ),
               AppGaps.x2,
               _IconSelector(
                 selected: _selectedIcon,
                 onSelected: (next) => setState(() => _selectedIcon = next),
+              ),
+              AppGaps.x2,
+              _RowSelector(
+                selected: _selectedRowIndex,
+                onSelected: (next) => setState(() => _selectedRowIndex = next),
               ),
               AppGaps.x2,
               Align(
@@ -349,13 +384,30 @@ class _CustomActionButtonsPanelState
     );
   }
 
+  void _selectActionKind(CustomActionKind next) {
+    setState(() {
+      _selectedKind = next;
+      if (!next.requiresFreeText) {
+        _valueController.text = next.defaultValue;
+      }
+    });
+  }
+
   String _subtitle(CustomActionButtonRecord item) {
-    final typeLabel = switch (item.action.type) {
-      CustomActionButtonType.textSnippet => 'Texte',
-      CustomActionButtonType.keyboardExpression => 'Expression clavier',
-      CustomActionButtonType.desktopKeySequence => 'Séquence desktop',
+    final actionLabel = item.action.kind.label;
+    final valueLabel = _valueLabel(item.action);
+    return 'Rangée ${item.rowIndex + 1} · $actionLabel · $valueLabel';
+  }
+
+  String _valueLabel(CustomActionButtonAction action) {
+    return switch (action.kind) {
+      CustomActionKind.clipboardCommand =>
+        CustomClipboardCommandPresentation.fromName(action.value).label,
+      CustomActionKind.mediaCommand => CustomMediaCommandPresentation.fromName(
+        action.value,
+      ).label,
+      _ => action.value,
     };
-    return '$typeLabel · ${item.action.value}';
   }
 
   String get _desktopSupportLabel {
@@ -369,62 +421,165 @@ class _CustomActionButtonsPanelState
   }
 }
 
-class _TypeSelector extends StatelessWidget {
-  const _TypeSelector({required this.selected, required this.onSelected});
+class _ActionBarPreview extends StatelessWidget {
+  const _ActionBarPreview({
+    required this.layout,
+    required this.busy,
+    required this.onRun,
+  });
 
-  final CustomActionButtonType selected;
-  final ValueChanged<CustomActionButtonType> onSelected;
+  final CustomActionBarLayout layout;
+  final bool busy;
+  final ValueChanged<CustomActionButtonRecord> onRun;
 
   @override
   Widget build(BuildContext context) {
-    return SegmentedButton<CustomActionButtonType>(
-      segments: const [
-        ButtonSegment(
-          value: CustomActionButtonType.textSnippet,
-          label: Text('Texte'),
-          icon: Icon(Icons.text_snippet_outlined),
-        ),
-        ButtonSegment(
-          value: CustomActionButtonType.desktopKeySequence,
-          label: Text('Séquence'),
-          icon: Icon(Icons.keyboard_command_key),
-        ),
-        ButtonSegment(
-          value: CustomActionButtonType.keyboardExpression,
-          label: Text('Expression'),
-          icon: Icon(Icons.auto_fix_high_outlined),
-        ),
+    if (layout.rows.isEmpty) {
+      return const AppEmptyStateCard(
+        title: 'Barre d’action vide',
+        message: 'Ajoute un bouton pour composer ta première rangée.',
+      );
+    }
+
+    return AppSectionCard(
+      title: 'Barre d’action',
+      subtitle: 'Prévisualisation des rangées personnalisées.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final row in layout.rows) ...[
+            Text('Rangée ${row.index + 1}'),
+            AppGaps.x1,
+            Wrap(
+              spacing: AppSpacing.x1,
+              runSpacing: AppSpacing.x1,
+              children: [
+                for (final slot in row.slots)
+                  FilledButton.tonalIcon(
+                    onPressed: busy ? null : () => onRun(slot.button),
+                    icon: Icon(slot.button.icon.iconData),
+                    label: Text(slot.button.title),
+                  ),
+              ],
+            ),
+            if (row != layout.rows.last) AppGaps.x2,
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionKindSelector extends StatelessWidget {
+  const _ActionKindSelector({required this.selected, required this.onSelected});
+
+  final CustomActionKind selected;
+  final ValueChanged<CustomActionKind> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<CustomActionKind>(
+      initialValue: selected,
+      decoration: const InputDecoration(labelText: 'Action du bouton'),
+      items: [
+        for (final kind in CustomActionKind.values)
+          DropdownMenuItem(
+            value: kind,
+            child: Row(
+              children: [
+                Icon(kind.iconData),
+                AppGaps.horizontalX2,
+                Text(kind.label),
+              ],
+            ),
+          ),
       ],
-      selected: {selected},
-      onSelectionChanged: (values) {
-        final next = values.isEmpty ? selected : values.first;
-        onSelected(next);
+      onChanged: (next) {
+        if (next != null) {
+          onSelected(next);
+        }
       },
     );
   }
 }
 
 class _ActionValueField extends StatelessWidget {
-  const _ActionValueField({required this.controller, required this.type});
+  const _ActionValueField({required this.controller, required this.kind});
 
   final TextEditingController controller;
-  final CustomActionButtonType type;
+  final CustomActionKind kind;
 
   @override
   Widget build(BuildContext context) {
-    final (label, hint) = switch (type) {
-      CustomActionButtonType.textSnippet => (
+    if (kind == CustomActionKind.clipboardCommand) {
+      final selected = CustomClipboardCommandPresentation.fromName(
+        controller.text,
+      );
+      return DropdownButtonFormField<CustomClipboardCommand>(
+        initialValue: selected,
+        decoration: const InputDecoration(labelText: 'Commande presse-papiers'),
+        items: [
+          for (final command in CustomClipboardCommand.values)
+            DropdownMenuItem(
+              value: command,
+              child: Row(
+                children: [
+                  Icon(command.iconData),
+                  AppGaps.horizontalX2,
+                  Text(command.label),
+                ],
+              ),
+            ),
+        ],
+        onChanged: (next) {
+          if (next != null) {
+            controller.text = next.name;
+          }
+        },
+      );
+    }
+    if (kind == CustomActionKind.mediaCommand) {
+      final selected = CustomMediaCommandPresentation.fromName(controller.text);
+      return DropdownButtonFormField<CustomMediaCommand>(
+        initialValue: selected,
+        decoration: const InputDecoration(labelText: 'Commande média'),
+        items: [
+          for (final command in CustomMediaCommand.values)
+            DropdownMenuItem(
+              value: command,
+              child: Row(
+                children: [
+                  Icon(command.iconData),
+                  AppGaps.horizontalX2,
+                  Text(command.label),
+                ],
+              ),
+            ),
+        ],
+        onChanged: (next) {
+          if (next != null) {
+            controller.text = next.name;
+          }
+        },
+      );
+    }
+
+    final (label, hint) = switch (kind) {
+      CustomActionKind.insertText => (
         'Texte ou snippet',
         'Réponse prête à coller',
       ),
-      CustomActionButtonType.desktopKeySequence => (
-        'Séquence clavier desktop',
-        'Ctrl+W, N',
-      ),
-      CustomActionButtonType.keyboardExpression => (
+      CustomActionKind.keySequence => ('Séquence clavier desktop', 'Ctrl+W, N'),
+      CustomActionKind.keyboardExpression => (
         'Expression clavier WinFlowz',
         'action:Undo',
       ),
+      CustomActionKind.macro => (
+        'Macro',
+        'insertText:Bonjour; keySequence:Enter',
+      ),
+      CustomActionKind.clipboardCommand ||
+      CustomActionKind.mediaCommand => ('', ''),
     };
     return TextField(
       key: const Key('custom-button-value-field'),
@@ -432,6 +587,29 @@ class _ActionValueField extends StatelessWidget {
       minLines: 2,
       maxLines: 4,
       decoration: InputDecoration(labelText: label, hintText: hint),
+    );
+  }
+}
+
+class _RowSelector extends StatelessWidget {
+  const _RowSelector({required this.selected, required this.onSelected});
+
+  final int selected;
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<int>(
+      segments: const [
+        ButtonSegment(value: 0, label: Text('Rangée 1')),
+        ButtonSegment(value: 1, label: Text('Rangée 2')),
+        ButtonSegment(value: 2, label: Text('Rangée 3')),
+      ],
+      selected: {selected},
+      onSelectionChanged: (values) {
+        final next = values.isEmpty ? selected : values.first;
+        onSelected(next);
+      },
     );
   }
 }

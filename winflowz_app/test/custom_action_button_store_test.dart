@@ -22,9 +22,10 @@ void main() {
       title: '  Fenêtre suivante  ',
       icon: CustomActionButtonIcon.window,
       action: const CustomActionButtonAction(
-        type: CustomActionButtonType.desktopKeySequence,
+        kind: CustomActionKind.keySequence,
         value: ' Ctrl+W, N ',
       ),
+      rowIndex: 1,
     );
 
     final items = await store.list();
@@ -32,5 +33,27 @@ void main() {
     expect(items.single.title, 'Fenêtre suivante');
     expect(items.single.icon, CustomActionButtonIcon.window);
     expect(items.single.action.value, 'Ctrl+W, N');
+    expect(items.single.rowIndex, 1);
   });
+
+  test(
+    'in-memory store accepts built-in actions without free-text payload',
+    () async {
+      final store = InMemoryCustomActionButtonStore(
+        clock: () => DateTime.utc(2026, 6, 11, 11),
+      );
+
+      await store.insert(
+        title: 'Coller',
+        icon: CustomActionButtonIcon.clipboard,
+        action: const CustomActionButtonAction(
+          kind: CustomActionKind.clipboardCommand,
+          value: '',
+        ),
+      );
+
+      final items = await store.list();
+      expect(items.single.action.kind, CustomActionKind.clipboardCommand);
+    },
+  );
 }

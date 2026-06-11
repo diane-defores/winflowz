@@ -1,9 +1,121 @@
 import 'package:flutter/material.dart';
 
-enum CustomActionButtonType {
-  textSnippet,
+enum CustomActionKind {
+  insertText,
+  keySequence,
   keyboardExpression,
-  desktopKeySequence,
+  clipboardCommand,
+  mediaCommand,
+  macro,
+}
+
+extension CustomActionKindPresentation on CustomActionKind {
+  IconData get iconData {
+    return switch (this) {
+      CustomActionKind.insertText => Icons.text_snippet_outlined,
+      CustomActionKind.keySequence => Icons.keyboard_command_key,
+      CustomActionKind.keyboardExpression => Icons.auto_fix_high_outlined,
+      CustomActionKind.clipboardCommand => Icons.content_paste_outlined,
+      CustomActionKind.mediaCommand => Icons.play_circle_outline,
+      CustomActionKind.macro => Icons.account_tree_outlined,
+    };
+  }
+
+  String get label {
+    return switch (this) {
+      CustomActionKind.insertText => 'Texte',
+      CustomActionKind.keySequence => 'Séquence clavier',
+      CustomActionKind.keyboardExpression => 'Action WinFlowz',
+      CustomActionKind.clipboardCommand => 'Presse-papiers',
+      CustomActionKind.mediaCommand => 'Média',
+      CustomActionKind.macro => 'Macro',
+    };
+  }
+
+  bool get requiresFreeText {
+    return switch (this) {
+      CustomActionKind.insertText ||
+      CustomActionKind.keySequence ||
+      CustomActionKind.keyboardExpression ||
+      CustomActionKind.macro => true,
+      CustomActionKind.clipboardCommand ||
+      CustomActionKind.mediaCommand => false,
+    };
+  }
+
+  String get defaultValue {
+    return switch (this) {
+      CustomActionKind.clipboardCommand => CustomClipboardCommand.paste.name,
+      CustomActionKind.mediaCommand => CustomMediaCommand.playPause.name,
+      _ => '',
+    };
+  }
+}
+
+enum CustomClipboardCommand { copy, cut, paste }
+
+extension CustomClipboardCommandPresentation on CustomClipboardCommand {
+  IconData get iconData {
+    return switch (this) {
+      CustomClipboardCommand.copy => Icons.content_copy_outlined,
+      CustomClipboardCommand.cut => Icons.content_cut_outlined,
+      CustomClipboardCommand.paste => Icons.content_paste_outlined,
+    };
+  }
+
+  String get label {
+    return switch (this) {
+      CustomClipboardCommand.copy => 'Copier',
+      CustomClipboardCommand.cut => 'Couper',
+      CustomClipboardCommand.paste => 'Coller',
+    };
+  }
+
+  String get key {
+    return switch (this) {
+      CustomClipboardCommand.copy => 'C',
+      CustomClipboardCommand.cut => 'X',
+      CustomClipboardCommand.paste => 'V',
+    };
+  }
+
+  static CustomClipboardCommand fromName(String raw) {
+    return CustomClipboardCommand.values.firstWhere(
+      (item) => item.name == raw.trim(),
+      orElse: () => CustomClipboardCommand.paste,
+    );
+  }
+}
+
+enum CustomMediaCommand { playPause, play, pause, nextTrack, previousTrack }
+
+extension CustomMediaCommandPresentation on CustomMediaCommand {
+  IconData get iconData {
+    return switch (this) {
+      CustomMediaCommand.playPause => Icons.play_circle_outline,
+      CustomMediaCommand.play => Icons.play_arrow_outlined,
+      CustomMediaCommand.pause => Icons.pause_outlined,
+      CustomMediaCommand.nextTrack => Icons.skip_next_outlined,
+      CustomMediaCommand.previousTrack => Icons.skip_previous_outlined,
+    };
+  }
+
+  String get label {
+    return switch (this) {
+      CustomMediaCommand.playPause => 'Play/Pause',
+      CustomMediaCommand.play => 'Play',
+      CustomMediaCommand.pause => 'Pause',
+      CustomMediaCommand.nextTrack => 'Suivant',
+      CustomMediaCommand.previousTrack => 'Précédent',
+    };
+  }
+
+  static CustomMediaCommand fromName(String raw) {
+    return CustomMediaCommand.values.firstWhere(
+      (item) => item.name == raw.trim(),
+      orElse: () => CustomMediaCommand.playPause,
+    );
+  }
 }
 
 enum CustomActionButtonIcon {
@@ -46,26 +158,34 @@ extension CustomActionButtonIconPresentation on CustomActionButtonIcon {
 }
 
 class CustomActionButtonAction {
-  const CustomActionButtonAction({required this.type, required this.value});
+  const CustomActionButtonAction({required this.kind, required this.value});
 
-  final CustomActionButtonType type;
+  final CustomActionKind kind;
   final String value;
 
   String get trimmedValue => value.trim();
 
   Map<String, Object?> toMap() {
-    return {'type': type.name, 'value': trimmedValue};
+    return {'kind': kind.name, 'value': trimmedValue};
   }
 
   factory CustomActionButtonAction.fromMap(Map<Object?, Object?> map) {
-    final rawType = map['type'] as String? ?? '';
+    final rawKind = (map['kind'] as String?) ?? (map['type'] as String?) ?? '';
     return CustomActionButtonAction(
-      type: CustomActionButtonType.values.firstWhere(
-        (item) => item.name == rawType,
-        orElse: () => CustomActionButtonType.textSnippet,
-      ),
+      kind: _kindFromWireName(rawKind),
       value: map['value'] as String? ?? '',
     );
+  }
+
+  static CustomActionKind _kindFromWireName(String raw) {
+    return switch (raw) {
+      'textSnippet' => CustomActionKind.insertText,
+      'desktopKeySequence' => CustomActionKind.keySequence,
+      _ => CustomActionKind.values.firstWhere(
+        (item) => item.name == raw,
+        orElse: () => CustomActionKind.insertText,
+      ),
+    };
   }
 }
 
@@ -76,6 +196,8 @@ class CustomActionButtonRecord {
     required this.icon,
     required this.action,
     required this.createdAt,
+    this.rowIndex = 0,
+    this.orderIndex = 0,
   });
 
   final String id;
@@ -83,6 +205,57 @@ class CustomActionButtonRecord {
   final CustomActionButtonIcon icon;
   final CustomActionButtonAction action;
   final DateTime createdAt;
+  final int rowIndex;
+  final int orderIndex;
+}
+
+class CustomActionBarLayout {
+  const CustomActionBarLayout({required this.rows});
+
+  final List<CustomActionBarRow> rows;
+
+  factory CustomActionBarLayout.fromButtons(
+    List<CustomActionButtonRecord> buttons,
+  ) {
+    final grouped = <int, List<CustomActionButtonRecord>>{};
+    for (final button in buttons) {
+      grouped.putIfAbsent(button.rowIndex, () => []).add(button);
+    }
+    final rowIndexes = grouped.keys.toList()..sort();
+    return CustomActionBarLayout(
+      rows: rowIndexes
+          .map((rowIndex) {
+            final rowButtons = grouped[rowIndex]!
+              ..sort((a, b) {
+                final order = a.orderIndex.compareTo(b.orderIndex);
+                if (order != 0) {
+                  return order;
+                }
+                return a.createdAt.compareTo(b.createdAt);
+              });
+            return CustomActionBarRow(
+              index: rowIndex,
+              slots: rowButtons
+                  .map((button) => CustomActionBarSlot(button: button))
+                  .toList(growable: false),
+            );
+          })
+          .toList(growable: false),
+    );
+  }
+}
+
+class CustomActionBarRow {
+  const CustomActionBarRow({required this.index, required this.slots});
+
+  final int index;
+  final List<CustomActionBarSlot> slots;
+}
+
+class CustomActionBarSlot {
+  const CustomActionBarSlot({required this.button});
+
+  final CustomActionButtonRecord button;
 }
 
 enum DesktopKeyModifier { ctrl, alt, shift, meta }
