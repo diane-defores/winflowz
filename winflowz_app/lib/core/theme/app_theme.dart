@@ -92,11 +92,11 @@ class AppTypography {
   // WinFlowz scale (cohérente avec le thème site, bornée à un set court).
   static const xs = WinFlowzThemeTokens.typographyXs;
   static const sm = WinFlowzThemeTokens.typographySm;
-  static const base = 14.0;
-  static const lg = 17.0;
-  static const h3 = 22.0;
-  static const h2 = 28.0;
-  static const h1 = 34.0;
+  static const base = WinFlowzThemeTokens.typographySm;
+  static const lg = WinFlowzThemeTokens.typographyLg;
+  static const h3 = WinFlowzThemeTokens.typographyH3;
+  static const h2 = WinFlowzThemeTokens.typographyH2;
+  static const h1 = WinFlowzThemeTokens.typographyH1;
 
   static const leadingTight = WinFlowzThemeTokens.lineHeightTight;
   static const leadingSnug = WinFlowzThemeTokens.lineHeightSnug;
@@ -306,7 +306,7 @@ class AppGradients {
         end: Alignment.bottomRight,
         colors: [
           WinFlowzThemeTokens.siteBackground,
-          Color(0xFF1F1F1F),
+          WinFlowzThemeTokens.themeGradientDarkMid,
           WinFlowzThemeTokens.siteCard,
         ],
         stops: [0, 0.48, 1],
@@ -319,7 +319,7 @@ class AppGradients {
       colors: [
         WinFlowzThemeTokens.appLightBackground,
         WinFlowzThemeTokens.appLightSurface,
-        Color(0xFFEDEBE3),
+        WinFlowzThemeTokens.themeGradientLightMid,
       ],
       stops: [0, 0.52, 1],
     );
@@ -328,11 +328,23 @@ class AppGradients {
 
 class AppRadii {
   static const sm = WinFlowzThemeTokens.siteRadiusSm;
-  static const md = 10.0;
+  static const md = WinFlowzThemeTokens.themeRadiusMd;
   static const lg = WinFlowzThemeTokens.siteRadiusLg;
   static const xl = WinFlowzThemeTokens.siteRadiusXl;
   static const x2l = WinFlowzThemeTokens.siteRadius2xl;
-  static const pill = 9999.0;
+  static const pill = WinFlowzThemeTokens.themeRadiusPill;
+}
+
+class AppKeyboardStudioMetrics {
+  static const double sliderLabelWidth = 82.0;
+  static const double sliderValueWidth = 62.0;
+  static const double importExportDialogWidth = 420.0;
+  static const double colorFieldPicker = 52.0;
+  static const double colorFieldPickerIcon = 24.0;
+  static const double previewPanelHeight = 74.0;
+  static const double colorChannelWidth = 24.0;
+  static const double colorValueWidth = 42.0;
+  static const double fieldCornerRadius = 5.0;
 }
 
 class AppShadows {
@@ -393,25 +405,26 @@ class AppTheme {
       seedColor: AppColors.primary,
       brightness: Brightness.light,
     ).copyWith(
-      primary: const Color(0xFF2FAE75),
+      primary: WinFlowzThemeTokens.themeLightPrimary,
       onPrimary: AppColors.white,
-      primaryContainer: const Color(0xFFE8F3EC),
-      onPrimaryContainer: const Color(0xFF1C3929),
-      secondary: const Color(0xFF4F5B55),
+      primaryContainer: WinFlowzThemeTokens.themeLightPrimaryContainer,
+      onPrimaryContainer: WinFlowzThemeTokens.themeLightOnPrimaryContainer,
+      secondary: WinFlowzThemeTokens.themeLightSecondary,
       onSecondary: AppColors.white,
-      secondaryContainer: const Color(0xFFE7E4DA),
-      onSecondaryContainer: const Color(0xFF2A342E),
+      secondaryContainer: WinFlowzThemeTokens.themeLightSecondaryContainer,
+      onSecondaryContainer: WinFlowzThemeTokens.themeLightOnSecondaryContainer,
       tertiary: WinFlowzThemeTokens.siteRing,
       onTertiary: AppColors.white,
       error: AppColors.danger,
-      surface: const Color(0xFFF2F1EC),
-      onSurface: const Color(0xFF20211F),
-      surfaceContainerLowest: const Color(0xFFE9E5D8),
-      surfaceContainerLow: const Color(0xFFF8F7F3),
-      surfaceContainer: const Color(0xFFFFFFFF),
-      surfaceContainerHighest: const Color(0xFFD9D4CA),
-      outline: const Color(0xFFC6C0B2),
-      outlineVariant: const Color(0xFFDDD6C8),
+      surface: WinFlowzThemeTokens.themeLightSurface,
+      onSurface: WinFlowzThemeTokens.themeLightOnSurface,
+      surfaceContainerLowest:
+          WinFlowzThemeTokens.themeLightSurfaceContainerLowest,
+      surfaceContainerLow: WinFlowzThemeTokens.themeLightSurfaceContainerLow,
+      surfaceContainer: WinFlowzThemeTokens.themeLightSurfaceContainer,
+      surfaceContainerHighest: WinFlowzThemeTokens.themeLightSurfaceContainerHighest,
+      outline: WinFlowzThemeTokens.themeLightOutline,
+      outlineVariant: WinFlowzThemeTokens.themeLightOutlineVariant,
     ),
   );
 
@@ -420,25 +433,25 @@ class AppTheme {
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
     ).copyWith(
-      primary: const Color(0xFF36B384),
-      onPrimary: const Color(0xFF09130F),
-      primaryContainer: const Color(0xFF24312A),
-      onPrimaryContainer: const Color(0xFFD4F7E5),
-      secondary: const Color(0xFF5B6A60),
-      onSecondary: const Color(0xFFE7F3EB),
-      secondaryContainer: const Color(0xFF1F2924),
-      onSecondaryContainer: const Color(0xFFDBF4E3),
+      primary: WinFlowzThemeTokens.themeDarkPrimary,
+      onPrimary: WinFlowzThemeTokens.themeDarkOnPrimary,
+      primaryContainer: WinFlowzThemeTokens.themeDarkPrimaryContainer,
+      onPrimaryContainer: WinFlowzThemeTokens.themeDarkOnPrimaryContainer,
+      secondary: WinFlowzThemeTokens.themeDarkSecondary,
+      onSecondary: WinFlowzThemeTokens.themeDarkOnSecondary,
+      secondaryContainer: WinFlowzThemeTokens.themeDarkSecondaryContainer,
+      onSecondaryContainer: WinFlowzThemeTokens.themeDarkOnSecondaryContainer,
       tertiary: WinFlowzThemeTokens.siteRing,
-      onTertiary: const Color(0xFFF4F4F2),
+      onTertiary: AppColors.white,
       error: AppColors.dangerLight,
-      surface: const Color(0xFF121815),
+      surface: WinFlowzThemeTokens.themeDarkSurface,
       onSurface: AppColors.textOnDark,
-      surfaceContainerLowest: const Color(0xFF0A0F0C),
-      surfaceContainerLow: const Color(0xFF151B18),
-      surfaceContainer: const Color(0xFF1E2724),
-      surfaceContainerHighest: const Color(0xFF2A3330),
-      outline: const Color(0xFF52635A),
-      outlineVariant: const Color(0xFF3A4840),
+      surfaceContainerLowest: WinFlowzThemeTokens.themeDarkSurfaceContainerLowest,
+      surfaceContainerLow: WinFlowzThemeTokens.themeDarkSurfaceContainerLow,
+      surfaceContainer: WinFlowzThemeTokens.themeDarkSurfaceContainer,
+      surfaceContainerHighest: WinFlowzThemeTokens.themeDarkSurfaceContainerHighest,
+      outline: WinFlowzThemeTokens.themeDarkOutline,
+      outlineVariant: WinFlowzThemeTokens.themeDarkOutlineVariant,
     ),
   );
 

@@ -26,6 +26,22 @@
 
     /* Radius */
     --radius: 1rem;
+
+    --ui-button-radius: 999rem;
+    --ui-button-gap: 0.5rem;
+    --ui-button-padding-y: 0.5rem;
+    --ui-button-padding-x: 1.125rem;
+    --ui-button-font-size: 0.95rem;
+    --ui-button-line-height: 1.1875;
+    --ui-button-text: #fff;
+    --ui-button-primary-text: rgb(23 23 23);
+    --ui-button-secondary-bg: rgb(23 23 23);
+    --ui-button-padding-y-lg: 1rem;
+    --ui-button-padding-x-lg: 1.25rem;
+    --ui-button-font-size-lg: 1rem;
+    --ui-button-icon-size: 1.1rem;
+    --ui-button-icon-stroke: 2;
+    --ui-button-border-width: 2px;
   }
 
   /* Base font size */

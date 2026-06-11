@@ -281,12 +281,13 @@ None.
 |----------|-------|-------|--------|--------|-----------|
 | 2026-06-11 15:06:43 UTC | 100-sf-spec | GPT-5 Codex | create | draft | /101-sf-ready WinFlowz token hardening and visual standardization |
 | 2026-06-11 15:07:15 UTC | 101-sf-ready | GPT-5 Codex | readiness-check | ready | /102-sf-start WinFlowz token hardening and visual standardization |
+| 2026-06-11 15:47:26 UTC | 102-sf-start | GPT-5 Codex | implementation | partial | /103-sf-verify WinFlowz token hardening and visual standardization |
 
 ## Current Chantier Flow
 
 - 100-sf-spec: done
 - 101-sf-ready: done
-- 102-sf-start: not launched
+- 102-sf-start: partial
 - 103-sf-verify: not launched
 - 104-sf-end: not launched
 - 005-sf-ship: not launched

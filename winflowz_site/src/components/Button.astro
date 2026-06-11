@@ -35,23 +35,23 @@ const { link, variant, icon } = propsSchema.parse(Astro.props);
 <style>
 	.action {
 		display: inline-flex;
-		gap: 0.5em;
+		gap: var(--ui-button-gap);
 		align-items: center;
-		border-radius: 999rem;
-		padding: 0.5rem 1.125rem;
-		color: white;
-		line-height: 1.1875;
+		border-radius: var(--ui-button-radius);
+		padding: var(--ui-button-padding-y) var(--ui-button-padding-x);
+		color: var(--ui-button-text);
+		line-height: var(--ui-button-line-height);
 		text-decoration: none;
-		font-size: 0.95rem;
+		font-size: var(--ui-button-font-size);
 	}
 	.action[data-variant='primary'],
 	.action[data-variant='primary']:hover {
 		background: var(--brand-yellow);
-		color: rgb(23 23 23);
+		color: var(--ui-button-primary-text);
 	}
 	.action[data-variant='secondary'] {
-		background: rgb(23 23 23);
-		border: 2px solid;
+		background: var(--ui-button-secondary-bg);
+		border: var(--ui-button-border-width) solid;
 	}
 	.action[data-variant='minimal'] {
 		padding-inline: 0;
@@ -59,17 +59,17 @@ const { link, variant, icon } = propsSchema.parse(Astro.props);
 
 	@media (min-width: 50rem) {
 		.action {
-			font-size: 1rem;
-			padding: 1rem 1.25rem;
+			font-size: var(--ui-button-font-size-lg);
+			padding: var(--ui-button-padding-y-lg) var(--ui-button-padding-x-lg);
 		}
 	}
 
 	.icon {
-		width: 1.1rem;
-		height: 1.1rem;
+		width: var(--ui-button-icon-size);
+		height: var(--ui-button-icon-size);
 		fill: none;
 		stroke: currentColor;
-		stroke-width: 2;
+		stroke-width: var(--ui-button-icon-stroke);
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}

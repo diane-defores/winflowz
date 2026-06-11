@@ -15,18 +15,6 @@ import '../domain/keyboard_theme_validation.dart';
 
 enum _SaveButtonFeedback { idle, saving, success, failure }
 
-class _KeyboardThemeStudioMetrics {
-  static const double sliderLabelWidth = 82.0;
-  static const double sliderValueWidth = 62.0;
-  static const double importExportDialogWidth = 420.0;
-  static const double colorFieldPicker = 52.0;
-  static const double colorFieldPickerIcon = 24.0;
-  static const double previewPanelHeight = 74.0;
-  static const double colorChannelWidth = 24.0;
-  static const double colorValueWidth = 42.0;
-  static const double fieldCornerRadius = 5.0;
-}
-
 class KeyboardThemeStudioScreen extends ConsumerStatefulWidget {
   const KeyboardThemeStudioScreen({super.key});
 
@@ -1288,7 +1276,7 @@ class _SliderField extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: _KeyboardThemeStudioMetrics.sliderLabelWidth,
+          width: AppKeyboardStudioMetrics.sliderLabelWidth,
           child: Text(label),
         ),
         Expanded(
@@ -1302,7 +1290,7 @@ class _SliderField extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: _KeyboardThemeStudioMetrics.sliderValueWidth,
+          width: AppKeyboardStudioMetrics.sliderValueWidth,
           child: Text(valueLabel, textAlign: TextAlign.end),
         ),
       ],
@@ -1386,8 +1374,8 @@ class _ColorFieldState extends State<_ColorField> {
           ),
           const SizedBox(width: AppSpacing.x2),
           SizedBox(
-            width: _KeyboardThemeStudioMetrics.colorFieldPicker,
-            height: _KeyboardThemeStudioMetrics.colorFieldPicker,
+            width: AppKeyboardStudioMetrics.colorFieldPicker,
+            height: AppKeyboardStudioMetrics.colorFieldPicker,
             child: IconButton(
               key: ValueKey('keyboard-theme-color-picker-${widget.label}'),
               onPressed: _openPicker,
@@ -1396,15 +1384,15 @@ class _ColorFieldState extends State<_ColorField> {
                 decoration: BoxDecoration(
                   color: Color(widget.value),
                   borderRadius: BorderRadius.circular(
-                    _KeyboardThemeStudioMetrics.fieldCornerRadius,
+                    AppKeyboardStudioMetrics.fieldCornerRadius,
                   ),
                   border: Border.all(
                     color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 child: const SizedBox(
-                  width: _KeyboardThemeStudioMetrics.colorFieldPickerIcon,
-                  height: _KeyboardThemeStudioMetrics.colorFieldPickerIcon,
+                  width: AppKeyboardStudioMetrics.colorFieldPickerIcon,
+                  height: AppKeyboardStudioMetrics.colorFieldPickerIcon,
                 ),
               ),
             ),
@@ -1456,7 +1444,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
     return AlertDialog(
       title: Text('Choisir ${widget.label}'),
       content: SizedBox(
-        width: _KeyboardThemeStudioMetrics.importExportDialogWidth,
+        width: AppKeyboardStudioMetrics.importExportDialogWidth,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1469,7 +1457,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                 ),
               ),
               child: const SizedBox(
-                height: _KeyboardThemeStudioMetrics.previewPanelHeight,
+                height: AppKeyboardStudioMetrics.previewPanelHeight,
                 width: double.infinity,
               ),
             ),
@@ -1539,7 +1527,7 @@ class _ColorChannelSlider extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: _KeyboardThemeStudioMetrics.colorChannelWidth,
+          width: AppKeyboardStudioMetrics.colorChannelWidth,
           child: Text(label),
         ),
         Expanded(
@@ -1554,7 +1542,7 @@ class _ColorChannelSlider extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: _KeyboardThemeStudioMetrics.colorValueWidth,
+          width: AppKeyboardStudioMetrics.colorValueWidth,
           child: Text(value.toString().padLeft(3)),
         ),
       ],

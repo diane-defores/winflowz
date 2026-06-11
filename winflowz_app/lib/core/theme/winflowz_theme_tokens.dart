@@ -51,6 +51,51 @@ class WinFlowzThemeTokens {
   static const Color siteBorderDarkSubtle = Color(0x1AFFFFFF);
   static const Color siteWhiteSubtle = Color(0x1AFFFFFF);
 
+  // Material theme composition tokens for `app_theme.dart`.
+  static const Color themeLightPrimary = Color(0xFF2FAE75);
+  static const Color themeLightOnPrimary = Color(0xFFFFFFFF);
+  static const Color themeLightPrimaryContainer = Color(0xFFE8F3EC);
+  static const Color themeLightOnPrimaryContainer = Color(0xFF1C3929);
+  static const Color themeLightSecondary = Color(0xFF4F5B55);
+  static const Color themeLightOnSecondary = Color(0xFFFFFFFF);
+  static const Color themeLightSecondaryContainer = Color(0xFFE7E4DA);
+  static const Color themeLightOnSecondaryContainer = Color(0xFF2A342E);
+  static const Color themeLightSurface = Color(0xFFF2F1EC);
+  static const Color themeLightOnSurface = Color(0xFF20211F);
+  static const Color themeLightSurfaceContainerLowest = Color(0xFFE9E5D8);
+  static const Color themeLightSurfaceContainerLow = Color(0xFFF8F7F3);
+  static const Color themeLightSurfaceContainer = Color(0xFFFFFFFF);
+  static const Color themeLightSurfaceContainerHighest = Color(0xFFD9D4CA);
+  static const Color themeLightOutline = Color(0xFFC6C0B2);
+  static const Color themeLightOutlineVariant = Color(0xFFDDD6C8);
+  static const Color themeDarkPrimary = Color(0xFF36B384);
+  static const Color themeDarkOnPrimary = Color(0xFF09130F);
+  static const Color themeDarkPrimaryContainer = Color(0xFF24312A);
+  static const Color themeDarkOnPrimaryContainer = Color(0xFFD4F7E5);
+  static const Color themeDarkSecondary = Color(0xFF5B6A60);
+  static const Color themeDarkOnSecondary = Color(0xFFE7F3EB);
+  static const Color themeDarkSecondaryContainer = Color(0xFF1F2924);
+  static const Color themeDarkOnSecondaryContainer = Color(0xFFDBF4E3);
+  static const Color themeDarkSurface = Color(0xFF121815);
+  static const Color themeDarkOnSurface = Color(0xFFF1F5F9);
+  static const Color themeDarkSurfaceContainerLowest = Color(0xFF0A0F0C);
+  static const Color themeDarkSurfaceContainerLow = Color(0xFF151B18);
+  static const Color themeDarkSurfaceContainer = Color(0xFF1E2724);
+  static const Color themeDarkSurfaceContainerHighest = Color(0xFF2A3330);
+  static const Color themeDarkOutline = Color(0xFF52635A);
+  static const Color themeDarkOutlineVariant = Color(0xFF3A4840);
+
+  static const Color themeGradientDarkMid = Color(0xFF1F1F1F);
+  static const Color themeGradientLightMid = Color(0xFFEDEBE3);
+  static const double themeRadiusMd = 10.0;
+  static const double themeRadiusPill = 9999.0;
+
+  // Typography values used in Flutter-specific heading scale.
+  static const double typographyLg = 17.0;
+  static const double typographyH3 = 22.0;
+  static const double typographyH2 = 28.0;
+  static const double typographyH1 = 34.0;
+
   // Light companion palette for app screens that still support Light/System.
   static const Color appLightBackground = Color(0xFFF4F3EE);
   static const Color appLightSurface = Color(0xFFFAFAF7);
