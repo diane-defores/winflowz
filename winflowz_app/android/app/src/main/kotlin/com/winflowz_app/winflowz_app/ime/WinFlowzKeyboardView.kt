@@ -5561,13 +5561,11 @@ class WinFlowzKeyboardView(
     }
 
     private fun computedHorizontalPadding(availableWidth: Float): Float {
-        return (availableWidth * keyboardHorizontalPaddingScale)
-            .coerceAtLeast(keyboardThemeBorderEdgePadding())
+        return (availableWidth * keyboardHorizontalPaddingScale) + keyboardThemeBorderEdgePadding()
     }
 
     private fun computedVerticalPadding(availableWidth: Float): Float {
-        return (availableWidth * keyboardVerticalPaddingScale)
-            .coerceAtLeast(keyboardThemeBorderEdgePadding())
+        return (availableWidth * keyboardVerticalPaddingScale) + keyboardThemeBorderEdgePadding()
     }
 
     private fun keyboardThemeBorderEdgePadding(): Float {
