@@ -1,4 +1,4 @@
-name: Flutter Android CI
+name: WinFlowz Android Checks and Manual APK
 
 on:
   push:
@@ -81,13 +81,12 @@ jobs:
               - 'winflowz_app/firestore.rules'
               - '.github/workflows/android-build.yml'
 
-  android_ci:
-    name: Analyze, Test, Build Debug APK
+  flutter_checks:
+    name: Android checks
     runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 60
     needs:
       - changes
-      - firebase_auth_config
     if: github.event_name != 'pull_request' || needs.changes.outputs.apk == 'true'
 
     steps:
@@ -121,6 +120,91 @@ jobs:
       - name: Run tests
         working-directory: winflowz_app
         run: flutter test
+
+  firebase_auth_config:
+    name: Manual APK preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Authenticate to Google Cloud via OIDC
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
+          create_credentials_file: true
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Verify Firebase Auth is configured
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          if [ -z "$FIREBASE_PROJECT_ID" ]; then
+            echo "::error::Missing FIREBASE_PROJECT_ID."
+            exit 1
+          fi
+
+          missing_services=()
+          for service in identitytoolkit.googleapis.com securetoken.googleapis.com; do
+            if ! gcloud services list --enabled --project "$FIREBASE_PROJECT_ID" --filter="config.name:${service}" --format="value(config.name)" | grep -qx "$service"; then
+              missing_services+=("$service")
+            fi
+          done
+          if [ "${#missing_services[@]}" -gt 0 ]; then
+            echo "::error::Firebase Auth services are not enabled on ${FIREBASE_PROJECT_ID}: ${missing_services[*]}"
+            exit 1
+          fi
+
+          http_status="$(
+            curl --silent --show-error --output /tmp/firebase-auth-config.json --write-out "%{http_code}" \
+              -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+              -H "x-goog-user-project: ${FIREBASE_PROJECT_ID}" \
+              "https://identitytoolkit.googleapis.com/admin/v2/projects/${FIREBASE_PROJECT_ID}/config"
+          )"
+          if [ "$http_status" != "200" ]; then
+            echo "::error::Firebase Auth config is not readable for ${FIREBASE_PROJECT_ID}; enable Firebase Authentication and its sign-in providers before building the APK."
+            exit 1
+          fi
+
+  build_debug_apk:
+    name: Manual debug APK build
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    timeout-minutes: 60
+    needs:
+      - flutter_checks
+      - firebase_auth_config
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Configure Git default branch
+        run: git config --global init.defaultBranch main
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        working-directory: winflowz_app
+        run: flutter pub get
 
       - name: Build debug APK
         working-directory: winflowz_app
@@ -173,7 +257,6 @@ jobs:
         run: test -f winflowz_app/build/app/outputs/flutter-apk/app-debug.apk
 
       - name: Upload APK
-        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v7
         with:
           name: winflowz_app-debug-apk
@@ -181,62 +264,8 @@ jobs:
           if-no-files-found: ignore
           retention-days: 1
 
-  firebase_auth_config:
-    name: Validate Firebase Auth Config
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs:
-      - changes
-    if: github.event_name != 'pull_request' || needs.changes.outputs.apk == 'true'
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Authenticate to Google Cloud via OIDC
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
-          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
-          create_credentials_file: true
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
-
-      - name: Verify Firebase Auth is configured
-        env:
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-        run: |
-          if [ -z "$FIREBASE_PROJECT_ID" ]; then
-            echo "::error::Missing FIREBASE_PROJECT_ID."
-            exit 1
-          fi
-
-          missing_services=()
-          for service in identitytoolkit.googleapis.com securetoken.googleapis.com; do
-            if ! gcloud services list --enabled --project "$FIREBASE_PROJECT_ID" --filter="config.name:${service}" --format="value(config.name)" | grep -qx "$service"; then
-              missing_services+=("$service")
-            fi
-          done
-          if [ "${#missing_services[@]}" -gt 0 ]; then
-            echo "::error::Firebase Auth services are not enabled on ${FIREBASE_PROJECT_ID}: ${missing_services[*]}"
-            exit 1
-          fi
-
-          http_status="$(
-            curl --silent --show-error --output /tmp/firebase-auth-config.json --write-out "%{http_code}" \
-              -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-              -H "x-goog-user-project: ${FIREBASE_PROJECT_ID}" \
-              "https://identitytoolkit.googleapis.com/admin/v2/projects/${FIREBASE_PROJECT_ID}/config"
-          )"
-          if [ "$http_status" != "200" ]; then
-            echo "::error::Firebase Auth config is not readable for ${FIREBASE_PROJECT_ID}; enable Firebase Authentication and its sign-in providers before building the APK."
-            exit 1
-          fi
-
   firebase:
-    name: Deploy Firestore Rules and Indexes
+    name: Firestore deploy
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs:
