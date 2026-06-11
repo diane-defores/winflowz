@@ -2190,7 +2190,7 @@ class WinFlowzKeyboardView(
             return
         }
         debugGestureText = "long key=${key.id} ptr=$pointerId"
-        if (key.action in repeatingActions) {
+        if (canRepeatPrimaryKey(key)) {
             acquireProtectedInteraction(pointerId, KeyboardProtectedInteraction.LongPressRepeat)
             pointerTracker.markLongPressTriggered(pointerId)
             startRepeat(pointerId, key, state.payload)
@@ -2253,6 +2253,18 @@ class WinFlowzKeyboardView(
         invalidate()
     }
 
+    private fun canRepeatPrimaryKey(key: KeyboardKeySpec): Boolean {
+        if (key.action in repeatingActions) {
+            return true
+        }
+        if (key.action == KeyboardKeyAction.Text && key.id != "space") {
+            return true
+        }
+        return key.action == KeyboardKeyAction.KeyValue &&
+            key.keyValue?.kind == KeyboardKeyValueKind.Text &&
+            !key.keyValue.text.isNullOrEmpty()
+    }
+
     private fun dispatchLongPressShortcut(
         key: KeyboardKeySpec,
         sourceFrame: KeyFrame?,
@@ -2291,14 +2303,57 @@ class WinFlowzKeyboardView(
                     }
                     val repeatKey = repeatActionKey ?: return
                     dispatch(repeatKey, repeatActionSelection, repeatSourceFrame)
-                    postDelayed(this, repeatDelayMs)
+                    postDelayed(this, repeatDelayForPointer(pointerId, repeatKey, repeatActionSelection))
                 }
             }
         repeatRunnable = runnable
         if (dispatchImmediately) {
             dispatch(key, selection, sourceFrame)
         }
-        postDelayed(runnable, repeatDelayMs)
+        postDelayed(runnable, repeatDelayForPointer(pointerId, key, selection))
+    }
+
+    private fun repeatDelayForPointer(
+        pointerId: Int,
+        key: KeyboardKeySpec,
+        selection: GestureSelection,
+    ): Long {
+        if (!canAccelerateRepeat(key, selection)) {
+            return repeatDelayMs
+        }
+        val state = pointerTracker.get(pointerId) ?: return repeatDelayMs
+        val distanceBoost =
+            when {
+                state.maxDistanceFromStart >= dp(180f) -> 3
+                state.maxDistanceFromStart >= dp(120f) -> 2
+                state.maxDistanceFromStart >= dp(72f) -> 1
+                else -> 0
+            }
+        val activityBoost =
+            when {
+                state.totalTravelDistance >= dp(360f) -> 2
+                state.totalTravelDistance >= dp(180f) -> 1
+                else -> 0
+            }
+        return when ((distanceBoost + activityBoost).coerceIn(0, 4)) {
+            0 -> repeatDelayMs
+            1 -> 56L
+            2 -> 44L
+            3 -> 34L
+            else -> 26L
+        }
+    }
+
+    private fun canAccelerateRepeat(
+        key: KeyboardKeySpec,
+        selection: GestureSelection,
+    ): Boolean {
+        return if (selection == GestureSelection.PrimaryTap) {
+            key.action in repeatingActions
+        } else {
+            val value = keyValueForSelection(key, selection) ?: return false
+            shouldRepeatGestureSelection(selection, value)
+        }
     }
 
     private fun stopRepeat(ownerPointerId: Int? = null) {

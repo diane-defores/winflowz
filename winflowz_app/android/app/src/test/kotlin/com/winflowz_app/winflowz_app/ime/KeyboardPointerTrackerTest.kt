@@ -41,6 +41,20 @@ class KeyboardPointerTrackerTest {
         assertEquals(0f, first?.maxDistanceFromStart ?: -1f, 0f)
         assertEquals(20f, second?.latestX ?: -1f, 0f)
         assertTrue((second?.maxDistanceFromStart ?: 0f) > 0f)
+        assertTrue((second?.totalTravelDistance ?: 0f) > 0f)
+    }
+
+    @Test
+    fun `accumulates total travel even when pointer moves around`() {
+        val tracker = KeyboardPointerTracker<String>()
+        tracker.startPointer(pointerId = 1, keyId = "key-a", payload = "A", x = 0f, y = 0f)
+
+        tracker.updatePosition(pointerId = 1, x = 10f, y = 0f)
+        tracker.updatePosition(pointerId = 1, x = 0f, y = 0f)
+
+        val state = tracker.get(1)
+        assertEquals(20f, state?.totalTravelDistance ?: -1f, 0f)
+        assertEquals(10f, state?.maxDistanceFromStart ?: -1f, 0f)
     }
 
     @Test

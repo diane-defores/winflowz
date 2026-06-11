@@ -413,14 +413,16 @@ Actionable repair tasks for the next `/sf-start`:
 | 2026-05-25 14:55:01 UTC | sf-verify | GPT-5 Codex | Verified the repair against the spec with allowed local checks: resolver/dispatch snippets reviewed, S/Z regression test present, debug logs absent, metadata lint passed, and `flutter analyze` passed. Android-native CI/device proof remains required. | partial | `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof` |
 | 2026-05-26 18:10:45 UTC | sf-test | GPT-5 Codex | Guided Diane through physical-device manual QA for AZERTY `letter-z` up/down and `letter-s` left/right directional swipes, including the expected absence of `Gesture shortcut unavailable`. | pass | `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof` |
 | 2026-06-11 18:29:17 UTC | 001-sf-build | GPT-5 Codex + worker subagent | Implemented held swipe/corner repeat for repeatable navigation/deletion gesture actions only, preserving one-shot text/clipboard actions and existing primary long-press repeat behavior; added policy tests for repeat eligibility. | partial | Android CI/Blacksmith Kotlin proof and physical-device IME QA for held swipes |
+| 2026-06-11 20:19:44 UTC | 005-sf-ship | GPT-5 Codex | Quick-shipped Android IME repeat tuning: primary character hold repeats, and navigation/deletion repeat accelerates from distance and thumb activity. | shipped | Android CI/Blacksmith Kotlin proof and physical-device IME QA |
 
 ## Current Chantier Flow
 
-Flux: sf-spec ✅ -> sf-ready ✅ -> sf-start ✅ -> sf-verify 🔄 -> sf-end ⏳ -> sf-ship ⏳
+Flux: sf-spec ✅ -> sf-ready ✅ -> sf-start ✅ -> sf-verify 🔄 -> sf-end ⏳ -> sf-ship ✅
 
 Reste a faire:
 - Passer la preuve CI/Blacksmith Android-native pour confirmer compilation/tests Kotlin; la QA appareil Android Diane sur `letter-z` haut/bas et `letter-s` gauche/droite est passee.
 - Retester sur appareil Android le maintien d'un swipe/corner repeatable (`↑`, `Word→`, `DelW→`) et verifier que `/`, `@`, `Paste` restent one-shot.
+- Retester sur appareil Android la repetition des caracteres primaires et l'acceleration des actions navigation/suppression quand le doigt part loin ou bouge beaucoup.
 
 Prochaine etape:
 - `/sf-verify keyboard-directional-gesture-shortcuts --android-ci-device-proof`

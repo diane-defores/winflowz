@@ -19,6 +19,7 @@ internal data class KeyboardPointerState<T>(
     var latestX: Float = startX,
     var latestY: Float = startY,
     var maxDistanceFromStart: Float = 0f,
+    var totalTravelDistance: Float = 0f,
     var longPressToken: Int = 0,
     var longPressTriggered: Boolean = false,
     var consumedByProtectedInteraction: Boolean = false,
@@ -66,6 +67,8 @@ internal class KeyboardPointerTracker<T> {
         y: Float,
     ): KeyboardPointerState<T>? {
         val state = pointerStates[pointerId] ?: return null
+        val stepDistance = hypot((x - state.latestX).toDouble(), (y - state.latestY).toDouble()).toFloat()
+        state.totalTravelDistance += stepDistance
         state.latestX = x
         state.latestY = y
         val dx = x - state.startX
