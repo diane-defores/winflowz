@@ -1,17 +1,18 @@
 ---
 artifact: spec
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "1.0.0"
 project: "winflowz"
 created: "2026-06-12"
 created_at: "2026-06-12 17:35:00 UTC"
 updated: "2026-06-12"
-updated_at: "2026-06-12 17:35:00 UTC"
+updated_at: "2026-06-12 15:26:00 UTC"
 status: ready
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
 scope: "roadmap-account-aware-feedback"
 owner: "Diane"
+confidence: high
 user_story: "En tant que visiteuse ou cliente WinFlowz, je veux consulter la roadmap publique, voter une fois par fonctionnalité avec mon compte, et proposer une idée liée à un produit afin que la roadmap reflète un feedback réel sans casser les garde-fous auth et anti-abus du produit actuel."
 risk_level: "medium"
 security_impact: "yes"
@@ -49,7 +50,7 @@ evidence:
   - "Audit 2026-06-12: `src/components/roadmap/AddFeatureModal.astro` had no submit handler or backend action."
   - "Audit 2026-06-12: `src/pages/[...lang]/[roadmap].astro` rendered hardcoded roadmap data while WinFlowz now runs Clerk + Convex + product entitlement flows."
   - "Existing runtime docs show Astro SSR + Clerk middleware + Convex state as the current canonical stack."
-next_step: "/102-sf-start roadmap-account-aware-feedback"
+next_step: "/103-sf-verify roadmap-account-aware-feedback"
 ---
 
 # Title
@@ -275,13 +276,15 @@ None
 |----------|-------|-------|--------|--------|-----------|
 | 2026-06-12 17:35:00 UTC | 100-sf-spec | GPT-5 Codex | Created roadmap feedback spec from roadmap audit findings and current Clerk/Convex runtime | updated | /101-sf-ready roadmap-account-aware-feedback |
 | 2026-06-12 17:35:30 UTC | 101-sf-ready | GPT-5 Codex | Validated structure, behavior contract, auth/data/security scope, and implementation autonomy | ready | /102-sf-start roadmap-account-aware-feedback |
+| 2026-06-12 15:11:00 UTC | 001-sf-build | GPT-5 Codex | Implemented roadmap Convex/API/UI wiring and ran `pnpm build:check`; verification blocked by pre-existing syntax error in `src/pages/[...lang]/[testimonials].astro` | partial | /103-sf-verify roadmap-account-aware-feedback |
+| 2026-06-12 15:26:00 UTC | 300-sf-docs | GPT-5 Codex | Refreshed fallback roadmap card content to better match current product docs and active WinFlowz app chantiers | updated | /103-sf-verify roadmap-account-aware-feedback |
 
 # Current Chantier Flow
 
 - 100-sf-spec: complete
 - 101-sf-ready: complete
-- 102-sf-start: pending
-- 103-sf-verify: pending
+- 102-sf-start: complete
+- 103-sf-verify: partial
 - 104-sf-end: pending
 - 005-sf-ship: pending
-- Next command: `/102-sf-start roadmap-account-aware-feedback`
+- Next command: `/103-sf-verify roadmap-account-aware-feedback`

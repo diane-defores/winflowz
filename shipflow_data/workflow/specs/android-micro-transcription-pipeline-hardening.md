@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-06-12"
 created_at: "2026-06-12 12:57:00 UTC"
 updated: "2026-06-12"
-updated_at: "2026-06-12 13:25:22 UTC"
+updated_at: "2026-06-12 15:41:39 UTC"
 status: ready
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -355,6 +355,8 @@ None at spec time. La decision produit la plus sensible est deja cadree: pas de 
 | 2026-06-12 13:25:22 UTC | 102-sf-start | GPT-5 Codex | Hardened Android microphone/transcription flows across overlay delivery, session arbitration, runtime truthfulness, and Flutter overlay import wiring. | Implemented: code, docs, and targeted Flutter checks completed; Android-native proof remains for verify. | /103-sf-verify shipflow_data/workflow/specs/android-micro-transcription-pipeline-hardening.md |
 | 2026-06-12 13:25:22 UTC | 103-sf-verify | GPT-5 Codex | Verified local implementation against the spec with `flutter analyze` and targeted `flutter test` coverage. | Partial: Flutter proof passed, but Kotlin unit tests were not run locally and Android CI/device checklist evidence is still missing. | /107-sf-test shipflow_data/workflow/test-checklists/android-micro-transcription-pipeline-hardening.md |
 | 2026-06-12 13:25:22 UTC | 104-sf-end | GPT-5 Codex | Stopped after end before ship, per operator request, without commit/push or stronger closure claims than the current proof allows. | Deferred: chantier bookkeeping updated, but final closure awaits Android CI/device proof and ship decision. | /107-sf-test shipflow_data/workflow/test-checklists/android-micro-transcription-pipeline-hardening.md |
+| 2026-06-12 15:33:32 UTC | 106-sf-fix | GPT-5 Codex | Fixed the post-hardening Android overlay start regression by restoring runtime microphone permission request flow and clearing ghost overlay session locks when native startup fails before the widget appears. | Fix attempted: local Flutter checks passed and durable bug memory was created in `BUG-2026-06-12-002`, but Android device proof is still required. | /107-sf-test |
+| 2026-06-12 15:41:39 UTC | 106-sf-fix | GPT-5 Codex | Improved the Android IME microphone-permission denial UX by adding a blocked mic state in the native keyboard view, red error status feedback, and a direct route to microphone onboarding. | Fix attempted: local Flutter checks passed and durable bug memory was created in `BUG-2026-06-12-003`, but Android device proof is still required. | /107-sf-test |
 
 # Current Chantier Flow
 

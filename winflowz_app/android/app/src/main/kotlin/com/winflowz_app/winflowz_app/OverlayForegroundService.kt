@@ -173,14 +173,26 @@ class OverlayForegroundService : Service() {
                     mapOf("code" to "OVERLAY_PERMISSION_MISSING"),
                 )
                 updateServiceState("permission_missing")
+                MicrophoneSessionCoordinator.clearSession(
+                    this,
+                    MicrophoneSessionCoordinator.SURFACE_OVERLAY,
+                )
                 return
             }
             if (!ensureForegroundNotification()) {
                 updateServiceState("foreground_failed")
+                MicrophoneSessionCoordinator.clearSession(
+                    this,
+                    MicrophoneSessionCoordinator.SURFACE_OVERLAY,
+                )
                 return
             }
             if (!ensureOverlay()) {
                 updateServiceState("overlay_add_failed")
+                MicrophoneSessionCoordinator.clearSession(
+                    this,
+                    MicrophoneSessionCoordinator.SURFACE_OVERLAY,
+                )
                 return
             }
             running = true

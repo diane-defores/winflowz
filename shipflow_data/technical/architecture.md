@@ -4,7 +4,7 @@ metadata_schema_version: '1.0'
 artifact_version: '1.0.1'
 project: winflowz
 created: '2026-05-17'
-updated: '2026-05-23'
+updated: '2026-06-12'
 status: reviewed
 source_skill: sf-docs
 scope: architecture
@@ -21,6 +21,8 @@ evidence:
   - src/pages/api/polar/checkout.ts
   - src/pages/api/bridge/entitlement.ts
   - src/pages/api/newsletter/subscribe.ts
+  - src/pages/api/features/[key]/vote.ts
+  - src/pages/api/features/suggest.ts
   - convex/http.ts
   - convex/schema.ts
 linked_systems:
@@ -72,6 +74,8 @@ Describe the stable system boundaries for WinFlowz so technical and docs changes
 - `src/pages/api/polar/webhook.ts`
 - `src/pages/api/newsletter/subscribe.ts`
 - `src/pages/api/clerk/webhook.ts`
+- `src/pages/api/features/[key]/vote.ts`
+- `src/pages/api/features/suggest.ts`
 - `convex/http.ts`
 
 ## System Overview
@@ -108,6 +112,7 @@ Astro API routes act as thin integration controllers for:
 - Polar webhook proxying
 - newsletter subscribe and unsubscribe
 - Clerk webhook intake
+- roadmap voting and suggestion intake
 - suite bridge endpoints:
   - `POST /api/bridge/firebase` maps Firebase users to suite identities and mirrors `winflowz_app` access into Firestore.
   - `POST /api/bridge/sync` refreshes the Firestore access mirror by `globalUserId`.
@@ -124,6 +129,8 @@ Convex is the primary state store. Current tables in `convex/schema.ts` are:
 - `productAccessEvents`
 - `apiKeys`
 - `features`
+- `featureVotes`
+- `featureSuggestions`
 
 ## Invariants
 

@@ -40,7 +40,9 @@ class MainActivity : FlutterActivity() {
     private val keyOverlayOpacity = "overlay_opacity"
     private val keyOpenRoute = "openRoute"
     private val requestPickThemeImage = 4607
+    private val requestRecordAudioPermission = 4608
     private var pendingKeyboardImageResult: MethodChannel.Result? = null
+    private var pendingOverlayStartResult: MethodChannel.Result? = null
     private var consumedInitialOpenRoute: String? = null
 
     override fun getInitialRoute(): String? {
@@ -142,84 +144,7 @@ class MainActivity : FlutterActivity() {
                         result.success(buildStatusMap())
                     }
                     "startOverlayRecording" -> {
-                        OverlayEventQueue.enqueue(
-                            "bridgeCall",
-                            mapOf("method" to "startOverlayRecording"),
-                        )
-                        if (!isOverlayPermissionGranted()) {
-                            OverlayEventQueue.enqueue(
-                                "bridgeError",
-                                mapOf("code" to "OVERLAY_PERMISSION_DENIED"),
-                            )
-                            result.error(
-                                "OVERLAY_PERMISSION_DENIED",
-                                "Overlay permission is required to start overlay recording.",
-                                null,
-                            )
-                            return@setMethodCallHandler
-                        }
-                        if (!isRecordAudioPermissionGranted()) {
-                            OverlayEventQueue.enqueue(
-                                "bridgeError",
-                                mapOf("code" to "OVERLAY_RECORD_AUDIO_PERMISSION_DENIED"),
-                            )
-                            result.error(
-                                "OVERLAY_RECORD_AUDIO_PERMISSION_DENIED",
-                                "Microphone permission is required to start overlay recording.",
-                                null,
-                            )
-                            return@setMethodCallHandler
-                        }
-                        if (!MicrophoneSessionCoordinator.requestOverlaySession(this)) {
-                            OverlayEventQueue.enqueue(
-                                "bridgeError",
-                                mapOf(
-                                    "code" to "OVERLAY_SESSION_BUSY",
-                                    "activeSurface" to
-                                        MicrophoneSessionCoordinator.activeSurface(this),
-                                ),
-                            )
-                            result.error(
-                                "OVERLAY_SESSION_BUSY",
-                                "Another microphone session is already active.",
-                                null,
-                            )
-                            return@setMethodCallHandler
-                        }
-                        if (!isOverlayEnabled()) {
-                            overlayPreferences()
-                                .edit()
-                                .putBoolean(keyOverlayEnabled, true)
-                                .apply()
-                            OverlayEventQueue.enqueue(
-                                "overlayPreference",
-                                mapOf(
-                                    "enabled" to true,
-                                    "source" to "startOverlayRecording",
-                                ),
-                            )
-                        }
-                        try {
-                            sendOverlayCommand(OverlayForegroundService.ACTION_START)
-                            result.success(buildStatusMap())
-                        } catch (error: Exception) {
-                            MicrophoneSessionCoordinator.clearSession(
-                                this,
-                                MicrophoneSessionCoordinator.SURFACE_OVERLAY,
-                            )
-                            OverlayEventQueue.enqueue(
-                                "bridgeError",
-                                mapOf(
-                                    "code" to "OVERLAY_START_FAILED",
-                                    "detail" to (error.message ?: error.javaClass.simpleName),
-                                ),
-                            )
-                            result.error(
-                                "OVERLAY_START_FAILED",
-                                "Unable to start overlay service.",
-                                error.message,
-                            )
-                        }
+                        startOverlayRecording(result)
                     }
                     "stopOverlayRecording" -> {
                         OverlayEventQueue.enqueue(
@@ -756,6 +681,38 @@ class MainActivity : FlutterActivity() {
             }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != requestRecordAudioPermission) {
+            return
+        }
+        val pendingResult = pendingOverlayStartResult
+        pendingOverlayStartResult = null
+        if (pendingResult == null) {
+            return
+        }
+        val granted =
+            grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+        if (!granted) {
+            OverlayEventQueue.enqueue(
+                "bridgeError",
+                mapOf("code" to "OVERLAY_RECORD_AUDIO_PERMISSION_DENIED"),
+            )
+            pendingResult.error(
+                "OVERLAY_RECORD_AUDIO_PERMISSION_DENIED",
+                "Microphone permission is required to start overlay recording.",
+                null,
+            )
+            return
+        }
+        startOverlayRecording(pendingResult)
+    }
+
     private fun copyKeyboardThemeImageToPrivateStorage(uri: Uri): String {
         val bounds =
             BitmapFactory.Options().apply {
@@ -896,6 +853,102 @@ class MainActivity : FlutterActivity() {
             return
         }
         startService(intent)
+    }
+
+    private fun startOverlayRecording(result: MethodChannel.Result) {
+        OverlayEventQueue.enqueue(
+            "bridgeCall",
+            mapOf("method" to "startOverlayRecording"),
+        )
+        if (!isOverlayPermissionGranted()) {
+            OverlayEventQueue.enqueue(
+                "bridgeError",
+                mapOf("code" to "OVERLAY_PERMISSION_DENIED"),
+            )
+            result.error(
+                "OVERLAY_PERMISSION_DENIED",
+                "Overlay permission is required to start overlay recording.",
+                null,
+            )
+            return
+        }
+        if (!isRecordAudioPermissionGranted()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (pendingOverlayStartResult != null) {
+                    result.error(
+                        "OVERLAY_RECORD_AUDIO_PERMISSION_PENDING",
+                        "A microphone permission request is already in progress.",
+                        null,
+                    )
+                    return
+                }
+                pendingOverlayStartResult = result
+                requestPermissions(
+                    arrayOf(Manifest.permission.RECORD_AUDIO),
+                    requestRecordAudioPermission,
+                )
+                return
+            }
+            OverlayEventQueue.enqueue(
+                "bridgeError",
+                mapOf("code" to "OVERLAY_RECORD_AUDIO_PERMISSION_DENIED"),
+            )
+            result.error(
+                "OVERLAY_RECORD_AUDIO_PERMISSION_DENIED",
+                "Microphone permission is required to start overlay recording.",
+                null,
+            )
+            return
+        }
+        if (!MicrophoneSessionCoordinator.requestOverlaySession(this)) {
+            OverlayEventQueue.enqueue(
+                "bridgeError",
+                mapOf(
+                    "code" to "OVERLAY_SESSION_BUSY",
+                    "activeSurface" to MicrophoneSessionCoordinator.activeSurface(this),
+                ),
+            )
+            result.error(
+                "OVERLAY_SESSION_BUSY",
+                "Another microphone session is already active.",
+                null,
+            )
+            return
+        }
+        if (!isOverlayEnabled()) {
+            overlayPreferences()
+                .edit()
+                .putBoolean(keyOverlayEnabled, true)
+                .apply()
+            OverlayEventQueue.enqueue(
+                "overlayPreference",
+                mapOf(
+                    "enabled" to true,
+                    "source" to "startOverlayRecording",
+                ),
+            )
+        }
+        try {
+            sendOverlayCommand(OverlayForegroundService.ACTION_START)
+            result.success(buildStatusMap())
+        } catch (error: Exception) {
+            MicrophoneSessionCoordinator.clearSession(
+                this,
+                MicrophoneSessionCoordinator.SURFACE_OVERLAY,
+            )
+            OverlayEventQueue.enqueue(
+                "bridgeError",
+                mapOf(
+                    "code" to "OVERLAY_START_FAILED",
+                    "detail" to (error.message ?: error.javaClass.simpleName),
+                ),
+            )
+            result.error(
+                "OVERLAY_START_FAILED",
+                "Unable to start overlay service.",
+                error.message,
+            )
+        }
     }
 
     private fun isOverlayPermissionGranted(): Boolean {

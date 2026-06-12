@@ -510,12 +510,16 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
 
   int? _forcedOnboardingStepIndex(OnboardingReadiness readiness) {
     final requested = widget.initialOnboardingStep?.trim();
-    if (requested != 'media' && requested != 'brightness') {
+    if (requested != 'media' &&
+        requested != 'brightness' &&
+        requested != 'microphone') {
       return null;
     }
-    final target = requested == 'brightness'
-        ? OnboardingStepId.brightnessSystemSettings
-        : OnboardingStepId.mediaSessionAccess;
+    final target = switch (requested) {
+      'brightness' => OnboardingStepId.brightnessSystemSettings,
+      'microphone' => OnboardingStepId.microphoneForDictation,
+      _ => OnboardingStepId.mediaSessionAccess,
+    };
     final index = readiness.steps.indexWhere(
       (step) => step.definition.id == target,
     );

@@ -306,6 +306,7 @@ class WinFlowzKeyboardView(
     private var recentEmojis = emptyList<String>()
     private var recentSymbols = emptyList<String>()
     private var voiceRecordingActive = false
+    private var voicePermissionRequired = false
     private var fieldPolicy = KeyboardSecurityPolicy.evaluate(null, KeyboardStateStore.PRIVACY_AUTO)
     private var fieldContext = KeyboardFieldContextMode.Text
     private var enterLabel = "Enter"
@@ -959,9 +960,18 @@ class WinFlowzKeyboardView(
         refreshLayout()
     }
 
-    fun setStatus(message: String) {
+    fun setStatus(
+        message: String,
+        isError: Boolean = false,
+    ) {
         transientStatusText = message
         statusText = message
+        statusPaint.color =
+            if (isError) {
+                Color.rgb(196, 48, 60)
+            } else {
+                resolvedStatusTextColor
+            }
         requestLayout()
         invalidate()
     }
@@ -974,9 +984,20 @@ class WinFlowzKeyboardView(
         invalidate()
     }
 
+    fun setVoicePermissionRequired(required: Boolean) {
+        if (voicePermissionRequired == required) {
+            return
+        }
+        voicePermissionRequired = required
+        invalidate()
+    }
+
+    fun isVoicePermissionRequired(): Boolean = voicePermissionRequired
+
     private fun clearTransientStatus() {
         transientStatusText = null
         statusText = baseStatusText
+        statusPaint.color = resolvedStatusTextColor
         requestLayout()
         invalidate()
     }
@@ -3528,6 +3549,7 @@ class WinFlowzKeyboardView(
             longPressSwipeActive && !isLongPressSwipeTarget && !isLongPressSwipeOrigin
         val paint = when {
             !key.enabled -> disabledKeyPaint
+            voicePermissionRequired && key.action == KeyboardKeyAction.Voice -> specialKeyPaint
             key.id in activePointerPressedKeyIds || key.id in lingeringPressedKeyIds || isLongPressSwipeHovered -> pressedKeyPaint
             isLongPressSwipeTarget || isCtrlPrimaryCornerTarget -> activeKeyPaint
             key.active && usesNeutralKeyboardSurface(key) -> pressedKeyPaint
@@ -3617,6 +3639,8 @@ class WinFlowzKeyboardView(
                     contrastTextColor(paint.color)
                 }
                 keyboardLayerColor(activeTextColor, KEYBOARD_TEXT_OPACITY_BOOST)
+            } else if (voicePermissionRequired && key.action == KeyboardKeyAction.Voice) {
+                Color.rgb(196, 48, 60)
             } else if (key.enabled) {
                 resolvedTextColor
             } else {
@@ -5602,6 +5626,9 @@ class WinFlowzKeyboardView(
     }
 
     private fun displayLabel(key: KeyboardKeySpec): String {
+        if (voicePermissionRequired && key.action == KeyboardKeyAction.Voice) {
+            return "⛔"
+        }
         if (key.id == "media-now-playing-label" && key.label.length > 52) {
             return key.label.take(49) + "..."
         }

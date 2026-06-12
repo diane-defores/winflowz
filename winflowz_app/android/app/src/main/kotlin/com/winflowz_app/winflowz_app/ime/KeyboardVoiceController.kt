@@ -18,10 +18,12 @@ class KeyboardVoiceController(
     private val context: Context,
     private val stateStore: KeyboardStateStore,
     private val onState: (String) -> Unit,
+    private val onPermissionRequiredChanged: (Boolean) -> Unit,
     private val onActiveChanged: (Boolean) -> Unit,
     private val onResult: (String) -> Unit,
 ) {
     companion object {
+        const val MICROPHONE_PERMISSION_REQUIRED_MESSAGE = "Microphone permission required"
         const val LOCAL_RUNTIME_STARTUP_TIMEOUT_MS = 10_000L
         const val ANDROID_FALLBACK_SEGMENT_WINDOW_MS = 60_000L
         const val ANDROID_FALLBACK_RESTART_DELAY_MS = 350L
@@ -113,11 +115,13 @@ class KeyboardVoiceController(
             return
         }
         if (!hasAudioPermission()) {
+            onPermissionRequiredChanged(true)
             setActive(false)
             recordUnavailable("permission_denied")
-            onState("Microphone permission required")
+            onState(MICROPHONE_PERMISSION_REQUIRED_MESSAGE)
             return
         }
+        onPermissionRequiredChanged(false)
         if (!MicrophoneSessionCoordinator.requestKeyboardSession(context)) {
             setActive(false)
             recordUnavailable("voice_session_active")
@@ -246,6 +250,7 @@ class KeyboardVoiceController(
         recognizer?.destroy()
         recognizer = null
         activeAndroidFallbackReason = null
+        onPermissionRequiredChanged(!hasAudioPermission())
         MicrophoneSessionCoordinator.clearSession(
             context,
             MicrophoneSessionCoordinator.SURFACE_KEYBOARD,

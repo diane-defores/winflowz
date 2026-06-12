@@ -43,7 +43,15 @@ class WinFlowzInputMethodService :
             KeyboardVoiceController(
                 context = this,
                 stateStore = stateStore,
-                onState = { message -> keyboardView?.setStatus(message) },
+                onState = { message ->
+                    keyboardView?.setStatus(
+                        message,
+                        isError = message == KeyboardVoiceController.MICROPHONE_PERMISSION_REQUIRED_MESSAGE,
+                    )
+                },
+                onPermissionRequiredChanged = { required ->
+                    keyboardView?.setVoicePermissionRequired(required)
+                },
                 onActiveChanged = { active -> keyboardView?.setVoiceRecordingActive(active) },
                 onResult = { text ->
                     val editor = editor()
@@ -433,6 +441,10 @@ class WinFlowzInputMethodService :
             voiceController.stop()
             return
         }
+        if (keyboardView?.isVoicePermissionRequired() == true) {
+            openMicrophoneOnboarding()
+            return
+        }
         voiceController.start()
     }
 
@@ -705,6 +717,18 @@ class WinFlowzInputMethodService :
                 }
             startActivity(intent)
             showStatus("Enable media access in WinFlowz")
+        }
+    }
+
+    private fun openMicrophoneOnboarding() {
+        runServiceSafely("openMicrophoneOnboarding") {
+            val intent =
+                Intent(this, MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putExtra("openRoute", "/settings?onboarding=microphone")
+                }
+            startActivity(intent)
+            showStatus("Open microphone onboarding")
         }
     }
 
@@ -1151,6 +1175,9 @@ class WinFlowzInputMethodService :
                 statusBarConfig = stateStore.statusBarConfig,
                 accountLabel = stateStore.accountLabel,
                 accountLabelMode = stateStore.accountLabelMode,
+            )
+            keyboardView?.setVoicePermissionRequired(
+                stateStore.voiceLastErrorCode == "permission_denied",
             )
         }
     }
