@@ -242,6 +242,15 @@ class AppNavigationMetrics {
 class AppLayoutMetrics {
   static const onboardingOverlayMaxWidth = 520.0;
   static const settingsTwoColumnBreakpoint = 1180.0;
+  static const authFormMaxWidth = WinFlowzThemeTokens.authFormMaxWidth;
+  static const authWebSignInButtonHeight =
+      WinFlowzThemeTokens.authWebSignInButtonHeight;
+  static const authWebSignInButtonMinWidth =
+      WinFlowzThemeTokens.authWebSignInButtonMinWidth;
+  static const authWebSignInButtonMaxWidth =
+      WinFlowzThemeTokens.authWebSignInButtonMaxWidth;
+  static const authWebSignInButtonDisabledOpacity =
+      WinFlowzThemeTokens.authWebSignInButtonDisabledAlpha;
 }
 
 class AppBreakpoints {

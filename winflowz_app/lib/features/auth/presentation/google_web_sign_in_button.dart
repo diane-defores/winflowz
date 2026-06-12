@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../data/google_auth_client.dart';
 import '../domain/auth_failure.dart';
 import 'google_web_sign_in_renderer.dart' as renderer;
@@ -106,17 +107,22 @@ class _GoogleWebSignInButtonState extends State<GoogleWebSignInButton> {
     }
 
     final disabled = widget.disabled || _busy;
-    return Opacity(
-      opacity: disabled ? 0.55 : 1,
+      return Opacity(
+      opacity: disabled
+          ? AppLayoutMetrics.authWebSignInButtonDisabledOpacity
+          : 1,
       child: AbsorbPointer(
         absorbing: disabled,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth.isFinite
-                ? constraints.maxWidth.clamp(240.0, 400.0)
-                : 400.0;
+                ? constraints.maxWidth.clamp(
+                    AppLayoutMetrics.authWebSignInButtonMinWidth,
+                    AppLayoutMetrics.authWebSignInButtonMaxWidth,
+                  )
+                : AppLayoutMetrics.authWebSignInButtonMaxWidth;
             return SizedBox(
-              height: 44,
+              height: AppLayoutMetrics.authWebSignInButtonHeight,
               width: double.infinity,
               child: Center(
                 child: SizedBox(

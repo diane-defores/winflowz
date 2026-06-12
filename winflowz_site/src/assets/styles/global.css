@@ -42,6 +42,9 @@
     --ui-button-icon-size: 1.1rem;
     --ui-button-icon-stroke: 2;
     --ui-button-border-width: 2px;
+    --ui-button-font-size-fluid: 4vw;
+    --ui-button-padding-y-fluid: 1.5vw;
+    --ui-button-padding-x-fluid: 2.5vw;
 
     /* Bio page visual tokens */
     --bio-bg: #000;

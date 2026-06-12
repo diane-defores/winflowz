@@ -156,6 +156,11 @@ class WinFlowzThemeTokens {
   static const double keyboardPreviewFrameMaxWidth = 760.0;
   static const double keyboardPreviewDropdownWidth = 220.0;
   static const double keyboardPreviewStatusHeight = 30.0;
+  static const double authFormMaxWidth = 460.0;
+  static const double authWebSignInButtonHeight = 44.0;
+  static const double authWebSignInButtonMinWidth = 240.0;
+  static const double authWebSignInButtonMaxWidth = 400.0;
+  static const double authWebSignInButtonDisabledAlpha = 0.55;
   static const double keyboardPreviewControlHeight = 48.0;
   static const double keyboardPreviewRowHeightTall = 48.0;
   static const double keyboardPreviewRowHeight = 46.0;

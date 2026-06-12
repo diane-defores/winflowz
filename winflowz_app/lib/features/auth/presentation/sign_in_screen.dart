@@ -259,7 +259,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             child: SingleChildScrollView(
               padding: AppInsets.screen,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
+                constraints:
+                    const BoxConstraints(maxWidth: AppLayoutMetrics.authFormMaxWidth),
                 child: AppSectionCard(
                   title: 'Connexion',
                   subtitle: widget.remoteOnly

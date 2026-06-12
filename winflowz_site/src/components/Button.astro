@@ -60,19 +60,27 @@ const { link, variant, icon } = propsSchema.parse(Astro.props);
 	.action {
 		font-size: clamp(
 			var(--ui-button-font-size),
-			var(--ui-button-font-size-lg),
+			var(--ui-button-font-size-fluid),
 			var(--ui-button-font-size-lg)
 		);
 		padding: clamp(
-				var(--ui-button-padding-y),
-				var(--ui-button-padding-y-lg),
-				var(--ui-button-padding-y-lg)
-			)
-			clamp(
-				var(--ui-button-padding-x),
-				var(--ui-button-padding-x-lg),
-				var(--ui-button-padding-x-lg)
-			);
+			var(--ui-button-padding-y),
+			var(--ui-button-padding-y-fluid),
+			var(--ui-button-padding-y-lg)
+		) clamp(
+			var(--ui-button-padding-x),
+			var(--ui-button-padding-x-fluid),
+			var(--ui-button-padding-x-lg)
+		);
+	}
+
+	.action[data-variant='primary'],
+	.action[data-variant='primary']:hover {
+		transition: background-color 0.2s ease;
+	}
+
+	.action[data-variant='secondary'] {
+		transition: border-color 0.2s ease, color 0.2s ease;
 	}
 
 	.icon {
