@@ -101,11 +101,36 @@ export default defineSchema({
   }).index("by_userId", ["userId"]),
 
   features: defineTable({
+    key: v.string(),
     title: v.string(),
     description: v.string(),
     status: v.string(),
     projectId: v.string(),
     votes: v.number(),
+    source: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
   }).index("by_projectId", ["projectId"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_key", ["key"]),
+
+  featureVotes: defineTable({
+    featureId: v.id("features"),
+    globalUserId: v.id("globalUsers"),
+    createdAt: v.number(),
+  }).index("by_featureUser", ["featureId", "globalUserId"])
+    .index("by_globalUserId", ["globalUserId"]),
+
+  featureSuggestions: defineTable({
+    globalUserId: v.id("globalUsers"),
+    projectId: v.string(),
+    title: v.string(),
+    titleNormalized: v.string(),
+    description: v.string(),
+    status: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_globalUserId", ["globalUserId"])
+    .index("by_status", ["status"])
+    .index("by_globalUserTitle", ["globalUserId", "titleNormalized"]),
 });

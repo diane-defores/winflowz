@@ -1,10 +1,19 @@
+export type FeatureStatus =
+  | "in-development"
+  | "planned"
+  | "considering"
+  | "completed"
+  | "rejected";
+
 export type Feature = {
   id: string;
+  key: string;
   title: string;
   description: string;
-  status: "in-development" | "planned" | "considering" | "completed" | "rejected";
+  status: FeatureStatus;
   votes: number;
-  project?: string;
+  projectId: string;
+  projectName?: string;
 };
 
 export interface Project {
