@@ -59,6 +59,12 @@ flutter pub get
 flutter run
 ```
 
+## Product Feature Notes
+
+- `winflowz_app/docs/CUSTOM_ACTION_BUTTONS.md` documente la configuration de la barre d’action personnalisable (icônes, rangées, exécution d’actions textuelles/clavier/multimédia).
+- `winflowz_app/docs/PLATFORM_BEHAVIOR.md` couvre les limites par plateforme et le contrat hôte.
+- `winflowz_app/docs/COMPONENTS.md` inclut l’inventaire des composants du panneau `Snippets / Boutons`.
+
 ## Firebase Runtime Defines
 
 Firebase is now wired as the first backend adapter behind backend-agnostic stores.

@@ -18,6 +18,15 @@ linked_systems:
   - "Windows desktop bridge"
   - "macOS desktop bridge"
   - "Linux desktop bridge"
+depends_on:
+  - "shipflow_data/workflow/specs/custom-action-buttons-and-command-macros.md"
+  - "shipflow_data/technical/winflowz_app/context-function-tree.md"
+evidence:
+  - "winflowz_app/lib/features/custom_action_buttons/domain/custom_action_buttons.dart"
+  - "winflowz_app/lib/features/snippets/presentation/custom_action_buttons_panel.dart"
+  - "winflowz_app/lib/features/custom_action_buttons/application/custom_action_button_runner.dart"
+supersedes: []
+next_step: "/sf-docs update"
 ---
 
 # Boutons personnalisés et actions WinFlowz
@@ -35,6 +44,38 @@ Un **snippet** reste une entrée texte (trigger + contenu) réutilisable, pas un
 - Utiliser le formulaire `Nouveau bouton` pour définir titre, icône, rangée, type d’action et valeur.
 - La section `Barre d’action` prévisualise les rangées configurées.
 - La liste `Boutons personnalisés` permet d’éditer, supprimer et exécuter un bouton existant.
+
+## Cas d’usage réels
+
+- Je veux lancer une action clavier rapide sans retaper une expression.
+  - Créer un bouton de type `desktop key sequence` avec une expression de touches.
+- Je veux garder mes snippets texte favoris mais déclenchés avec un clic unique.
+  - Créer un bouton de type `insert text` et coller votre snippet dans la valeur.
+- Je veux garder une commande de raccourci (copier/coller/media) dans une zone visuelle constante.
+  - Créer un bouton de type `clipboard command` ou `media command` depuis la liste.
+- Je veux réutiliser une expression clavier WinFlowz déjà connue.
+  - Créer un bouton `keyboard expression` pour partager le même contrat de parsing que le clavier Android.
+
+## Exemple : envoyer `Ctrl+W` puis `N` pour changer de fenêtre
+
+Le scénario demandé (`Ctrl W N`) s’écrit en deux étapes dans le modèle `desktop key sequence`:
+
+1. `Ctrl+W`
+2. `N`
+
+Le runner interprète chaque étape au format texte borné (`modifier+key` ou touche seule) et exécute la séquence uniquement si le host desktop actif la supporte.
+
+Exemple de chaîne valide:
+
+```text
+Ctrl+W, N
+```
+
+Conseils:
+
+- Utiliser `Ctrl`, `Alt`, `Shift`, `Meta`, `Cmd` selon la plateforme.
+- Utiliser `,` (virgule) comme séparateur entre actions successives.
+- Vérifier que la case d’exécution affiche une confirmation de support avant d’attendre un résultat fiable.
 
 ## Où se place le stockage et l’exécution
 
@@ -65,3 +106,43 @@ Un **snippet** reste une entrée texte (trigger + contenu) réutilisable, pas un
 - Aucune chaîne sensible n’est loguée en clair.
 - Les actions non supportées sur la surface courante doivent rester non bloquantes et clairement expliquées.
 
+## Types d’actions V1, avec exemples
+
+### `insert text`
+
+Insère du texte brut ou du contenu basé sur un snippet (`trigger` + `content`).
+
+- Exemple: `Bonjour`, `Merci de patienter`, `Ctrl+W N` (copié/traité comme texte si choisi ici, pas comme séquence).
+
+### `keyboard expression`
+
+Expression textuelle déjà utilisée côté clavier Android (format d’expression WinFlowz).
+
+- Utile pour partager une logique d’action entre raccourci clavier et bouton.
+- Exemple: expression de type `JA:` (texte), ou commandes natives existantes.
+
+### `desktop key sequence`
+
+Séquence bornée de touches pour Windows/macOS/Linux desktop (hors IME).
+
+- Exemple 1: `Ctrl+W, N`
+- Exemple 2: `Ctrl+Shift+T`
+
+### `clipboard command`
+
+Commande intégrée de type copier/couper/coller.
+
+- Exemple: `copy` -> copie la sélection courante via le flux de commande borné.
+- Exemple: `paste` -> colle via `Ctrl+V` ou équivalent hôte.
+
+### `media command`
+
+Commande média courte et explicite (ex. play/pause).
+
+- Exemple: `play_pause`
+
+### `macro`
+
+Action typée stockée, prête à être activée quand un hôte d’exécution dédié sera implémenté.
+
+- Exemple: commande nommée côté backend (`macro:focus_task`) sans exécution libre non maîtrisée.

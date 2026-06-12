@@ -83,6 +83,17 @@ Still required outside local VM:
 | Windows desktop overlay/hotkeys | Implemented locally, pending Windows runner proof | Flutter bridge contract, Dart tests, and Windows runner channel now cover status/events, `Ctrl+Alt+Space`, always-on-top show/hide, clipboard copy, and best-effort `Ctrl+V` delivery. IME remains unavailable. | Windows runner/manual QA for launch, hotkey registration, always-on-top overlay, clipboard fallback, automatic best-effort delivery, focus recovery, multi-monitor/DPI. |
 | Web permission limits | Degraded parity target | `PlatformCapabilities.localSpeechSupported` is false on web today; secure storage remains degraded; OS overlay/IME are unavailable. `flutter build web` passed on 2026-05-10. | Browser smoke when web parity scope opens; document browser-only alternatives. |
 
+## Boutons d’action personnalisés — Manual Matrix
+
+- Ouvrir `Snippets` → onglet `Boutons`.
+- Créer un bouton `desktop key sequence` avec valeur `Ctrl+W, N`.
+- Vérifier l’aperçu: le bouton apparaît dans la bonne rangée, selon `rowIndex` et `order`.
+- Exécuter le bouton et vérifier que la séquence n’est pas silencieusement ignorée sur hôtes non supportés; un message explicite doit s’afficher.
+- Créer un bouton `insert text` avec texte court et un bouton `clipboard command` (`paste`).
+- Vérifier que les boutons refusent les commandes shell/texte arbitraire hors contrat.
+- Modifier / supprimer un bouton et vérifier le rafraîchissement de la liste sans redémarrage.
+- Vérifier un message clair si une action `macro` ou `media command` est enregistrée mais non encore exécutable sur la plateforme courante.
+
 ## Security Gate
 
 - No client bundle contains a service role key.
