@@ -95,7 +95,7 @@ export const ROUTES: Record<string, RouteDefinition> = {
   },
   signin: {
     en: 'signin',
-    fr: 'connexion'
+    fr: 'signin'
   }
 }
 

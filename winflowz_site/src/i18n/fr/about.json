@@ -1,7 +1,7 @@
 {
-  "title": "À propos de nous",
+  "title": "À propos de moi",
   "meta": {
-    "description": "Découvrez WinFlowz - l'histoire derrière nos outils et formations de productivité Windows."
+    "description": "Découvrez Diane Defores, mon parcours, mes outils et mes formations de productivité Windows."
   },
   "hero": {
     "tagline": "Des Lifetime Deals aux Outils de Productivité",
@@ -11,31 +11,31 @@
   "story": {
     "title": "Mon Histoire",
     "paragraphs": [
-      "Mon parcours a débuté dans la communauté dynamique des lifetime deals (LTD). Je suis membre active depuis des années, découvrant et testant d'innombrables outils de productivité qui promettent de faciliter notre vie professionnelle. Grâce à cette expérience, j'ai développé une compréhension approfondie de ce qui rend vraiment un outil précieux au quotidien.",
+      "Mon parcours a débuté dans la communauté dynamique des lifetime deals (LTD). J'y suis active depuis des années, découvrant et testant d'innombrables outils de productivité qui promettent de faciliter ma vie professionnelle. Grâce à cette expérience, j'ai développé une compréhension approfondie de ce qui rend vraiment un outil précieux au quotidien.",
       "Cette passion m'a conduite à créer un cours de productivité sur AppSumo, axé spécifiquement sur la productivité Windows. Ce cours est né de mes propres difficultés à trouver des ressources complètes pour optimiser le potentiel de Windows pour la productivité. J'ai réalisé que s'il existe de nombreux guides de productivité pour Mac, les utilisateurs Windows sont souvent négligés.",
       "WinFlowz est né de ce constat. Ce qui a commencé comme du contenu éducatif s'est transformé en une suite d'outils et de ressources conçus spécifiquement pour les utilisateurs avancés de Windows qui veulent travailler plus intelligemment, pas plus durement."
     ]
   },
   "mission": {
-    "title": "Notre Mission",
-    "content": "Donner aux utilisateurs Windows les connaissances et les outils dont ils ont besoin pour transformer leur flux de travail. Nous croyons que tout le monde mérite d'avoir accès à des solutions de productivité qui fonctionnent vraiment – pas seulement des fonctionnalités tape-à-l'œil qui ont l'air bien dans les supports marketing.",
+    "title": "Ma Mission",
+    "content": "J'aide les utilisateurs Windows à retrouver une méthode de travail claire, en donnant les connaissances et les outils dont ils ont besoin pour transformer leur flux de travail. Je suis convaincue que tout le monde mérite des solutions de productivité qui fonctionnent vraiment, pas des effets de forme.",
     "values": [
       {
         "title": "Le Pratique d'Abord",
-        "description": "Chaque outil et conseil que nous partageons a été testé dans des scénarios réels. Si cela ne vous fait pas gagner du temps, cela ne passe pas la sélection."
+        "description": "Chaque outil et conseil que je partage a été testé dans des scénarios réels. S'il ne vous fait pas gagner du temps, il ne passe pas la sélection."
       },
       {
         "title": "Focus Windows",
-        "description": "Nous n'essayons pas d'être tout pour tout le monde. Notre expertise réside dans la productivité Windows, et c'est là que nous excellons."
+        "description": "Je ne cherche pas à couvrir tous les sujets. Mon expertise se concentre sur la productivité Windows, là où je peux vraiment faire la différence."
       },
       {
         "title": "Communauté au Centre",
-        "description": "Nos meilleures idées viennent de la communauté. La communauté LTD m'a appris la valeur de la sagesse collective, et nous perpétuons cet esprit."
+        "description": "Mes meilleures idées viennent de la communauté. La communauté LTD m'a appris la valeur de la sagesse collective, et je perpétue cet esprit."
       }
     ]
   },
   "offerings": {
-    "title": "Ce Que Nous Offrons",
+    "title": "Ce que j'offre",
     "items": [
       {
         "title": "Outils de Productivité",
@@ -43,7 +43,7 @@
       },
       {
         "title": "Formations",
-        "description": "Des cours approfondis couvrant les techniques de productivité Windows, y compris notre cours populaire sur AppSumo."
+    "description": "Des cours approfondis couvrant les techniques de productivité Windows, y compris mon cours sur AppSumo."
       },
       {
         "title": "Ressources & Guides",
@@ -54,9 +54,9 @@
   "cta": {
     "title": "Prêt à Booster Votre Productivité ?",
     "description": "Rejoignez des milliers d'utilisateurs Windows qui ont transformé leur flux de travail avec WinFlowz.",
-    "button": "Découvrir Nos Outils"
+    "button": "Découvrir mes outils"
   },
   "footer": {
-    "contact": "Des questions ? N'hésitez pas à nous contacter à hello@winflowz.com"
+    "contact": "Des questions ? N'hésitez pas à me contacter à hello@winflowz.com"
   }
 }

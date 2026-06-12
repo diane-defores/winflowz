@@ -82,6 +82,6 @@ export const routes: {
     'legal': 'mentions-legales',
     'landing': 'landing',
     'cgv': 'cgv',
-    'signin': 'connexion'
+    'signin': 'signin'
   }
 }

@@ -5,7 +5,7 @@ status: "coming_soon"
 main:
   id: 1
   content: |
-    Découvrez FlowzSuite – la collection ultime de plugins premium pour Obsidian, conçue pour transformer votre prise de notes en un flux de travail créatif fluide. De la création de contenu à la gestion de projet, en passant par la gestion des médias et les flux RSS, FlowzSuite met des outils professionnels à portée de main. Créé par des développeurs neurodivergents pour une productivité et une utilisation intuitives maximales.
+    Découvrez FlowzSuite – la collection ultime de plugins premium pour Obsidian, conçue pour transformer votre prise de notes en un flux de travail créatif fluide. De la création de contenu à la gestion de projet, en passant par la gestion des médias et les flux RSS, FlowzSuite met des outils professionnels à portée de main. Créé pour des profils ambitieux qui veulent une productivité maximale et une prise en main intuitive.
   imgCard: "@/images/WinFlowz.png"
   imgMain: "@/images/WinFlowz.png"
   imgAlt: "Présentation de l'interface FlowzSuite dans Obsidian"

@@ -395,7 +395,7 @@ If your need goes beyond simple emphasis, tools like **LucidRead** or **Helperbi
 - typography adjustments
 - focus modes
 - text-to-speech
-- more serious options for dyslexia, ADHD, or long reading sessions
+- more serious options for dyslexia, demanding reading, or long reading sessions
 
 In other words:
 - **Jiffy Reader** if you want to test a light, specific aid

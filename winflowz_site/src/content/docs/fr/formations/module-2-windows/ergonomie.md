@@ -395,7 +395,7 @@ Si ton besoin dépasse la simple emphase visuelle, des outils comme **LucidRead*
 - ajustements typographiques
 - modes de focus
 - text-to-speech
-- options plus sérieuses pour dyslexie, ADHD ou lecture longue
+- options plus sérieuses pour dyslexie, lecture exigeante ou lecture longue
 
 Autrement dit :
 - **Jiffy Reader** si tu veux tester une aide légère et spécifique

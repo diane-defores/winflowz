@@ -335,7 +335,7 @@ Le focus ne consiste pas à "se concentrer plus fort". Il consiste à :
 - limiter les cibles concurrentes
 - réduire le coût des transitions
 
-Pour certaines personnes, surtout avec des profils TDAH, le problème n'est pas l'absence totale d'attention mais sa régulation. L'enjeu n'est donc pas de devenir "normal", mais d'augmenter les chances que l'attention intense s'accroche au bon objet.
+Pour certaines personnes, surtout dans des environnements de travail très sollicitants, le problème n'est pas l'absence totale d'attention mais sa régulation. L'enjeu n'est donc pas de devenir "normal", mais d'augmenter les chances que l'attention intense s'accroche au bon objet.
 
 La charge mentale joue aussi un rôle direct. Quand elle monte trop :
 - tu lis sans intégrer

@@ -1,7 +1,7 @@
 {
-  "title": "About Us",
+  "title": "About Me",
   "meta": {
-    "description": "Learn about WinFlowz - the story behind our Windows productivity tools and courses."
+    "description": "Learn about me, Diane Defores, and the story behind WinFlowz and the Windows productivity courses I build."
   },
   "hero": {
     "tagline": "From Lifetime Deals to Productivity Tools",
@@ -11,31 +11,31 @@
   "story": {
     "title": "My Story",
     "paragraphs": [
-      "My journey started in the vibrant lifetime deal (LTD) community. I've been an active member for years, discovering and testing countless productivity tools that promise to make our work lives easier. Through this experience, I developed a deep understanding of what truly makes a tool valuable for everyday use.",
+      "My journey started in the lifetime deal (LTD) community. For years, I’ve been an active member, discovering and testing countless productivity tools that promised to make work life easier. Through that experience, I developed a deep understanding of what makes a tool truly useful in daily use.",
       "This passion led me to create a productivity course on AppSumo, focused specifically on Windows productivity. The course was born from my own struggles to find comprehensive resources about maximizing Windows as a productivity powerhouse. I realized that while there are plenty of Mac productivity guides, Windows users often get overlooked.",
       "WinFlowz emerged from this gap. What started as educational content has grown into a suite of tools and resources designed specifically for Windows power users who want to work smarter, not harder."
     ]
   },
   "mission": {
-    "title": "Our Mission",
-    "content": "To empower Windows users with the knowledge and tools they need to transform their workflow. We believe that everyone deserves access to productivity solutions that actually work – not just fancy features that look good in marketing materials.",
+    "title": "My Mission",
+    "content": "I help Windows users rebuild their workflow with the knowledge and tools they need to work with clarity and momentum. I believe everyone deserves practical productivity systems that actually work, not just polished features.",
     "values": [
       {
         "title": "Practical First",
-        "description": "Every tool and tip we share has been tested in real-world scenarios. If it doesn't save you time, it doesn't make the cut."
+        "description": "Every tool and tip I share is tested in real-world scenarios. If it doesn't save you time, it doesn't make the cut."
       },
       {
         "title": "Windows-Focused",
-        "description": "We're not trying to be everything to everyone. Our expertise lies in Windows productivity, and that's where we excel."
+        "description": "I don't try to be everything to everyone. My expertise is in Windows productivity, and that's where I can go deep.",
       },
       {
         "title": "Community-Driven",
-        "description": "Our best ideas come from the community. The LTD community taught me the value of collective wisdom, and we carry that spirit forward."
+        "description": "My best ideas come from the community. The LTD community taught me the power of collective wisdom, and I continue that spirit today."
       }
     ]
   },
   "offerings": {
-    "title": "What We Offer",
+    "title": "What I Offer",
     "items": [
       {
         "title": "Productivity Tools",
@@ -43,7 +43,7 @@
       },
       {
         "title": "Training Courses",
-        "description": "In-depth courses covering Windows productivity techniques, including our popular AppSumo course."
+    "description": "In-depth courses covering Windows productivity techniques, including my popular AppSumo course."
       },
       {
         "title": "Resources & Guides",
@@ -54,9 +54,9 @@
   "cta": {
     "title": "Ready to Boost Your Productivity?",
     "description": "Join thousands of Windows users who have transformed their workflow with WinFlowz.",
-    "button": "Explore Our Tools"
+    "button": "Explore My Tools"
   },
   "footer": {
-    "contact": "Questions? Feel free to reach out at hello@winflowz.com"
+    "contact": "Questions? Feel free to reach out to me at hello@winflowz.com"
   }
 }

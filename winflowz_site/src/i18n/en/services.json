@@ -7,14 +7,14 @@
   },
   "hero": {
     "title": "Empowering Your Digital Productivity",
-    "subtitle": "Transform your workflow with custom development and expert training. As a neurodivergent developer, UX/UI enthusiast, and productivity specialist, I offer tailored solutions and guidance to help you achieve peak efficiency in your digital workspace.",
+    "subtitle": "Transform your workflow with custom development and expert training. As a productivity-focused developer and UX/UI enthusiast, I build tailored solutions and guidance to help ambitious entrepreneurs and professionals work with more clarity and efficiency.",
     "cta": "Schedule a Consultation"
   },
   "articles": [
     {
       "isRightSection": true,
       "title": "Custom Development",
-      "subtitle": "As a neurodivergent developer specialized in productivity tools and passionate about UX/UI, I create custom solutions that enhance your digital workflow. From Obsidian plugins to Chrome extensions, each project is meticulously crafted to meet your specific needs while ensuring optimal performance and an intuitive user experience.",
+      "subtitle": "As a developer specialized in productivity tools and passionate about UX/UI, I create custom solutions that enhance your digital workflow. From Obsidian plugins to Chrome extensions, each project is meticulously crafted to meet your specific needs while ensuring optimal performance and an intuitive user experience.",
       "single": false,
       "imgOneAlt": "Development workflow illustration",
       "imgTwoAlt": "Person working with digital tools"

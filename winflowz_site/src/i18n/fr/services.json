@@ -7,14 +7,14 @@
   },
   "hero": {
     "title": "Optimisez Votre Productivité Numérique",
-    "subtitle": "Transformez votre flux de travail avec du développement sur mesure et une formation experte. En tant que développeuse neurodivergente, passionnée d'UX/UI et spécialiste de la productivité, je propose des solutions et des conseils personnalisés pour vous aider à atteindre une efficacité maximale dans votre espace de travail numérique.",
+    "subtitle": "Transformez votre flux de travail avec du développement sur mesure et une formation experte. En tant que développeuse spécialisée en productivité et passionnée d'UX/UI, je propose des solutions et des conseils personnalisés pour aider des entrepreneurs ambitieux et des professionnels déterminés à gagner en clarté et en efficacité.",
     "cta": "Planifier une consultation"
   },
   "articles": [
     {
       "isRightSection": true,
       "title": "Développement Sur Mesure",
-      "subtitle": "En tant que développeuse neurodivergente spécialisée dans les outils de productivité et passionnée d'UX/UI, je crée des solutions personnalisées qui améliorent votre flux de travail numérique. Des plugins Obsidian aux extensions Chrome, chaque projet est méticuleusement conçu pour répondre à vos besoins spécifiques tout en garantissant une performance et une expérience utilisateur optimales.",
+      "subtitle": "En tant que développeuse spécialisée dans les outils de productivité et passionnée d'UX/UI, je crée des solutions personnalisées qui améliorent votre flux de travail numérique. Des plugins Obsidian aux extensions Chrome, chaque projet est méticuleusement conçu pour répondre à vos besoins spécifiques tout en garantissant une performance et une expérience utilisateur optimales.",
       "single": false,
       "imgOneAlt": "Illustration du flux de développement",
       "imgTwoAlt": "Personne travaillant avec des outils numériques"

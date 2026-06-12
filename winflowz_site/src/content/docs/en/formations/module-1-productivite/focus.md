@@ -335,7 +335,7 @@ Focus is not just "trying harder." It is the ability to:
 - limit competing targets
 - reduce transition costs
 
-For some people, especially with ADHD-like profiles, the issue is not a total lack of attention but regulation. The goal is not to become "normal." The goal is to increase the odds that intense attention locks onto the right object.
+For some people, especially in high-stimulation or high-pressure work environments, the issue is not a total lack of attention but regulation. The goal is not to become "normal." The goal is to increase the odds that intense attention locks onto the right object.
 
 Mental load also plays a direct role. When it gets too high:
 - you read without retaining
