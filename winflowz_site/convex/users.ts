@@ -1,5 +1,9 @@
 import { v } from "convex/values";
 import { internalMutation, query } from "./_generated/server";
+import {
+  DEFAULT_FREE_PRODUCT_IDS,
+  ensureMissingDefaultFreeEntitlements,
+} from "./defaultFreeEntitlements";
 
 const FORMATION_PRODUCT_ID = "winflowz_formation";
 const LEGACY_FORMATION_PRODUCT_ID = "winflowz-training";
@@ -103,6 +107,7 @@ export const upsertFromClerk = internalMutation({
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
       .unique();
 
+    let userDocId;
     if (existing) {
       await ctx.db.patch(existing._id, withoutUndefined({
         email: args.email,
@@ -110,16 +115,38 @@ export const upsertFromClerk = internalMutation({
         imageUrl: args.imageUrl,
         globalUserId: globalUserDocId,
       }));
-      return existing._id;
+      userDocId = existing._id;
+    } else {
+      userDocId = await ctx.db.insert("users", withoutUndefined({
+        clerkId: args.clerkId,
+        email: args.email,
+        name: args.name,
+        imageUrl: args.imageUrl,
+        globalUserId: globalUserDocId,
+      }));
     }
 
-    return await ctx.db.insert("users", withoutUndefined({
-      clerkId: args.clerkId,
-      email: args.email,
-      name: args.name,
-      imageUrl: args.imageUrl,
-      globalUserId: globalUserDocId,
-    }));
+    const globalUser = await ctx.db.get(globalUserDocId);
+    if (!globalUser) {
+      throw new Error("global_user_not_found");
+    }
+
+    const rawEntitlements = await ctx.db
+      .query("productEntitlements")
+      .withIndex("by_globalUserId", (q) => q.eq("globalUserId", globalUserDocId))
+      .collect();
+
+    await ensureMissingDefaultFreeEntitlements(ctx, {
+      rawEntitlements,
+      productIds: DEFAULT_FREE_PRODUCT_IDS,
+      globalUserDocId,
+      globalUserPublicId: globalUser.globalUserId,
+      sourceRef: args.sourceRef ?? args.clerkId,
+      environment,
+      now,
+    });
+
+    return userDocId;
   },
 });
 

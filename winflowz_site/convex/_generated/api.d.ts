@@ -10,6 +10,7 @@
 
 import type * as apiKeys from "../apiKeys.js";
 import type * as bridge from "../bridge.js";
+import type * as defaultFreeEntitlements from "../defaultFreeEntitlements.js";
 import type * as features from "../features.js";
 import type * as http from "../http.js";
 import type * as polar from "../polar.js";
@@ -25,6 +26,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   apiKeys: typeof apiKeys;
   bridge: typeof bridge;
+  defaultFreeEntitlements: typeof defaultFreeEntitlements;
   features: typeof features;
   http: typeof http;
   polar: typeof polar;

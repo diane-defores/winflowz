@@ -183,12 +183,13 @@ courante, l'UI doit le dire clairement au lieu de simuler un succès.
 | 2026-06-12 01:02:21 UTC | 001-sf-build | GPT-5 Codex | Finalized the run trace alignment for the custom action buttons feature and aligned UI selector keys after test execution model change. | Implemented; local validation remains green (analyze + targeted widget tests). | `/104-sf-end shipflow_data/workflow/specs/custom-action-buttons-and-command-macros.md` |
 | 2026-06-12 03:05:00 UTC | 104-sf-end | GPT-5 Codex | Completed end-of-task wrap-up and ready for ship with current run evidence and pending proof path noted. | Closed (ship pending). | `/005-sf-ship shipflow_data/workflow/specs/custom-action-buttons-and-command-macros.md` |
 | 2026-06-12 03:06:00 UTC | 005-sf-ship | GPT-5 Codex | Closed the tracking loop and committed the 104-sf-end spec update for the custom action button feature. | Shipped (docs/trace layer). | `none` |
+| 2026-06-12 04:10:00 UTC | 007-sf-content | GPT-5 Codex | Enriched user-facing docs for custom action buttons with usage examples, `Ctrl+W, N` action-sequence guidance, explicit snippet-vs-button model explanation, and verification checklist updates. | Implemented (documentation pass; runtime behavior unchanged). | `none` |
 
 ## Current Chantier Flow
 
 sf-spec: ready
 sf-ready: accepted inside sf-build
 sf-start: implemented
-sf-verify: local checks pass
+sf-verify: local checks + docs checks pass
 sf-end: closed
 sf-ship: shipped
