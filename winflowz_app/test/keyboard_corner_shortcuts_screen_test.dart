@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:winflowz_app/core/theme/app_theme.dart';
+import 'package:winflowz_app/features/custom_action_buttons/application/custom_action_button_store_provider.dart';
+import 'package:winflowz_app/features/custom_action_buttons/data/in_memory_custom_action_button_store.dart';
+import 'package:winflowz_app/features/custom_action_buttons/domain/custom_action_buttons.dart';
 import 'package:winflowz_app/features/keyboard/application/keyboard_sync_providers.dart';
 import 'package:winflowz_app/features/keyboard/domain/keyboard_models.dart';
 import 'package:winflowz_app/features/keyboard/presentation/keyboard_corner_shortcuts_screen.dart';
@@ -12,9 +15,15 @@ import 'package:winflowz_app/features/snippets/data/in_memory_snippet_store.dart
 
 const _keyboardChannel = MethodChannel('winflowz_app/keyboard');
 
-Widget _testWidget(InMemorySnippetStore snippetStore) {
+Widget _testWidget(
+  InMemorySnippetStore snippetStore,
+  InMemoryCustomActionButtonStore customActionStore,
+) {
   return ProviderScope(
-    overrides: [snippetStoreProvider.overrideWithValue(snippetStore)],
+    overrides: [
+      snippetStoreProvider.overrideWithValue(snippetStore),
+      customActionButtonStoreProvider.overrideWithValue(customActionStore),
+    ],
     child: MaterialApp(
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
@@ -31,6 +40,33 @@ Future<InMemorySnippetStore> _snippetStore() async {
     trigger: 'JA',
     content: "j'arrive dans cinq minutes",
     label: 'J arrive',
+  );
+  return store;
+}
+
+Future<InMemoryCustomActionButtonStore> _customActionButtonStore() async {
+  final store = InMemoryCustomActionButtonStore(
+    clock: () => DateTime.utc(2026, 5, 14, 12),
+  );
+  await store.insert(
+    title: 'Presse',
+    icon: CustomActionButtonIcon.clipboard,
+    action: const CustomActionButtonAction(
+      kind: CustomActionKind.clipboardCommand,
+      value: 'paste',
+    ),
+    rowIndex: 0,
+    orderIndex: 1,
+  );
+  await store.insert(
+    title: 'Non-supporté',
+    icon: CustomActionButtonIcon.terminal,
+    action: const CustomActionButtonAction(
+      kind: CustomActionKind.keySequence,
+      value: 'Ctrl+W, N',
+    ),
+    rowIndex: 0,
+    orderIndex: 2,
   );
   return store;
 }
@@ -153,7 +189,9 @@ void main() {
       final calls = <MethodCall>[];
       _installKeyboardMock(calls: calls);
 
-      await tester.pumpWidget(_testWidget(await _snippetStore()));
+      await tester.pumpWidget(
+        _testWidget(await _snippetStore(), await _customActionButtonStore()),
+      );
       await tester.pumpAndSettle();
       final container = ProviderScope.containerOf(
         tester.element(find.byType(KeyboardCornerShortcutsScreen)),
@@ -191,7 +229,9 @@ void main() {
     await _runAsAndroid(tester, () async {
       _installKeyboardMock(calls: <MethodCall>[]);
 
-      await tester.pumpWidget(_testWidget(await _snippetStore()));
+      await tester.pumpWidget(
+        _testWidget(await _snippetStore(), await _customActionButtonStore()),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('corner-preview-key-letter-e')));
@@ -223,7 +263,9 @@ void main() {
     await _runAsAndroid(tester, () async {
       _installKeyboardMock(calls: <MethodCall>[]);
 
-      await tester.pumpWidget(_testWidget(await _snippetStore()));
+      await tester.pumpWidget(
+        _testWidget(await _snippetStore(), await _customActionButtonStore()),
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(
@@ -242,6 +284,61 @@ void main() {
     });
   });
 
+  testWidgets('visual editor applies supported custom action button shortcuts', (
+    tester,
+  ) async {
+    await _runAsAndroid(tester, () async {
+      _installKeyboardMock(calls: <MethodCall>[]);
+
+      await tester.pumpWidget(
+        _testWidget(await _snippetStore(), await _customActionButtonStore()),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('corner-preview-key-letter-e')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('corner-action-search')));
+      await tester.enterText(
+        find.byKey(const Key('corner-action-search')),
+        'Presse',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('corner-custom-action-button-Presse')));
+      await tester.pumpAndSettle();
+
+      expect(find.descendant(
+        of: find.byKey(const Key('corner-preview-slot-topLeft-E')),
+        matching: find.text('Presse'),
+      ), findsOneWidget);
+    });
+  });
+
+  testWidgets('visual editor blocks unsupported custom action types', (
+    tester,
+  ) async {
+    await _runAsAndroid(tester, () async {
+      _installKeyboardMock(calls: <MethodCall>[]);
+
+      await tester.pumpWidget(
+        _testWidget(await _snippetStore(), await _customActionButtonStore()),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('corner-preview-key-letter-e')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('corner-action-search')));
+      await tester.enterText(
+        find.byKey(const Key('corner-action-search')),
+        'Non-support',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('corner-custom-action-button-Non-supporté')));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('séquences clavier'), findsOneWidget);
+    });
+  });
+
   testWidgets('corner preview exposes semantic gesture targets', (
     tester,
   ) async {
@@ -250,7 +347,9 @@ void main() {
       await _runAsAndroid(tester, () async {
         _installKeyboardMock(calls: <MethodCall>[]);
 
-        await tester.pumpWidget(_testWidget(await _snippetStore()));
+        await tester.pumpWidget(
+          _testWidget(await _snippetStore(), await _customActionButtonStore()),
+        );
         await tester.pumpAndSettle();
 
         expect(_semanticWidget('Keyboard key Q'), findsOneWidget);
@@ -275,7 +374,9 @@ void main() {
       final calls = <MethodCall>[];
       _installKeyboardMock(calls: calls);
 
-      await tester.pumpWidget(_testWidget(await _snippetStore()));
+      await tester.pumpWidget(
+        _testWidget(await _snippetStore(), await _customActionButtonStore()),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.widgetWithText(OutlinedButton, 'Import JSON'));

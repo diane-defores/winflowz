@@ -8,6 +8,8 @@ import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../application/keyboard_sync_providers.dart';
+import '../../custom_action_buttons/application/custom_action_button_store_provider.dart';
+import '../../custom_action_buttons/domain/custom_action_buttons.dart';
 import '../../snippets/application/snippet_store_provider.dart';
 import '../../snippets/domain/snippet_store.dart';
 import '../domain/keyboard_models.dart';
@@ -46,6 +48,7 @@ class _KeyboardCornerShortcutsScreenState
     AndroidKeyboardCornerConfig.defaults(),
   );
   List<SnippetRecord> _snippets = const [];
+  List<CustomActionButtonRecord> _customActionButtons = const [];
   bool _loading = true;
   bool _saving = false;
   bool _privateMode = false;
@@ -75,6 +78,8 @@ class _KeyboardCornerShortcutsScreenState
       final status = await AndroidKeyboardBridge.getStatus();
       final config = await AndroidKeyboardBridge.getCornerConfig();
       final snippets = await ref.read(snippetStoreProvider).list();
+      final customActionButtons =
+          await ref.read(customActionButtonStoreProvider).list();
       if (!mounted) {
         return;
       }
@@ -82,6 +87,7 @@ class _KeyboardCornerShortcutsScreenState
         _draft = KeyboardCornerDraft.fromConfig(config);
         _layoutProfile = status.layoutProfile;
         _snippets = snippets;
+        _customActionButtons = customActionButtons;
         _message = PlatformCapabilities.keyboardImeSupported
             ? 'Loaded. Changes stay in draft until Save.'
             : 'Simulation sur ${PlatformCapabilities.currentPlatformLabel}: ${PlatformCapabilities.keyboardImeUnavailableReason}';
@@ -718,18 +724,18 @@ class _KeyboardCornerShortcutsScreenState
                         TextField(
                           key: const Key('corner-action-search'),
                           controller: _searchController,
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.search),
-                            labelText:
-                                'Search accents, punctuation, gestures or snippets',
-                          ),
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              labelText:
+                                  'Search accents, punctuation, gestures, snippets or action buttons',
+                            ),
                         ),
                         AppGaps.x3,
                         _ActionCatalog(
                           actions: _filteredActions(),
                           onSelected: _applyAction,
                         ),
-                        AppGaps.x3,
+            AppGaps.x3,
                         _SnippetCatalog(
                           snippets: _filteredSnippets(),
                           onSelected: (snippet) {
@@ -746,6 +752,11 @@ class _KeyboardCornerShortcutsScreenState
                               ),
                             );
                           },
+                        ),
+                        AppGaps.x3,
+                        _CustomActionButtonCatalog(
+                          buttons: _filteredCustomActionButtons(),
+                          onSelected: _applyCustomActionButton,
                         ),
                         AppGaps.x3,
                         ExpansionTile(
@@ -816,6 +827,40 @@ class _KeyboardCornerShortcutsScreenState
               snippet.content.toLowerCase().contains(query),
         )
         .toList(growable: false);
+  }
+
+  List<CustomActionButtonRecord> _filteredCustomActionButtons() {
+    final query = _searchController.text.trim().toLowerCase();
+    if (query.isEmpty) {
+      return _customActionButtons;
+    }
+    return _customActionButtons
+        .where(
+          (button) =>
+              button.title.toLowerCase().contains(query) ||
+              button.action.value.toLowerCase().contains(query) ||
+              button.action.kind.label.toLowerCase().contains(query),
+        )
+        .toList(growable: false);
+  }
+
+  void _applyCustomActionButton(CustomActionButtonRecord button) {
+    final expression = button.action.keyboardCornerExpression;
+    if (expression == null) {
+      setState(() => _message = button.action.keyboardCornerUnsupportedReason);
+      return;
+    }
+    _applyAction(
+      KeyboardGuidedAction(
+        category: KeyboardGuidedActionCategory.customAction,
+        title: button.title,
+        expression: expression,
+        label: button.title,
+        sensitive: button.action.kind == CustomActionKind.clipboardCommand,
+        description:
+            'Custom action: ${button.action.kind.label} (${button.action.value}).',
+      ),
+    );
   }
 
   String _shortcutLabel(KeyboardCornerSlot slot) {
@@ -965,6 +1010,49 @@ class _SnippetCatalog extends StatelessWidget {
                 key: Key('corner-snippet-${snippet.trigger}'),
                 label: Text(snippet.label ?? snippet.trigger),
                 onPressed: () => onSelected(snippet),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _CustomActionButtonCatalog extends StatelessWidget {
+  const _CustomActionButtonCatalog({
+    required this.buttons,
+    required this.onSelected,
+  });
+
+  final List<CustomActionButtonRecord> buttons;
+  final ValueChanged<CustomActionButtonRecord> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    if (buttons.isEmpty) {
+      return const Text('No matching action buttons.');
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Action buttons',
+          style: Theme.of(context)
+              .textTheme
+              .labelLarge
+              ?.copyWith(fontWeight: AppFontWeights.bold),
+        ),
+        AppGaps.x1,
+        Wrap(
+          spacing: AppSpacing.x2,
+          runSpacing: AppSpacing.x2,
+          children: [
+            for (final button in buttons)
+              ActionChip(
+                key: Key('corner-custom-action-button-${button.title}'),
+                avatar: Icon(button.icon.iconData),
+                label: Text(button.title),
+                onPressed: () => onSelected(button),
               ),
           ],
         ),

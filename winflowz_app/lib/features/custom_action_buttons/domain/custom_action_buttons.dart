@@ -52,6 +52,54 @@ extension CustomActionKindPresentation on CustomActionKind {
   }
 }
 
+extension CustomActionButtonActionRuntimeSupport on CustomActionButtonAction {
+  bool get supportsKeyboardCornerExecution {
+    return keyboardCornerExpression != null;
+  }
+
+  String get keyboardCornerUnsupportedReason {
+    return switch (kind) {
+      CustomActionKind.keySequence =>
+        'Les séquences clavier ne sont pas disponibles pour les gestes Android.',
+      CustomActionKind.mediaCommand =>
+        'Les commandes média ne sont pas disponibles pour les gestes Android.',
+      CustomActionKind.macro => 'Les macros ne sont pas encore supportées ici.',
+      _ => 'Cette action ne peut pas être ajoutée au geste configuré.',
+    };
+  }
+
+  String? get keyboardCornerExpression {
+    final normalizedValue = trimmedValue;
+    return switch (kind) {
+      CustomActionKind.insertText =>
+        normalizedValue.isEmpty ? null : _quotedTextExpression(normalizedValue),
+      CustomActionKind.keyboardExpression =>
+        normalizedValue.isEmpty ? null : normalizedValue,
+      CustomActionKind.clipboardCommand => _clipboardCommandToExpression(
+        normalizedValue,
+      ),
+      CustomActionKind.keySequence ||
+      CustomActionKind.mediaCommand ||
+      CustomActionKind.macro => null,
+    };
+  }
+
+  String _clipboardCommandToExpression(String rawCommand) {
+    return switch (CustomClipboardCommandPresentation.fromName(rawCommand)) {
+      CustomClipboardCommand.copy => 'action:CopySelection',
+      CustomClipboardCommand.cut => 'action:CutSelection',
+      CustomClipboardCommand.paste => 'action:PasteClipboard',
+    };
+  }
+
+  String _quotedTextExpression(String value) {
+    final escaped = value
+        .replaceAll('\\', '\\\\')
+        .replaceAll("'", r"\'");
+    return "'$escaped'";
+  }
+}
+
 enum CustomClipboardCommand { copy, cut, paste }
 
 extension CustomClipboardCommandPresentation on CustomClipboardCommand {

@@ -56,4 +56,38 @@ void main() {
       expect(items.single.action.kind, CustomActionKind.clipboardCommand);
     },
   );
+
+  test('keyboard corner bindings map supported custom actions to expressions', () {
+    const insertText = CustomActionButtonAction(
+      kind: CustomActionKind.insertText,
+      value: 'Bonjour',
+    );
+    const shortcut = CustomActionButtonAction(
+      kind: CustomActionKind.keyboardExpression,
+      value: 'action:Undo',
+    );
+    const copy = CustomActionButtonAction(
+      kind: CustomActionKind.clipboardCommand,
+      value: 'copy',
+    );
+
+    expect(insertText.supportsKeyboardCornerExecution, isTrue);
+    expect(shortcut.supportsKeyboardCornerExecution, isTrue);
+    expect(copy.supportsKeyboardCornerExecution, isTrue);
+    expect(copy.keyboardCornerExpression, 'action:CopySelection');
+    expect(insertText.keyboardCornerExpression, "'Bonjour'");
+  });
+
+  test('keyboard corner bindings reject desktop-only action types', () {
+    const unsupported = CustomActionButtonAction(
+      kind: CustomActionKind.keySequence,
+      value: 'Ctrl+W, N',
+    );
+
+    expect(unsupported.supportsKeyboardCornerExecution, isFalse);
+    expect(
+      unsupported.keyboardCornerUnsupportedReason,
+      contains('séquences clavier'),
+    );
+  });
 }

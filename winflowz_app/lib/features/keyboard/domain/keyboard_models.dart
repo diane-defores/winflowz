@@ -1463,6 +1463,7 @@ enum KeyboardGuidedActionCategory {
   punctuation('Punctuation'),
   snippet('Snippet'),
   action('Action'),
+  customAction('Action personnalisée'),
   macro('Macro'),
   advancedExpression('Advanced');
 

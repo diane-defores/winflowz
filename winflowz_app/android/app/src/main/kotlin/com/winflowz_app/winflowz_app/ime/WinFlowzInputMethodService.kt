@@ -86,7 +86,8 @@ class WinFlowzInputMethodService :
                 key == KeyboardStateStore.KEY_KEY_VIBRATION_ENABLED ||
                 key == KeyboardStateStore.KEY_KEY_SOUND_ENABLED ||
                 key == KeyboardStateStore.KEY_KEY_SOUND_INTENSITY ||
-                key == KeyboardStateStore.KEY_KEY_VIBRATION_INTENSITY
+                key == KeyboardStateStore.KEY_KEY_VIBRATION_INTENSITY ||
+                key == KeyboardStateStore.KEY_AUTO_CLOSE_MODES_ENABLED
         ) {
             runServiceSafely("onSharedPreferenceChanged:$key") {
                 applyRuntimePreferencesToView()
