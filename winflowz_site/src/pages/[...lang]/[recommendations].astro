@@ -1,0 +1,66 @@
+---
+export const prerender = true
+import MainLayout from '@/layouts/MainLayout.astro'
+import type { Language } from '@/types'
+import { generateStaticPaths } from '@/utils/routing'
+import { getLocalizedSiteUrl } from '@/constants'
+import { recommendationImages } from '@/data/recommendations'
+
+export const getStaticPaths = () => generateStaticPaths('recommendations')
+
+interface Props {
+  lang: Language
+}
+
+const { lang } = Astro.props
+const title = lang === 'fr' ? 'Recommandations' : 'Recommendations'
+const eyebrow = lang === 'fr' ? 'Preuves sociales' : 'Social proof'
+const description =
+  lang === 'fr'
+    ? 'Captures réelles d’avis clients et de recommandations autour du produit.'
+    : 'Real customer review captures and recommendations around the product.'
+---
+
+<MainLayout
+  title={title}
+  meta={{ description }}
+  lang={lang}
+  structuredData={{
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': getLocalizedSiteUrl(lang, lang === 'fr' ? '/recommandations' : '/recommendations'),
+    url: getLocalizedSiteUrl(lang, lang === 'fr' ? '/recommandations' : '/recommendations'),
+    name: title,
+    description,
+    inLanguage: lang,
+  }}
+>
+  <main class="bg-background text-foreground">
+    <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-zinc-500">
+          {eyebrow}
+        </p>
+        <h1 class="mt-4 text-balance text-4xl font-bold tracking-tight text-neutral-950 dark:text-white sm:text-5xl">
+          {title}
+        </h1>
+        <p class="mx-auto mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-neutral-600 dark:text-zinc-400">
+          {description}
+        </p>
+      </div>
+
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {recommendationImages.map((image) => (
+          <figure class="landing-surface overflow-hidden rounded-2xl border shadow-sm transition-transform duration-300 hover:-translate-y-1">
+            <img
+              src={image.src}
+              alt={image.alt}
+              class="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </figure>
+        ))}
+      </div>
+    </section>
+  </main>
+</MainLayout>

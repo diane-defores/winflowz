@@ -9,7 +9,7 @@
     "primaryBtn": "See Windows Mastery",
     "primaryBtnURL": "/windows-mastery",
     "secondaryBtn": "Testimonials",
-    "secondaryBtnURL": "/products#testimonials",
+    "secondaryBtnURL": "/recommendations",
     "review": {
       "rating": "",
       "starCount": 0,

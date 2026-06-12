@@ -11,6 +11,7 @@ import FAQ from '@components/sections/misc/FAQ.astro'
 import { useTranslations } from '@/utils/i18n'
 import type { Language } from '@/types'
 import { getLocalizedSiteUrl } from '@/constants'
+import { getLocalizedPath } from '@/utils/routing'
 
 export const prerender = true
 
@@ -61,7 +62,7 @@ const defaultTestimonial = {
 
 const statistics = t.testimonials?.statistics || []
 const hasValidStats = Array.isArray(statistics) && statistics.length > 0
-const testimonialsUrl = lang === 'fr' ? '/fr/produits#testimonials' : '/products#testimonials'
+const testimonialsUrl = getLocalizedPath(lang, 'recommendations')
 ---
 
 <MainLayout

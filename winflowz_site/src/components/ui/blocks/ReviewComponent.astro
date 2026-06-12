@@ -4,7 +4,7 @@ import FullStar from "@components/ui/stars/FullStar.astro";
 import { getLocalizedPath } from "@/utils/routing";
 
 const { avatars, starCount = 0, rating, reviews } = Astro.props;
-const productsUrl = getLocalizedPath(Astro.currentLocale === "fr" ? "fr" : "en", "testimonials");
+const productsUrl = getLocalizedPath(Astro.currentLocale === "fr" ? "fr" : "en", "recommendations");
 
 interface Props {
   avatars?: Array<string>;

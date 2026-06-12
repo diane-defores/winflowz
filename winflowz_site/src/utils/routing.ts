@@ -45,6 +45,10 @@ export const ROUTES: Record<string, RouteDefinition> = {
     en: 'testimonials',
     fr: 'temoignages'
   },
+  recommendations: {
+    en: 'recommendations',
+    fr: 'recommandations'
+  },
   contact: {
     en: 'contact',
     fr: 'contact'  // Same in both languages
