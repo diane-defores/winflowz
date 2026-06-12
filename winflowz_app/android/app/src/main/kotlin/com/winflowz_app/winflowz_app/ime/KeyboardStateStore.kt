@@ -12,6 +12,7 @@ import android.text.TextUtils
 import com.winflowz_app.winflowz_app.WinFlowzNotificationListenerService
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionBarState
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressBehavior
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionRowSpec
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardAttachedActionRowState
 import java.io.File
 import java.text.SimpleDateFormat
@@ -28,6 +29,10 @@ class KeyboardStateStore(private val context: Context) {
     var voiceEnabled: Boolean
         get() = preferences.getBoolean(KEY_VOICE_ENABLED, true)
         set(value) = preferences.edit().putBoolean(KEY_VOICE_ENABLED, value).apply()
+
+    var customActionBarEnabled: Boolean
+        get() = preferences.getBoolean(KEY_CUSTOM_ACTION_BAR_ENABLED, false)
+        set(value) = preferences.edit().putBoolean(KEY_CUSTOM_ACTION_BAR_ENABLED, value).apply()
 
     var clipboardSyncDesired: Boolean
         get() = preferences.getBoolean(KEY_CLIPBOARD_SYNC_DESIRED, false)
@@ -217,6 +222,92 @@ class KeyboardStateStore(private val context: Context) {
         set(value) {
             preferences.edit().putString(KEY_ACTION_BAR_LONG_PRESS_BEHAVIOR, value.wireValue).apply()
         }
+
+    fun replaceCustomActionBarConfig(rawConfig: Map<*, *>) {
+        val enabled = rawConfig["enabled"] as? Boolean ?: customActionBarEnabled
+        val rawActions = rawConfig["actions"] as? List<*> ?: emptyList<Any?>()
+        val actions = JSONArray()
+        rawActions.take(MAX_CUSTOM_ACTION_BAR_ITEMS).forEach { raw ->
+            val item = raw as? Map<*, *> ?: return@forEach
+            val id = sanitizedWireString(item["id"], MAX_CUSTOM_ACTION_ID_LENGTH)
+            val title = sanitizedWireString(item["title"], MAX_CUSTOM_ACTION_TITLE_LENGTH)
+            val type = sanitizedWireString(item["type"], MAX_CUSTOM_ACTION_TYPE_LENGTH)
+            val value = sanitizedWireString(item["value"], MAX_CUSTOM_ACTION_VALUE_LENGTH)
+            if (id.isBlank() || title.isBlank() || type.isBlank()) {
+                return@forEach
+            }
+            if ((type == "insertText" || type == "keyboardExpression") && value.isBlank()) {
+                return@forEach
+            }
+            actions.put(
+                JSONObject()
+                    .put("id", id)
+                    .put("title", title)
+                    .put("type", type)
+                    .put("value", value)
+                    .put("orderIndex", (item["orderIndex"] as? Number)?.toInt() ?: actions.length())
+                    .put("sensitive", item["sensitive"] as? Boolean ?: defaultCustomActionSensitivity(type)),
+            )
+        }
+        val payload = JSONObject()
+            .put("schemaVersion", 1)
+            .put("actions", actions)
+            .toString()
+        if (payload.length > MAX_CUSTOM_ACTION_BAR_CONFIG_JSON_LENGTH) {
+            throw IllegalArgumentException("Custom action bar config is too large.")
+        }
+        preferences.edit()
+            .putBoolean(KEY_CUSTOM_ACTION_BAR_ENABLED, enabled)
+            .putString(KEY_CUSTOM_ACTION_BAR_CONFIG, payload)
+            .apply()
+    }
+
+    fun customActionRows(fieldPolicy: KeyboardFieldPolicy): List<KeyboardActionRowSpec> {
+        if (!customActionBarEnabled || fieldPolicy.privateMode) {
+            return emptyList()
+        }
+        val rawConfig = preferences.getString(KEY_CUSTOM_ACTION_BAR_CONFIG, null)
+        if (rawConfig.isNullOrBlank() || rawConfig.length > MAX_CUSTOM_ACTION_BAR_CONFIG_JSON_LENGTH) {
+            return emptyList()
+        }
+        val keys = runCatching {
+            val actions = JSONObject(rawConfig).optJSONArray("actions") ?: JSONArray()
+            val parsed = mutableListOf<Pair<Int, KeyboardKeySpec>>()
+            for (index in 0 until minOf(actions.length(), MAX_CUSTOM_ACTION_BAR_ITEMS)) {
+                val item = actions.optJSONObject(index) ?: continue
+                val type = item.optString("type").trim()
+                val sensitive = item.optBoolean("sensitive", defaultCustomActionSensitivity(type))
+                if (sensitive && fieldPolicy.privateMode) {
+                    continue
+                }
+                if (type == "clipboardCommand" && !fieldPolicy.clipboardAllowed) {
+                    continue
+                }
+                if (type == "mediaCommand" && !mediaControlsEnabled) {
+                    continue
+                }
+                customActionKeySpec(item)?.let { spec ->
+                    parsed.add(item.optInt("orderIndex", index) to spec)
+                }
+            }
+            parsed.sortedBy { it.first }.map { it.second }
+        }.getOrElse {
+            emptyList()
+        }
+        if (keys.isEmpty()) {
+            return emptyList()
+        }
+        return listOf(
+            KeyboardActionRowSpec(
+                rowId = "custom-action-bar",
+                dedupeKey = "custom-action-bar",
+                visiblePageKeyCount = CUSTOM_ACTION_BAR_VISIBLE_KEY_COUNT,
+                pagedHorizontal = true,
+                items = keys,
+                actionSurface = true,
+            ),
+        )
+    }
 
     var privacyMode: String
         get() = preferences.getString(KEY_PRIVACY_MODE, PRIVACY_AUTO) ?: PRIVACY_AUTO
@@ -460,6 +551,7 @@ class KeyboardStateStore(private val context: Context) {
             "enabled" to isInputMethodEnabled(),
             "active" to isInputMethodActive(),
             "voiceEnabled" to voiceEnabled,
+            "customActionBarEnabled" to customActionBarEnabled,
             "clipboardSyncDesired" to clipboardSyncDesired,
             "clipboardSensitiveFieldHistoryEnabled" to clipboardSensitiveFieldHistoryEnabled,
             "mediaControlsEnabled" to mediaControlsEnabled,
@@ -1153,9 +1245,91 @@ class KeyboardStateStore(private val context: Context) {
 
     private fun clipboardDedupeKey(content: String): String = content.replace(Regex("\\s+"), " ").trim().lowercase()
 
+    private fun customActionKeySpec(item: JSONObject): KeyboardKeySpec? {
+        val id = item.optString("id").trim().take(MAX_CUSTOM_ACTION_ID_LENGTH)
+        val title = item.optString("title").trim().take(MAX_CUSTOM_ACTION_TITLE_LENGTH)
+        val type = item.optString("type").trim()
+        val value = item.optString("value").trim().take(MAX_CUSTOM_ACTION_VALUE_LENGTH)
+        if (id.isBlank() || title.isBlank()) {
+            return null
+        }
+        val safeId = id.replace(Regex("[^A-Za-z0-9_.-]"), "_")
+        return when (type) {
+            "insertText" -> {
+                if (value.isBlank()) return null
+                KeyboardKeySpec(
+                    id = "custom-action-$safeId",
+                    label = title,
+                    action = KeyboardKeyAction.Text,
+                    keyValue = KeyboardKeyValue.text(value, title),
+                    weight = customActionWeight(title),
+                )
+            }
+            "keyboardExpression" -> {
+                val parsed = runCatching { KeyboardKeyValueParser.parse(value) }.getOrNull() ?: return null
+                KeyboardKeySpec(
+                    id = "custom-action-$safeId",
+                    label = title,
+                    action = parsed.action ?: KeyboardKeyAction.Text,
+                    keyValue = parsed,
+                    weight = customActionWeight(title),
+                )
+            }
+            "clipboardCommand" -> {
+                val action = when (value) {
+                    "copy" -> KeyboardKeyAction.CopySelection
+                    "cut" -> KeyboardKeyAction.CutSelection
+                    "paste" -> KeyboardKeyAction.PasteClipboard
+                    else -> return null
+                }
+                KeyboardKeySpec(
+                    id = "custom-action-$safeId",
+                    label = title,
+                    action = action,
+                    weight = customActionWeight(title),
+                )
+            }
+            "mediaCommand" -> {
+                val action = when (value) {
+                    "playPause" -> KeyboardKeyAction.MediaPlayPause
+                    "play" -> KeyboardKeyAction.MediaPlayPause
+                    "pause" -> KeyboardKeyAction.MediaPlayPause
+                    "nextTrack" -> KeyboardKeyAction.MediaNext
+                    "previousTrack" -> KeyboardKeyAction.MediaPrevious
+                    else -> return null
+                }
+                KeyboardKeySpec(
+                    id = "custom-action-$safeId",
+                    label = title,
+                    action = action,
+                    weight = customActionWeight(title),
+                )
+            }
+            else -> null
+        }
+    }
+
+    private fun sanitizedWireString(
+        value: Any?,
+        maxLength: Int,
+    ): String = (value as? String).orEmpty().replace(Regex("\\s+"), " ").trim().take(maxLength)
+
+    private fun defaultCustomActionSensitivity(type: String): Boolean {
+        return type == "insertText" || type == "keyboardExpression" || type == "clipboardCommand"
+    }
+
+    private fun customActionWeight(title: String): Float {
+        return when {
+            title.length <= 6 -> 1.0f
+            title.length <= 12 -> 1.25f
+            else -> 1.5f
+        }
+    }
+
     private fun exportSyncablePreferences(): Map<String, Any> {
         return mapOf(
             "voiceEnabled" to voiceEnabled,
+            "customActionBarEnabled" to customActionBarEnabled,
             "mediaControlsEnabled" to mediaControlsEnabled,
             "mediaVolumeStepPercent" to mediaVolumeStepPercent,
             "mediaBrightnessStepPercent" to mediaBrightnessStepPercent,
@@ -1308,6 +1482,7 @@ class KeyboardStateStore(private val context: Context) {
         rawPreferences.forEach { (key, value) ->
             when (key as? String) {
                 "voiceEnabled" -> if (value is Boolean) voiceEnabled = value
+                "customActionBarEnabled" -> if (value is Boolean) customActionBarEnabled = value
                 "mediaControlsEnabled" -> if (value is Boolean) mediaControlsEnabled = value
                 "mediaVolumeStepPercent" -> if (value is Number) mediaVolumeStepPercent = value.toInt()
                 "mediaBrightnessStepPercent" -> if (value is Number) mediaBrightnessStepPercent = value.toInt()
@@ -1428,6 +1603,7 @@ class KeyboardStateStore(private val context: Context) {
     companion object {
         const val PREFERENCES_NAME = "winflowz_app_keyboard_prefs"
         const val KEY_VOICE_ENABLED = "voice_enabled"
+        const val KEY_CUSTOM_ACTION_BAR_ENABLED = "custom_action_bar_enabled"
         const val KEY_CLIPBOARD_SYNC_DESIRED = "clipboard_sync_desired"
         const val KEY_CLIPBOARD_SENSITIVE_FIELD_HISTORY_ENABLED = "clipboard_sensitive_field_history_enabled"
         const val KEY_MEDIA_CONTROLS_ENABLED = "media_controls_enabled"
@@ -1466,6 +1642,7 @@ class KeyboardStateStore(private val context: Context) {
         const val KEY_CORNER_CONFIG = "corner_config"
         const val KEY_THEME_CONFIG = "theme_config"
         const val KEY_STATUS_BAR_CONFIG = "status_bar_config"
+        const val KEY_CUSTOM_ACTION_BAR_CONFIG = "custom_action_bar_config"
         const val KEY_ACCOUNT_LABEL = "keyboard_statusbar_account_label"
         const val KEY_ACCOUNT_LABEL_MODE = "keyboard_statusbar_account_label_mode"
         const val KEY_TIPS_LAST_RESET_AT = "keyboard_statusbar_tips_last_reset_at_ms"
@@ -1490,6 +1667,13 @@ class KeyboardStateStore(private val context: Context) {
         const val MAX_CLIPBOARD_ENTRIES = 60
         const val MAX_CORNER_CONFIG_JSON_LENGTH = 24000
         const val MAX_THEME_CONFIG_JSON_LENGTH = 48000
+        const val MAX_CUSTOM_ACTION_BAR_CONFIG_JSON_LENGTH = 32000
+        const val MAX_CUSTOM_ACTION_BAR_ITEMS = 40
+        const val MAX_CUSTOM_ACTION_ID_LENGTH = 96
+        const val MAX_CUSTOM_ACTION_TITLE_LENGTH = 48
+        const val MAX_CUSTOM_ACTION_TYPE_LENGTH = 32
+        const val MAX_CUSTOM_ACTION_VALUE_LENGTH = 2048
+        const val CUSTOM_ACTION_BAR_VISIBLE_KEY_COUNT = 6
         const val MAX_NAVIGATION_DIAGNOSTIC_ENTRIES = 40
         const val PRIVACY_AUTO = "auto"
         const val PRIVACY_STRICT = "strict"

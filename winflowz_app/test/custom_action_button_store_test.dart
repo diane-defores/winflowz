@@ -57,26 +57,29 @@ void main() {
     },
   );
 
-  test('keyboard corner bindings map supported custom actions to expressions', () {
-    const insertText = CustomActionButtonAction(
-      kind: CustomActionKind.insertText,
-      value: 'Bonjour',
-    );
-    const shortcut = CustomActionButtonAction(
-      kind: CustomActionKind.keyboardExpression,
-      value: 'action:Undo',
-    );
-    const copy = CustomActionButtonAction(
-      kind: CustomActionKind.clipboardCommand,
-      value: 'copy',
-    );
+  test(
+    'keyboard corner bindings map supported custom actions to expressions',
+    () {
+      const insertText = CustomActionButtonAction(
+        kind: CustomActionKind.insertText,
+        value: 'Bonjour',
+      );
+      const shortcut = CustomActionButtonAction(
+        kind: CustomActionKind.keyboardExpression,
+        value: 'action:Undo',
+      );
+      const copy = CustomActionButtonAction(
+        kind: CustomActionKind.clipboardCommand,
+        value: 'copy',
+      );
 
-    expect(insertText.supportsKeyboardCornerExecution, isTrue);
-    expect(shortcut.supportsKeyboardCornerExecution, isTrue);
-    expect(copy.supportsKeyboardCornerExecution, isTrue);
-    expect(copy.keyboardCornerExpression, 'action:CopySelection');
-    expect(insertText.keyboardCornerExpression, "'Bonjour'");
-  });
+      expect(insertText.supportsKeyboardCornerExecution, isTrue);
+      expect(shortcut.supportsKeyboardCornerExecution, isTrue);
+      expect(copy.supportsKeyboardCornerExecution, isTrue);
+      expect(copy.keyboardCornerExpression, 'action:CopySelection');
+      expect(insertText.keyboardCornerExpression, "'Bonjour'");
+    },
+  );
 
   test('keyboard corner bindings reject desktop-only action types', () {
     const unsupported = CustomActionButtonAction(
@@ -89,5 +92,47 @@ void main() {
       unsupported.keyboardCornerUnsupportedReason,
       contains('séquences clavier'),
     );
+  });
+
+  test('IME compatibility reports supported and unsupported action types', () {
+    const text = CustomActionButtonAction(
+      kind: CustomActionKind.insertText,
+      value: 'Bonjour',
+    );
+    const shortcut = CustomActionButtonAction(
+      kind: CustomActionKind.keyboardExpression,
+      value: 'action:Undo',
+    );
+    const keySequence = CustomActionButtonAction(
+      kind: CustomActionKind.keySequence,
+      value: 'Ctrl+W, N',
+    );
+    const macro = CustomActionButtonAction(
+      kind: CustomActionKind.macro,
+      value: 'a',
+    );
+    const unknownClipboard = CustomActionButtonAction(
+      kind: CustomActionKind.clipboardCommand,
+      value: 'archiveClipboard',
+    );
+    const playPause = CustomActionButtonAction(
+      kind: CustomActionKind.mediaCommand,
+      value: 'playPause',
+    );
+
+    expect(text.isImeCompatible, isTrue);
+    expect(text.imeCompatibilityLabel, 'IME: compatible');
+    expect(keySequence.isImeCompatible, isFalse);
+    expect(keySequence.imeCompatibilityLabel, 'IME: incompatible');
+    expect(keySequence.imeCompatibilityReason, contains('Séquences clavier'));
+    expect(macro.isImeCompatible, isFalse);
+    expect(macro.imeCompatibilityReason, contains('Macro'));
+
+    expect(shortcut.imeCompatibilityReason, isNot(contains('incompatible')));
+    expect(shortcut.isImeCompatible, isTrue);
+    expect(shortcut.imeCompatibilityLabel, 'IME: compatible');
+    expect(playPause.isImeCompatible, isTrue);
+    expect(unknownClipboard.isImeCompatible, isFalse);
+    expect(unknownClipboard.imeCompatibilityReason, contains('non reconnue'));
   });
 }

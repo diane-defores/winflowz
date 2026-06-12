@@ -87,6 +87,8 @@ class WinFlowzInputMethodService :
                 key == KeyboardStateStore.KEY_KEY_SOUND_ENABLED ||
                 key == KeyboardStateStore.KEY_KEY_SOUND_INTENSITY ||
                 key == KeyboardStateStore.KEY_KEY_VIBRATION_INTENSITY ||
+                key == KeyboardStateStore.KEY_CUSTOM_ACTION_BAR_ENABLED ||
+                key == KeyboardStateStore.KEY_CUSTOM_ACTION_BAR_CONFIG ||
                 key == KeyboardStateStore.KEY_AUTO_CLOSE_MODES_ENABLED
         ) {
             runServiceSafely("onSharedPreferenceChanged:$key") {
@@ -1133,6 +1135,7 @@ class WinFlowzInputMethodService :
                 symbolRecents = symbolRecents,
                 clipboardEntries = clipboardEntriesForKeyboard(),
                 snippets = stateStore.snippetRules(),
+                customActionRows = stateStore.customActionRows(fieldPolicy),
                 cornerConfig = stateStore.cornerConfig(),
                 actionBarState = actionBarStateForCurrentField(),
                 actionBarLongPressBehavior = stateStore.actionBarLongPressBehavior,

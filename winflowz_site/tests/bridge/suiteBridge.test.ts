@@ -106,9 +106,12 @@ describe('suiteBridge helpers', () => {
     expect(isAllowedSuiteProduct('winflowz_app')).toBe(true)
     expect(isAllowedSuiteProduct('winflowz_formation')).toBe(true)
     expect(isAllowedSuiteProduct('gocharbon')).toBe(true)
+    expect(isAllowedSuiteProduct('contentglowz')).toBe(true)
+    expect(isAllowedSuiteProduct('shipflow')).toBe(true)
     expect(isAllowedSuiteProduct('replayglowz')).toBe(true)
     expect(isAllowedSuiteProduct('socialglowz')).toBe(true)
     expect(isAllowedSuiteProduct('temu_shopping_lists')).toBe(true)
+    expect(isAllowedSuiteProduct('winflowz_android')).toBe(false)
     expect(isAllowedSuiteProduct('old_youtube_product')).toBe(false)
     expect(isAllowedSuiteProduct('legacy_product')).toBe(false)
   })
@@ -118,6 +121,8 @@ describe('suiteBridge helpers', () => {
       'winflowz_app',
       'winflowz_formation',
       'gocharbon',
+      'contentglowz',
+      'shipflow',
       'replayglowz',
       'socialglowz',
       'temu_shopping_lists',

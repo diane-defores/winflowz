@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:winflowz_app/core/theme/app_theme.dart';
 import 'package:winflowz_app/features/custom_action_buttons/application/custom_action_button_store_provider.dart';
+import 'package:winflowz_app/features/custom_action_buttons/domain/custom_action_buttons.dart';
 import 'package:winflowz_app/features/custom_action_buttons/data/in_memory_custom_action_button_store.dart';
 import 'package:winflowz_app/features/snippets/presentation/custom_action_buttons_panel.dart';
 
@@ -55,5 +56,49 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.text('Fenêtre suivante'), findsWidgets);
+  });
+
+  testWidgets('custom action panel shows IME compatibility status', (
+    tester,
+  ) async {
+    final store = InMemoryCustomActionButtonStore();
+    await store.insert(
+      title: 'Texte',
+      icon: CustomActionButtonIcon.spark,
+      action: const CustomActionButtonAction(
+        kind: CustomActionKind.insertText,
+        value: 'Bonjour',
+      ),
+    );
+    await store.insert(
+      title: 'Next',
+      icon: CustomActionButtonIcon.window,
+      action: const CustomActionButtonAction(
+        kind: CustomActionKind.keySequence,
+        value: 'Ctrl+W, N',
+      ),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          localCustomActionButtonStoreProvider.overrideWithValue(store),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomActionButtonsPanel(
+              surfaceSelector: const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 200));
+
+    expect(find.textContaining('IME: compatible'), findsWidgets);
+    expect(find.textContaining('IME: incompatible'), findsWidgets);
+    expect(find.textContaining('Séquences clavier'), findsAtLeast(1));
+    expect(find.text('Barre d’action Android IME'), findsOneWidget);
   });
 }

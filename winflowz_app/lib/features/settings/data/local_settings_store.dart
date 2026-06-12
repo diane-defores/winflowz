@@ -14,6 +14,8 @@ class LocalSettingsStore implements SettingsStore {
   static const _retentionPolicyKey = 'settings_retention_policy';
   static const _clipboardAutoSyncKey = 'settings_clipboard_auto_sync';
   static const _transcriptionSyncKey = 'settings_transcription_sync';
+  static const _customActionBarEnabledKey =
+      'settings_custom_action_bar_enabled';
   static const _confirmDestructiveActionsKey =
       'settings_confirm_destructive_actions';
   static const _onboardingCompletedKey = 'settings_onboarding_completed';
@@ -54,6 +56,10 @@ class LocalSettingsStore implements SettingsStore {
     final transcriptionSync = _boolFromValue(
       await _read(_transcriptionSyncKey),
       fallback: true,
+    );
+    final customActionBarEnabled = _boolFromValue(
+      await _read(_customActionBarEnabledKey),
+      fallback: false,
     );
     final confirmDestructiveActions = _boolFromValue(
       await _read(_confirmDestructiveActionsKey),
@@ -112,6 +118,7 @@ class LocalSettingsStore implements SettingsStore {
       retentionPolicy: retentionPolicy,
       clipboardAutoSync: clipboardAutoSync,
       transcriptionSync: transcriptionSync,
+      customActionBarEnabled: customActionBarEnabled,
       confirmDestructiveActions: confirmDestructiveActions,
       onboardingCompleted: onboardingCompleted,
       onboardingCurrentStep: onboardingCurrentStep,
@@ -134,6 +141,10 @@ class LocalSettingsStore implements SettingsStore {
     await _write(_retentionPolicyKey, settings.retentionPolicy.value);
     await _write(_clipboardAutoSyncKey, settings.clipboardAutoSync.toString());
     await _write(_transcriptionSyncKey, settings.transcriptionSync.toString());
+    await _write(
+      _customActionBarEnabledKey,
+      settings.customActionBarEnabled.toString(),
+    );
     await _write(
       _confirmDestructiveActionsKey,
       settings.confirmDestructiveActions.toString(),

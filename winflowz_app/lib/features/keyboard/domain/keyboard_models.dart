@@ -1956,6 +1956,7 @@ class AndroidKeyboardStatus {
     required this.enabled,
     required this.active,
     required this.voiceEnabled,
+    required this.customActionBarEnabled,
     required this.clipboardSyncDesired,
     required this.clipboardSensitiveFieldHistoryEnabled,
     required this.mediaControlsEnabled,
@@ -2012,6 +2013,7 @@ class AndroidKeyboardStatus {
   final bool enabled;
   final bool active;
   final bool voiceEnabled;
+  final bool customActionBarEnabled;
   final bool clipboardSyncDesired;
   final bool clipboardSensitiveFieldHistoryEnabled;
   final bool mediaControlsEnabled;
@@ -2069,6 +2071,7 @@ class AndroidKeyboardStatus {
       enabled: false,
       active: false,
       voiceEnabled: false,
+      customActionBarEnabled: false,
       clipboardSyncDesired: false,
       clipboardSensitiveFieldHistoryEnabled: false,
       mediaControlsEnabled: false,
@@ -2128,6 +2131,7 @@ class AndroidKeyboardStatus {
       enabled: map['enabled'] as bool? ?? false,
       active: map['active'] as bool? ?? false,
       voiceEnabled: map['voiceEnabled'] as bool? ?? true,
+      customActionBarEnabled: map['customActionBarEnabled'] as bool? ?? false,
       clipboardSyncDesired: map['clipboardSyncDesired'] as bool? ?? false,
       clipboardSensitiveFieldHistoryEnabled:
           map['clipboardSensitiveFieldHistoryEnabled'] as bool? ?? false,
@@ -2233,6 +2237,7 @@ class AndroidKeyboardStatus {
 
   Map<String, Object?> toPreferencesMap({
     bool? voiceEnabled,
+    bool? customActionBarEnabled,
     bool? clipboardSyncDesired,
     bool? clipboardSensitiveFieldHistoryEnabled,
     bool? mediaControlsEnabled,
@@ -2258,6 +2263,8 @@ class AndroidKeyboardStatus {
   }) {
     return {
       'voiceEnabled': voiceEnabled ?? this.voiceEnabled,
+      'customActionBarEnabled':
+          customActionBarEnabled ?? this.customActionBarEnabled,
       'clipboardSyncDesired': clipboardSyncDesired ?? this.clipboardSyncDesired,
       'clipboardSensitiveFieldHistoryEnabled':
           clipboardSensitiveFieldHistoryEnabled ??

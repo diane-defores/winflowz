@@ -61,9 +61,9 @@ flutter run
 
 ## Product Feature Notes
 
-- `winflowz_app/docs/CUSTOM_ACTION_BUTTONS.md` documente la configuration de la barre d’action personnalisable (icônes, rangées, exécution d’actions textuelles/clavier/multimédia).
+- `winflowz_app/docs/CUSTOM_ACTION_BUTTONS.md` documente la page `Actions`, la barre d’action personnalisable, la compatibilité IME Android et les limites desktop.
 - `winflowz_app/docs/PLATFORM_BEHAVIOR.md` couvre les limites par plateforme et le contrat hôte.
-- `winflowz_app/docs/COMPONENTS.md` inclut l’inventaire des composants du panneau `Snippets / Boutons`.
+- `winflowz_app/docs/COMPONENTS.md` inclut l’inventaire des composants `Actions`, `Snippets` et clavier Android.
 
 ## Firebase Runtime Defines
 

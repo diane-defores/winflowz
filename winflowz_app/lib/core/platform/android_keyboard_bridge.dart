@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../features/clipboard/domain/clipboard_capture_event.dart';
+import '../../features/custom_action_buttons/domain/custom_action_buttons.dart';
 import '../../features/keyboard/domain/keyboard_models.dart';
 import '../../features/keyboard/domain/keyboard_sync_models.dart';
 import '../../features/keyboard/data/local_keyboard_sync_queue_store.dart';
@@ -213,6 +214,7 @@ class AndroidKeyboardBridge {
 
   static Future<AndroidKeyboardStatus> setPreferences({
     required bool voiceEnabled,
+    required bool customActionBarEnabled,
     required bool clipboardSyncDesired,
     required bool clipboardSensitiveFieldHistoryEnabled,
     required bool mediaControlsEnabled,
@@ -245,6 +247,7 @@ class AndroidKeyboardBridge {
     }
     final raw = await _invoke<Map<Object?, Object?>>('setKeyboardPreferences', {
       'voiceEnabled': voiceEnabled,
+      'customActionBarEnabled': customActionBarEnabled,
       'clipboardSyncDesired': clipboardSyncDesired,
       'clipboardSensitiveFieldHistoryEnabled':
           clipboardSensitiveFieldHistoryEnabled,
@@ -274,6 +277,22 @@ class AndroidKeyboardBridge {
       'autoCloseModesEnabled': autoCloseModesEnabled,
       'privacyMode': privacyMode.name,
     });
+    return AndroidKeyboardStatus.fromMap(raw ?? const {});
+  }
+
+  static Future<AndroidKeyboardStatus> setCustomActionBarConfig(
+    CustomActionButtonImeConfig config,
+  ) async {
+    if (!PlatformCapabilities.keyboardImeSupported) {
+      throw AndroidKeyboardBridgeException(
+        code: 'KEYBOARD_UNSUPPORTED',
+        message: PlatformCapabilities.keyboardImeUnavailableReason,
+      );
+    }
+    final raw = await _invoke<Map<Object?, Object?>>(
+      'setKeyboardCustomActionBarConfig',
+      config.toMap(),
+    );
     return AndroidKeyboardStatus.fromMap(raw ?? const {});
   }
 

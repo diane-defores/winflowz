@@ -493,6 +493,9 @@ class MainActivity : FlutterActivity() {
                         call.argument<Boolean>("voiceEnabled")?.let {
                             keyboardState.voiceEnabled = it
                         }
+                        call.argument<Boolean>("customActionBarEnabled")?.let {
+                            keyboardState.customActionBarEnabled = it
+                        }
                         call.argument<Boolean>("clipboardSyncDesired")?.let {
                             keyboardState.clipboardSyncDesired = it
                         }
@@ -566,6 +569,27 @@ class MainActivity : FlutterActivity() {
                             keyboardState.privacyMode = it
                         }
                         result.success(keyboardState.buildStatusMap())
+                    }
+                    "setKeyboardCustomActionBarConfig" -> {
+                        val rawConfig = call.arguments as? Map<*, *>
+                        if (rawConfig == null) {
+                            result.error(
+                                "CUSTOM_ACTION_BAR_CONFIG_INVALID",
+                                "Custom action bar config payload must be a map.",
+                                null,
+                            )
+                            return@setMethodCallHandler
+                        }
+                        try {
+                            keyboardState.replaceCustomActionBarConfig(rawConfig)
+                            result.success(keyboardState.buildStatusMap())
+                        } catch (error: IllegalArgumentException) {
+                            result.error(
+                                "CUSTOM_ACTION_BAR_CONFIG_INVALID",
+                                error.message ?: "Custom action bar config is invalid.",
+                                null,
+                            )
+                        }
                     }
                     "setKeyboardThemeMode" -> {
                         keyboardState.themeMode = call.argument<String>("themeMode").orEmpty()

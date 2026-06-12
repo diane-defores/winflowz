@@ -59,6 +59,7 @@ class FirebaseSettingsStore implements SettingsStore {
       'retentionHours': _retentionHours(settings.retentionPolicy),
       'clipboardAutoSync': settings.clipboardAutoSync,
       'transcriptionSync': settings.transcriptionSync,
+      'customActionBarEnabled': settings.customActionBarEnabled,
       'confirmDestructiveActions': settings.confirmDestructiveActions,
       'onboardingCompleted': settings.onboardingCompleted,
       'onboardingCurrentStep': settings.onboardingCurrentStep,
@@ -90,6 +91,7 @@ class FirebaseSettingsStore implements SettingsStore {
       ),
       clipboardAutoSync: data['clipboardAutoSync'] as bool? ?? true,
       transcriptionSync: data['transcriptionSync'] as bool? ?? true,
+      customActionBarEnabled: data['customActionBarEnabled'] as bool? ?? false,
       confirmDestructiveActions:
           data['confirmDestructiveActions'] as bool? ?? true,
       onboardingCompleted: data['onboardingCompleted'] as bool? ?? false,

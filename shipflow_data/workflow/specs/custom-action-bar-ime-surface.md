@@ -6,8 +6,8 @@ project: "WinFlowz"
 created: "2026-06-12"
 created_at: "2026-06-12 03:47:50 UTC"
 updated: "2026-06-12"
-updated_at: "2026-06-12 03:56:49 UTC"
-status: ready
+updated_at: "2026-06-12 08:53:59 UTC"
+status: active
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
 scope: "custom-action-bar-ime-surface"
@@ -46,7 +46,7 @@ evidence:
   - "Code scan: `lib/features/custom_action_buttons/**` already provides typed button models, stores, layout metadata, and a runner."
   - "Code scan: `android/app/src/main/kotlin/com/winflowz_app/winflowz_app/ime/actions/KeyboardActionBarController.kt` already owns native action-row rendering state."
   - "Official Android docs: input methods normally extend `InputMethodService` and can expose settings UI through the system input-method settings surface."
-next_step: "/102-sf-start shipflow_data/workflow/specs/custom-action-bar-ime-surface.md"
+next_step: "/005-sf-ship winflowz_app for Blacksmith Android proof"
 ---
 
 # Title
@@ -550,12 +550,14 @@ dedicated app page for actions.
 |----------|-------|-------|--------|--------|-----------|
 | 2026-06-12 03:47:50 UTC | 100-sf-spec | GPT-5 Codex | Created spec for a dedicated Actions page and Android IME custom action bar based on Diane's product decisions. | Draft ready for readiness review. | `/101-sf-ready shipflow_data/workflow/specs/custom-action-bar-ime-surface.md` |
 | 2026-06-12 03:56:49 UTC | 101-sf-ready | GPT-5 Codex | Validated readiness, tightened test contract, language/design/security gates, and implementation-proof expectations. | ready | `/102-sf-start shipflow_data/workflow/specs/custom-action-bar-ime-surface.md` |
+| 2026-06-12 04:23:51 UTC | 102-sf-start | GPT-5 Codex + gpt-5.3-codex-spark subagent | Implemented the dedicated Actions page, app/settings toggles, Flutter-to-Android custom action bar bridge, native IME custom row config/render path, docs, checklist and tests. | implemented; Flutter proof passed, Android runtime proof deferred to CI/Blacksmith and Diane device QA by repo guardrail. | `/103-sf-verify shipflow_data/workflow/specs/custom-action-bar-ime-surface.md` |
+| 2026-06-12 08:53:59 UTC | 103-sf-verify | GPT-5 Codex | Verified local Flutter proof, repaired the checklist into a status-bearing artifact, and assessed the remaining Android IME runtime proof gates. | partial; local analyze/test/design/docs gates passed, but required Blacksmith CI/Kotlin proof and Diane device QA remain missing for CAB-IME-004/006/007/008/009 and the checklist keeps CAB-IME-003 as not run. | `/005-sf-ship winflowz_app for Blacksmith Android proof -> /405-sf-prod -> /107-sf-test` |
 
 ## Current Chantier Flow
 
 100-sf-spec: drafted from product decisions
 101-sf-ready: ready
-102-sf-start: pending
-103-sf-verify: pending
+102-sf-start: implemented
+103-sf-verify: partial
 104-sf-end: pending
 005-sf-ship: pending

@@ -33,17 +33,18 @@ next_step: "/sf-docs update"
 
 ## Vue d’ensemble
 
-Cette fonctionnalité permet d’avoir une barre d’action personnalisable avec une ou plusieurs rangées de boutons.
+Cette fonctionnalité permet d’avoir une barre d’action personnalisable avec des boutons typés.
 Un **bouton personnalisé** est un objet UI : titre, icône, rangée, ordre et action liée.
 Un **snippet** reste une entrée texte (trigger + contenu) réutilisable, pas un conteneur UI.
 
 ## Où créer une barre de boutons
 
-- Ouvrir `Snippets`.
-- Basculer sur l’onglet `Boutons`.
+- Ouvrir la page `Actions`.
 - Utiliser le formulaire `Nouveau bouton` pour définir titre, icône, rangée, type d’action et valeur.
-- La section `Barre d’action` prévisualise les rangées configurées.
+- La section `Barre d’action` prévisualise la barre globale scrollable.
+- Activer `Barre d’action Android IME` depuis `Actions` ou `Settings > Keyboard`.
 - La liste `Boutons personnalisés` permet d’éditer, supprimer et exécuter un bouton existant.
+- `Snippets > Boutons` renvoie vers `Actions` pour éviter deux surfaces concurrentes.
 
 ## Cas d’usage réels
 
@@ -80,15 +81,16 @@ Conseils:
 ## Où se place le stockage et l’exécution
 
 - Les boutons sont stockés dans le domaine `custom_action_buttons`.
-- L’exécution passe par `CustomActionButtonRunner` et un runner de livraison desktop borné.
-- Le support d’exécution dépend du host actif : `text`, `séquence clavier` et certaines commandes intégrées sont disponibles sur desktop compatibles, sinon un message clair indique la limite.
+- L’exécution app passe par `CustomActionButtonRunner` et un runner de livraison desktop borné.
+- La synchronisation Android passe par une projection IME filtrée : texte, expression clavier WinFlowz, presse-papiers et média peuvent être envoyés au clavier; les séquences desktop et macros restent hors IME.
+- En champ privé, mot de passe, OTP ou contexte sensible, l’IME supprime les actions sensibles avant rendu.
 
 ## Différence avec les actions de corners
 
 - Les corners de clavier et la bibliothèque de boutons partagent le même but produit (accéder rapidement à des actions), mais ils sont aujourd’hui deux surfaces distinctes.
 - `Bouton` ≠ `corner` :
   - un corner est configuré dans `Settings > Keyboard > Corner shortcuts`;
-  - un bouton est configuré dans `Snippets > Boutons`.
+  - un bouton est configuré dans `Actions`.
 - L’état de compatibilité par surface reste explicite : si un host ne supporte pas une action, on affiche une limite plutôt qu’un succès fictif.
 
 ## Modèles d’action supportés en V1

@@ -541,6 +541,7 @@ class SettingsSyncAdapter implements LocalCloudSyncDomainAdapter {
       'retentionPolicy': settings.retentionPolicy.value,
       'clipboardAutoSync': settings.clipboardAutoSync,
       'transcriptionSync': settings.transcriptionSync,
+      'customActionBarEnabled': settings.customActionBarEnabled,
       'confirmDestructiveActions': settings.confirmDestructiveActions,
       'onboardingCompleted': settings.onboardingCompleted,
       'onboardingCurrentStep': settings.onboardingCurrentStep,
@@ -581,6 +582,9 @@ class SettingsSyncAdapter implements LocalCloudSyncDomainAdapter {
       transcriptionSync: record['transcriptionSync'] is bool
           ? record['transcriptionSync'] as bool
           : fallback.transcriptionSync,
+      customActionBarEnabled: record['customActionBarEnabled'] is bool
+          ? record['customActionBarEnabled'] as bool
+          : fallback.customActionBarEnabled,
       confirmDestructiveActions: record['confirmDestructiveActions'] is bool
           ? record['confirmDestructiveActions'] as bool
           : fallback.confirmDestructiveActions,

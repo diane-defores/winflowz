@@ -60,7 +60,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => AppShellScreen(
-          initialIndex: 5,
+          initialIndex: 6,
           initialOnboardingStep: state.uri.queryParameters['onboarding'],
         ),
       ),
@@ -81,9 +81,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AppShellScreen(initialIndex: 3),
       ),
       GoRoute(
+        path: '/actions',
+        name: 'actions',
+        builder: (context, state) => const AppShellScreen(initialIndex: 4),
+      ),
+      GoRoute(
         path: '/dictionary',
         name: 'dictionary',
-        builder: (context, state) => const AppShellScreen(initialIndex: 4),
+        builder: (context, state) => const AppShellScreen(initialIndex: 5),
       ),
     ],
   );

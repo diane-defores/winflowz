@@ -38,6 +38,7 @@ import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionCatalog
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionEnvironment
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressBehavior
 import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionLongPressResult
+import com.winflowz_app.winflowz_app.ime.actions.KeyboardActionRowSpec
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.hypot
@@ -326,6 +327,7 @@ class WinFlowzKeyboardView(
     private var suggestions = emptyList<String>()
     private var clipboardEntries = emptyList<KeyboardClipboardEntry>()
     private var snippets = emptyList<KeyboardTextRule>()
+    private var customActionRows = emptyList<KeyboardActionRowSpec>()
     private var mediaNowPlayingLabel: String? = null
     private var cornerConfig = KeyboardCornerConfig()
     private val activeSystemModifiers = linkedSetOf<KeyboardSystemModifier>()
@@ -647,6 +649,7 @@ class WinFlowzKeyboardView(
         symbolRecents: List<String>,
         clipboardEntries: List<KeyboardClipboardEntry>,
         snippets: List<KeyboardTextRule>,
+        customActionRows: List<KeyboardActionRowSpec>,
         cornerConfig: KeyboardCornerConfig,
         actionBarState: KeyboardActionBarState,
         actionBarLongPressBehavior: KeyboardActionLongPressBehavior,
@@ -693,6 +696,7 @@ class WinFlowzKeyboardView(
         applyThemeMode(themeMode)
         this.clipboardEntries = clipboardEntries
         this.snippets = snippets
+        this.customActionRows = customActionRows
         this.cornerConfig = cornerConfig
         setActionBarState(
             actionBarState.copy(
@@ -897,6 +901,7 @@ class WinFlowzKeyboardView(
             recentEmojis = recentEmojis,
             recentSymbols = recentSymbols,
             snippets = snippets,
+            customActionRows = customActionRows,
         )
     }
 

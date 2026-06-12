@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-06-11"
 created_at: "2026-06-11 19:07:18 UTC"
 updated: "2026-06-12"
-updated_at: "2026-06-12 01:07:25 UTC"
+updated_at: "2026-06-12 10:16:22 UTC"
 status: draft
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -74,7 +74,7 @@ evidence:
   - "winflowz_site/src/pages/api/polar/checkout.ts is tied to gated course lessons, not a general app LTD checkout."
   - "shipflow_data/business/winflowz-android-ltd-pricing-audit.md recommends a tiered LTD ladder: $79 local platform, $149 platform pro, $249 all-platform local/BYO, and $599+ or waitlist for all-platform cloud."
   - "User decision context 2026-06-12: AppSumo is likely later, and direct-site pricing must preserve room for AppSumo to negotiate the lowest available public deal."
-next_step: "Diane validates the pricing ladder and remaining offer-policy choices before /101-sf-ready"
+next_step: "/100-sf-spec validate WinFlowz Android LTD offer policy decisions before readiness"
 ---
 
 # Spec: WinFlowz Android Lifetime Deal Launch
@@ -445,6 +445,8 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
+| 2026-06-12 10:16:22 UTC | 101-sf-ready | GPT-5 Codex | Re-reviewed the WinFlowz Android LTD launch spec against readiness, adversarial, security, design-system, language, documentation freshness, and external provider gates. | not ready | Resolve remaining offer-policy decisions: exact public ladder, cloud tier visibility, tax/currency display, AppSumo sequencing, entry-tier scope, device caps, tier inclusions, access delivery, support, and founder allocation. |
+| 2026-06-12 10:15:04 UTC | 706-continue | GPT-5 Codex | Reprised the launch chantier after AppSumo/pricing discussion, checked repo status and task context, and routed the next step. | blocked | Diane validates the direct-site Early Bird ladder, AppSumo sequencing, cloud tier visibility, device caps, and access/support policy before 101-sf-ready or 102-sf-start. |
 | 2026-06-12 01:24:00 UTC | 204-sf-market-study | GPT-5 Codex | Added future AppSumo pricing-parity constraint to the pricing audit and spec: direct-site Early Bird must preserve room for later AppSumo negotiation and avoid "lowest price ever" claims. | partial | Validate direct-site pricing ladder and AppSumo sequencing before public page implementation. |
 | 2026-06-12 01:07:25 UTC | 204-sf-market-study | GPT-5 Codex | Created `shipflow_data/business/winflowz-android-ltd-pricing-audit.md` with competitor pricing, LTD precedents, Lemon Squeezy net-price estimates, cloud/AI cost exposure, license semantics, and a recommended tier ladder. | partial | Diane validates or adjusts the pricing ladder, cloud tier visibility, device caps, and support/access policy before readiness. |
 | 2026-06-11 19:20:34 UTC | 100-sf-spec | GPT-5 Codex | Added pricing audit as a prerequisite before setting the Early Bird price, including competitor pricing, LTD history where sourced, cloud-cost exposure, support burden, and no-bankruptcy floor. | partial | Run /204-sf-market-study WinFlowz Android LTD pricing audit. |
@@ -458,7 +460,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 | Step | Status | Evidence | Next |
 |------|--------|----------|------|
 | 100-sf-spec | partial | Draft spec created on 2026-06-11, updated with Lemon Squeezy as selected provider, strengthened to require premium sales-page quality, and updated on 2026-06-12 with the pricing-audit recommendation. | Diane validates offer-policy choices. |
-| 101-sf-ready | not ready | Readiness review on 2026-06-11 found blocking offer-policy questions. Provider is resolved to Lemon Squeezy, launch language is English-first, and pricing now has an audit-backed recommendation. Remaining blockers are Diane's final pricing approval, cloud tier visibility, exact LTD inclusion, access delivery, device caps, and support policy. | Clarify offer policy, then rerun readiness. |
+| 101-sf-ready | not ready | Re-reviewed on 2026-06-12. Structure, user-story fit, task ordering, design constraints, claim safety, and test strategy are strong, but `Open Questions` is not `None` and the remaining decisions materially change payment, access, support, cloud liability, AppSumo parity, and public copy. | Resolve offer-policy decisions, update the spec, then rerun readiness. |
 | 102-sf-start | pending | Not started. | Wait for ready spec. |
 | 103-sf-verify | pending | Not started. | After implementation. |
 | 104-sf-end | pending | Not started. | After verification. |

@@ -9,10 +9,11 @@ import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../settings/application/settings_store_provider.dart';
 import '../application/snippet_store_provider.dart';
 import '../domain/snippet_store.dart';
-import 'custom_action_buttons_panel.dart';
 
 class SnippetsScreen extends ConsumerStatefulWidget {
-  const SnippetsScreen({super.key});
+  const SnippetsScreen({super.key, this.onOpenActions});
+
+  final VoidCallback? onOpenActions;
 
   @override
   ConsumerState<SnippetsScreen> createState() => _SnippetsScreenState();
@@ -305,7 +306,27 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
       ),
     );
     if (_surface == _SnippetLibrarySurface.buttons) {
-      return CustomActionButtonsPanel(surfaceSelector: surfaceSelector);
+      return ListView(
+        padding: AppInsets.screen,
+        children: [
+          surfaceSelector,
+          AppGaps.x2,
+          AppSectionCard(
+            title: 'Boutons déplacés dans Actions',
+            subtitle:
+                'Les boutons personnalisés pilotent maintenant une barre dédiée, activable dans le clavier Android.',
+            leading: const Icon(Icons.smart_button_outlined),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.icon(
+                onPressed: widget.onOpenActions,
+                icon: const Icon(Icons.arrow_forward_outlined),
+                label: const Text('Ouvrir Actions'),
+              ),
+            ),
+          ),
+        ],
+      );
     }
     ref.listen<int>(snippetRefreshSignalProvider, (previous, next) {
       if (previous != null && previous != next) {

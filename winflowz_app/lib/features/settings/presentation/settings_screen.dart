@@ -22,6 +22,7 @@ import '../../auth/domain/auth_session_store.dart';
 import '../../auth/domain/product_entitlement.dart';
 import '../../auth/presentation/sign_in_screen.dart';
 import '../../clipboard/application/clipboard_store_provider.dart';
+import '../../custom_action_buttons/application/custom_action_bar_preferences.dart';
 import '../../dictionary/application/dictionary_store_provider.dart';
 import '../../keyboard/domain/keyboard_models.dart';
 import '../../keyboard/presentation/keyboard_corner_shortcuts_screen.dart';
@@ -54,6 +55,7 @@ final _storageStatusProvider = FutureProvider<SecretStorageStatus>(
 typedef _KeyboardPreferenceChanged =
     Future<void> Function({
       bool? voiceEnabled,
+      bool? customActionBarEnabled,
       bool? clipboardSyncDesired,
       bool? clipboardSensitiveFieldHistoryEnabled,
       bool? mediaControlsEnabled,
@@ -640,6 +642,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _setKeyboardPreferences({
     bool? voiceEnabled,
+    bool? customActionBarEnabled,
     bool? clipboardSyncDesired,
     bool? clipboardSensitiveFieldHistoryEnabled,
     bool? mediaControlsEnabled,
@@ -668,6 +671,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final status = await _keyboardController.setPreferences(
         current: current,
         voiceEnabled: voiceEnabled,
+        customActionBarEnabled: customActionBarEnabled,
         clipboardSyncDesired: clipboardSyncDesired,
         clipboardSensitiveFieldHistoryEnabled:
             clipboardSensitiveFieldHistoryEnabled,
@@ -695,6 +699,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         return;
       }
       setState(() => _keyboardStatus = status);
+      if (customActionBarEnabled != null) {
+        await ref
+            .read(customActionBarEnabledProvider.notifier)
+            .setEnabled(status.customActionBarEnabled);
+      }
       unawaited(
         ref
             .read(appThemeModeProvider.notifier)

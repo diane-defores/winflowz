@@ -396,6 +396,7 @@ void main() {
       'enabled': true,
       'active': false,
       'voiceEnabled': false,
+      'customActionBarEnabled': true,
       'clipboardSyncDesired': true,
       'mediaControlsEnabled': true,
       'mediaVolumeStepPercent': 25,
@@ -409,6 +410,7 @@ void main() {
     expect(status.enabled, isTrue);
     expect(status.active, isFalse);
     expect(status.voiceEnabled, isFalse);
+    expect(status.customActionBarEnabled, isTrue);
     expect(status.clipboardSyncDesired, isTrue);
     expect(status.mediaVolumeStepPercent, 20);
     expect(status.mediaBrightnessStepPercent, 15);

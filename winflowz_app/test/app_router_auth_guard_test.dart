@@ -14,6 +14,7 @@ const _productRoutes = {
   '/voice': 'Capture automatique',
   '/clipboard': 'Nouvel élément',
   '/snippets': 'Nouveau snippet',
+  '/actions': 'Actions',
   '/dictionary': 'Nouveau terme',
   '/settings': 'Réglages',
 };

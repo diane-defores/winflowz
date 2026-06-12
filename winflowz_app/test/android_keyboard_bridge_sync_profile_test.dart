@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:winflowz_app/core/platform/android_keyboard_bridge.dart';
+import 'package:winflowz_app/features/custom_action_buttons/domain/custom_action_buttons.dart';
 import 'package:winflowz_app/features/keyboard/domain/keyboard_sync_models.dart';
 
 const _keyboardChannel = MethodChannel('winflowz_app/keyboard');
@@ -14,6 +15,51 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_keyboardChannel, null);
   });
+
+  test(
+    'setCustomActionBarConfig sends bounded typed actions to native bridge',
+    () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      MethodCall? captured;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_keyboardChannel, (call) async {
+            captured = call;
+            return {
+              'supported': true,
+              'enabled': true,
+              'active': true,
+              'customActionBarEnabled': true,
+            };
+          });
+
+      final status = await AndroidKeyboardBridge.setCustomActionBarConfig(
+        const CustomActionButtonImeConfig(
+          enabled: true,
+          actions: [
+            CustomActionButtonImeAction(
+              id: 'button-1',
+              title: 'Bonjour',
+              icon: CustomActionButtonIcon.spark,
+              type: CustomActionButtonImeActionType.insertText,
+              value: 'Bonjour Diane',
+              orderIndex: 0,
+              sensitive: true,
+            ),
+          ],
+        ),
+      );
+
+      expect(captured?.method, 'setKeyboardCustomActionBarConfig');
+      expect(captured?.arguments, isA<Map<Object?, Object?>>());
+      final payload = captured!.arguments as Map<Object?, Object?>;
+      expect(payload['enabled'], isTrue);
+      final actions = payload['actions'] as List<Object?>;
+      expect(actions, hasLength(1));
+      expect(actions.single, containsPair('type', 'insertText'));
+      expect(actions.single, containsPair('sensitive', true));
+      expect(status.customActionBarEnabled, isTrue);
+    },
+  );
 
   test(
     'exportKeyboardSyncProfile returns null on unsupported platform',

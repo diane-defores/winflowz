@@ -74,16 +74,18 @@ next_step: "/sf-start shipflow_data/workflow/specs/firebase-backend-agnostic-mig
 - Optional touch-debug overlay can show tactile and visual key bounds, gesture direction/threshold/action diagnostics, and never includes typed content.
 - Password, OTP, `noPersonalizedLearning`, and host-marked private fields force private mode: dictation, clipboard capture, snippets, sync intent, and learning are disabled while basic typing remains available.
 - Minimal panels are available directly in the keyboard: clipboard (copy/paste/pins), media (prev/play-pause/next), snippets (single quick insert + app handoff), and settings (gesture toggle + layout toggle + app handoff).
+- The custom action bar is configured from the app `Actions` page and can be enabled from `Actions` or `Settings > Keyboard`. The native IME receives only compatible typed actions, renders them as one horizontal scrollable row, and suppresses sensitive actions in private fields.
 - FlutterWeb keyboard preview and the visual gesture editor can display explicit override shortcuts and simple text/snippet-style insertions for visual review. They do not simulate native preset defaults and are not proof of native Android key events, IME field policy, native persistence, or system-level dispatch.
 - Clipboard sync from the keyboard is opt-in and represented as intent/status. Real cloud sync and cross-account queue flushing require the backend-agnostic Firebase adapter before production claims.
 - Non-Android platforms must not show IME activation controls.
 
 ## Custom Action Buttons
 
-- Custom action buttons are configured from `Snippets -> Boutons`, not from the keyboard corner editor.
+- Custom action buttons are configured from the dedicated `Actions` page, not from the keyboard corner editor.
 - A snippet is a piece of reusable text (`trigger` + `content`) that can be inserted through actions; it is not itself a toolbar control.
 - A custom button owns UI placement (`rowIndex`/`order`), icon, title, and one typed action (`insert text`, `desktop key sequence`, `keyboard expression`, `clipboard command`, `media command`, or `macro`).
-- The in-app action bar preview and execution are available in the `CustomActionButtonsPanel`; execution attempts are constrained to supported desktop host capabilities.
+- The in-app action bar preview and execution are available in the `Actions` page through `CustomActionButtonsPanel`; execution attempts are constrained to supported host capabilities.
+- Android IME exposure is opt-in and filtered. Desktop key sequences such as `Ctrl+W, N` remain configurable as buttons for desktop hosts but are marked incompatible for Android IME.
 - Custom action buttons are not automatically exposed inside corner shortcuts; reuse is by model intent only (typed action contract), and each surface owns its own runtime constraints.
 
 ## Android Overlay

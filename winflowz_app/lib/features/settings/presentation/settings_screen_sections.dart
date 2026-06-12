@@ -896,6 +896,17 @@ class _KeyboardSettingsSection extends StatelessWidget {
               ),
             ),
             SwitchListTile(
+              value: status?.customActionBarEnabled ?? false,
+              onChanged: busy
+                  ? null
+                  : (value) =>
+                        onPreferenceChanged(customActionBarEnabled: value),
+              title: const Text('Barre d’actions personnalisée'),
+              subtitle: const Text(
+                'Affiche dans le clavier Android la barre globale configurée depuis la page Actions.',
+              ),
+            ),
+            SwitchListTile(
               value: status?.voiceEnabled ?? true,
               onChanged: busy
                   ? null

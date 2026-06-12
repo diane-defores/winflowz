@@ -9,6 +9,24 @@ enum CustomActionKind {
   macro,
 }
 
+bool _knownAndroidImeCommand(CustomActionKind kind, String value) {
+  return switch (kind) {
+    CustomActionKind.clipboardCommand => switch (value) {
+      'copy' || 'cut' || 'paste' => true,
+      _ => false,
+    },
+    CustomActionKind.mediaCommand => switch (value) {
+      'playPause' ||
+      'play' ||
+      'pause' ||
+      'nextTrack' ||
+      'previousTrack' => true,
+      _ => false,
+    },
+    _ => false,
+  };
+}
+
 extension CustomActionKindPresentation on CustomActionKind {
   IconData get iconData {
     return switch (this) {
@@ -57,6 +75,64 @@ extension CustomActionButtonActionRuntimeSupport on CustomActionButtonAction {
     return keyboardCornerExpression != null;
   }
 
+  bool get supportsImeExecution {
+    return switch (kind) {
+      CustomActionKind.insertText => true,
+      CustomActionKind.keyboardExpression => true,
+      CustomActionKind.clipboardCommand => true,
+      CustomActionKind.mediaCommand => true,
+      CustomActionKind.keySequence => false,
+      CustomActionKind.macro => false,
+    };
+  }
+
+  bool get hasValidImePayload {
+    return switch (kind) {
+      CustomActionKind.insertText => trimmedValue.isNotEmpty,
+      CustomActionKind.keyboardExpression => trimmedValue.isNotEmpty,
+      CustomActionKind.clipboardCommand || CustomActionKind.mediaCommand =>
+        _knownAndroidImeCommand(kind, trimmedValue),
+      CustomActionKind.keySequence => false,
+      CustomActionKind.macro => false,
+    };
+  }
+
+  bool get isImeCompatible => supportsImeExecution && hasValidImePayload;
+
+  String get imeCompatibilityLabel {
+    if (isImeCompatible) {
+      return 'IME: compatible';
+    }
+    return 'IME: incompatible';
+  }
+
+  String get imeCompatibilityReason {
+    if (isImeCompatible) {
+      return 'Action prête pour l’IME Android.';
+    }
+    return switch (kind) {
+      CustomActionKind.keySequence =>
+        'Séquences clavier: non exécutables dans l’IME Android.',
+      CustomActionKind.macro =>
+        'Macro: non prise en charge dans l’IME Android.',
+      CustomActionKind.insertText when trimmedValue.isEmpty =>
+        'Texte: valeur vide, action ignorée.',
+      CustomActionKind.keyboardExpression when trimmedValue.isEmpty =>
+        'Expression: valeur vide, action ignorée.',
+      CustomActionKind.clipboardCommand when trimmedValue.isEmpty =>
+        'Presse-papiers: commande vide.',
+      CustomActionKind.mediaCommand when trimmedValue.isEmpty =>
+        'Média: commande vide.',
+      CustomActionKind.clipboardCommand || CustomActionKind.mediaCommand =>
+        'Commande non reconnue par l’IME Android.',
+      _ => 'Action non supportée dans l’IME Android.',
+    };
+  }
+
+  String get imeCompatibilitySummary {
+    return '$imeCompatibilityLabel${isImeCompatible ? '' : ': $imeCompatibilityReason'}';
+  }
+
   String get keyboardCornerUnsupportedReason {
     return switch (kind) {
       CustomActionKind.keySequence =>
@@ -93,10 +169,166 @@ extension CustomActionButtonActionRuntimeSupport on CustomActionButtonAction {
   }
 
   String _quotedTextExpression(String value) {
-    final escaped = value
-        .replaceAll('\\', '\\\\')
-        .replaceAll("'", r"\'");
+    final escaped = value.replaceAll('\\', '\\\\').replaceAll("'", r"\'");
     return "'$escaped'";
+  }
+}
+
+enum CustomActionButtonImeActionType {
+  insertText,
+  keyboardExpression,
+  clipboardCommand,
+  mediaCommand,
+}
+
+class CustomActionButtonImeAction {
+  const CustomActionButtonImeAction({
+    required this.id,
+    required this.title,
+    required this.icon,
+    required this.type,
+    required this.value,
+    required this.orderIndex,
+    required this.sensitive,
+  });
+
+  final String id;
+  final String title;
+  final CustomActionButtonIcon icon;
+  final CustomActionButtonImeActionType type;
+  final String value;
+  final int orderIndex;
+  final bool sensitive;
+
+  Map<String, Object?> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'icon': icon.name,
+      'type': type.name,
+      'value': value,
+      'orderIndex': orderIndex,
+      'sensitive': sensitive,
+    };
+  }
+}
+
+class CustomActionButtonImeConfig {
+  const CustomActionButtonImeConfig({
+    required this.enabled,
+    required this.actions,
+  });
+
+  final bool enabled;
+  final List<CustomActionButtonImeAction> actions;
+
+  Map<String, Object?> toMap() {
+    return {
+      'enabled': enabled,
+      'actions': actions
+          .map((action) => action.toMap())
+          .toList(growable: false),
+    };
+  }
+}
+
+extension CustomActionButtonImeSupport on CustomActionButtonRecord {
+  static const int maxTitleLength = 48;
+  static const int maxValueLength = 2048;
+
+  bool get supportsAndroidImeExecution => androidImeActionOrNull != null;
+
+  String get androidImeUnsupportedReason {
+    if (title.trim().isEmpty) {
+      return 'Le bouton doit avoir un nom pour apparaître dans le clavier.';
+    }
+    if (action.trimmedValue.length > maxValueLength) {
+      return 'Le contenu est trop long pour la barre IME Android.';
+    }
+    return switch (action.kind) {
+      CustomActionKind.keySequence =>
+        'Les séquences clavier desktop comme Ctrl+W, N restent hors Android.',
+      CustomActionKind.macro =>
+        'Les macros ne sont pas encore exécutées dans le clavier Android.',
+      CustomActionKind.insertText || CustomActionKind.keyboardExpression =>
+        action.trimmedValue.isEmpty
+            ? 'Cette action doit avoir une valeur pour le clavier.'
+            : 'Compatible avec le clavier Android.',
+      CustomActionKind.clipboardCommand || CustomActionKind.mediaCommand =>
+        _knownAndroidImeCommand(action.kind, action.trimmedValue)
+            ? 'Compatible avec le clavier Android quand le contexte l’autorise.'
+            : 'Cette commande n’est pas reconnue par le clavier Android.',
+    };
+  }
+
+  CustomActionButtonImeAction? get androidImeActionOrNull {
+    final normalizedTitle = title.trim();
+    final normalizedValue = action.trimmedValue;
+    if (normalizedTitle.isEmpty || normalizedValue.length > maxValueLength) {
+      return null;
+    }
+    final type = switch (action.kind) {
+      CustomActionKind.insertText =>
+        normalizedValue.isEmpty
+            ? null
+            : CustomActionButtonImeActionType.insertText,
+      CustomActionKind.keyboardExpression =>
+        normalizedValue.isEmpty
+            ? null
+            : CustomActionButtonImeActionType.keyboardExpression,
+      CustomActionKind.clipboardCommand =>
+        _knownAndroidImeCommand(action.kind, normalizedValue)
+            ? CustomActionButtonImeActionType.clipboardCommand
+            : null,
+      CustomActionKind.mediaCommand =>
+        _knownAndroidImeCommand(action.kind, normalizedValue)
+            ? CustomActionButtonImeActionType.mediaCommand
+            : null,
+      CustomActionKind.keySequence || CustomActionKind.macro => null,
+    };
+    if (type == null) {
+      return null;
+    }
+    return CustomActionButtonImeAction(
+      id: id,
+      title: normalizedTitle.length <= maxTitleLength
+          ? normalizedTitle
+          : normalizedTitle.substring(0, maxTitleLength),
+      icon: icon,
+      type: type,
+      value: normalizedValue,
+      orderIndex: orderIndex,
+      sensitive: _sensitiveInIme(type),
+    );
+  }
+
+  bool _sensitiveInIme(CustomActionButtonImeActionType type) {
+    return switch (type) {
+      CustomActionButtonImeActionType.insertText => true,
+      CustomActionButtonImeActionType.keyboardExpression => true,
+      CustomActionButtonImeActionType.clipboardCommand => true,
+      CustomActionButtonImeActionType.mediaCommand => false,
+    };
+  }
+}
+
+extension CustomActionButtonImeListSupport on List<CustomActionButtonRecord> {
+  List<CustomActionButtonImeAction> toAndroidImeActions() {
+    final actions = <CustomActionButtonImeAction>[];
+    for (final button in this) {
+      final action = button.androidImeActionOrNull;
+      if (action != null) {
+        actions.add(action);
+      }
+    }
+    actions.sort((a, b) {
+      final order = a.orderIndex.compareTo(b.orderIndex);
+      if (order != 0) {
+        return order;
+      }
+      return a.title.compareTo(b.title);
+    });
+    return actions;
   }
 }
 

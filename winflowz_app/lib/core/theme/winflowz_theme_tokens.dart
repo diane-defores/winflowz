@@ -155,6 +155,7 @@ class WinFlowzThemeTokens {
   static const double navRailExtendedBreakpoint = 980.0;
   static const double keyboardPreviewFrameMaxWidth = 760.0;
   static const double keyboardPreviewDropdownWidth = 220.0;
+  static const double customActionChipWidth = 210.0;
   static const double keyboardPreviewStatusHeight = 30.0;
   static const double authFormMaxWidth = 460.0;
   static const double authWebSignInButtonHeight = 44.0;

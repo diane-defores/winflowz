@@ -110,12 +110,14 @@ This inventory separates:
 ### Snippets and dictionary
 
 - `SnippetsScreen` + editor sheet/dialog for CRUD and trigger uniqueness errors.
-- `SnippetsScreen` also hosts the `Boutons` library surface (`SurfaceSelector`) so users create, edit, delete and run custom action buttons from the same entry point.
+- `SnippetsScreen` keeps snippets as the primary text shortcut surface and redirects button management to `Actions`.
+- `CustomActionsScreen` is the dedicated product page for custom action buttons, IME enablement, and Android keyboard sync.
 - `CustomActionButtonsPanel`:
   - Preview the current action bar by rows.
   - Create action buttons with icon, row index, order, and typed command.
   - Execute a button from the panel or from its preview row surface.
   - Return explicit unsupported/host-limited status for actions not supported on the current platform.
+  - Report Android IME compatibility and keep incompatible desktop-only actions out of the native keyboard projection.
 - `DictionaryScreen` + editor sheet/dialog for CRUD and replacement validation.
 
 ### Overlay integration (Android)

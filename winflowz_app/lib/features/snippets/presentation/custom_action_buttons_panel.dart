@@ -5,15 +5,22 @@ import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
+import '../../custom_action_buttons/application/custom_action_bar_preferences.dart';
 import '../../custom_action_buttons/application/custom_action_button_runner.dart';
 import '../../custom_action_buttons/application/custom_action_button_store_provider.dart';
+import '../../custom_action_buttons/presentation/custom_action_buttons_surface.dart';
 import '../../custom_action_buttons/domain/custom_action_buttons.dart';
 import '../../settings/application/settings_store_provider.dart';
 
 class CustomActionButtonsPanel extends ConsumerStatefulWidget {
-  const CustomActionButtonsPanel({super.key, required this.surfaceSelector});
+  const CustomActionButtonsPanel({
+    super.key,
+    required this.surfaceSelector,
+    this.onItemsChanged,
+  });
 
   final Widget surfaceSelector;
+  final ValueChanged<List<CustomActionButtonRecord>>? onItemsChanged;
 
   @override
   ConsumerState<CustomActionButtonsPanel> createState() =>
@@ -53,6 +60,7 @@ class _CustomActionButtonsPanelState
     });
     try {
       final rows = await ref.read(customActionButtonStoreProvider).list();
+      widget.onItemsChanged?.call(rows);
       if (mounted) {
         setState(() => _items = rows);
       }
@@ -251,10 +259,18 @@ class _CustomActionButtonsPanelState
 
   @override
   Widget build(BuildContext context) {
+    final isActionBarEnabled = ref.watch(customActionBarEnabledProvider);
     return ListView(
       padding: AppInsets.screen,
       children: [
         widget.surfaceSelector,
+        AppGaps.x2,
+        _ActionBarActivationToggle(
+          isEnabled: isActionBarEnabled,
+          onChanged: (value) {
+            ref.read(customActionBarEnabledProvider.notifier).setEnabled(value);
+          },
+        ),
         AppGaps.x2,
         ProductSummaryStrip(
           children: [
@@ -277,10 +293,11 @@ class _CustomActionButtonsPanelState
           ],
         ),
         AppGaps.x2,
-        _ActionBarPreview(
+        CustomActionBarSurface(
           layout: CustomActionBarLayout.fromButtons(_items),
           busy: _busy,
           onRun: _run,
+          isEnabled: isActionBarEnabled,
         ),
         AppGaps.x2,
         AppSectionCard(
@@ -401,7 +418,8 @@ class _CustomActionButtonsPanelState
   String _subtitle(CustomActionButtonRecord item) {
     final actionLabel = item.action.kind.label;
     final valueLabel = _valueLabel(item.action);
-    return 'Rangée ${item.rowIndex + 1} · $actionLabel · $valueLabel';
+    final imeSummary = item.action.imeCompatibilitySummary;
+    return 'Rangée ${item.rowIndex + 1} · $actionLabel · $valueLabel · $imeSummary';
   }
 
   String _valueLabel(CustomActionButtonAction action) {
@@ -426,51 +444,28 @@ class _CustomActionButtonsPanelState
   }
 }
 
-class _ActionBarPreview extends StatelessWidget {
-  const _ActionBarPreview({
-    required this.layout,
-    required this.busy,
-    required this.onRun,
+class _ActionBarActivationToggle extends StatelessWidget {
+  const _ActionBarActivationToggle({
+    required this.isEnabled,
+    required this.onChanged,
   });
 
-  final CustomActionBarLayout layout;
-  final bool busy;
-  final ValueChanged<CustomActionButtonRecord> onRun;
+  final bool isEnabled;
+  final ValueChanged<bool> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    if (layout.rows.isEmpty) {
-      return const AppEmptyStateCard(
-        title: 'Barre d’action vide',
-        message: 'Ajoute un bouton pour composer ta première rangée.',
-      );
-    }
+    final isImeSupported = PlatformCapabilities.keyboardImeSupported;
 
-    return AppSectionCard(
-      title: 'Barre d’action',
-      subtitle: 'Prévisualisation des rangées personnalisées.',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final row in layout.rows) ...[
-            Text('Rangée ${row.index + 1}'),
-            AppGaps.x1,
-            Wrap(
-              spacing: AppSpacing.x1,
-              runSpacing: AppSpacing.x1,
-              children: [
-                for (final slot in row.slots)
-                  FilledButton.tonalIcon(
-                    onPressed: busy ? null : () => onRun(slot.button),
-                    icon: Icon(slot.button.icon.iconData),
-                    label: Text(slot.button.title),
-                  ),
-              ],
-            ),
-            if (row != layout.rows.last) AppGaps.x2,
-          ],
-        ],
+    return SwitchListTile(
+      title: const Text('Barre d’action Android IME'),
+      subtitle: Text(
+        isImeSupported
+            ? 'Les boutons compatibles apparaissent dans le clavier WinFlowz.'
+            : PlatformCapabilities.keyboardImeUnavailableReason,
       ),
+      value: isImeSupported && isEnabled,
+      onChanged: isImeSupported ? onChanged : null,
     );
   }
 }

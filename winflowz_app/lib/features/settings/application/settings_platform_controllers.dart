@@ -79,6 +79,7 @@ class SettingsKeyboardController {
   Future<AndroidKeyboardStatus> setPreferences({
     required AndroidKeyboardStatus current,
     bool? voiceEnabled,
+    bool? customActionBarEnabled,
     bool? clipboardSyncDesired,
     bool? clipboardSensitiveFieldHistoryEnabled,
     bool? mediaControlsEnabled,
@@ -104,6 +105,8 @@ class SettingsKeyboardController {
   }) {
     return AndroidKeyboardBridge.setPreferences(
       voiceEnabled: voiceEnabled ?? current.voiceEnabled,
+      customActionBarEnabled:
+          customActionBarEnabled ?? current.customActionBarEnabled,
       clipboardSyncDesired:
           clipboardSyncDesired ?? current.clipboardSyncDesired,
       clipboardSensitiveFieldHistoryEnabled:

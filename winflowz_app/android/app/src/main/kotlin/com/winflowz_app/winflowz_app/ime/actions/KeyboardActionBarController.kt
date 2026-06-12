@@ -107,7 +107,7 @@ class KeyboardActionBarController(
         val sanitized = sanitizeState(state, environment)
         val descriptors = descriptorsForMainRow(sanitized.orderedActionIds, environment, sanitized)
         val mainItems = descriptors.map { descriptor -> actionMainKey(descriptor, environment, sanitized) }
-        val attached = buildAttachedRows(sanitized, environment).map { it.spec }
+        val attached = environment.customActionRows + buildAttachedRows(sanitized, environment).map { it.spec }
         return KeyboardActionRenderSnapshot(
             state = sanitized,
             mainRow = KeyboardActionRowSpec(

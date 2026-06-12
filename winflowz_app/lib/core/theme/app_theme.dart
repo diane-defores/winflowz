@@ -251,6 +251,8 @@ class AppLayoutMetrics {
       WinFlowzThemeTokens.authWebSignInButtonMaxWidth;
   static const authWebSignInButtonDisabledOpacity =
       WinFlowzThemeTokens.authWebSignInButtonDisabledAlpha;
+  static const customActionChipWidth =
+      WinFlowzThemeTokens.customActionChipWidth;
 }
 
 class AppBreakpoints {

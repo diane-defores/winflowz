@@ -14,6 +14,7 @@ import '../../auth/application/auth_session_provider.dart';
 import '../../auth/application/suite_identity_provider.dart';
 import '../../clipboard/application/clipboard_store_provider.dart';
 import '../../clipboard/presentation/clipboard_screen.dart';
+import '../../custom_action_buttons/presentation/custom_actions_screen.dart';
 import '../../dictionary/presentation/dictionary_screen.dart';
 import '../../keyboard/domain/keyboard_models.dart';
 import '../../home/application/home_feed_provider.dart';
@@ -48,8 +49,9 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   static const int _voiceTabIndex = 1;
   static const int _clipboardTabIndex = 2;
   static const int _snippetTabIndex = 3;
-  static const int _dictionaryTabIndex = 4;
-  static const int _settingsTabIndex = 5;
+  static const int _actionsTabIndex = 4;
+  static const int _dictionaryTabIndex = 5;
+  static const int _settingsTabIndex = 6;
 
   static const _unsupportedOverlayStatus = AndroidOverlayStatus(
     enabled: false,
@@ -101,6 +103,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       'Voix',
       'Papiers',
       'Snippets',
+      'Actions',
       'Dico',
       'Réglages',
     ];
@@ -454,6 +457,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         final status = await _loadKeyboardStatusForOnboarding();
         await AndroidKeyboardBridge.setPreferences(
           voiceEnabled: status.voiceEnabled,
+          customActionBarEnabled: status.customActionBarEnabled,
           clipboardSyncDesired: true,
           clipboardSensitiveFieldHistoryEnabled:
               status.clipboardSensitiveFieldHistoryEnabled,
@@ -735,7 +739,8 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       HomeScreen(onOpenSource: _openHomeSource),
       VoiceScreen(),
       ClipboardScreen(),
-      SnippetsScreen(),
+      SnippetsScreen(onOpenActions: () => _selectTab(_actionsTabIndex)),
+      const CustomActionsScreen(),
       DictionaryScreen(),
       SettingsScreen(
         highlightOnboardingResume: _showOnboardingResumeHint,
@@ -813,6 +818,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                           NavigationRailDestination(
                             icon: Icon(Icons.text_snippet_outlined),
                             label: Text('Snippets'),
+                          ),
+                          NavigationRailDestination(
+                            icon: Icon(Icons.smart_button_outlined),
+                            label: Text('Actions'),
                           ),
                           NavigationRailDestination(
                             icon: Icon(Icons.auto_fix_high_outlined),
@@ -918,6 +927,13 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         motion: _BottomNavIconMotion.nudge,
       ),
       _bottomNavigationDestination(
+        index: _actionsTabIndex,
+        icon: Icons.smart_button_outlined,
+        selectedIcon: Icons.smart_button,
+        label: 'Actions',
+        motion: _BottomNavIconMotion.tap,
+      ),
+      _bottomNavigationDestination(
         index: _dictionaryTabIndex,
         icon: Icons.auto_fix_high_outlined,
         selectedIcon: Icons.auto_fix_high,
@@ -957,7 +973,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   }
 }
 
-enum _BottomNavIconMotion { lift, pulse, stack, nudge, spark, gear }
+enum _BottomNavIconMotion { lift, pulse, stack, nudge, tap, spark, gear }
 
 class _AnimatedBottomNavIcon extends StatelessWidget {
   const _AnimatedBottomNavIcon({

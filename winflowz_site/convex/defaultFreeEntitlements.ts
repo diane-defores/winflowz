@@ -4,6 +4,8 @@ import type { MutationCtx } from './_generated/server'
 export const WINFLOWZ_APP_PRODUCT_ID = 'winflowz_app'
 export const WINFLOWZ_FORMATION_PRODUCT_ID = 'winflowz_formation'
 export const GOCHARBON_PRODUCT_ID = 'gocharbon'
+export const CONTENTGLOWZ_PRODUCT_ID = 'contentglowz'
+export const SHIPFLOW_PRODUCT_ID = 'shipflow'
 export const REPLAYGLOWZ_PRODUCT_ID = 'replayglowz'
 export const SOCIALGLOWZ_PRODUCT_ID = 'socialglowz'
 export const TEMU_SHOPPING_LISTS_PRODUCT_ID = 'temu_shopping_lists'
@@ -12,6 +14,8 @@ export const SUITE_PRODUCT_IDS = [
   WINFLOWZ_APP_PRODUCT_ID,
   WINFLOWZ_FORMATION_PRODUCT_ID,
   GOCHARBON_PRODUCT_ID,
+  CONTENTGLOWZ_PRODUCT_ID,
+  SHIPFLOW_PRODUCT_ID,
   REPLAYGLOWZ_PRODUCT_ID,
   SOCIALGLOWZ_PRODUCT_ID,
   TEMU_SHOPPING_LISTS_PRODUCT_ID,
@@ -30,6 +34,16 @@ export const DEFAULT_FREE_ENTITLEMENT_POLICIES = [
   },
   {
     productId: GOCHARBON_PRODUCT_ID,
+    plan: 'free',
+    source: 'product_default',
+  },
+  {
+    productId: CONTENTGLOWZ_PRODUCT_ID,
+    plan: 'free',
+    source: 'product_default',
+  },
+  {
+    productId: SHIPFLOW_PRODUCT_ID,
     plan: 'free',
     source: 'product_default',
   },

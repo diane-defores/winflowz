@@ -97,6 +97,7 @@ data class KeyboardActionEnvironment(
     val recentSymbols: List<String> = emptyList(),
     val clipboardEntries: List<KeyboardClipboardEntry> = emptyList(),
     val snippets: List<KeyboardTextRule> = emptyList(),
+    val customActionRows: List<KeyboardActionRowSpec> = emptyList(),
 )
 
 data class KeyboardActionTapResult(
