@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-06-11"
 created_at: "2026-06-11 10:58:00 UTC"
 updated: "2026-06-12"
-updated_at: "2026-06-12 03:05:00 UTC"
+updated_at: "2026-06-12 01:36:11 UTC"
 status: reviewed
 source_skill: sf-build
 source_model: "GPT-5 Codex"
@@ -182,6 +182,7 @@ courante, l'UI doit le dire clairement au lieu de simuler un succès.
 | 2026-06-11 14:52:02 UTC | 001-sf-build | GPT-5 Codex | Corrected product model from snippet-like buttons to action-bar buttons with typed action catalog, row layout, clipboard commands, tests, and docs. | Local verification passed; closure/ship still pending. | `/104-sf-end shipflow_data/workflow/specs/custom-action-buttons-and-command-macros.md` |
 | 2026-06-12 01:02:21 UTC | 001-sf-build | GPT-5 Codex | Finalized the run trace alignment for the custom action buttons feature and aligned UI selector keys after test execution model change. | Implemented; local validation remains green (analyze + targeted widget tests). | `/104-sf-end shipflow_data/workflow/specs/custom-action-buttons-and-command-macros.md` |
 | 2026-06-12 03:05:00 UTC | 104-sf-end | GPT-5 Codex | Completed end-of-task wrap-up and ready for ship with current run evidence and pending proof path noted. | Closed (ship pending). | `/005-sf-ship shipflow_data/workflow/specs/custom-action-buttons-and-command-macros.md` |
+| 2026-06-12 03:06:00 UTC | 005-sf-ship | GPT-5 Codex | Closed the tracking loop and committed the 104-sf-end spec update for the custom action button feature. | Shipped (docs/trace layer). | `none` |
 
 ## Current Chantier Flow
 
@@ -190,4 +191,4 @@ sf-ready: accepted inside sf-build
 sf-start: implemented
 sf-verify: local checks pass
 sf-end: closed
-sf-ship: pending
+sf-ship: shipped
