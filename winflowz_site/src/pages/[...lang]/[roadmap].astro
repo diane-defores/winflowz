@@ -4,38 +4,13 @@ import KanbanBoard from '../../components/roadmap/KanbanBoard.astro'
 import ProjectNav from '../../components/roadmap/ProjectNav.astro'
 import AddFeatureModal from '../../components/roadmap/AddFeatureModal.astro'
 import { projects } from '../../types/roadmap'
+import type { Feature } from '../../types/roadmap'
+import { ROADMAP_DEFAULT_FEATURES } from '@/lib/roadmapDefaults'
 import { getLangFromUrl, useTranslations } from '@/utils/i18n'
+import { ConvexHttpClient } from 'convex/browser'
+import { getServerEnv } from '@/lib/serverEnv'
 
-export const prerender = true
-
-export function getStaticPaths() {
-	return [
-		{
-			params: {
-				lang: undefined,
-				roadmap: 'roadmap',
-			},
-		},
-		...projects.map((project) => ({
-			params: {
-				lang: undefined,
-				roadmap: `roadmap/${project.id}`,
-			},
-		})),
-		{
-			params: {
-				lang: 'fr',
-				roadmap: 'roadmap',
-			},
-		},
-		...projects.map((project) => ({
-			params: {
-				lang: 'fr',
-				roadmap: `roadmap/${project.id}`,
-			},
-		})),
-	]
-}
+export const prerender = false
 
 const lang = getLangFromUrl(Astro.url)
 const t = await useTranslations(lang, 'roadmap')
@@ -55,6 +30,10 @@ const defaultTranslations = {
 	rejected: 'Rejected',
 	vote: 'Vote',
 	votes: 'votes',
+	loginToVote: 'Sign in to vote',
+	accountNotReady: 'Your account is still syncing. Retry in a moment.',
+	alreadyVoted: 'You already voted for this feature',
+	voteFailed: 'Vote failed. Please retry.',
 }
 
 const translations = {
@@ -65,29 +44,43 @@ const translations = {
 	rejected: t?.status?.rejected ?? defaultTranslations.rejected,
 	vote: t?.feature?.vote ?? defaultTranslations.vote,
 	votes: t?.feature?.votes ?? defaultTranslations.votes,
+	loginToVote: t?.feature?.loginToVote ?? defaultTranslations.loginToVote,
+	accountNotReady: t?.feature?.accountNotReady ?? defaultTranslations.accountNotReady,
+	alreadyVoted: t?.feature?.alreadyVoted ?? defaultTranslations.alreadyVoted,
+	voteFailed: t?.feature?.voteFailed ?? defaultTranslations.voteFailed,
 }
 
-// Hardcoded features until Convex is fully wired
-const features: any[] = [
-	// ReplayGlowz
-	{ id: '1', title: 'YouTube Timestamp Bookmarks', description: 'Save and organize bookmarks at specific video timestamps with notes', status: 'completed', projectId: 'replayglowz', votes: 42 },
-	{ id: '2', title: 'Annotation Export to Obsidian', description: 'Export all video annotations directly into your Obsidian vault as structured notes', status: 'in-development', projectId: 'replayglowz', votes: 38 },
-	{ id: '3', title: 'Playlist Analytics Dashboard', description: 'Visual overview of your watch patterns, saved content, and learning progress', status: 'planned', projectId: 'replayglowz', votes: 25 },
-	{ id: '4', title: 'AI-Powered Video Summaries', description: 'Automatic chapter summaries using AI to capture key takeaways', status: 'considering', projectId: 'replayglowz', votes: 67 },
-	// MediaFlowz
-	{ id: '5', title: 'RSS Feed Aggregation', description: 'Unified RSS reader inside Obsidian with customizable feeds and filters', status: 'completed', projectId: 'mediaflowz', votes: 31 },
-	{ id: '6', title: 'Social Media Scheduler', description: 'Schedule and publish content across multiple social platforms from Obsidian', status: 'planned', projectId: 'mediaflowz', votes: 44 },
-	{ id: '7', title: 'Content Curation Templates', description: 'Pre-built templates for curating and organizing content from various sources', status: 'in-development', projectId: 'mediaflowz', votes: 19 },
-	{ id: '8', title: 'Newsletter Generator', description: 'Turn curated content into formatted newsletters ready to send', status: 'considering', projectId: 'mediaflowz', votes: 52 },
-	// WinFlowz
-	{ id: '9', title: 'Windows Mastery Guide v2', description: 'Updated guide with 200+ tips covering Windows 11 24H2 features and optimizations', status: 'in-development', projectId: 'winflowz', votes: 35 },
-	{ id: '10', title: 'Plugin Manager for Obsidian', description: 'Search, compare, and manage Obsidian plugins with ratings and compatibility checks', status: 'completed', projectId: 'winflowz', votes: 28 },
-	{ id: '11', title: 'Keyboard Shortcut Trainer', description: 'Interactive training mode to learn and practice Windows keyboard shortcuts', status: 'planned', projectId: 'winflowz', votes: 41 },
-	{ id: '12', title: 'Workflow Automation Builder', description: 'Visual builder for creating custom Windows automation workflows', status: 'considering', projectId: 'winflowz', votes: 73 },
-]
+const env = getServerEnv()
+const convexUrl = env.PUBLIC_CONVEX_URL
 
+async function loadRoadmapFeatures(): Promise<Feature[]> {
+	if (!convexUrl || convexUrl === 'https://PLACEHOLDER.convex.cloud') {
+		return projectId
+			? ROADMAP_DEFAULT_FEATURES.filter((feature) => feature.projectId === projectId)
+			: ROADMAP_DEFAULT_FEATURES
+	}
+
+	try {
+		const convex = new ConvexHttpClient(convexUrl)
+		const data = (await convex.query('features:list' as never, {
+			projectId,
+		} as never)) as Feature[]
+
+		if (data.length > 0) {
+			return data
+		}
+	} catch {
+		// Fallback to the legacy catalog when Convex is unavailable.
+	}
+
+	return projectId
+		? ROADMAP_DEFAULT_FEATURES.filter((feature) => feature.projectId === projectId)
+		: ROADMAP_DEFAULT_FEATURES
+}
+
+const features = await loadRoadmapFeatures()
 const featuresWithProjectNames =
-	features?.map((feature: any) => ({
+	features.map((feature) => ({
 		...feature,
 		projectName:
 			projects.find((p) => p.id === feature.projectId)?.name ??

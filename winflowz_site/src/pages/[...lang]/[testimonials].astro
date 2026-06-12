@@ -19,7 +19,7 @@ const target = getLocalizedPath(lang, 'recommendations')
     <meta http-equiv="refresh" content={`0; url=${target}`} />
     <link rel="canonical" href={target} />
     <script is:inline>
-      window.location.replace({JSON.stringify(target)});
+      {`window.location.replace(${JSON.stringify(target)});`}
     </script>
   </head>
   <body>

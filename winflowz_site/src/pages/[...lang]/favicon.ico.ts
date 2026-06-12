@@ -17,7 +17,7 @@ export const getStaticPaths = () => {
 
 export const GET: APIRoute = async () => {
   try {
-    const faviconBuffer = await sharp(path.join(__dirname, '../../../../public/images/WinFlowz.png'))
+    const faviconBuffer = await sharp(path.join(__dirname, '../../../public/images/WinFlowz.png'))
       .resize(32, 32)
       .png()
       .toBuffer();

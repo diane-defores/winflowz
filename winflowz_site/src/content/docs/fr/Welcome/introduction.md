@@ -19,6 +19,6 @@ WinFlowz est un écosystème complet d'outils de productivité conçu pour vous 
 ## Besoin d'Aide ?
 
 Si vous avez besoin d'aide, n'hésitez pas à :
-- Consulter notre [FAQ](/fr/docs/faq)
-- Rejoindre notre [Communauté](/fr/community)
+- Nous écrire via la page [contact](/fr/contact)
+- Rejoindre notre réseau via la page [contact](/fr/contact)
 - Contacter notre [Support](/fr/contact) 

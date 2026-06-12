@@ -51,7 +51,13 @@ const validationMessages = {
 				</button>
 			</div>
 
-			<form id="addFeatureForm">
+			<form
+				id="addFeatureForm"
+				data-duplicate-message={t?.addFeature?.duplicatePending ?? "You already submitted this suggestion"}
+				data-account-message={t?.addFeature?.accountNotReady ?? "Your account is still syncing"}
+				data-submit-error={t?.addFeature?.submitError ?? t?.addFeature?.error ?? "Suggestion failed"}
+				data-submit-success={t?.addFeature?.submitSuccess ?? t?.addFeature?.success ?? "Suggestion submitted for review"}
+			>
 				<div class="p-4 overflow-y-auto">
 					<div class="grid gap-y-4">
 						<!-- Sélection du projet -->
@@ -116,6 +122,10 @@ const validationMessages = {
                 minlength="10"
               ></textarea>
 						</div>
+						<p
+							id="featureFormStatus"
+							class="hidden rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
+						></p>
 					</div>
 				</div>
 
@@ -143,9 +153,11 @@ const validationMessages = {
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('addFeatureModal');
     const backdrop = document.querySelector('.hs-overlay-backdrop');
+    const form = document.getElementById('addFeatureForm');
     const projectSelect = document.getElementById('project');
     const titleInput = document.getElementById('title');
     const descriptionInput = document.getElementById('description');
+    const statusNode = document.getElementById('featureFormStatus');
 
     // Configuration de la validation personnalisée
     function setupValidation(input, requiredMessage, minLengthMessage) {
@@ -184,6 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         modal?.classList.remove('hs-overlay-open');
         modal?.classList.add('hidden');
+        if (statusNode) {
+            statusNode.classList.add('hidden');
+            statusNode.textContent = '';
+        }
     }
 
     // Gestionnaire pour le clic en dehors de la modale
@@ -204,6 +220,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeButtons = document.querySelectorAll('[data-hs-overlay="#addFeatureModal"]');
     closeButtons.forEach(button => {
         button.addEventListener('click', cleanupModal);
+    });
+
+    form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton?.setAttribute('disabled', 'true');
+
+        try {
+            const response = await fetch('/api/features/suggest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    projectId: projectSelect?.value ?? '',
+                    title: titleInput?.value ?? '',
+                    description: descriptionInput?.value ?? '',
+                }),
+            });
+
+            if (response.status === 401) {
+                const redirectUrl = encodeURIComponent(window.location.pathname + window.location.search);
+                window.location.href = `/signin?redirect_url=${redirectUrl}`;
+                return;
+            }
+
+            const data = await response.json();
+
+            if (statusNode) {
+                statusNode.classList.remove('hidden');
+            }
+
+            if (response.ok) {
+                if (statusNode) {
+                    statusNode.textContent = form.dataset.submitSuccess ?? 'Suggestion submitted for review';
+                }
+                form.reset();
+                setTimeout(() => cleanupModal(), 600);
+                return;
+            }
+
+            if (!statusNode) {
+                return;
+            }
+
+            if (data.error === 'duplicate_suggestion') {
+                statusNode.textContent = form.dataset.duplicateMessage ?? 'Duplicate suggestion';
+                return;
+            }
+
+            if (data.error === 'account_not_ready') {
+                statusNode.textContent = form.dataset.accountMessage ?? 'Account syncing';
+                return;
+            }
+
+            statusNode.textContent = form.dataset.submitError ?? 'Suggestion failed';
+        } catch (error) {
+            console.error('Error submitting feature suggestion:', error);
+            if (statusNode) {
+                statusNode.classList.remove('hidden');
+                statusNode.textContent = form?.dataset.submitError ?? 'Suggestion failed';
+            }
+        } finally {
+            submitButton?.removeAttribute('disabled');
+        }
     });
 });
 </script>

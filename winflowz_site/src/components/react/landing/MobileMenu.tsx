@@ -61,7 +61,7 @@ export function MobileMenu({
 
   const navItems: NavItem[] = items || [
     { label: "Apps", href: "/products" },
-    { label: "Courses", href: "/docs" },
+    { label: "Courses", href: "/en/formations/" },
     { label: "Roadmap", href: "/roadmap" },
     { label: "Services", href: "/services" },
     { label: "Blog", href: "/blog" },

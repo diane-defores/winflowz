@@ -32,7 +32,10 @@
   "feature": {
     "vote": "Voter",
     "votes": "votes",
-    "loginToVote": "Connectez-vous pour voter"
+    "loginToVote": "Connectez-vous pour voter",
+    "alreadyVoted": "Vous avez déjà voté pour cette fonctionnalité",
+    "accountNotReady": "Votre compte est en cours de synchronisation. Réessayez dans un instant.",
+    "voteFailed": "Le vote a échoué. Réessayez."
   },
   "nav": {
     "projectsLabel": "Navigation des projets",
@@ -53,6 +56,10 @@
     "cancel": "Annuler",
     "success": "Suggestion envoyée avec succès",
     "error": "Erreur lors de l'envoi de la suggestion",
+    "submitSuccess": "Suggestion envoyée pour revue.",
+    "submitError": "L'envoi a échoué. Réessayez.",
+    "duplicatePending": "Vous avez déjà proposé cette idée et elle est encore en attente de revue.",
+    "accountNotReady": "Votre compte est en cours de synchronisation. Réessayez dans un instant.",
     "validation": {
       "projectRequired": "Veuillez sélectionner un projet",
       "titleRequired": "Veuillez entrer un titre",
