@@ -35,7 +35,7 @@ next_step: "/sf-verify socialglowz-processor-agnostic-ltd-commerce after Lemon S
 
 ## Purpose
 
-Document how WinFlowz uses Lemon Squeezy for the suite-owned SocialGlowz direct Lifetime Deal checkout path.
+Document how WinFlowz uses Lemon Squeezy for suite-owned direct Lifetime Deal checkout paths, including SocialGlowz and WinFlowz App founder offers.
 
 Use the global provider note for source links and tool availability:
 
@@ -45,7 +45,7 @@ This file is the local usage contract for architecture, validation, and automati
 
 ## Usage Summary
 
-- Provider role: first payment provider adapter for direct SocialGlowz Lifetime Deal sales.
+- Provider role: first payment provider adapter for direct suite Lifetime Deal sales.
 - Product access owner: WinFlowz suite entitlement ledger, not Lemon Squeezy.
 - Applies to paths:
   - `winflowz_site/src/lib/commerce/**`
@@ -68,6 +68,10 @@ This file is the local usage contract for architecture, validation, and automati
 | Store id | `LEMONSQUEEZY_STORE_ID` | sensitive-ish | Record key name only in docs; do not record real value. |
 | SocialGlowz product id | `LEMONSQUEEZY_SOCIALGLOWZ_PRODUCT_ID` | sensitive-ish | Provider reference only; never replaces internal `productId=socialglowz`. |
 | SocialGlowz LTD variant id | `LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID` | sensitive-ish | Provider reference only; mapped from internal offer `socialglowz/lifetime_deal`. |
+| WinFlowz App product id | `LEMONSQUEEZY_WINFLOWZ_APP_PRODUCT_ID` | sensitive-ish | Provider reference only; internal product remains `winflowz_app`. |
+| WinFlowz Starter Founder variant id | `LEMONSQUEEZY_WINFLOWZ_APP_STARTER_FOUNDER_VARIANT_ID` | sensitive-ish | Provider reference only; mapped from internal offer `winflowz_app/starter_founder`. |
+| WinFlowz Pro Founder variant id | `LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID` | sensitive-ish | Provider reference only; mapped from internal offer `winflowz_app/pro_founder`. |
+| WinFlowz Studio Founder variant id | `LEMONSQUEEZY_WINFLOWZ_APP_STUDIO_FOUNDER_VARIANT_ID` | sensitive-ish | Provider reference only; mapped from internal offer `winflowz_app/studio_founder`. |
 | Webhook secret | `LEMONSQUEEZY_WEBHOOK_SECRET` | yes | Server-only; used to verify `X-Signature`. |
 | Provider order preference | `COMMERCE_PROVIDER_ORDER` | no | Current default: `lemonsqueezy,polar`. |
 | Checkout route | `/api/commerce/checkout` | no | Creates hosted checkout server-side. |
@@ -82,8 +86,8 @@ This file is the local usage contract for architecture, validation, and automati
 - `order_created` maps to a normalized paid event.
 - `order_refunded` maps to a normalized refunded event.
 - Unsupported or incomplete signed events must be `pending_review`, not an access grant.
-- Fulfillment runs through `bridge:processSocialGlowzCommerceEvent` and writes to suite-owned `productEntitlements` / `productAccessEvents`.
-- Checkout success pages are not payment proof. Access changes come from signed webhooks and idempotent suite fulfillment.
+- Fulfillment runs through `bridge:processCommerceEvent` and writes to suite-owned `productEntitlements` / `productAccessEvents`. The legacy SocialGlowz bridge mutation remains for compatibility.
+- Checkout success pages are not payment proof. Access changes come from signed webhooks and idempotent suite fulfillment. Lemon Squeezy owns payment receipt emails; WinFlowz access state must come from the signed webhook and suite ledger.
 - Polar remains a provider adapter/legacy route and must not be deleted as part of Lemon Squeezy adoption.
 
 ## MCP / CLI Policy
@@ -110,8 +114,8 @@ Requires a new spec or explicit approval:
 
 ## Invariants
 
-- Internal offer id remains `socialglowz/lifetime_deal`.
-- Internal product and plan remain `productId=socialglowz`, `plan=lifetime_deal`.
+- Internal offer ids remain product-owned, for example `socialglowz/lifetime_deal`, `winflowz_app/starter_founder`, `winflowz_app/pro_founder`, and `winflowz_app/studio_founder`.
+- Internal product and plan values remain canonical suite values, for example `productId=socialglowz`, `productId=winflowz_app`, `plan=lifetime_deal`, `plan=starter_founder`, `plan=pro_founder`, or `plan=studio_founder`.
 - Provider product, variant, order, customer, invoice, and webhook ids are references only.
 - Lemon Squeezy never becomes the runtime authorization store.
 - No email-only auto-grant or account merge.
@@ -149,7 +153,7 @@ python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py /home/claude/winfl
 Provider smoke, after test-mode setup:
 
 ```text
-Create checkout from SocialGlowz pricing -> complete test order -> receive signed order_created webhook -> verify suite ledger access/code path -> perform/simulate refund -> verify access becomes non-granting.
+Create checkout from SocialGlowz or WinFlowz founder pricing -> complete test order -> receive signed order_created webhook -> verify suite ledger access/code path -> perform/simulate refund -> verify access becomes non-granting.
 ```
 
 ## Reader Checklist

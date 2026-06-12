@@ -12,7 +12,18 @@ import { getServerEnv } from "../serverEnv"
 const SOCIALGLOWZ_OFFER_ID = "socialglowz/lifetime_deal"
 const SOCIALGLOWZ_PRODUCT_ID = "socialglowz"
 const SOCIALGLOWZ_PLAN = "lifetime_deal"
+const WINFLOWZ_APP_PRODUCT_ID = "winflowz_app"
+const WINFLOWZ_APP_STARTER_FOUNDER_OFFER_ID = "winflowz_app/starter_founder"
+const WINFLOWZ_APP_PRO_FOUNDER_OFFER_ID = "winflowz_app/pro_founder"
+const WINFLOWZ_APP_STUDIO_FOUNDER_OFFER_ID = "winflowz_app/studio_founder"
 const SOCIALGLOWZ_SOURCES = [
+  "direct",
+  "partner",
+  "appsumo",
+  "manual",
+  "legacy",
+] as const
+const WINFLOWZ_APP_SOURCES = [
   "direct",
   "partner",
   "appsumo",
@@ -31,10 +42,46 @@ const OFFER_BY_ID: Record<CommerceOfferId, CommerceOffer> = {
     cancelPath: "/purchase/cancel",
     description: "SocialGlowz Lifetime Deal, direct checkout",
   },
+  [WINFLOWZ_APP_STARTER_FOUNDER_OFFER_ID]: {
+    id: WINFLOWZ_APP_STARTER_FOUNDER_OFFER_ID,
+    productId: WINFLOWZ_APP_PRODUCT_ID,
+    plan: "starter_founder",
+    sources: WINFLOWZ_APP_SOURCES,
+    providers: ["lemonsqueezy"],
+    successPath: "/purchase/success?offerId=winflowz_app/starter_founder",
+    cancelPath: "/purchase/cancel?offerId=winflowz_app/starter_founder",
+    description: "WinFlowz Starter Founder access, 1 active device",
+  },
+  [WINFLOWZ_APP_PRO_FOUNDER_OFFER_ID]: {
+    id: WINFLOWZ_APP_PRO_FOUNDER_OFFER_ID,
+    productId: WINFLOWZ_APP_PRODUCT_ID,
+    plan: "pro_founder",
+    sources: WINFLOWZ_APP_SOURCES,
+    providers: ["lemonsqueezy"],
+    successPath: "/purchase/success?offerId=winflowz_app/pro_founder",
+    cancelPath: "/purchase/cancel?offerId=winflowz_app/pro_founder",
+    description: "WinFlowz Pro Founder access, 3 active devices",
+  },
+  [WINFLOWZ_APP_STUDIO_FOUNDER_OFFER_ID]: {
+    id: WINFLOWZ_APP_STUDIO_FOUNDER_OFFER_ID,
+    productId: WINFLOWZ_APP_PRODUCT_ID,
+    plan: "studio_founder",
+    sources: WINFLOWZ_APP_SOURCES,
+    providers: ["lemonsqueezy"],
+    successPath: "/purchase/success?offerId=winflowz_app/studio_founder",
+    cancelPath: "/purchase/cancel?offerId=winflowz_app/studio_founder",
+    description: "WinFlowz Studio Founder access, 5 active devices",
+  },
 } as const
 
 export const SOCIALGLOWZ_LETTER = SOCIALGLOWZ_OFFER_ID
 export const SOCIALGLOWZ_LTD_OFFER_ID = SOCIALGLOWZ_OFFER_ID
+export const WINFLOWZ_APP_STARTER_FOUNDER_LTD_OFFER_ID =
+  WINFLOWZ_APP_STARTER_FOUNDER_OFFER_ID
+export const WINFLOWZ_APP_PRO_FOUNDER_LTD_OFFER_ID =
+  WINFLOWZ_APP_PRO_FOUNDER_OFFER_ID
+export const WINFLOWZ_APP_STUDIO_FOUNDER_LTD_OFFER_ID =
+  WINFLOWZ_APP_STUDIO_FOUNDER_OFFER_ID
 
 export function getCommerceOffers(): Record<string, CommerceOffer> {
   return { ...OFFER_BY_ID }
@@ -56,22 +103,55 @@ export function isAllowedSocialGlowzOffer(
   )
 }
 
+function getLemonSqueezyVariantEnvKey(offerId: string): string | null {
+  if (offerId === SOCIALGLOWZ_OFFER_ID) {
+    return "LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID"
+  }
+  if (offerId === WINFLOWZ_APP_STARTER_FOUNDER_OFFER_ID) {
+    return "LEMONSQUEEZY_WINFLOWZ_APP_STARTER_FOUNDER_VARIANT_ID"
+  }
+  if (offerId === WINFLOWZ_APP_PRO_FOUNDER_OFFER_ID) {
+    return "LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID"
+  }
+  if (offerId === WINFLOWZ_APP_STUDIO_FOUNDER_OFFER_ID) {
+    return "LEMONSQUEEZY_WINFLOWZ_APP_STUDIO_FOUNDER_VARIANT_ID"
+  }
+  return null
+}
+
+function getLemonSqueezyProductEnvKey(offerId: string): string | null {
+  if (offerId === SOCIALGLOWZ_OFFER_ID) {
+    return "LEMONSQUEEZY_SOCIALGLOWZ_PRODUCT_ID"
+  }
+  if (
+    offerId === WINFLOWZ_APP_STARTER_FOUNDER_OFFER_ID ||
+    offerId === WINFLOWZ_APP_PRO_FOUNDER_OFFER_ID ||
+    offerId === WINFLOWZ_APP_STUDIO_FOUNDER_OFFER_ID
+  ) {
+    return "LEMONSQUEEZY_WINFLOWZ_APP_PRODUCT_ID"
+  }
+  return null
+}
+
 export function getOfferProviderConfig(
   offerId: string,
   provider: CommerceProviderId
 ): CommerceProviderConfig | null {
-  if (offerId !== SOCIALGLOWZ_OFFER_ID) {
+  const offer = getCommerceOffer(offerId)
+  if (!offer || !offer.providers.includes(provider)) {
     return null
   }
 
   const env = getServerEnv()
 
   if (provider === "lemonsqueezy") {
-    const variantId = env.LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID
+    const variantEnvKey = getLemonSqueezyVariantEnvKey(offerId)
+    const variantId = variantEnvKey ? env[variantEnvKey] : undefined
     if (!variantId) return null
 
     const storeId = env.LEMONSQUEEZY_STORE_ID
-    const productId = env.LEMONSQUEEZY_SOCIALGLOWZ_PRODUCT_ID
+    const productEnvKey = getLemonSqueezyProductEnvKey(offerId)
+    const productId = productEnvKey ? env[productEnvKey] : undefined
     return {
       provider,
       productId,

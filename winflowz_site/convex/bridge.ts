@@ -8,6 +8,7 @@ import {
   REPLAYGLOWZ_PRODUCT_ID,
   SOCIALGLOWZ_PRODUCT_ID,
   TEMU_SHOPPING_LISTS_PRODUCT_ID,
+  WINFLOWZ_APP_PRODUCT_ID,
   ensureDefaultFreeEntitlement,
   ensureMissingDefaultFreeEntitlements,
   isActiveAccessStatus,
@@ -31,6 +32,20 @@ const SOCIALGLOWZ_REVOKE_EVENT_SOURCE = 'socialglowz_revoke'
 const SOCIALGLOWZ_COMMERCE_EVENT_SOURCE = 'socialglowz_commerce'
 const SOCIALGLOWZ_COMMERCE_GRANT_SOURCE = 'socialglowz_commerce'
 const SOCIALGLOWZ_COMMERCE_EVENT_SOURCE_PREFIX = 'socialglowz:commerce'
+const SUITE_COMMERCE_EVENT_SOURCE = 'suite_commerce'
+const SUITE_COMMERCE_EVENT_SOURCE_PREFIX = 'suite:commerce'
+const WINFLOWZ_APP_PLAN_ALLOWLIST = new Set([
+  'free',
+  'starter_founder',
+  'pro_founder',
+  'studio_founder',
+  'lifetime_deal',
+])
+const WINFLOWZ_APP_OFFER_PLAN_BY_ID = new Map([
+  ['winflowz_app/starter_founder', 'starter_founder'],
+  ['winflowz_app/pro_founder', 'pro_founder'],
+  ['winflowz_app/studio_founder', 'studio_founder'],
+])
 const TEMU_SHOPPING_LISTS_PROVIDER = 'temu_shopping_lists_convex'
 const TEMU_SHOPPING_LISTS_BRIDGE_SOURCE = 'temu_shopping_lists_bridge_api'
 
@@ -131,6 +146,20 @@ function resolveCommerceIdentityBySourceRef(
   }
 
   return (async () => {
+    const suiteEvents = await ctx.db
+      .query('productAccessEvents')
+      .withIndex('by_sourceRef', (q) =>
+        q.eq('source', SUITE_COMMERCE_EVENT_SOURCE).eq('sourceRef', sourceRef)
+      )
+      .collect()
+    const suiteEvent = suiteEvents.find((entry) => entry.globalUserId) as
+      | { globalUserId: Id<'globalUsers'> }
+      | undefined
+
+    if (suiteEvent?.globalUserId) {
+      return suiteEvent.globalUserId
+    }
+
     const sourceEvents = await ctx.db
       .query('productAccessEvents')
       .withIndex('by_sourceRef', (q) =>
@@ -618,9 +647,179 @@ function isSupportedSocialGlowzCommerceOffer(
   )
 }
 
+function isAllowedSuiteCommercePlan(productId: string, planId: string) {
+  if (productId === SOCIALGLOWZ_PRODUCT_ID) {
+    return isAllowedSocialGlowzPlan(planId)
+  }
+  if (productId === WINFLOWZ_APP_PRODUCT_ID) {
+    return WINFLOWZ_APP_PLAN_ALLOWLIST.has(planId)
+  }
+  return false
+}
+
+function isSupportedSuiteCommerceOffer(
+  offerId: string,
+  productId: string,
+  plan: string
+) {
+  if (isSupportedSocialGlowzCommerceOffer(offerId, productId, plan)) {
+    return true
+  }
+  if (productId !== WINFLOWZ_APP_PRODUCT_ID) {
+    return false
+  }
+  return WINFLOWZ_APP_OFFER_PLAN_BY_ID.get(offerId) === plan
+}
+
+function buildSuiteCommerceSourceRef(args: {
+  sourceRef?: string
+  providerOrderId: string
+  providerSourceRef?: string
+}) {
+  return args.sourceRef || args.providerSourceRef || args.providerOrderId
+}
+
+function buildSuiteCommerceIdempotencyKey(eventType: string, eventKey: string) {
+  return `${SUITE_COMMERCE_EVENT_SOURCE_PREFIX}:${eventType}:${eventKey}`
+}
+
 function normalizeCommerceMetadataSource(value: string | undefined) {
   const normalized = value?.trim().toLowerCase() ?? 'direct'
   return isAllowedSocialGlowzSource(normalized) ? normalized : 'direct'
+}
+
+async function upsertSuiteCommerceEntitlement(
+  ctx: MutationCtx,
+  args: {
+    globalUserDocId: Id<'globalUsers'>
+    productId: string
+    plan: string
+    source: string
+    sourceRef: string
+    environment: string
+    idempotencyKey: string
+  }
+) {
+  if (!isAllowedSuiteProduct(args.productId)) {
+    throw new Error('product_not_allowed')
+  }
+  if (!isAllowedSuiteCommercePlan(args.productId, args.plan)) {
+    throw new Error('plan_not_allowed')
+  }
+
+  const now = Date.now()
+  const existing = await ctx.db
+    .query('productEntitlements')
+    .withIndex('by_idempotencyKey', (q) => q.eq('idempotencyKey', args.idempotencyKey))
+    .first()
+
+  if (existing) {
+    await ctx.db.patch(existing._id, {
+      status: 'active',
+      source: args.source,
+      sourceRef: args.sourceRef ?? existing.sourceRef,
+      plan: args.plan,
+      environment: args.environment,
+      grantedAt: existing.grantedAt ?? now,
+      updatedAt: now,
+    })
+    return existing._id
+  }
+
+  return await ctx.db.insert('productEntitlements', {
+    globalUserId: args.globalUserDocId,
+    productId: args.productId,
+    plan: args.plan,
+    status: 'active',
+    source: args.source,
+    sourceRef: args.sourceRef,
+    environment: args.environment,
+    idempotencyKey: args.idempotencyKey,
+    grantedAt: now,
+    createdAt: now,
+    updatedAt: now,
+  })
+}
+
+async function resolveVerifiedCommerceGlobalUser(
+  ctx: MutationCtx,
+  args: {
+    globalUserId?: string
+    provider?: string
+    providerAccountId?: string
+    email?: string
+    environment: string
+    sourceRef?: string
+  }
+): Promise<{ globalUserDocId: Id<'globalUsers'> } | null> {
+  return resolveVerifiedSocialGlowzGlobalUser(ctx, args)
+}
+
+async function buildSuiteCommerceAccessSnapshot(
+  ctx: MutationCtx,
+  globalUserDocId: Id<'globalUsers'>,
+  productId: string
+) {
+  const rawEntitlements = await ctx.db
+    .query('productEntitlements')
+    .withIndex('by_globalUserId', (q) => q.eq('globalUserId', globalUserDocId))
+    .collect()
+
+  const globalUser = await ctx.db.get(globalUserDocId)
+  if (!globalUser) {
+    throw new Error('global_user_not_found')
+  }
+
+  const entitlement = selectPreferredActiveProductEntitlement(
+    rawEntitlements.map((entry) => ({
+      productId: entry.productId,
+      status: entry.status,
+      plan: entry.plan,
+      source: entry.source,
+    })),
+    productId
+  )
+
+  return {
+    hasAccess: Boolean(entitlement),
+    globalUserId: globalUser.globalUserId,
+    productId,
+    planId: entitlement?.plan ?? null,
+    source: entitlement?.source ?? null,
+    reasonCode: entitlement ? 'active_entitlement' : 'missing_product_entitlement',
+  }
+}
+
+async function upsertSuiteCommerceAccessEvent(
+  ctx: MutationCtx,
+  params: {
+    productId: string
+    globalUserDocId?: Id<'globalUsers'>
+    eventType: string
+    environment: string
+    sourceRef?: string
+    idempotencyKey: string
+    status: string
+    customerEmail?: string
+    providerCustomerId?: string
+    providerEventId?: string
+    reason?: string
+  }
+) {
+  return upsertCommerceAccessEvent(ctx, {
+    source: SUITE_COMMERCE_EVENT_SOURCE,
+    eventType: params.eventType,
+    sourceRef: params.sourceRef ?? params.idempotencyKey,
+    idempotencyKey: params.idempotencyKey,
+    environment: params.environment,
+    productId: params.productId,
+    status: params.status,
+    providerEventId: params.providerEventId ?? params.idempotencyKey,
+    providerCustomerId: params.providerCustomerId,
+    customerEmail: params.customerEmail,
+    reason: params.reason,
+    ...(params.globalUserDocId ? { globalUserDocId: params.globalUserDocId } : {}),
+  })
 }
 
 async function getOrCreateSocialGlowzIdentity(
@@ -1883,6 +2082,272 @@ export const refundSocialGlowzAccessByProviderAccount = mutation({
     return {
       ...result,
       reason: args.reason ?? 'refunded',
+    }
+  },
+})
+
+export const processCommerceEvent = mutation({
+  args: {
+    provider: v.string(),
+    offerId: v.string(),
+    productId: v.string(),
+    plan: v.string(),
+    eventType: v.union(
+      v.literal('paid'),
+      v.literal('refunded'),
+      v.literal('revoked'),
+      v.literal('pending_review')
+    ),
+    environment: v.string(),
+    providerEventId: v.string(),
+    providerOrderId: v.string(),
+    idempotencyKey: v.string(),
+    status: v.union(v.literal('applied'), v.literal('pending_review'), v.literal('ignored')),
+    customerEmail: v.optional(v.string()),
+    providerCustomerId: v.optional(v.string()),
+    globalUserId: v.optional(v.string()),
+    sourceRef: v.optional(v.string()),
+    providerSourceRef: v.optional(v.string()),
+    providerInvoiceId: v.optional(v.string()),
+    metadata: v.optional(v.record(v.string(), v.string())),
+    bridgeSecret: v.string(),
+  },
+  handler: async (ctx, args) => {
+    requireBridgeSecret(args.bridgeSecret)
+
+    const incomingEnvironment = normalizeCommerceEnvironment(args.environment)
+    const runtimeEnvironment = resolveRuntimeBridgeEnvironment()
+    const sourceRef = buildSuiteCommerceSourceRef({
+      sourceRef: args.sourceRef,
+      providerOrderId: args.providerOrderId,
+      providerSourceRef: args.providerSourceRef,
+    })
+    const metadataSource = normalizeCommerceMetadataSource(args.metadata?.source)
+    const eventSourceRef = `${args.productId}:${sourceRef}`
+
+    if (!isAllowedCommerceEnvironment(incomingEnvironment, runtimeEnvironment)) {
+      await upsertSuiteCommerceAccessEvent(ctx, {
+        productId: args.productId,
+        environment: runtimeEnvironment,
+        sourceRef: eventSourceRef,
+        idempotencyKey: args.idempotencyKey,
+        status: 'pending_review',
+        eventType: 'suite_commerce.environment_mismatch',
+        customerEmail: args.customerEmail,
+        providerCustomerId: args.providerCustomerId,
+        providerEventId: args.providerEventId,
+        reason: `commerce_environment_mismatch:${incomingEnvironment}`,
+      })
+      return {
+        ok: false,
+        status: 'pending_review',
+        alreadyProcessed: false,
+        reason: 'environment_mismatch',
+      }
+    }
+
+    if (!isSupportedSuiteCommerceOffer(args.offerId, args.productId, args.plan)) {
+      await upsertSuiteCommerceAccessEvent(ctx, {
+        productId: args.productId,
+        environment: incomingEnvironment,
+        sourceRef: eventSourceRef,
+        idempotencyKey: args.idempotencyKey,
+        status: 'pending_review',
+        eventType: 'suite_commerce.unsupported_offer',
+        customerEmail: args.customerEmail,
+        providerCustomerId: args.providerCustomerId,
+        providerEventId: args.providerEventId,
+        reason: `unsupported_offer:${args.offerId}`,
+      })
+      return {
+        ok: false,
+        status: 'pending_review',
+        alreadyProcessed: false,
+        reason: 'unsupported_offer',
+      }
+    }
+
+    if (args.status === 'ignored') {
+      await upsertSuiteCommerceAccessEvent(ctx, {
+        productId: args.productId,
+        environment: incomingEnvironment,
+        sourceRef: eventSourceRef,
+        idempotencyKey: args.idempotencyKey,
+        status: 'ignored',
+        eventType: 'suite_commerce.ignored',
+        customerEmail: args.customerEmail,
+        providerCustomerId: args.providerCustomerId,
+        providerEventId: args.providerEventId,
+        reason: 'ignored_webhook_event',
+      })
+      return {
+        ok: true,
+        status: 'ignored',
+        alreadyProcessed: false,
+        reason: 'ignored_webhook_event',
+      }
+    }
+
+    const existingEvent = await ctx.db
+      .query('productAccessEvents')
+      .withIndex('by_idempotencyKey', (q) => q.eq('idempotencyKey', args.idempotencyKey))
+      .first()
+    if (existingEvent) {
+      return {
+        ok: true,
+        status: existingEvent.status,
+        alreadyProcessed: true,
+        reason: existingEvent.reason ?? 'already_processed',
+      }
+    }
+
+    const resolvedByProvided = await resolveVerifiedCommerceGlobalUser(ctx, {
+      globalUserId: args.globalUserId,
+      provider: args.provider,
+      providerAccountId: args.providerCustomerId,
+      email: args.customerEmail,
+      environment: incomingEnvironment,
+      sourceRef: eventSourceRef,
+    })
+    const globalUserDocId =
+      resolvedByProvided?.globalUserDocId ?? (await resolveCommerceIdentityBySourceRef(ctx, eventSourceRef))
+
+    if (args.eventType === 'paid') {
+      if (!globalUserDocId) {
+        await upsertSuiteCommerceAccessEvent(ctx, {
+          productId: args.productId,
+          environment: incomingEnvironment,
+          sourceRef: eventSourceRef,
+          idempotencyKey: args.idempotencyKey,
+          status: 'pending_review',
+          eventType: 'suite_commerce.pending_review',
+          customerEmail: args.customerEmail,
+          providerCustomerId: args.providerCustomerId,
+          providerEventId: args.providerEventId,
+          reason: `missing_global_user:${args.providerCustomerId ?? 'none'}`,
+        })
+        return {
+          ok: false,
+          status: 'pending_review',
+          alreadyProcessed: false,
+          reason: 'missing_global_user',
+        }
+      }
+
+      await upsertSuiteCommerceEntitlement(ctx, {
+        globalUserDocId,
+        productId: args.productId,
+        plan: args.plan,
+        source: metadataSource,
+        sourceRef: eventSourceRef,
+        environment: incomingEnvironment,
+        idempotencyKey: buildSuiteCommerceIdempotencyKey(
+          'grant',
+          `${args.productId}:${args.providerOrderId}:${metadataSource}`
+        ),
+      })
+
+      await upsertSuiteCommerceAccessEvent(ctx, {
+        productId: args.productId,
+        environment: incomingEnvironment,
+        sourceRef: eventSourceRef,
+        idempotencyKey: buildSuiteCommerceIdempotencyKey(
+          'access',
+          `${args.productId}:${args.providerOrderId}`
+        ),
+        status: 'granted',
+        eventType: `${args.productId}_access.granted`,
+        customerEmail: args.customerEmail,
+        providerCustomerId: args.providerCustomerId,
+        providerEventId: args.providerEventId,
+        reason: buildCommerceEventReason('paid'),
+        globalUserDocId,
+      })
+
+      const snapshot = await buildSuiteCommerceAccessSnapshot(
+        ctx,
+        globalUserDocId,
+        args.productId
+      )
+      return {
+        ok: true,
+        status: 'granted',
+        alreadyProcessed: false,
+        snapshot,
+      }
+    }
+
+    if (!globalUserDocId) {
+      await upsertSuiteCommerceAccessEvent(ctx, {
+        productId: args.productId,
+        environment: incomingEnvironment,
+        sourceRef: eventSourceRef,
+        idempotencyKey: args.idempotencyKey,
+        status: 'pending_review',
+        eventType: 'suite_commerce.pending_review',
+        customerEmail: args.customerEmail,
+        providerCustomerId: args.providerCustomerId,
+        providerEventId: args.providerEventId,
+        reason: 'missing_global_user_for_revoke',
+      })
+      return {
+        ok: false,
+        status: 'pending_review',
+        alreadyProcessed: false,
+        reason: 'missing_global_user',
+      }
+    }
+
+    const now = Date.now()
+    const rawEntitlements = await ctx.db
+      .query('productEntitlements')
+      .withIndex('by_globalUserId', (q) => q.eq('globalUserId', globalUserDocId))
+      .collect()
+
+    const activeEntitlement = rawEntitlements.find(
+      (entry) =>
+        entry.productId === args.productId &&
+        isActiveAccessStatus(entry.status)
+    )
+
+    if (activeEntitlement) {
+      await ctx.db.patch(activeEntitlement._id, {
+        status: 'revoked',
+        source: activeEntitlement.source ?? SUITE_COMMERCE_EVENT_SOURCE,
+        sourceRef: eventSourceRef,
+        environment: incomingEnvironment,
+        updatedAt: now,
+      })
+    }
+
+    const snapshot = await buildSuiteCommerceAccessSnapshot(
+      ctx,
+      globalUserDocId,
+      args.productId
+    )
+    await upsertSuiteCommerceAccessEvent(ctx, {
+      productId: args.productId,
+      environment: incomingEnvironment,
+      sourceRef: eventSourceRef,
+      idempotencyKey: args.idempotencyKey,
+      status: 'revoked',
+      eventType:
+        args.eventType === 'revoked'
+          ? `${args.productId}_access.revoked`
+          : `${args.productId}_access.refunded`,
+      customerEmail: args.customerEmail,
+      providerCustomerId: args.providerCustomerId,
+      providerEventId: args.providerEventId,
+      reason: buildCommerceEventReason(args.eventType),
+      globalUserDocId,
+    })
+
+    return {
+      ok: true,
+      status: 'revoked',
+      alreadyProcessed: false,
+      reason: buildCommerceEventReason(args.eventType),
+      snapshot,
     }
   },
 })

@@ -81,9 +81,10 @@ function normalizeSuccessCancelUrl(
 function parseCheckoutRequestFromQuery(request: Request): CheckoutRequestData {
   const url = new URL(request.url)
   const search = url.searchParams
+  const offerId = getFirstNonEmpty(search.get('offerId'))
 
   return {
-    offerId: getFirstNonEmpty(search.get('offerId'), 'socialglowz/lifetime_deal')!,
+    offerId: offerId ?? '',
     provider: getFirstNonEmpty(search.get('provider')?.toLowerCase()),
     source: getFirstNonEmpty(search.get('source')),
     sourceRef: getFirstNonEmpty(search.get('sourceRef')),
@@ -98,7 +99,7 @@ function parseCheckoutRequestFromQuery(request: Request): CheckoutRequestData {
       '/purchase/cancel'
     ),
     metadata: {
-      offer_id: getFirstNonEmpty(search.get('offerId'), 'socialglowz/lifetime_deal')!,
+      offer_id: offerId ?? '',
       global_user_id: getFirstNonEmpty(search.get('globalUserId')),
       source: getFirstNonEmpty(search.get('source')),
       source_ref: getFirstNonEmpty(search.get('sourceRef')),
@@ -113,10 +114,7 @@ function parseCheckoutBody(body: unknown, request: Request): CheckoutRequestData
   }
 
   const payload = body as Record<string, unknown>
-  const offerId = getFirstNonEmpty(
-    payload.offerId?.toString(),
-    'socialglowz/lifetime_deal'
-  ) ?? 'socialglowz/lifetime_deal'
+  const offerId = getFirstNonEmpty(payload.offerId?.toString()) ?? ''
 
   return {
     offerId,
@@ -224,6 +222,14 @@ async function runCheckoutWithProvider(
   requestData: CheckoutRequestData,
   env: ReturnType<typeof getServerEnv>
 ) {
+  if (!requestData.offerId) {
+    return {
+      ok: false,
+      statusText: 'Missing offerId',
+      status: 400,
+    } as CheckoutHttpResult
+  }
+
   if (!getCommerceOffer(requestData.offerId)) {
     return {
       ok: false,

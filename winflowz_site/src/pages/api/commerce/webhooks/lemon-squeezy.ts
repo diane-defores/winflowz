@@ -20,6 +20,9 @@ export const POST: APIRoute = async ({ request }) => {
   if (!convexUrl || convexUrl === 'https://PLACEHOLDER.convex.cloud') {
     return jsonResponse({ message: 'Convex is not configured' }, 500)
   }
+  if (!env.SUITE_BRIDGE_CONVEX_SECRET) {
+    return jsonResponse({ message: 'Convex bridge secret is not configured' }, 500)
+  }
 
   const webhookSecret = env.LEMONSQUEEZY_WEBHOOK_SECRET
   const body = await request.text()
@@ -41,7 +44,7 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const convex = new ConvexHttpClient(convexUrl)
     const result = await convex.mutation(
-      'bridge:processSocialGlowzCommerceEvent' as never,
+      'bridge:processCommerceEvent' as never,
       {
         provider: parsed.normalizedEvent.provider,
         offerId: parsed.normalizedEvent.offerId,
@@ -60,6 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
         providerSourceRef: parsed.normalizedEvent.providerSourceRef,
         providerInvoiceId: parsed.normalizedEvent.providerInvoiceId,
         metadata: parsed.normalizedEvent.metadata,
+        bridgeSecret: env.SUITE_BRIDGE_CONVEX_SECRET,
       } as never
     )
 

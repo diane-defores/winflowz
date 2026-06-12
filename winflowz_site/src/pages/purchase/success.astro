@@ -4,31 +4,40 @@ import { isSafePrivateCoursePath } from '@/utils/courseGating'
 
 const auth = Astro.locals.auth()
 const nextUrl = Astro.url.searchParams.get('next')
+const offerId = Astro.url.searchParams.get('offerId')
 const safeNextUrl = isSafePrivateCoursePath(nextUrl) ? nextUrl : null
 const lang = safeNextUrl?.includes('/dashboard/docs/fr/') ? 'fr' : 'en'
+const isWinFlowzAppOffer = offerId?.startsWith('winflowz_app/') ?? false
 const labels =
 	lang === 'fr'
 		? {
 				title: 'Achat confirme',
-				body: 'Votre acces a la formation a ete debloque. Vous pouvez ouvrir la lecon privee maintenant.',
+				body: isWinFlowzAppOffer
+					? "Paiement reçu. L'accès WinFlowz est confirmé par webhook signé et peut nécessiter une vérification de compte avant activation dans l'app."
+					: 'Votre acces a la formation a ete debloque. Vous pouvez ouvrir la lecon privee maintenant.',
 				openLesson: 'Ouvrir la lecon',
 				goToDashboard: 'Aller au dashboard',
 				signIn: 'Se connecter pour acceder',
 				viewProducts: 'Voir les produits',
+				contact: 'Contacter le support',
 			}
 		: {
 				title: 'Purchase Confirmed',
-				body: 'Your training access has been unlocked. You can open the private lesson now.',
+				body: isWinFlowzAppOffer
+					? 'Payment received. WinFlowz access is confirmed by signed webhook and may require account verification before activation in the app.'
+					: 'Your training access has been unlocked. You can open the private lesson now.',
 				openLesson: 'Open Lesson',
 				goToDashboard: 'Go to Dashboard',
 				signIn: 'Sign In to Access',
 				viewProducts: 'View Products',
+				contact: 'Contact Support',
 			}
 const productsUrl = lang === 'fr' ? '/fr/produits' : '/products'
+const contactUrl = lang === 'fr' ? '/fr/contact' : '/contact'
 ---
 
 <MainLayout title={labels.title}>
-	<div class="flex min-h-[60vh] items-center justify-center py-12">
+	<div class="flex min-h-screen items-center justify-center py-12">
 		<div class="mx-auto max-w-lg text-center">
 			<div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green/10">
 				<svg class="h-8 w-8 text-green" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -42,7 +51,11 @@ const productsUrl = lang === 'fr' ? '/fr/produits' : '/products'
 			</p>
 
 			<div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
-				{auth.userId ? (
+				{isWinFlowzAppOffer ? (
+					<a href={contactUrl} class="inline-flex items-center justify-center rounded-lg bg-magenta px-6 py-3 font-medium text-white hover:opacity-90 transition-opacity">
+						{labels.contact}
+					</a>
+				) : auth.userId ? (
 					<a href={safeNextUrl || '/dashboard'} class="inline-flex items-center justify-center rounded-lg bg-magenta px-6 py-3 font-medium text-white hover:opacity-90 transition-opacity">
 						{safeNextUrl ? labels.openLesson : labels.goToDashboard}
 					</a>

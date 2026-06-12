@@ -6,6 +6,9 @@ import {
   normalizeCommerceProviderOrder,
   SOCIALGLOWZ_LTD_OFFER_ID,
   SOCIALGLOWZ_LETTER,
+  WINFLOWZ_APP_PRO_FOUNDER_LTD_OFFER_ID,
+  WINFLOWZ_APP_STARTER_FOUNDER_LTD_OFFER_ID,
+  WINFLOWZ_APP_STUDIO_FOUNDER_LTD_OFFER_ID,
 } from '@/lib/commerce/offers'
 
 function withEnv(vars: Record<string, string | undefined>, test: () => void) {
@@ -44,12 +47,32 @@ describe('commerce offer configuration', () => {
     expect(allowed).toEqual(candidates)
   })
 
+  test('returns WinFlowz founder offer configs', () => {
+    expect(getCommerceOffer(WINFLOWZ_APP_STARTER_FOUNDER_LTD_OFFER_ID)).toMatchObject({
+      productId: 'winflowz_app',
+      plan: 'starter_founder',
+      providers: ['lemonsqueezy'],
+    })
+    expect(getCommerceOffer(WINFLOWZ_APP_PRO_FOUNDER_LTD_OFFER_ID)).toMatchObject({
+      productId: 'winflowz_app',
+      plan: 'pro_founder',
+      providers: ['lemonsqueezy'],
+    })
+    expect(getCommerceOffer(WINFLOWZ_APP_STUDIO_FOUNDER_LTD_OFFER_ID)).toMatchObject({
+      productId: 'winflowz_app',
+      plan: 'studio_founder',
+      providers: ['lemonsqueezy'],
+    })
+  })
+
   test('reads lemonSqueezy provider config from environment', () => {
     withEnv(
       {
         LEMONSQUEEZY_API_KEY: 'api-key-123',
         LEMONSQUEEZY_STORE_ID: 'store-456',
         LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID: 'variant-789',
+        LEMONSQUEEZY_WINFLOWZ_APP_PRODUCT_ID: 'winflowz-product',
+        LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID: 'winflowz-pro-variant',
         POLAR_WINFLOWZ_PRODUCT_ID: 'polar-winflowz',
       },
       () => {
@@ -72,6 +95,17 @@ describe('commerce offer configuration', () => {
           provider: 'polar',
           productId: 'polar-winflowz',
         })
+
+        const winflowzConfig = getOfferProviderConfig(
+          WINFLOWZ_APP_PRO_FOUNDER_LTD_OFFER_ID,
+          'lemonsqueezy'
+        )
+        expect(winflowzConfig).toEqual({
+          provider: 'lemonsqueezy',
+          productId: 'winflowz-product',
+          variantId: 'winflowz-pro-variant',
+          storeId: 'store-456',
+        })
       }
     )
   })
@@ -87,4 +121,3 @@ describe('commerce offer configuration', () => {
     expect(SOCIALGLOWZ_LETTER).toBe(SOCIALGLOWZ_LTD_OFFER_ID)
   })
 })
-

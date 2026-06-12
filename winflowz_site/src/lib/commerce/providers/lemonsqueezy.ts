@@ -11,7 +11,7 @@ import type {
   CommerceWebhookPayloadMetadata,
   LemonSqueezyWebhookContext,
 } from "../types"
-import { getCommerceOffer, getOfferProviderConfig } from "../offers"
+import { getCommerceOffer } from "../offers"
 
 type JsonRecord = Record<string, unknown>
 type LemonSqueezyEnv = Record<string, string | undefined>
@@ -300,11 +300,12 @@ function coerceCheckoutUrl(payload: unknown): string | null {
 }
 
 export function getLemonSqueezyCheckoutConfig(
-  env: LemonSqueezyEnv
+  env: LemonSqueezyEnv,
+  offerId = "socialglowz/lifetime_deal"
 ): LemonSqueezyCheckoutConfig | null {
   const apiKey = toNonEmptyString(env.LEMONSQUEEZY_API_KEY)
   const storeId = toNonEmptyString(env.LEMONSQUEEZY_STORE_ID)
-  const variantId = toNonEmptyString(env.LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID)
+  const variantId = toNonEmptyString(resolveLemonSqueezyVariantId(env, offerId))
 
   if (!apiKey || !storeId || !variantId) {
     return null
@@ -318,6 +319,25 @@ export function getLemonSqueezyCheckoutConfig(
     storeId,
     variantId,
   }
+}
+
+function resolveLemonSqueezyVariantId(
+  env: LemonSqueezyEnv,
+  offerId: string
+): string | undefined {
+  if (offerId === "socialglowz/lifetime_deal") {
+    return env.LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID
+  }
+  if (offerId === "winflowz_app/starter_founder") {
+    return env.LEMONSQUEEZY_WINFLOWZ_APP_STARTER_FOUNDER_VARIANT_ID
+  }
+  if (offerId === "winflowz_app/pro_founder") {
+    return env.LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID
+  }
+  if (offerId === "winflowz_app/studio_founder") {
+    return env.LEMONSQUEEZY_WINFLOWZ_APP_STUDIO_FOUNDER_VARIANT_ID
+  }
+  return undefined
 }
 
 export function getLemonSqueezyWebhookSecret(
@@ -352,21 +372,12 @@ export async function createLemonSqueezyCheckout(
     }
   }
 
-  const providerConfig = getLemonSqueezyCheckoutConfig(env)
+  const providerConfig = getLemonSqueezyCheckoutConfig(env, offerId)
   if (!providerConfig) {
     return {
       ok: false,
       code: "missing_env",
       message: "Missing Lemon Squeezy checkout configuration",
-    }
-  }
-
-  const offerConfig = getOfferProviderConfig(offerId, LEMONSQUEEZY_PROVIDER_ID)
-  if (!offerConfig || !offerConfig.variantId || !offerConfig.storeId) {
-    return {
-      ok: false,
-      code: "provider_not_configured",
-      message: "Lemon Squeezy variant is not configured for this offer",
     }
   }
 

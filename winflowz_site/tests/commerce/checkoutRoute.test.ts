@@ -8,6 +8,7 @@ function resetCommerceEnv() {
   delete process.env.LEMONSQUEEZY_API_KEY
   delete process.env.LEMONSQUEEZY_STORE_ID
   delete process.env.LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID
+  delete process.env.LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID
   delete process.env.LEMONSQUEEZY_API_URL
   delete process.env.POLAR_WINFLOWZ_PRODUCT_ID
   delete process.env.POLAR_PRODUCT_ID
@@ -25,6 +26,19 @@ afterEach(() => {
 })
 
 describe('commerce checkout route', () => {
+  test('rejects missing offerId instead of falling back to SocialGlowz', async () => {
+    resetCommerceEnv()
+
+    const response = await GET({
+      request: checkoutRequest('https://winflowz.test/api/commerce/checkout'),
+    })
+
+    expect(response.status).toBe(400)
+    await expect(response.json()).resolves.toEqual({
+      message: 'Missing offerId',
+    })
+  })
+
   test('returns unavailable when no checkout provider is configured', async () => {
     resetCommerceEnv()
 
@@ -93,6 +107,44 @@ describe('commerce checkout route', () => {
       '"product_options":{"redirect_url":"https://socialglowz.test/purchase/success"}'
     )
     expect(body).toContain('"offer_id":"socialglowz/lifetime_deal"')
+    expect(body).not.toContain('api-key')
+  })
+
+  test('redirects WinFlowz founder checkout to Lemon Squeezy', async () => {
+    resetCommerceEnv()
+    process.env.LEMONSQUEEZY_API_KEY = 'api-key'
+    process.env.LEMONSQUEEZY_STORE_ID = 'store-id'
+    process.env.LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID = 'winflowz-pro-variant'
+
+    const fetchSpy = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: {
+            id: 'co_wfz_route',
+            attributes: { url: 'https://checkout.lemonsqueezy.test/winflowz' },
+          },
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } }
+      )
+    )
+    globalThis.fetch = fetchSpy as unknown as typeof fetch
+
+    const response = await GET({
+      request: checkoutRequest(
+        'https://winflowz.test/api/commerce/checkout?offerId=winflowz_app/pro_founder&provider=lemonsqueezy&source=direct&sourceRef=/winflowz-founder&successUrl=https://winflowz.test/purchase/success?offerId=winflowz_app%2Fpro_founder&cancelUrl=https://winflowz.test/purchase/cancel?offerId=winflowz_app%2Fpro_founder'
+      ),
+    })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe(
+      'https://checkout.lemonsqueezy.test/winflowz'
+    )
+
+    const body = String(fetchSpy.mock.calls[0]?.[1]?.body)
+    expect(body).toContain('"offer_id":"winflowz_app/pro_founder"')
+    expect(body).toContain('"product_id":"winflowz_app"')
+    expect(body).toContain('"plan":"pro_founder"')
+    expect(body).toContain('"id":"winflowz-pro-variant"')
     expect(body).not.toContain('api-key')
   })
 })

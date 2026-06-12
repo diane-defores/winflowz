@@ -53,6 +53,24 @@ describe('lemonsqueezy adapter', () => {
     })
   })
 
+  test('returns WinFlowz founder config for the requested offer', () => {
+    expect(
+      getLemonSqueezyCheckoutConfig(
+        {
+          LEMONSQUEEZY_API_KEY: 'api-key',
+          LEMONSQUEEZY_STORE_ID: 'store-id',
+          LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID: 'winflowz-pro-variant',
+        },
+        'winflowz_app/pro_founder'
+      )
+    ).toEqual({
+      apiUrl: 'https://api.lemonsqueezy.com',
+      apiKey: 'api-key',
+      storeId: 'store-id',
+      variantId: 'winflowz-pro-variant',
+    })
+  })
+
   test('fails checkout if config is missing', async () => {
     const result = await createLemonSqueezyCheckout(
       {
@@ -125,6 +143,46 @@ describe('lemonsqueezy adapter', () => {
     )
     expect((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[1]?.body).not.toContain('success_url')
     expect((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[1]?.body).not.toContain('cancel_url')
+  })
+
+  test('creates WinFlowz checkout with WinFlowz variant metadata', async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            data: { id: 'co_wfz', attributes: { url: 'https://checkout.test/winflowz' } },
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        ) as unknown as Response
+      ) as typeof fetch
+
+    const result = await createLemonSqueezyCheckout(
+      {
+        offerId: 'winflowz_app/pro_founder',
+        successUrl: 'https://winflowz.com/purchase/success?offerId=winflowz_app%2Fpro_founder',
+        cancelUrl: 'https://winflowz.com/purchase/cancel?offerId=winflowz_app%2Fpro_founder',
+        metadata: { offer_id: 'winflowz_app/pro_founder' },
+      },
+      'winflowz_app/pro_founder',
+      {
+        LEMONSQUEEZY_API_KEY: 'api-key',
+        LEMONSQUEEZY_STORE_ID: 'store-id',
+        LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID: 'winflowz-pro-variant',
+      }
+    )
+
+    expect(result).toMatchObject({
+      ok: true,
+      provider: 'lemonsqueezy',
+      checkoutUrl: 'https://checkout.test/winflowz',
+    })
+
+    const body = String((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0]?.[1]?.body)
+    expect(body).toContain('"id":"winflowz-pro-variant"')
+    expect(body).toContain('"offer_id":"winflowz_app/pro_founder"')
+    expect(body).toContain('"product_id":"winflowz_app"')
+    expect(body).toContain('"plan":"pro_founder"')
   })
 
   test('validates order_created webhook signature and normalizes paid event', async () => {
@@ -277,6 +335,52 @@ describe('lemonsqueezy adapter', () => {
     expect(parsed.normalizedEvent.idempotencyKey).toBe(
       'lemonsqueezy:order_refunded:evt_refunded:ord_refunded'
     )
+  })
+
+  test('validates WinFlowz order_created webhook as paid event', async () => {
+    const rawBody = JSON.stringify({
+      data: {
+        id: 'ord_wfz',
+        attributes: {
+          customer_id: 'cus_wfz',
+          user_email: 'buyer@example.com',
+          first_order_item: { test_mode: true },
+        },
+      },
+      event_id: 'evt_wfz',
+      event_name: 'order_created',
+      meta: {
+        custom_data: {
+          offer_id: 'winflowz_app/pro_founder',
+          product_id: 'winflowz_app',
+          plan: 'pro_founder',
+          source: 'direct',
+          source_ref: '/winflowz-founder',
+        },
+      },
+    })
+    const signature = await signWebhook(rawBody, 'webhook-secret')
+
+    const parsed = await parseLemonSqueezyWebhook({
+      rawBody,
+      signature,
+      eventName: 'order_created',
+      webhookSecret: 'webhook-secret',
+    })
+
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) {
+      throw new Error('parse failed')
+    }
+
+    expect(parsed.normalizedEvent).toMatchObject({
+      eventType: 'paid',
+      status: 'applied',
+      offerId: 'winflowz_app/pro_founder',
+      productId: 'winflowz_app',
+      plan: 'pro_founder',
+      providerOrderId: 'ord_wfz',
+    })
   })
 
   test('verifies webhook signatures against the exact raw body', async () => {

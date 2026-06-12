@@ -172,10 +172,14 @@ The route calls suite Convex bridge mutations for `socialglowz` entitlement snap
 - `LEMONSQUEEZY_STORE_ID`
 - `LEMONSQUEEZY_SOCIALGLOWZ_PRODUCT_ID`
 - `LEMONSQUEEZY_SOCIALGLOWZ_LIFETIME_DEAL_VARIANT_ID`
+- `LEMONSQUEEZY_WINFLOWZ_APP_PRODUCT_ID`
+- `LEMONSQUEEZY_WINFLOWZ_APP_STARTER_FOUNDER_VARIANT_ID`
+- `LEMONSQUEEZY_WINFLOWZ_APP_PRO_FOUNDER_VARIANT_ID`
+- `LEMONSQUEEZY_WINFLOWZ_APP_STUDIO_FOUNDER_VARIANT_ID`
 - `LEMONSQUEEZY_WEBHOOK_SECRET`
 - `COMMERCE_PROVIDER_ORDER` (optional provider preference, e.g. `lemonsqueezy,polar`)
 
-The direct checkout adapter creates hosted Lemon Squeezy checkouts with `product_options.redirect_url` and `checkout_data.custom`. Webhook fulfillment reads the signed raw body, verifies `X-Signature`, uses `X-Event-Name`, and maps Lemon Squeezy `meta.custom_data` back to the suite entitlement ledger.
+The direct checkout adapter creates hosted Lemon Squeezy checkouts with `product_options.redirect_url` and `checkout_data.custom`. Webhook fulfillment reads the signed raw body, verifies `X-Signature`, uses `X-Event-Name`, and maps Lemon Squeezy `meta.custom_data` back to the suite entitlement ledger through `bridge:processCommerceEvent`. Lemon Squeezy owns payment receipts and checkout emails; app access is granted or marked `pending_review` only from the signed webhook path, never from the success redirect alone.
 
 ### Resend
 

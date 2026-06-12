@@ -6,7 +6,7 @@ project: "WinFlowz"
 created: "2026-06-11"
 created_at: "2026-06-11 19:07:18 UTC"
 updated: "2026-06-12"
-updated_at: "2026-06-12 10:39:02 UTC"
+updated_at: "2026-06-12 11:11:35 UTC"
 status: draft
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -72,11 +72,13 @@ evidence:
   - "winflowz_site/src/lib/commerce/offers.ts currently contains only socialglowz/lifetime_deal as a generic commerce offer."
   - "winflowz_site/src/pages/api/commerce/checkout.ts defaults to socialglowz/lifetime_deal when offerId is omitted."
   - "winflowz_site/src/pages/api/polar/checkout.ts is tied to gated course lessons, not a general app LTD checkout."
-  - "shipflow_data/business/winflowz-android-ltd-pricing-audit.md recommends a tiered LTD ladder: $79 local platform, $149 platform pro, $249 all-platform local/BYO, and $599+ or waitlist for all-platform cloud."
+  - "shipflow_data/business/winflowz-android-ltd-pricing-audit.md recommends an activation-based LTD ladder: $79 Starter Founder with 1 active device, $149 Pro Founder with 3 active devices, $249 Studio Founder with 5 active devices, and $599+ or waitlist for all-platform cloud."
   - "User decision context 2026-06-12: AppSumo is likely later, and direct-site pricing must preserve room for AppSumo to negotiate the lowest available public deal."
   - "User decision 2026-06-12: the direct-site launch is a pre-AppSumo founder pricing window."
   - "User decision 2026-06-12: LTD licenses should grant access to all present and future released platforms, with the tier differentiated by the number of active device activations rather than by platform family."
-next_step: "/100-sf-spec validate WinFlowz Android LTD offer policy decisions before readiness"
+  - "Design implementation 2026-06-12: `winflowz_site/src/pages/[...lang]/winflowz-founder.astro` creates a bilingual Founder Access sales-page draft focused on page architecture, visual hierarchy, activation tiers, and honest availability."
+  - "Commerce implementation 2026-06-12: WinFlowz App founder offers are registered as `winflowz_app/starter_founder`, `winflowz_app/pro_founder`, and `winflowz_app/studio_founder`, with Lemon Squeezy variant env keys, checkout CTAs, signed webhook parsing, and generic suite entitlement fulfillment via `bridge:processCommerceEvent`."
+next_step: "/103-sf-verify WinFlowz Founder checkout after Lemon Squeezy test-mode variants are configured"
 ---
 
 # Spec: WinFlowz Android Lifetime Deal Launch
@@ -87,7 +89,7 @@ WinFlowz Android Lifetime Deal Launch
 
 ## Status
 
-Draft created on 2026-06-11 from Diane's launch request and a repository scan of the WinFlowz app business docs, editorial governance, product pages, navigation, and checkout code. Diane confirmed on 2026-06-11 that this launch must use Lemon Squeezy because Polar is not currently available. Diane also clarified that price must not be decided by instinct: cloud sync and future cloud-dependent features can create material cost and bankruptcy risk, so an explicit pricing/competitor audit is required before setting the Early Bird price. The pricing audit was created on 2026-06-12 and recommends a tiered, sustainability-first LTD ladder rather than one cheap all-in offer. The chantier is intentionally high-risk because it touches public claims, payment routing, access promises, pricing sustainability, and launch planning. It is not ready for implementation until Diane validates the pricing ladder and the offer policy is explicit enough for public copy and checkout validation.
+Draft created on 2026-06-11 from Diane's launch request and a repository scan of the WinFlowz app business docs, editorial governance, product pages, navigation, and checkout code. Diane confirmed on 2026-06-11 that this launch must use Lemon Squeezy because Polar is not currently available. Diane also clarified that price must not be decided by instinct: cloud sync and future cloud-dependent features can create material cost and bankruptcy risk, so an explicit pricing/competitor audit is required before setting the Early Bird price. The pricing audit was created on 2026-06-12 and recommends a tiered, sustainability-first LTD ladder rather than one cheap all-in offer. A bounded design draft was created on 2026-06-12 at `/winflowz-founder` and `/fr/winflowz-founder`; on the same day it was connected to three internal WinFlowz App Founder offers through the existing Lemon Squeezy checkout route and the suite entitlement ledger. The chantier remains high-risk because the real Lemon Squeezy product/variant IDs, hosted checkout smoke, signed webhook smoke, final public pricing, and access/support policy still require operator configuration and verification before broad launch.
 
 ## User Story
 
@@ -185,7 +187,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
   5. Commerce proof: provider test-mode checkout or explicitly documented "checkout not launched" block.
   6. Manual launch review: Diane confirms price, offer wording, support/access policy, and launch calendar before paid promotion.
 - Required scenario IDs:
-  - `WFZ-LTD-001`: French sales page explains Android-only Early Bird LTD and has a valid CTA state.
+  - `WFZ-LTD-001`: French sales page explains Android-first availability, cross-platform released-platform entitlement, activation limits, and a valid CTA state.
   - `WFZ-LTD-002`: English sales page matches the French offer without adding unsupported claims.
   - `WFZ-LTD-003`: product catalog and detail pages route visitors to the Android offer without describing WinFlowz only as Windows training.
   - `WFZ-LTD-004`: checkout route recognizes the WinFlowz Android offer and never defaults a WinFlowz CTA to SocialGlowz.
@@ -257,7 +259,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 ## Edge Cases
 
 - Visitor arrives from a blog article about Android keyboard and expects immediate app download.
-- Visitor is on iOS/desktop and sees Android-only purchase offer.
+- Visitor is on iOS/desktop and sees a cross-platform LTD whose only currently available app is Android.
 - Checkout provider is configured for one product but env vars point to another provider product.
 - `offerId` is omitted in a CTA URL and defaults to SocialGlowz.
 - Provider checkout succeeds but entitlement/access is manual or pending review.
@@ -278,7 +280,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
   - User story link: prevents underpricing an offer with cloud-dependent costs.
   - Depends on: competitor seed list and Diane's target market assumptions.
   - Validate with: cited sources, dated pricing evidence, and a recommended no-bankruptcy floor.
-  - Notes: Completed in `shipflow_data/business/winflowz-android-ltd-pricing-audit.md`. Recommendation: avoid a cheap all-in LTD; use $79 local platform, $149 platform pro, $249 all-platform local/BYO, and keep all-platform cloud at $599+ or waitlist until usage is measured.
+  - Notes: Completed in `shipflow_data/business/winflowz-android-ltd-pricing-audit.md`. Recommendation: avoid a cheap all-in LTD; use an activation-based ladder: $79 Starter Founder with 1 active device, $149 Pro Founder with 3 active devices, $249 Studio Founder with 5 active devices, and keep all-platform cloud at $599+ or waitlist until usage is measured.
 
 - [ ] Task 2: Decide and encode the WinFlowz Android offer contract.
   - File: `winflowz_site/src/lib/commerce/offers.ts`
@@ -322,7 +324,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 - [ ] Task 7: Create the bilingual Android LTD sales page.
   - File: `winflowz_site/src/pages/[...lang]/winflowz-android-lifetime-deal.astro` or agreed localized route files.
-  - Action: Implement offer sections: hero, Android-only availability, problem, app workflows, included features, Early Bird offer, limits, FAQ, support/access policy, CTA, and risk-reducing proof.
+  - Action: Implement offer sections: hero, Android-first availability, cross-platform released-platform entitlement, activation limits, problem, app workflows, included features, Early Bird offer, limits, FAQ, support/access policy, CTA, and risk-reducing proof.
   - User story link: creates the main conversion surface.
   - Depends on: Tasks 1-6 or explicit non-payment CTA decision.
   - Validate with: `pnpm build:check` and browser proof at `390x844` and `1440x900`.
@@ -378,7 +380,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 ## Acceptance Criteria
 
-- [ ] CA 1: Given a visitor opens the French LTD route, when the page loads, then it clearly presents WinFlowz Android Lifetime Deal Early Bird and Android-only current availability before the first paid CTA.
+- [ ] CA 1: Given a visitor opens the French LTD route, when the page loads, then it clearly presents WinFlowz Android Lifetime Deal Early Bird, Android-first current availability, cross-platform released-platform entitlement, and activation limits before the first paid CTA.
 - [ ] CA 2: Given a visitor opens the English LTD route, when the page loads, then it mirrors the French offer without stronger unsupported claims.
 - [ ] CA 3: Given a paid CTA is rendered, when its href or request payload is inspected, then it targets a WinFlowz Android offer id or an explicitly approved external checkout, never SocialGlowz or Windows training.
 - [ ] CA 4: Given checkout provider env vars are absent, when the checkout route is called for WinFlowz Android, then it returns an honest unavailable error and does not fallback to another offer.
@@ -450,6 +452,8 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
+| 2026-06-12 11:11:35 UTC | 601-sf-product-entitlements | GPT-5 Codex | Connected the Founder page to three WinFlowz App Lemon Squeezy checkout offers, added offer-specific env keys, hardened missing `offerId` fallback, routed signed Lemon Squeezy webhooks to generic suite entitlement fulfillment, and documented receipt/email versus entitlement ownership. | partial | Configure Lemon Squeezy test-mode variants/webhook, run hosted checkout + signed webhook + refund smoke, then finalize public pricing/copy. |
+| 2026-06-12 10:55:34 UTC | 006-sf-design | GPT-5.3 Codex Spark + GPT-5 Codex | Spawned a Spark sub-agent and created the bilingual Founder Access page draft at `/winflowz-founder` and `/fr/winflowz-founder`, focused on premium page architecture, device-activation tiers, Android-now availability, and future released-platform framing. | partial | Review the visual direction, then finalize copy, offer terms, payment routing, and product visuals before public sales launch. |
 | 2026-06-12 10:39:02 UTC | 100-sf-spec | GPT-5 Codex | Recorded Diane's decision that LTD licensing should be cross-platform across present and future released platforms, differentiated by active device activation count rather than by platform family. | partial | Confirm activation caps, cloud tier visibility, support, tax/currency display, and access delivery. |
 | 2026-06-12 10:36:31 UTC | 100-sf-spec | GPT-5 Codex | Recorded Diane's decision that direct-site Early Bird is a pre-AppSumo founder pricing window and should not promise "lowest price ever." | partial | Ask Diane specific offer and fulfillment questions, then rerun readiness. |
 | 2026-06-12 10:16:22 UTC | 101-sf-ready | GPT-5 Codex | Re-reviewed the WinFlowz Android LTD launch spec against readiness, adversarial, security, design-system, language, documentation freshness, and external provider gates. | not ready | Resolve remaining offer-policy decisions: exact public ladder, cloud tier visibility, tax/currency display, AppSumo sequencing, entry-tier scope, device caps, tier inclusions, access delivery, support, and founder allocation. |
@@ -467,8 +471,10 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 | Step | Status | Evidence | Next |
 |------|--------|----------|------|
 | 100-sf-spec | partial | Draft spec created on 2026-06-11, updated with Lemon Squeezy as selected provider, strengthened to require premium sales-page quality, and updated on 2026-06-12 with the pricing-audit recommendation. | Diane validates offer-policy choices. |
+| 006-sf-design | partial | Spark sub-agent created a bilingual Founder Access design draft at `winflowz_site/src/pages/[...lang]/winflowz-founder.astro`; local build, design drift check, forbidden-claim scan, and browser screenshots were collected for the draft page. | Diane reviews the visual direction; unresolved offer/copy/checkout decisions remain outside this design draft. |
+| 601-sf-product-entitlements | partial | WinFlowz App Founder offer ids, checkout CTAs, Lemon Squeezy env keys, signed webhook forwarding, and generic suite entitlement fulfillment are implemented locally; tests cover checkout metadata, webhook parsing, route forwarding, and missing-offer fallback. | Configure Lemon Squeezy test-mode products/variants/webhook and run hosted order/refund smoke before claiming ready to sell. |
 | 101-sf-ready | not ready | Re-reviewed on 2026-06-12. Structure, user-story fit, task ordering, design constraints, claim safety, and test strategy are strong, but `Open Questions` is not `None` and the remaining decisions materially change payment, access, support, cloud liability, AppSumo parity, and public copy. | Resolve offer-policy decisions, update the spec, then rerun readiness. |
-| 102-sf-start | pending | Not started. | Wait for ready spec. |
-| 103-sf-verify | pending | Not started. | After implementation. |
+| 102-sf-start | partial | Bounded implementation started for page, checkout, webhook, and entitlement fulfillment after Diane explicitly requested the page not remain disconnected from checkout. | Finish hosted provider proof and public copy/offer decisions before launch readiness. |
+| 103-sf-verify | pending | Local checks run; hosted provider proof is still missing. | After Lemon Squeezy test-mode config and webhook smoke. |
 | 104-sf-end | pending | Not started. | After verification. |
 | 005-sf-ship | pending | Not started. | After closure and explicit ship scope. |

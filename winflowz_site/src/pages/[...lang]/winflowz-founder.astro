@@ -1,0 +1,568 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro'
+import type { Language } from '@/types'
+import { getLocalizedSiteUrl } from '@/constants'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+	return [
+		{
+			params: { lang: undefined },
+			props: { lang: 'en' as Language },
+		},
+		{
+			params: { lang: 'fr' },
+			props: { lang: 'fr' as Language },
+		},
+	]
+}
+
+interface Tier {
+	title: string
+	label: string
+	focus: string
+	included: string
+	activation: string
+	state: string
+	offerId: string
+}
+
+interface WorkflowStep {
+	step: string
+	title: string
+	description: string
+}
+
+interface FaqItem {
+	question: string
+	answer: string
+}
+
+interface CopyBlock {
+	metaTitle: string
+	metaDescription: string
+	heroTitle: string
+	heroSubtitle: string
+	badge: string
+	primaryAction: string
+	secondaryAction: string
+	availabilityTitle: string
+	availabilityText: string
+	availabilityBullets: string[]
+	productHeading: string
+	productSubheading: string
+	workflowHeading: string
+	workflowText: string
+	workflowSteps: WorkflowStep[]
+	activationHeading: string
+	activationText: string
+	activationBullets: string[]
+	tiersHeading: string
+	tiersText: string
+	tiers: Tier[]
+	trustHeading: string
+	trustText: string
+	trustPoints: string[]
+	faqHeading: string
+	faqText: string
+	faqItems: FaqItem[]
+	finalHeading: string
+	finalText: string
+	finalAction: string
+	finalActionUrl: string
+}
+
+const copyByLang: Record<Language, CopyBlock> = {
+	en: {
+		metaTitle: 'WinFlowz Founder Access Window | Premium Sales Preview',
+		metaDescription:
+			'Founder window design draft for WinFlowz: a premium product-focused page with activation architecture, workflow value, and transparent licensing model.',
+		heroTitle: 'WinFlowz Founder Access',
+		heroSubtitle:
+			'A founder window for the voice-first workflow app that starts on Android today and expands across released platforms over time.',
+		badge: 'Founder Preview',
+		primaryAction: 'Choose Pro Founder',
+		secondaryAction: 'Review the structure',
+		availabilityTitle: 'Current availability',
+		availabilityText:
+			'The WinFlowz mobile app is currently available on Android. Licenses are usable across released platforms, and new platform releases are planned over time as feature parity lands.',
+		availabilityBullets: [
+			'Android app is active now.',
+			'Windows, iOS, Linux, and desktop releases are planned without a fixed date promise.',
+			'Your license coverage follows release scope and active-device activation limits.',
+			'Founder offers are in design and this page is a sales architecture draft.',
+		],
+		productHeading: 'See the product logic, not just a price card',
+		productSubheading:
+			'This draft shows how WinFlowz organizes user work: fast capture, context layers, and action-ready exports.',
+		workflowHeading: 'Workflow blueprint',
+		workflowText:
+			'The page architecture mirrors how you actually work with WinFlowz from first open to delivery.',
+		workflowSteps: [
+			{
+				step: '01',
+				title: 'Capture context fast',
+				description:
+					'Collect ideas, tasks, and references in one structure so your projects can start with clear intent.',
+			},
+			{
+				step: '02',
+				title: 'Shape the outcome',
+				description:
+					'Convert raw notes into milestones, deadlines, and execution blocks with lightweight progress views.',
+			},
+			{
+				step: '03',
+				title: 'Ship and improve',
+				description:
+					'Close loops, track what is done, and keep the system ready for the next high-value sprint.',
+			},
+		],
+		activationHeading: 'Activation model (draft)',
+		activationText:
+			'No final checkout, no instant claim text. This is the architecture to finalize with legal and fulfillment.',
+		activationBullets: [
+			'Licenses are platform-agnostic for every platform already released.',
+			'Each license grants a set of active device activations shared across current platforms.',
+			'Activation changes and transfer are controlled at account level for easy family/professional handoff.',
+			'Additional activation bundles are planned as product depth and demand change.',
+		],
+		tiersHeading: 'Tier architecture draft',
+		tiersText:
+			'The sales page structure is built around three activation tiers. Pricing and final plan language can still be refined.',
+		tiers: [
+			{
+				title: 'Starter Founder',
+				label: '1 activation',
+				focus: 'One active device across released platforms',
+				included:
+					'Founder access to released WinFlowz platforms, local-first workflows, and product updates within the founder policy.',
+				activation: '1 active device',
+				state: 'Founder price pending',
+				offerId: 'winflowz_app/starter_founder',
+			},
+			{
+				title: 'Pro Founder',
+				label: '3 activations',
+				focus: 'Three active devices across released platforms',
+				included:
+					'More activation room for people switching between phone, laptop, and workstation.',
+				activation: '3 active devices',
+				state: 'Founder price pending',
+				offerId: 'winflowz_app/pro_founder',
+			},
+			{
+				title: 'Studio Founder',
+				label: '5 activations',
+				focus: 'Five active devices across released platforms',
+				included:
+					'The most flexible founder tier for people who want WinFlowz across every released surface they use.',
+				activation: '5 active devices',
+				state: 'Founder price pending',
+				offerId: 'winflowz_app/studio_founder',
+			},
+		],
+		trustHeading: 'Trust and limits',
+		trustText:
+			'This draft intentionally avoids overpromising. We call out what is true now and what is not promised yet.',
+		trustPoints: [
+			'Android is available now; release timing for other platforms is without fixed dates.',
+			'Cloud capacity is documented per platform release and fulfillment scope.',
+			'No fixed onboarding timeline is shared; onboarding follows verification and fulfillment cadence.',
+			'Founder pricing language, legal copy, and payment flow are still intentionally deferred.',
+		],
+		faqHeading: 'FAQ',
+		faqText: 'Short answers for the current founder-window draft.',
+		faqItems: [
+			{
+				question: 'Is this page a final sales page with checkout?',
+				answer:
+					'Not yet. This is a premium architectural version for structure, trust flow, and conversion layout.',
+			},
+			{
+				question: 'What platforms are included in a founder license?',
+				answer:
+					'All platforms that have already been released. Additional platform availability is planned and announced without fixed release dates.',
+			},
+			{
+				question: 'Can I use the license on multiple devices?',
+				answer:
+					'Yes, by active-device activation rules. The exact number and transfer policy are part of the final fulfillment spec.',
+			},
+			{
+				question: 'What happens if I upgrade between tiers?',
+				answer:
+					'You can be moved within the same entitlement family according to published activation policy at launch.',
+			},
+			{
+				question: 'When can I pay?',
+				answer:
+					'The payment journey and URL are intentionally not connected on this draft page.',
+			},
+		],
+		finalHeading: 'Want founder access first?',
+		finalText:
+			'If you are interested in being in the first group to review updated terms and pricing, leave your intent now. No payment required.',
+		finalAction: 'Choose Pro Founder',
+		finalActionUrl: '/contact',
+	},
+	fr: {
+		metaTitle: 'Accès WinFlowz Founder | Aperçu de page de vente premium',
+		metaDescription:
+			'Brouillon de page premium WinFlowz pour l accès founder: architecture produit, logique d activations, et structure commerciale transparente.',
+		heroTitle: 'WinFlowz Founder Access',
+		heroSubtitle:
+			"Une fenêtre founder pour l'app workflow voice-first, disponible sur Android aujourd'hui et pensée pour s'étendre aux plateformes sorties avec le temps.",
+		badge: 'Aperçu founder',
+		primaryAction: 'Choisir Pro Founder',
+		secondaryAction: 'Voir la structure',
+		availabilityTitle: 'Disponibilité actuelle',
+		availabilityText:
+			"L'app mobile WinFlowz est disponible sur Android maintenant. Les licences sont valables sur les plateformes déjà sorties, et les nouvelles versions seront lancées progressivement selon le calendrier produit.",
+		availabilityBullets: [
+			"Android est disponible aujourd'hui.",
+			'Windows, iOS, Linux et desktop sont prévus sans promesse de date ferme.',
+			"La licence suit les plateformes sorties et les limites d'activation actives.",
+			"Cette page pose l'architecture de vente; les termes exacts arrivent ensuite.",
+		],
+		productHeading: 'Voir la logique produit, pas seulement un bloc prix',
+		productSubheading:
+			'Ce brouillon montre la manière dont WinFlowz organise le travail: capture rapide, couches de contexte, et sortie actionnable.',
+		workflowHeading: 'Blueprint workflow',
+		workflowText:
+			"La page suit la même logique que votre usage quotidien, depuis le premier signal jusqu'à la livraison.",
+		workflowSteps: [
+			{
+				step: '01',
+				title: 'Capture rapide du contexte',
+				description:
+					'Rassembler idées, tâches et références dans une structure commune pour un début propre.',
+			},
+			{
+				step: '02',
+				title: 'Former le résultat',
+				description:
+					"Transformer les notes en jalons, deadlines, et blocs d'exécution bien ordonnés.",
+			},
+			{
+				step: '03',
+				title: 'Livrer et optimiser',
+				description:
+					'Clore les cycles, suivre ce qui avance, et garder une base stable pour la prochaine itération.',
+			},
+		],
+		activationHeading: 'Mode activation (brouillon)',
+		activationText:
+			"Pas de checkout final ici. Cette section pose l'architecture à finaliser avec le légal et la livraison d'accès.",
+		activationBullets: [
+			'Les licences sont cross-platform pour les plateformes déjà sorties.',
+			"Chaque licence donne un nombre d'appareils actifs partagé entre les plateformes disponibles.",
+			"Le transfert d'activation se gère au niveau du compte pour rester simple.",
+			"D'autres bundles d'activation sont possibles selon la charge produit et la demande.",
+		],
+		tiersHeading: 'Architecture de tiers (brouillon)',
+		tiersText:
+			"L'architecture commerciale repose sur trois niveaux d'activations. Les prix et la formulation finale restent à définir.",
+		tiers: [
+			{
+				title: 'Starter Founder',
+				label: '1 activation',
+				focus: 'Un appareil actif sur les plateformes sorties',
+				included:
+					'Accès founder aux plateformes WinFlowz sorties, aux workflows local-first et aux mises à jour prévues par la politique founder.',
+				activation: '1 appareil actif',
+				state: 'Prix founder à confirmer',
+				offerId: 'winflowz_app/starter_founder',
+			},
+			{
+				title: 'Pro Founder',
+				label: '3 activations',
+				focus: 'Trois appareils actifs sur les plateformes sorties',
+				included:
+					'Plus de marge pour passer entre téléphone, laptop et machine de travail.',
+				activation: '3 appareils actifs',
+				state: 'Prix founder à confirmer',
+				offerId: 'winflowz_app/pro_founder',
+			},
+			{
+				title: 'Studio Founder',
+				label: '5 activations',
+				focus: 'Cinq appareils actifs sur les plateformes sorties',
+				included:
+					'Le tier le plus flexible pour utiliser WinFlowz sur toutes les surfaces sorties dont vous avez besoin.',
+				activation: '5 appareils actifs',
+				state: 'Prix founder à confirmer',
+				offerId: 'winflowz_app/studio_founder',
+			},
+		],
+		trustHeading: 'Confiance et limites',
+		trustText:
+			"Ce brouillon préfère la transparence. On annonce ce qui est vrai aujourd'hui et ce qui est encore en cours.",
+		trustPoints: [
+			"Android est disponible aujourd'hui; l'horizon des autres plateformes est sans date ferme.",
+			'Pas de mention de cloud illimité.',
+			"Pas de promesse d'accès instantané.",
+			'Prix, légal et paiement sont encore à finaliser.',
+		],
+		faqHeading: 'FAQ',
+		faqText: 'Réponses courtes pour cette version founder.',
+		faqItems: [
+			{
+				question: 'Cette page est-elle finalisée avec paiement?',
+				answer:
+					"Non. C'est une version d'architecture premium et de conversion, pas un parcours de vente branché.",
+			},
+			{
+				question: "L'accès vaut-il sur toutes les plateformes?",
+				answer:
+					'Sur les plateformes déjà disponibles. Le support des nouvelles plateformes sera annoncé plus tard, sans date ferme.',
+			},
+			{
+				question: "Puis-je activer sur plusieurs appareils?",
+				answer:
+					"Oui, selon la politique d'activations. Le seuil exact et le transfert seront précisés dans les termes finaux.",
+			},
+			{
+				question: 'Puis-je changer de niveau?',
+				answer:
+					"Oui, au sein de la même famille d'autorisations selon la politique de mise à niveau.",
+			},
+			{
+				question: 'Quand payer?',
+				answer: "Le tunnel de paiement n'est pas connecté dans ce brouillon.",
+			},
+		],
+		finalHeading: "Vous voulez être prioritaire founder?",
+		finalText:
+			"Si vous voulez faire partie du premier groupe pour valider contenu, bénéfices et tarification, laissez un message ici. Aucun paiement requis.",
+		finalAction: 'Choisir Pro Founder',
+		finalActionUrl: '/fr/contact',
+	},
+}
+
+const { lang = 'en' as Language } = Astro.props
+const copy = copyByLang[lang]
+const pagePath = lang === 'fr' ? '/fr/winflowz-founder' : '/winflowz-founder'
+const defaultOfferId = 'winflowz_app/pro_founder'
+
+function checkoutUrl(offerId: string) {
+	const successUrl = `/purchase/success?offerId=${encodeURIComponent(offerId)}`
+	const cancelUrl = `/purchase/cancel?offerId=${encodeURIComponent(offerId)}`
+	return `/api/commerce/checkout?offerId=${encodeURIComponent(offerId)}&provider=lemonsqueezy&source=direct&sourceRef=${encodeURIComponent(pagePath)}&successUrl=${encodeURIComponent(successUrl)}&cancelUrl=${encodeURIComponent(cancelUrl)}`
+}
+---
+
+<MainLayout
+	title={copy.metaTitle}
+	meta={{
+		title: copy.metaTitle,
+		description: copy.metaDescription,
+	}}
+	lang={lang}
+	structuredData={{
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		'@id': getLocalizedSiteUrl(lang, '/winflowz-founder'),
+		url: getLocalizedSiteUrl(lang, '/winflowz-founder'),
+		name: copy.metaTitle,
+		description: copy.metaDescription,
+		inLanguage: lang,
+	}}
+>
+	<div class="space-y-16 pb-16">
+		<section class="relative overflow-hidden rounded-2xl border border-neutral-200/80 bg-gradient-to-br from-white to-neutral-50 p-8 md:p-12 dark:border-neutral-700 dark:from-neutral-900 dark:to-neutral-950">
+			<div class="absolute inset-x-0 top-0 h-2 bg-gradient-rainbow-horizontal opacity-80" />
+			<div class="absolute inset-0 bg-gradient-to-br from-magenta/10 via-transparent to-cyan/10" />
+			<div class="relative mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
+				<div class="max-w-2xl">
+					<p class="mb-4 inline-flex rounded-full border border-magenta/40 bg-magenta/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-magenta">
+						{copy.badge}
+					</p>
+					<h1 class="mb-6 text-4xl font-bold text-neutral-900 dark:text-white sm:text-5xl">
+						{copy.heroTitle}
+					</h1>
+					<p class="mb-8 text-lg leading-relaxed text-neutral-600 dark:text-neutral-300">
+						{copy.heroSubtitle}
+					</p>
+					<div class="flex flex-wrap gap-4">
+						<a
+							href={checkoutUrl(defaultOfferId)}
+							class="inline-flex items-center rounded-xl bg-magenta px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-magenta/90"
+						>
+							{copy.primaryAction}
+						</a>
+						<a
+							href="#architecture"
+							class="inline-flex items-center rounded-xl border border-neutral-300 bg-white/80 px-6 py-3 text-sm font-semibold text-neutral-900 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
+						>
+							{copy.secondaryAction}
+						</a>
+					</div>
+				</div>
+				<div class="relative">
+					<div class="mx-auto w-full max-w-sm rounded-3xl border border-neutral-200 bg-white p-4 shadow-2xl shadow-black/10 ring-1 ring-black/5 dark:border-neutral-700 dark:bg-neutral-900 dark:ring-white/5">
+						<div class="rounded-2xl bg-gradient-to-b from-neutral-100 to-white p-3 dark:from-neutral-800 dark:to-neutral-900">
+							<div class="h-5 w-36 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+							<div class="mt-3 h-8 rounded-xl bg-magenta/10 p-2">
+								<div class="h-3 w-24 rounded-full bg-magenta/30 dark:bg-magenta/40" />
+							</div>
+							<div class="mt-4 space-y-3">
+								<div class="space-y-2 rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-800">
+									<div class="h-2 w-3/4 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+									<div class="h-2 w-1/2 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+								</div>
+								<div class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-800">
+									<div class="mb-2 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+										{copy.productSubheading}
+									</div>
+									<div class="h-2 w-full rounded-full bg-neutral-300 dark:bg-neutral-600" />
+									<div class="mt-2 h-2 w-5/6 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+								</div>
+								<div class="grid grid-cols-2 gap-2">
+									<div class="rounded-lg bg-blue-50 p-3 text-sm dark:bg-blue-950/40">
+										<p class="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">Flow</p>
+										<p class="text-xs text-blue-700 dark:text-blue-200">Capture &amp; prioritize</p>
+									</div>
+									<div class="rounded-lg bg-emerald-50 p-3 text-sm dark:bg-emerald-950/40">
+										<p class="mb-1 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Execution</p>
+										<p class="text-xs text-emerald-700 dark:text-emerald-200">Plan &amp; ship</p>
+									</div>
+								</div>
+							</div>
+							<div class="mt-4 rounded-lg bg-neutral-100 p-3 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+								Active device: 1 / 3
+							</div>
+						</div>
+						<div class="mt-3 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+						<div class="mt-2 h-2 w-20 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="mx-auto max-w-6xl rounded-2xl border border-neutral-200 bg-white px-6 py-10 dark:border-neutral-700 dark:bg-neutral-900">
+			<div class="mb-4 flex items-start justify-between gap-3">
+				<h2 class="text-2xl font-semibold text-neutral-900 dark:text-white">{copy.availabilityTitle}</h2>
+				<span class="rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-600 dark:border-neutral-600 dark:text-neutral-400">
+					{lang === 'fr' ? 'Disponibilite' : 'Availability'}
+				</span>
+			</div>
+			<p class="mb-4 max-w-3xl text-neutral-600 dark:text-neutral-300">{copy.availabilityText}</p>
+			<ul class="grid gap-3 md:grid-cols-2">
+				{copy.availabilityBullets.map((item) => (
+					<li class="rounded-lg border border-neutral-100 bg-neutral-50 p-4 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300">
+						{item}
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section id="architecture" class="mx-auto max-w-6xl">
+			<div class="mb-6">
+				<p class="text-sm font-semibold uppercase tracking-widest text-magenta">
+					{lang === 'fr' ? 'Conception produit' : 'Product architecture'}
+				</p>
+				<h2 class="mt-2 text-3xl font-bold text-neutral-900 dark:text-white">{copy.productHeading}</h2>
+				<p class="mt-4 max-w-3xl text-neutral-600 dark:text-neutral-300">{copy.productSubheading}</p>
+			</div>
+			<div class="grid gap-6 rounded-2xl border border-neutral-200 bg-white p-8 dark:border-neutral-700 dark:bg-neutral-900">
+				<h3 class="text-xl font-semibold text-neutral-900 dark:text-white">{copy.workflowHeading}</h3>
+				<p class="text-sm text-neutral-600 dark:text-neutral-300">{copy.workflowText}</p>
+				<div class="grid gap-4 md:grid-cols-3">
+					{copy.workflowSteps.map((item) => (
+						<div class="rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-800">
+							<p class="mb-2 text-xs font-bold uppercase tracking-widest text-magenta">Step {item.step}</p>
+							<h4 class="mb-2 text-lg font-semibold text-neutral-900 dark:text-white">{item.title}</h4>
+							<p class="text-sm text-neutral-600 dark:text-neutral-300">{item.description}</p>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<section class="mx-auto max-w-6xl rounded-2xl border border-neutral-200 bg-gradient-to-r from-violet-50 to-cyan-50 p-8 dark:border-neutral-700 dark:from-neutral-900 dark:to-neutral-900">
+			<div class="mb-6">
+				<h2 class="text-3xl font-bold text-neutral-900 dark:text-white">{copy.activationHeading}</h2>
+				<p class="mt-4 max-w-3xl text-neutral-700 dark:text-neutral-300">{copy.activationText}</p>
+			</div>
+			<div class="grid gap-4 md:grid-cols-2">
+				{copy.activationBullets.map((item) => (
+					<div class="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-800">
+						<p class="text-sm text-neutral-700 dark:text-neutral-200">{item}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section class="mx-auto max-w-6xl">
+			<div class="mb-6">
+				<p class="text-sm font-semibold uppercase tracking-widest text-magenta">
+					{lang === 'fr' ? 'Architecture commerciale' : 'Commercial structure'}
+				</p>
+				<h2 class="mt-2 text-3xl font-bold text-neutral-900 dark:text-white">{copy.tiersHeading}</h2>
+				<p class="mt-4 max-w-3xl text-neutral-600 dark:text-neutral-300">{copy.tiersText}</p>
+			</div>
+			<div class="grid gap-6 md:grid-cols-3">
+				{copy.tiers.map((tier) => (
+					<div class="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-900">
+						<p class="mb-2 inline-flex rounded-full border border-neutral-200 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:border-neutral-600 dark:text-neutral-300">
+							{tier.label}
+						</p>
+						<h3 class="mb-1 text-xl font-semibold text-neutral-900 dark:text-white">{tier.title}</h3>
+						<p class="mb-4 text-sm text-neutral-500 dark:text-neutral-400">{tier.focus}</p>
+						<p class="mb-4 text-sm text-neutral-700 dark:text-neutral-200">{tier.included}</p>
+						<div class="mb-4 text-xs text-neutral-500 dark:text-neutral-400">Activation: {tier.activation}</div>
+						<div class="text-sm font-semibold text-neutral-900 dark:text-white">{tier.state}</div>
+						<a
+							href={checkoutUrl(tier.offerId)}
+							class="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-neutral-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+						>
+							{lang === 'fr' ? 'Choisir ce niveau' : 'Choose this tier'}
+						</a>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section class="mx-auto max-w-6xl rounded-2xl border border-neutral-200 bg-white px-6 py-10 dark:border-neutral-700 dark:bg-neutral-900">
+			<h2 class="mb-4 text-3xl font-bold text-neutral-900 dark:text-white">{copy.trustHeading}</h2>
+			<p class="mb-6 max-w-3xl text-neutral-600 dark:text-neutral-300">{copy.trustText}</p>
+			<div class="grid gap-3 md:grid-cols-2">
+				{copy.trustPoints.map((point) => (
+					<div class="rounded-lg bg-neutral-50 p-4 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
+						{point}
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section class="mx-auto max-w-6xl rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-900">
+			<h2 class="mb-2 text-3xl font-bold text-neutral-900 dark:text-white">{copy.faqHeading}</h2>
+			<p class="mb-6 text-neutral-600 dark:text-neutral-300">{copy.faqText}</p>
+			<div class="space-y-3">
+				{copy.faqItems.map((item) => (
+					<div class="rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-800">
+						<p class="mb-2 text-sm font-semibold text-neutral-900 dark:text-white">{item.question}</p>
+						<p class="text-sm text-neutral-600 dark:text-neutral-300">{item.answer}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section class="mx-auto max-w-6xl rounded-2xl border border-magenta/40 bg-gradient-to-r from-magenta/90 to-purple-700 p-10 text-white">
+			<div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+				<div class="max-w-2xl">
+					<h2 class="text-3xl font-bold">{copy.finalHeading}</h2>
+					<p class="mt-4 text-white/90">{copy.finalText}</p>
+				</div>
+				<a
+					href={checkoutUrl(defaultOfferId)}
+					class="inline-flex items-center rounded-xl bg-white px-6 py-3 font-semibold text-neutral-900 transition-colors hover:bg-neutral-100"
+				>
+					{copy.finalAction}
+				</a>
+			</div>
+		</section>
+	</div>
+</MainLayout>
