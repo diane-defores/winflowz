@@ -36,15 +36,17 @@ const SUITE_COMMERCE_EVENT_SOURCE = 'suite_commerce'
 const SUITE_COMMERCE_EVENT_SOURCE_PREFIX = 'suite:commerce'
 const WINFLOWZ_APP_PLAN_ALLOWLIST = new Set([
   'free',
-  'starter_founder',
-  'pro_founder',
-  'studio_founder',
+  'focus',
+  'power',
+  'control',
+  'command',
   'lifetime_deal',
 ])
 const WINFLOWZ_APP_OFFER_PLAN_BY_ID = new Map([
-  ['winflowz_app/starter_founder', 'starter_founder'],
-  ['winflowz_app/pro_founder', 'pro_founder'],
-  ['winflowz_app/studio_founder', 'studio_founder'],
+  ['winflowz_app/focus', 'focus'],
+  ['winflowz_app/power', 'power'],
+  ['winflowz_app/control', 'control'],
+  ['winflowz_app/command', 'command'],
 ])
 const TEMU_SHOPPING_LISTS_PROVIDER = 'temu_shopping_lists_convex'
 const TEMU_SHOPPING_LISTS_BRIDGE_SOURCE = 'temu_shopping_lists_bridge_api'
