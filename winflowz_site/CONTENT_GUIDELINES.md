@@ -32,6 +32,27 @@ A premium lesson feels like:
 
 Tools can support this. They do not replace it.
 
+## Product Documentation Standard
+
+When a page or content block describes a product, the documentation must make the product legible before it becomes promotional.
+
+Each declared product should have, at minimum:
+
+- a clear product name and role
+- a short description of what it does
+- the intended audience
+- the delivery mode or fulfillment path
+- the canonical public surface if the product is sold or marketed
+
+If a product is sold, the repo should also make the purchase path easy to verify:
+
+- sales page
+- product page
+- checkout or entitlement path
+- demo or screenshot evidence when relevant
+
+Do not turn a product page into generic hype. The copy should help a reviewer understand what is sold, how it is delivered, and why it is a legitimate digital product.
+
 ## Core Principles
 
 ### Concepts come before tools

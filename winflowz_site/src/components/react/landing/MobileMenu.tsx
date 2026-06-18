@@ -85,10 +85,10 @@ export function MobileMenu({
         <div
           className={
             forceDark
-              ? "absolute top-full left-0 right-0 mt-2 rounded-2xl border border-zinc-800 bg-zinc-950/96 p-4 shadow-2xl backdrop-blur-md"
-              : "absolute top-full left-0 right-0 mt-2 rounded-2xl border border-neutral-200/60 bg-white/95 p-4 shadow-lg backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/95 dark:shadow-none"
+              ? "absolute top-full left-0 right-0 mt-2 border border-zinc-800 bg-zinc-950/96 p-4 shadow-2xl backdrop-blur-md"
+              : "absolute top-full left-0 right-0 mt-2 border border-neutral-200/60 bg-white/95 p-4 shadow-lg backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/95 dark:shadow-none"
           }
-          style={{ animation: "hero-fade-up 0.2s ease-out forwards" }}
+          style={{ borderRadius: "var(--menu-panel-radius)", animation: "var(--hero-fade-animation-fast)" }}
         >
           <div className="flex flex-col gap-2">
             {navItems.map((item) => (

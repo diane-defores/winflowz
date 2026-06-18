@@ -104,7 +104,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  background: var(--landing-shimmer-gradient);
   background-size: 200% 100%;
   animation: shimmer var(--landing-shimmer-duration) ease-in-out infinite;
 }
@@ -113,11 +113,11 @@
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 1;
-    box-shadow: 0 0 4px currentColor;
+    box-shadow: var(--landing-pulse-shadow-rest);
   }
   50% {
     opacity: 0.6;
-    box-shadow: 0 0 8px currentColor;
+    box-shadow: var(--landing-pulse-shadow-peak);
   }
 }
 

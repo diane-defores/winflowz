@@ -8,10 +8,13 @@ interface Props {
 ---
 
 <div class="flex-shrink-0">
-  <img
-    class="size-8 rounded-full sm:h-[2.875rem] sm:w-[2.875rem]"
-    src={src}
-    alt={alt}
-    loading="lazy"
-  />
+  <img class="avatar-testimonial size-8 rounded-full" src={src} alt={alt} loading="lazy" />
 </div>
+<style>
+  @media (width >= 40rem) {
+    .avatar-testimonial {
+      width: var(--avatar-size-sm-up);
+      height: var(--avatar-size-sm-up);
+    }
+  }
+</style>

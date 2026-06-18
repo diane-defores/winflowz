@@ -15,8 +15,15 @@ interface Props {
 <style>
 	.landing-card {
 		--card-bg: rgba(23, 25, 30, 0.8);
+		--landing-card-foreground: rgb(250 250 250);
+		--landing-card-radius: 1rem;
+		--landing-card-border: rgb(255 255 255 / 0.12);
+		--landing-card-padding: 1.25rem;
+		--landing-card-z: 1;
+		--landing-card-accent-size: 6.25rem;
+		--landing-card-accent-radius: 100%;
 		display: contents;
-		color: rgb(250 250 250);
+		color: var(--landing-card-foreground);
 	}
 	:global(:root[data-theme='light']) .landing-card {
 		--card-bg: rgba(255, 255, 255, 0.8);
@@ -26,24 +33,24 @@ interface Props {
 		overflow: hidden;
 		background: var(--card-bg);
 		position: relative;
-		border-radius: 1rem;
-		border: 1px solid rgb(255 255 255 / 0.12);
-		padding: 1.25rem;
+		border-radius: var(--landing-card-radius);
+		border: 1px solid var(--landing-card-border);
+		padding: var(--landing-card-padding);
 		backdrop-filter: blur(12px);
 	}
 
 	.landing-card .card > * {
-		z-index: 1;
+		z-index: var(--landing-card-z);
 	}
 	.landing-card .card::before {
 		content: '';
 		position: absolute;
 		top: 0;
 		inset-inline-end: 0;
-		width: 6.25rem;
-		height: 6.25rem;
+		width: var(--landing-card-accent-size);
+		height: var(--landing-card-accent-size);
 		background: var(--landing-card-accent, var(--brand-magenta));
-		border-radius: 100%;
+		border-radius: var(--landing-card-accent-radius);
 		filter: blur(3.25rem);
 		opacity: 0.33;
 	}

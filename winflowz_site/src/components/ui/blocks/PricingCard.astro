@@ -32,7 +32,7 @@ const cardClass = popular
   ? 'relative flex flex-col overflow-hidden rounded-xl shadow-xl'
   : 'relative flex flex-col rounded-xl bg-white p-8 shadow-sm dark:bg-neutral-800'
 const innerClass = popular
-  ? 'relative m-[3px] flex h-full w-full flex-col rounded-[10px] bg-neutral-900 p-8'
+  ? 'relative flex h-full w-full flex-col bg-neutral-900 p-8'
   : 'flex h-full flex-col'
 const badgeClass = popular
   ? 'badge-rainbow absolute right-0 top-0 rounded-tr-[10px] rounded-bl-xl'
@@ -60,7 +60,10 @@ const ctaClass = popular
 <div class={cardClass}>
   {popular && <div class="absolute inset-0 rounded-xl bg-gradient-rainbow" />}
 
-  <div class={innerClass}>
+  <div
+    class={innerClass}
+    style={popular ? 'margin: var(--pricing-card-inset-margin); border-radius: var(--pricing-card-inset-radius);' : undefined}
+  >
     <span class={badgeClass}>
       {tagLabel}
     </span>

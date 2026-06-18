@@ -228,6 +228,30 @@ void main() {
     expect(find.text('85%'), findsOneWidget);
   });
 
+  testWidgets('drags the corner text opacity slider smoothly', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(home: KeyboardThemeStudioScreen()),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 200));
+
+    await openStudioSection(tester, 'Touches');
+
+    final slider = find.byType(Slider).first;
+    await tester.scrollUntilVisible(
+      slider,
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(tester.widget<Slider>(slider).value, 0.85);
+    await tester.drag(slider, const Offset(-240, 0));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<Slider>(slider).value, isNot(0.85));
+  });
+
   testWidgets('opens one studio section at a time', (tester) async {
     await tester.pumpWidget(
       const ProviderScope(

@@ -17,7 +17,7 @@ interface Props {
 <div class="grid gap-8 sm:grid-cols-2 sm:items-center">
 	<!-- Container for the blog post's cover image -->
 	<div class="sm:order-2">
-		<div class="relative rounded-lg pt-[50%] sm:pt-[100%]">
+		<div class="card-blog-recent-media relative rounded-lg">
 			<img
 				class="absolute start-0 top-0 size-full rounded-xl object-cover"
 				src={blogEntry.data.cardImage.toString()}
@@ -68,3 +68,14 @@ interface Props {
 		</div>
 	</div>
 </div>
+<style>
+	.card-blog-recent-media {
+		padding-top: var(--media-ratio-card-wide);
+	}
+
+	@media (width >= 40rem) {
+		.card-blog-recent-media {
+			padding-top: var(--media-ratio-card-square);
+		}
+	}
+</style>

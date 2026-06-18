@@ -20,6 +20,13 @@ This file provides root-level guidance for agents working in the WinFlowz monore
 - notes: Use local checks for structural, Flutter, and unit validation. Use Vercel preview validation before claiming hosted site/app web behavior, serverless API behavior, auth callbacks, bridge endpoints, checkout, or production-like deployment behavior.
 - last_reviewed: 2026-05-24
 
+## Product Documentation Rule
+
+- Every declared product in this repo must appear in the repo-level product documentation with a clear name, role, delivery mode, and canonical surface.
+- If a product is publicly sold or marketed, its sales page, product page, and fulfillment path must be explicit and kept in sync with the site routes.
+- Do not leave product identity or purchase flow implied only by code; the docs should make the commercial surface reviewable without guesswork.
+- Treat product claims as evidence-backed statements: tie them to source truth, a live surface, or a proof asset before considering them validated.
+
 ## Validation
 
 Use focused checks from the changed subproject:

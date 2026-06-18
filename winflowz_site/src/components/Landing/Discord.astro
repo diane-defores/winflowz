@@ -17,12 +17,12 @@ const { title, cta } = Astro.props;
 <style>
 	.discord {
 		margin: 0 auto;
-		padding: 4rem 0;
+		padding: var(--landing-discord-padding);
 		text-align: center;
 	}
 
 	.discord h2 {
-		font-size: 1.5rem !important;
+		font-size: var(--landing-discord-heading-size) !important;
 		font-weight: 400;
 	}
 
@@ -33,8 +33,8 @@ const { title, cta } = Astro.props;
 	}
 
 	.hide {
-		margin-bottom: -1rem;
-		width: 5rem;
-		height: 5rem;
+		margin-bottom: var(--landing-discord-image-offset);
+		width: var(--landing-discord-image-size);
+		height: var(--landing-discord-image-size);
 	}
 </style>

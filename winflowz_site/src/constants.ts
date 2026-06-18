@@ -1,8 +1,8 @@
 import ogImageSrc from "@/assets/images/WinFlowz.png";
 
-const SITE_THEME_COLOR = '#facc15';
-const SITE_MANIFEST_THEME_COLOR = '#000000';
-const SITE_MANIFEST_BACKGROUND_COLOR = '#ffffff';
+const SITE_THEME_COLOR = 'gold';
+const SITE_MANIFEST_THEME_COLOR = 'black';
+const SITE_MANIFEST_BACKGROUND_COLOR = 'white';
 const SITE_SOCIAL_IMAGE_WIDTH = 1200;
 const SITE_SOCIAL_IMAGE_HEIGHT = 600;
 const SITE_SOCIAL_IMAGE_TYPE = 'image/png';

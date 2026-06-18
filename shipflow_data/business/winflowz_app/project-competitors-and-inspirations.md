@@ -1,10 +1,10 @@
 ---
 artifact: competitive_intelligence
 metadata_schema_version: "1.0"
-artifact_version: "0.3.0"
+artifact_version: "0.3.1"
 project: "WinFlowz"
 created: "2026-03-18"
-updated: "2026-06-10"
+updated: "2026-06-16"
 status: "draft"
 source_skill: "sf-docs"
 scope: "project-competitors-and-inspirations"
@@ -61,6 +61,9 @@ Benchmark de dictée native iOS pour l'intégration système et la fluidité d'u
 
 ### Blip AI
 Concurrent/inspiration pour la dictée IA cross-platform: raccourci global, parole vers texte propre, insertion dans n'importe quelle app, limites d'usage mensuelles et acquisition via AppSumo. À benchmarker contre WinFlowz App sur déclenchement clavier/overlay, nettoyage IA, historique, confidentialité et mode local-first.
+
+### Typing Hero
+Concurrent/inspiration pour le text expansion Android: snippets, templates, insertion de date/heure, calculs simples, transformation de texte, historique presse-papiers et automatisation via accessibilité. À benchmarker contre WinFlowz App sur les snippets, les variantes de template, les actions texte et le positionnement freemium/premium.
 
 ## Audio et voix
 

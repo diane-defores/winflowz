@@ -22,28 +22,28 @@
   },
   "features": {
     "title": "What stays on the homepage",
-    "subTitle": "We keep the page honest: current app screenshots, the training path, and the recommendations page."
+    "subTitle": "We keep the page honest: current app screenshots, the training path, the recommendations page, and claims that stay tied to proof."
   },
   "workflow": {
     "title": "A workflow stack built from the ground up",
     "tabs": [
       {
         "heading": "WinFlowz app",
-        "content": "Android screenshots and a working app surface that show the product as it exists today."
+        "content": "Android screenshots and a working app surface that show the product as it exists today, with claims kept proof-backed."
       },
       {
         "heading": "Windows Mastery",
-        "content": "A Windows productivity course with practical lessons, focused on useful habits and time savings."
+        "content": "A Windows productivity course with practical lessons, focused on useful habits, time savings, and verifiable statements."
       },
       {
         "heading": "Recommendations",
-        "content": "A proof page for AppSumo feedback, structured around the captures you already have."
+        "content": "A proof page for AppSumo feedback, structured around the captures you already have and the claims they support."
       }
     ]
   },
   "testimonials": {
     "title": "What the offer includes",
-    "subTitle": "A training path, the WinFlowz app, and a proof page that keeps the screenshots in order.",
+    "subTitle": "A training path, the WinFlowz app, and a proof page that keeps the screenshots and claim evidence in order.",
     "main": {
       "content": "Congratulations, Diane! I just spent 20 minutes in it and I'm already wondering what I've been doing with my life until now :)) Lots of goodies to improve my work. I love it!",
       "author": "Florin Muresan",

@@ -447,9 +447,6 @@ class _KeyboardThemeStudioScreenState
                   expanded: _isStudioSectionExpanded('keys'),
                   onExpansionChanged: _setStudioSectionExpanded,
                   child: Column(
-                    key: ValueKey(
-                      'theme-keys-${_draft.keyColor}-${_draft.specialKeyColor}-${_draft.activeKeyColor}-${_draft.pressedKeyColor}-${_draft.textColor}-${_draft.cornerTextColor}-${_draft.cornerTextOpacity}-${_draft.statusTextColor}',
-                    ),
                     children: [
                       _ColorField(
                         label: 'Couleur des touches',
@@ -532,7 +529,7 @@ class _KeyboardThemeStudioScreenState
                         value: _draft.keyHorizontalGap,
                         min: 0,
                         max: 16,
-                        divisions: 4,
+                        divisions: 16,
                         valueLabel: '${_draft.keyHorizontalGap.round()} px',
                         onChanged: (value) => setState(
                           () =>
@@ -544,7 +541,7 @@ class _KeyboardThemeStudioScreenState
                         value: _draft.rowVerticalGap,
                         min: 0,
                         max: 16,
-                        divisions: 4,
+                        divisions: 16,
                         valueLabel: '${_draft.rowVerticalGap.round()} px',
                         onChanged: (value) => setState(
                           () => _draft = _draft.copyWith(rowVerticalGap: value),

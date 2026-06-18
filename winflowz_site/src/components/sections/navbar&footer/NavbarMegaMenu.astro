@@ -26,7 +26,8 @@ const navBarLinks = (strings.navBarLinks ?? []) as NavBarLink[];
 >
 	<!-- Navigation container -->
 	<nav
-		class="relative mx-2 w-full rounded-[36px] border border-yellow/10 bg-yellow/5 px-4 py-3 backdrop-blur-md dark:border-neutral-700/40 dark:bg-neutral-800/80 dark:backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto"
+		class="relative mx-2 w-full border border-yellow/10 px-4 py-3 backdrop-blur-md dark:border-neutral-700/40 dark:bg-neutral-800/80 dark:backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto"
+		style="border-radius: var(--mega-menu-radius); background: var(--surface-tint-subtle);"
 		aria-label="Global"
 	>
 		<div class="flex items-center justify-between">
@@ -48,7 +49,8 @@ const navBarLinks = (strings.navBarLinks ?? []) as NavBarLink[];
 					aria-label="Toggle navigation"
 				>
 					<svg
-						class="h-[1.25rem] w-[1.25rem] flex-shrink-0 hs-collapse-open:hidden"
+						class="flex-shrink-0 hs-collapse-open:hidden"
+						style="height: var(--icon-size-md); width: var(--icon-size-md);"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
@@ -63,7 +65,8 @@ const navBarLinks = (strings.navBarLinks ?? []) as NavBarLink[];
 						<line x1="3" x2="21" y1="18" y2="18"></line>
 					</svg>
 					<svg
-						class="hidden h-[1.25rem] w-[1.25rem] flex-shrink-0 hs-collapse-open:block"
+						class="hidden flex-shrink-0 hs-collapse-open:block"
+						style="height: var(--icon-size-md); width: var(--icon-size-md);"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"

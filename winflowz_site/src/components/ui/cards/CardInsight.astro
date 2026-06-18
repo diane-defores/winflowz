@@ -30,7 +30,7 @@ interface Props {
 		: `/insights/${insightEntry.slug.replace(/^en\//, '')}/`}
 >
 	<!-- This is the container for the insight's cover image. -->
-	<div class="relative overflow-hidden rounded-xl pt-[50%] sm:pt-[70%]">
+	<div class="card-insight-media relative overflow-hidden rounded-xl">
 		<img
 			class="absolute start-0 top-0 size-full rounded-xl object-cover transition duration-500 ease-in-out group-hover:scale-105"
 			src={insightEntry.data.cardImage.toString()}
@@ -60,3 +60,14 @@ interface Props {
 		</p>
 	</div>
 </a>
+<style>
+	.card-insight-media {
+		padding-top: var(--media-ratio-card-wide);
+	}
+
+	@media (width >= 40rem) {
+		.card-insight-media {
+			padding-top: var(--media-ratio-card-insight);
+		}
+	}
+</style>

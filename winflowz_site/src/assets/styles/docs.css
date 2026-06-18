@@ -1,4 +1,19 @@
 .docs-shell {
+  --docs-aside-tip-border: rgb(255 229 0 / 0.3);
+  --docs-aside-tip-start: rgb(255 229 0 / 0.2);
+  --docs-aside-tip-mid: rgb(16 185 129 / 0.1);
+  --docs-aside-note-border: rgb(0 200 255 / 0.25);
+  --docs-aside-note-start: rgb(0 200 255 / 0.2);
+  --docs-aside-note-mid: rgb(16 185 129 / 0.1);
+  --docs-aside-danger-border: rgb(255 0 51 / 0.3);
+  --docs-aside-danger-start: rgb(255 0 51 / 0.2);
+  --docs-aside-danger-mid: rgb(249 115 22 / 0.1);
+  --docs-aside-success-border: rgb(16 185 129 / 0.25);
+  --docs-aside-success-start: rgb(16 185 129 / 0.2);
+  --docs-aside-success-mid: rgb(0 255 68 / 0.1);
+}
+
+.docs-shell {
   @apply grid items-start gap-8 pb-16 pt-4;
 }
 
@@ -160,42 +175,42 @@
 }
 
 .docs-aside--tip {
-  border-color: rgb(255 229 0 / 0.3);
+  border-color: var(--docs-aside-tip-border);
   background-image: linear-gradient(
     to bottom right,
-    rgb(255 229 0 / 0.2),
-    rgb(16 185 129 / 0.1),
+    var(--docs-aside-tip-start),
+    var(--docs-aside-tip-mid),
     transparent
   );
 }
 
 .docs-aside--note {
-  border-color: rgb(0 200 255 / 0.25);
+  border-color: var(--docs-aside-note-border);
   background-image: linear-gradient(
     to bottom right,
-    rgb(0 200 255 / 0.2),
-    rgb(16 185 129 / 0.1),
+    var(--docs-aside-note-start),
+    var(--docs-aside-note-mid),
     transparent
   );
 }
 
 .docs-aside--caution,
 .docs-aside--danger {
-  border-color: rgb(255 0 51 / 0.3);
+  border-color: var(--docs-aside-danger-border);
   background-image: linear-gradient(
     to bottom right,
-    rgb(255 0 51 / 0.2),
-    rgb(249 115 22 / 0.1),
+    var(--docs-aside-danger-start),
+    var(--docs-aside-danger-mid),
     transparent
   );
 }
 
 .docs-aside--success {
-  border-color: rgb(16 185 129 / 0.25);
+  border-color: var(--docs-aside-success-border);
   background-image: linear-gradient(
     to bottom right,
-    rgb(16 185 129 / 0.2),
-    rgb(0 255 68 / 0.1),
+    var(--docs-aside-success-start),
+    var(--docs-aside-success-mid),
     transparent
   );
 }

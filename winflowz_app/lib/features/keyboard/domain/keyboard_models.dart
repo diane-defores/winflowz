@@ -720,7 +720,7 @@ class KeyboardThemeConfig {
 
     double asGridGap(Object? value, double fallback, double max) {
       final raw = ((value as num?)?.toDouble() ?? fallback).clamp(0.0, max);
-      return (raw / 4).roundToDouble() * 4;
+      return raw.roundToDouble();
     }
 
     final defaults = KeyboardThemeConfig.defaults();
