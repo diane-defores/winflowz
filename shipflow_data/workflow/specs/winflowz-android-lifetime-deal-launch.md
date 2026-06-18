@@ -5,8 +5,8 @@ artifact_version: "0.1.0"
 project: "WinFlowz"
 created: "2026-06-11"
 created_at: "2026-06-11 19:07:18 UTC"
-updated: "2026-06-12"
-updated_at: "2026-06-12 11:11:35 UTC"
+updated: "2026-06-18"
+updated_at: "2026-06-18 11:32:51 UTC"
 status: draft
 source_skill: 100-sf-spec
 source_model: "GPT-5 Codex"
@@ -29,6 +29,7 @@ linked_systems:
   - "Launch planning"
   - "Pricing research"
   - "Competitor analysis"
+  - "Payment activation entitlements"
 depends_on:
   - artifact: "shipflow_data/business/winflowz_app/product.md"
     artifact_version: "1.1.0"
@@ -54,6 +55,9 @@ depends_on:
   - artifact: "shipflow_data/technical/platforms/lemonsqueezy.md"
     artifact_version: "unknown"
     required_status: "reviewed"
+  - artifact: "shipflow_data/technical/payment-activation-entitlements.md"
+    artifact_version: "0.1.0"
+    required_status: "draft"
   - artifact: "shipflow_data/business/winflowz-android-ltd-pricing-audit.md"
     artifact_version: "0.1.0"
     required_status: "draft"
@@ -78,7 +82,8 @@ evidence:
   - "User decision 2026-06-12: LTD licenses should grant access to all present and future released platforms, with the tier differentiated by the number of active device activations rather than by platform family."
   - "Design implementation 2026-06-12: `winflowz_site/src/pages/[...lang]/winflowz-founder.astro` creates a bilingual Founder Access sales-page draft focused on page architecture, visual hierarchy, activation tiers, and honest availability."
   - "Commerce implementation 2026-06-12: WinFlowz App founder offers are registered as `winflowz_app/focus`, `winflowz_app/power`, `winflowz_app/control`, and `winflowz_app/command`, with Lemon Squeezy variant env keys, checkout CTAs, signed webhook parsing, and generic suite entitlement fulfillment via `bridge:processCommerceEvent`."
-next_step: "/103-sf-verify WinFlowz Founder checkout after Lemon Squeezy test-mode variants are configured"
+  - "Documentation update 2026-06-18: `shipflow_data/technical/payment-activation-entitlements.md` defines the reusable payment activation, entitlement, and future device activation contract."
+next_step: "/103-sf-verify WinFlowz Founder checkout and entitlement flow after Lemon Squeezy test-mode variants are configured"
 ---
 
 # Spec: WinFlowz Android Lifetime Deal Launch
@@ -89,7 +94,7 @@ WinFlowz Android Lifetime Deal Launch
 
 ## Status
 
-Draft created on 2026-06-11 from Diane's launch request and a repository scan of the WinFlowz app business docs, editorial governance, product pages, navigation, and checkout code. Diane confirmed on 2026-06-11 that this launch must use Lemon Squeezy because Polar is not currently available. Diane also clarified that price must not be decided by instinct: cloud sync and future cloud-dependent features can create material cost and bankruptcy risk, so an explicit pricing/competitor audit is required before setting the Early Bird price. The pricing audit was created on 2026-06-12 and recommends a tiered, sustainability-first LTD ladder rather than one cheap all-in offer. A bounded design draft was created on 2026-06-12 at `/winflowz-founder` and `/fr/winflowz-founder`; on the same day it was connected to three internal WinFlowz App Founder offers through the existing Lemon Squeezy checkout route and the suite entitlement ledger. The chantier remains high-risk because the real Lemon Squeezy product/variant IDs, hosted checkout smoke, signed webhook smoke, final public pricing, and access/support policy still require operator configuration and verification before broad launch.
+Draft created on 2026-06-11 from Diane's launch request and a repository scan of the WinFlowz app business docs, editorial governance, product pages, navigation, and checkout code. Diane confirmed on 2026-06-11 that this launch must use Lemon Squeezy because Polar is not currently available. Diane also clarified that price must not be decided by instinct: cloud sync and future cloud-dependent features can create material cost and bankruptcy risk, so an explicit pricing/competitor audit is required before setting the Early Bird price. The pricing audit was created on 2026-06-12 and recommends a tiered, sustainability-first LTD ladder rather than one cheap all-in offer. A bounded design draft was created on 2026-06-12 at `/winflowz-founder` and `/fr/winflowz-founder`; on the same day it was connected to four internal WinFlowz App Founder offers through the existing Lemon Squeezy checkout route and the suite entitlement ledger. On 2026-06-18 the payment activation contract was documented for future use. The chantier remains high-risk because hosted Lemon Squeezy checkout smoke, signed webhook smoke, refund/revoke smoke, final public copy/pricing, and device activation enforcement still require verification or implementation before broad launch.
 
 ## User Story
 
@@ -97,18 +102,18 @@ En tant que propriétaire de WinFlowz, je veux vendre l'application Android WinF
 
 ## Minimal Behavior Contract
 
-Quand un visiteur arrive sur les surfaces publiques WinFlowz, le site doit présenter clairement l'application Android WinFlowz comme l'offre Early Bird disponible maintenant, expliquer ce qui est inclus dans le Lifetime Deal, orienter les liens pertinents vers une page de vente dédiée haut de gamme, puis envoyer l'acheteur vers un checkout Lemon Squeezy configuré pour l'offre WinFlowz Android sans réutiliser par erreur une offre SocialGlowz ou formation Windows. La page de vente doit être suffisamment belle, crédible et persuasive pour servir de surface de lancement principale: direction visuelle forte, hiérarchie nette, assets produit réels ou mockups Android soignés, argumentaire commercial complet, CTA répétés sans agressivité, et limites honnêtes. Si le checkout, le prix, l'accès après achat, ou une preuve produit manque, le site doit afficher une attente honnête ou bloquer la mise en vente plutôt que publier un CTA trompeur. L'edge case facile à rater est la confusion de marque: le site contient encore des mentions de WinFlowz comme formation Windows, alors que cette vente vise l'application Android voice-first.
+Quand un visiteur arrive sur les surfaces publiques WinFlowz, le site doit présenter clairement l'offre Founder Early Bird de WinFlowz App, expliquer que l'application disponible maintenant est Android mais que le Lifetime Deal couvre les plateformes présentes et futures une fois publiées, orienter les liens pertinents vers une page de vente dédiée haut de gamme, puis envoyer l'acheteur vers un checkout Lemon Squeezy configuré pour les offres `winflowz_app/focus`, `winflowz_app/power`, `winflowz_app/control`, ou `winflowz_app/command` sans réutiliser par erreur une offre SocialGlowz ou formation Windows. La page de vente doit être suffisamment belle, crédible et persuasive pour servir de surface de lancement principale: direction visuelle forte, hiérarchie nette, assets produit réels ou mockups Android soignés, argumentaire commercial complet, CTA répétés sans agressivité, et limites honnêtes. Si le checkout, le prix, l'accès après achat, ou une preuve produit manque, le site doit afficher une attente honnête ou bloquer la mise en vente plutôt que publier un CTA trompeur. L'edge case facile à rater est la confusion de marque: le site contient encore des mentions de WinFlowz comme formation Windows, alors que cette vente vise l'application productive voice-first.
 
 ## Success Behavior
 
-- La page de vente dédiée existe en français et en anglais, avec des routes stables, par exemple `/fr/winflowz-android-lifetime-deal` et `/winflowz-android-lifetime-deal`, ou une alternative documentée dans la spec avant implémentation.
+- La page de vente dédiée existe en français et en anglais, avec les routes stables `/fr/winflowz-founder` et `/winflowz-founder`.
 - Le prix Early Bird est fondé sur un audit pricing/concurrents et sur une hypothèse de coût soutenable, pas sur une intuition ou un prix bas par peur de vendre.
-- La première vue annonce l'offre littérale: WinFlowz Android, Lifetime Deal, Early Bird, disponibilité Android uniquement pour l'instant, avec un rendu visuel premium immédiatement identifiable.
+- La première vue annonce l'offre littérale: WinFlowz Founder Access, Lifetime Deal, Early Bird, Android disponible maintenant, plateformes futures sans deadline, avec un rendu visuel premium immédiatement identifiable.
 - La page n'utilise pas un template produit générique: elle a une composition de landing/sales page dédiée, une proposition de valeur forte, des sections de persuasion, une lecture mobile excellente et des assets produit visibles.
 - Les visuels montrent le produit ou un état produit inspectable: captures réelles de l'app Android, mockups téléphone construits à partir de captures, ou assets bitmap générés puis validés visuellement. Les visuels purement abstraits, flous, décoratifs ou sans lien produit ne suffisent pas.
 - La page décrit les bénéfices prouvables: dictée, transcription, nettoyage/copie, clipboard, snippets, dictionnaire, overlay/quick actions Android, clavier Android si confirmé par l'app actuelle.
 - La page distingue les capacités vérifiées, les prérequis et les limites: Android first, clés BYO locales pour modes avancés, packs vocaux locaux seulement pour langues supportées, pas de promesse de parité toutes plateformes.
-- Les CTA de vente utilisent un `offerId` WinFlowz Android dédié, par exemple `winflowz_android/lifetime_deal`, ou un lien externe explicitement choisi par Diane et documenté.
+- Les CTA de vente utilisent un `offerId` WinFlowz App dédié parmi `winflowz_app/focus`, `winflowz_app/power`, `winflowz_app/control`, et `winflowz_app/command`, ou un lien externe explicitement choisi par Diane et documenté.
 - Le produit WinFlowz dans `src/content/products/{fr,en}/winflowz.md` est réaligné avec l'application Android ou scindé pour éviter de confondre formation Windows et app Android.
 - La navigation, le footer, la homepage, le catalogue produits, les pages pertinentes et les articles Android existants créent un chemin cohérent vers l'offre.
 - Le plan de lancement existe dans un artefact durable et couvre le pré-lancement, la publication, les preuves checkout, les contenus de promotion, les objections, et le suivi post-lancement.
@@ -120,7 +125,7 @@ Quand un visiteur arrive sur les surfaces publiques WinFlowz, le site doit prés
 - Si le prix Early Bird n'est pas décidé ou disponible depuis le fournisseur de paiement, la page ne doit pas inventer de prix public; elle doit soit utiliser une source de vérité configurée, soit rester non publiée, soit afficher une liste d'attente non payante selon décision explicite.
 - Si le checkout WinFlowz Android n'est pas configuré, les CTA de paiement ne doivent pas rediriger vers `socialglowz/lifetime_deal`, `/api/polar/checkout` formation, ou un produit fournisseur ambigu.
 - Si le webhook ou la création d'accès après achat n'est pas prouvé, la copie ne doit pas promettre "accès instantané" ou "activation automatique" sans mécanisme vérifié.
-- Si un visiteur non Android lit la page, le contenu doit expliquer honnêtement que la vente actuelle concerne Android et ne doit pas promettre clavier système, overlay ou parité native hors Android.
+- Si un visiteur non Android lit la page, le contenu doit expliquer honnêtement que l'app prête aujourd'hui est Android et ne doit pas promettre clavier système, overlay ou parité native hors Android avant release.
 - Si une surface publique reste incohérente après migration, la vérification doit échouer avec la surface et la mention fautive.
 - Si des secrets, IDs fournisseurs réels ou payloads clients apparaissent dans docs, tests, captures ou logs, le chantier doit être bloqué et redirigé vers nettoyage sécurité.
 
@@ -130,14 +135,14 @@ WinFlowz veut commencer à vendre l'application Android, mais le site et les con
 
 ## Solution
 
-Créer un chantier de lancement en trois blocs: une page de vente Android LTD Early Bird, un réalignement transverse des mentions et liens publics, et un plan de lancement vérifiable. L'implémentation doit d'abord établir une source de vérité d'offre et de checkout pour WinFlowz Android, puis construire la page et les liens autour de cette source, avec des claims limités aux preuves disponibles.
+Créer un chantier de lancement en trois blocs: une page de vente Founder LTD Early Bird, un réalignement transverse des mentions et liens publics, et un plan de lancement vérifiable. L'implémentation doit d'abord établir une source de vérité d'offre et de checkout pour WinFlowz App, puis construire la page et les liens autour de cette source, avec des claims limités aux preuves disponibles.
 
 ## Scope In
 
-- Créer une page de vente dédiée bilingue pour l'offre WinFlowz Android Lifetime Deal Early Bird.
+- Créer une page de vente dédiée bilingue pour l'offre WinFlowz App Founder Lifetime Deal Early Bird.
 - Créer une vraie direction de page de vente premium: hero, preuve visuelle produit, storytelling problème-solution, sections bénéfices, offre LTD, limites honnêtes, FAQ, CTA et réassurance.
 - Produire ou intégrer des assets visuels adaptés: captures app Android existantes, mockups téléphone, visuels hero ou images générées si les captures disponibles ne suffisent pas.
-- Définir ou intégrer un identifiant d'offre commerce dédié à l'app Android, distinct de SocialGlowz et de la formation Windows.
+- Définir ou intégrer des identifiants d'offre commerce dédiés à WinFlowz App, distincts de SocialGlowz et de la formation Windows.
 - Réaliser un audit pricing/concurrents avant de fixer le prix public Early Bird.
 - Mettre à jour les CTA pour utiliser le checkout correct ou une route d'attente explicitement non payante si la vente immédiate est bloquée.
 - Réaligner `winflowz_site/src/content/products/fr/winflowz.md` et `winflowz_site/src/content/products/en/winflowz.md` pour supprimer la confusion formation Windows vs app Android.
@@ -155,7 +160,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 - Promettre une app iOS, desktop ou web avec parité native complète.
 - Mettre en place AppSumo, affiliation, programme partenaire ou marketplace externe complet sauf si Diane le décide dans un chantier séparé.
 - Refaire toute la marque WinFlowz ou toute la homepage au-delà des chemins nécessaires vers l'offre.
-- Résoudre toutes les dettes SocialGlowz/commerce générique hors besoin WinFlowz Android LTD.
+- Résoudre toutes les dettes SocialGlowz/commerce générique hors besoin WinFlowz App Founder LTD.
 
 ## Constraints
 
@@ -190,7 +195,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
   - `WFZ-LTD-001`: French sales page explains Android-first availability, cross-platform released-platform entitlement, activation limits, and a valid CTA state.
   - `WFZ-LTD-002`: English sales page matches the French offer without adding unsupported claims.
   - `WFZ-LTD-003`: product catalog and detail pages route visitors to the Android offer without describing WinFlowz only as Windows training.
-  - `WFZ-LTD-004`: checkout route recognizes the WinFlowz Android offer and never defaults a WinFlowz CTA to SocialGlowz.
+  - `WFZ-LTD-004`: checkout route recognizes the WinFlowz App founder offers and never defaults a WinFlowz CTA to SocialGlowz.
   - `WFZ-LTD-005`: claims scan finds no unsupported universal offline, all-platform, quota, billing, or instant-access promises.
   - `WFZ-LTD-006`: launch plan contains pre-launch, launch-day, and post-launch tasks with proof owners.
   - `WFZ-LTD-007`: mobile viewport renders CTA, offer summary, limits, FAQ, and proof sections without overlap or clipped text.
@@ -228,7 +233,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 ## Invariants
 
-- WinFlowz Android LTD is a separate offer from SocialGlowz LTD and from Windows Mastery training.
+- WinFlowz App Founder LTD is a separate offer from SocialGlowz LTD and from Windows Mastery training.
 - Public copy must make Android availability clear before the first paid CTA.
 - LTD entitlement is cross-platform over released platforms; tiers differ by active device activation count, not by platform family.
 - Claims must stay inside the app target-reviewed truth: Android-native entrypoints first, BYO keys local, supported language packs only, no universal offline promise, no all-platform parity promise.
@@ -245,13 +250,13 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 - Lemon Squeezy is the selected provider for this launch; provider docs and env examples must add WinFlowz Android-specific keys and tests.
 - Polar is not available for this launch; the existing course-specific route must not be stretched into an app LTD route.
 - Homepage and product catalog SEO may shift from Windows training first to Android app first; update page intent docs if this is intentional.
-- The existing Windows Mastery page can keep selling training, but must not be the primary CTA for the Android LTD.
+- The existing Windows Mastery page can keep selling training, but must not be the primary CTA for the Founder LTD.
 
 ## Documentation Coherence
 
 - Update `shipflow_data/editorial/claim-register.md` for Lifetime Deal, Early Bird, Android-only availability, support, access, language packs, and checkout claims.
 - Update `shipflow_data/editorial/content-map.md` and `public-surface-map.md` if new route families or launch surfaces are added.
-- Update `shipflow_data/technical/platforms/lemonsqueezy.md` because Lemon Squeezy handles WinFlowz Android offers for this launch.
+- Update `shipflow_data/technical/platforms/lemonsqueezy.md` because Lemon Squeezy handles WinFlowz App founder offers for this launch.
 - Update `winflowz_site/README.md` and `.env.example` if new checkout environment variables are introduced.
 - Create a launch plan artifact, recommended path: `shipflow_data/business/winflowz-android-lifetime-deal-launch-plan.md`.
 - Add a changelog entry only at closure/ship, after implementation is verified.
@@ -282,37 +287,37 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
   - Validate with: cited sources, dated pricing evidence, and a recommended no-bankruptcy floor.
   - Notes: Completed in `shipflow_data/business/winflowz-android-ltd-pricing-audit.md`. Recommendation: avoid a cheap all-in LTD; use an activation-based ladder. Diane later selected the public plan names Focus, Power, Control, and Command, with 1, 2, 5, and 10 active devices respectively.
 
-- [ ] Task 2: Decide and encode the WinFlowz Android offer contract.
+- [x] Task 2: Decide and encode the WinFlowz App founder offer contract.
   - File: `winflowz_site/src/lib/commerce/offers.ts`
-  - Action: Add a dedicated Lemon Squeezy-backed offer id, product id, plan, sources, provider candidates, and helper tests for WinFlowz Android LTD.
+  - Action: Add dedicated Lemon Squeezy-backed offer ids, product id, plans, sources, provider candidates, and helper tests for WinFlowz App Founder LTD.
   - User story link: prevents the app offer from using SocialGlowz or training checkout by mistake.
   - Depends on: Task 1 and Diane price/access decision.
   - Validate with: `pnpm test tests/commerce/offers.test.ts`.
-  - Notes: Use `offerId=winflowz_android/lifetime_deal`, `productId=winflowz_android`, `plan=lifetime_deal`, `providers=["lemonsqueezy"]`.
+  - Notes: Implemented as `winflowz_app/focus`, `winflowz_app/power`, `winflowz_app/control`, and `winflowz_app/command`, with `productId=winflowz_app`, plans `focus|power|control|command`, and `providers=["lemonsqueezy"]`.
 
-- [ ] Task 3: Add provider configuration for WinFlowz Android checkout.
+- [x] Task 3: Add provider configuration for WinFlowz App checkout.
   - File: `winflowz_site/src/lib/commerce/offers.ts`, `winflowz_site/src/lib/commerce/providers/lemonsqueezy.ts`, `winflowz_site/.env.example`
-  - Action: Add Lemon Squeezy env var names and provider mapping for the Android LTD without reusing SocialGlowz variant IDs.
+  - Action: Add Lemon Squeezy env var names and provider mapping for the Founder LTD without reusing SocialGlowz variant IDs.
   - User story link: enables a real paid CTA.
   - Depends on: Task 2.
   - Validate with: `pnpm test tests/commerce/offers.test.ts tests/commerce/checkoutRoute.test.ts tests/commerce/lemonsqueezy.test.ts`.
-  - Notes: Expected env names should be product-specific, for example `LEMONSQUEEZY_WINFLOWZ_ANDROID_PRODUCT_ID` and `LEMONSQUEEZY_WINFLOWZ_ANDROID_LIFETIME_DEAL_VARIANT_ID`.
+  - Notes: Implemented with `LEMONSQUEEZY_WINFLOWZ_APP_PRODUCT_ID` and per-plan variant keys `LEMONSQUEEZY_WINFLOWZ_APP_FOCUS_VARIANT_ID`, `LEMONSQUEEZY_WINFLOWZ_APP_POWER_VARIANT_ID`, `LEMONSQUEEZY_WINFLOWZ_APP_CONTROL_VARIANT_ID`, and `LEMONSQUEEZY_WINFLOWZ_APP_COMMAND_VARIANT_ID`.
 
-- [ ] Task 4: Harden checkout defaults.
+- [x] Task 4: Harden checkout defaults.
   - File: `winflowz_site/src/pages/api/commerce/checkout.ts`
   - Action: Remove or constrain silent fallback to `socialglowz/lifetime_deal`; require explicit offerId for paid product CTAs unless the route is intentionally SocialGlowz-specific.
   - User story link: prevents wrong-product checkout.
   - Depends on: Task 2.
   - Validate with: `pnpm test tests/commerce/checkoutRoute.test.ts`.
-  - Notes: Existing SocialGlowz tests must remain explicit.
+  - Notes: Implemented: missing `offerId` now fails instead of silently falling back to SocialGlowz.
 
-- [ ] Task 5: Define the premium sales-page creative direction.
+- [x] Task 5: Define the premium sales-page creative direction.
   - File: `shipflow_data/business/winflowz-android-lifetime-deal-launch-plan.md` or a page-local implementation note inside the spec before code.
   - Action: Specify visual direction, page narrative, section order, CTA rhythm, asset plan, and claim boundaries before writing the page.
   - User story link: ensures the page is magnificent and commercially coherent, not merely present.
   - Depends on: Tasks 1-4 and offer-policy decisions.
   - Validate with: operator review or explicit acceptance inside readiness.
-  - Notes: Keep direction compatible with site tokens and Android-first product truth.
+  - Notes: A premium Founder Access page architecture exists at `winflowz_site/src/pages/[...lang]/winflowz-founder.astro`; copy and final offer details still need marketing polish and operator review.
 
 - [ ] Task 6: Create or collect product visuals for the sales page.
   - File: `winflowz_site/public/images/**` or `winflowz_site/src/assets/images/**`
@@ -322,13 +327,13 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
   - Validate with: browser screenshot proof at required viewports.
   - Notes: Prefer real app screenshots when available; generated assets are acceptable only if they do not misrepresent product state.
 
-- [ ] Task 7: Create the bilingual Android LTD sales page.
-  - File: `winflowz_site/src/pages/[...lang]/winflowz-android-lifetime-deal.astro` or agreed localized route files.
+- [x] Task 7: Create the bilingual Founder LTD sales page.
+  - File: `winflowz_site/src/pages/[...lang]/winflowz-founder.astro`
   - Action: Implement offer sections: hero, Android-first availability, cross-platform released-platform entitlement, activation limits, problem, app workflows, included features, Early Bird offer, limits, FAQ, support/access policy, CTA, and risk-reducing proof.
   - User story link: creates the main conversion surface.
   - Depends on: Tasks 1-6 or explicit non-payment CTA decision.
   - Validate with: `pnpm build:check` and browser proof at `390x844` and `1440x900`.
-  - Notes: Use site tokens from `global.css`/Tailwind; no one-off visual literals.
+  - Notes: Implemented at `/winflowz-founder` and `/fr/winflowz-founder`; final visual/product proof and copy review remain before public launch.
 
 - [ ] Task 8: Realign product content entries.
   - File: `winflowz_site/src/content/products/fr/winflowz.md`, `winflowz_site/src/content/products/en/winflowz.md`
@@ -340,19 +345,19 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 - [ ] Task 9: Audit and update public links and mentions.
   - File: `winflowz_site/src/pages/[...lang]/index.astro`, `winflowz_site/src/components/shared/site/Navbar.astro`, `winflowz_site/src/components/shared/site/Footer.astro`, `winflowz_site/src/components/astro/landing/Pricing.astro`, `winflowz_site/src/content/blog/**`
-  - Action: Add or adjust links to the Android LTD page where relevant; remove or downgrade incoherent generic pricing and wrong-product CTAs.
+  - Action: Add or adjust links to the Founder LTD page where relevant; remove or downgrade incoherent generic pricing and wrong-product CTAs.
   - User story link: makes the launch discoverable.
   - Depends on: Tasks 7-8.
   - Validate with: `rg -n "WinFlowz|Lifetime|Early Bird|Android|maitrise-windows|windows-mastery|socialglowz/lifetime_deal" winflowz_site/src` plus browser proof.
   - Notes: Do not over-link from unrelated utility pages unless contextually useful.
 
-- [ ] Task 10: Update editorial and technical governance.
+- [x] Task 10: Update technical governance for payment activation.
   - File: `shipflow_data/editorial/claim-register.md`, `shipflow_data/editorial/content-map.md`, `shipflow_data/editorial/public-surface-map.md`, `shipflow_data/technical/platforms/lemonsqueezy.md`, `winflowz_site/README.md`
   - Action: Document new route, claim boundaries, provider env vars, and checkout proof requirements.
   - User story link: keeps future launches and edits from reintroducing unsafe claims.
   - Depends on: Tasks 1-9.
   - Validate with: `/home/claude/shipflow/tools/shipflow_metadata_lint.py AGENT.md shipflow_data`.
-  - Notes: Only update Lemon Squeezy docs if that provider is actually used.
+  - Notes: Payment activation is now documented in `shipflow_data/technical/payment-activation-entitlements.md` and linked from the Lemon Squeezy usage note. Editorial governance and broad public-surface maps still need a separate content pass.
 
 - [ ] Task 11: Create the launch plan.
   - File: `shipflow_data/business/winflowz-android-lifetime-deal-launch-plan.md`
@@ -362,13 +367,21 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
   - Validate with: metadata lint and operator review.
   - Notes: Include separate statuses for page-ready, checkout-ready, access-ready, and broad-promotion-ready.
 
-- [ ] Task 12: Add tests and scans for launch safety.
+- [x] Task 12: Add commerce tests for launch safety.
   - File: `winflowz_site/tests/commerce/*.test.ts`, optional new `winflowz_site/tests/content/*.test.ts`
-  - Action: Cover WinFlowz Android offer recognition, checkout route behavior, explicit offer IDs, and absence of wrong-product CTA defaults.
+  - Action: Cover WinFlowz App offer recognition, checkout route behavior, explicit offer IDs, and absence of wrong-product CTA defaults.
   - User story link: prevents regressions that would send buyers to the wrong product.
   - Depends on: Tasks 1-9.
   - Validate with: `pnpm test:unit`.
-  - Notes: Prefer deterministic local tests over provider network calls.
+  - Notes: Local commerce tests cover the four Founder plans and signed Lemon Squeezy webhook forwarding. Broader content scans and hosted provider smoke remain pending.
+
+- [ ] Task 14: Implement server-owned active device activation enforcement.
+  - File: `winflowz_site/convex/**`, `winflowz_app/lib/features/auth/**`, and future support/admin surfaces as needed.
+  - Action: Add a durable activation ledger that enforces Focus/Power/Control/Command active-device limits after payment entitlement is granted.
+  - User story link: makes the paid tier promise operational instead of purely descriptive.
+  - Depends on: finalized device identity policy, support revoke/reassign policy, and app activation UX.
+  - Validate with: unit tests for same-device idempotency, over-limit denial, revoke/refund non-granting behavior, and support-safe lookup.
+  - Notes: Payment activation and device activation are related but not the same system; current code grants product entitlement, not device-limit enforcement.
 
 - [ ] Task 13: Run final local and browser proof.
   - File: `winflowz_site` and proof artifacts under `shipflow_data/workflow/verification/` if screenshots/logs are recorded.
@@ -380,10 +393,10 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 ## Acceptance Criteria
 
-- [ ] CA 1: Given a visitor opens the French LTD route, when the page loads, then it clearly presents WinFlowz Android Lifetime Deal Early Bird, Android-first current availability, cross-platform released-platform entitlement, and activation limits before the first paid CTA.
+- [ ] CA 1: Given a visitor opens the French Founder route, when the page loads, then it clearly presents WinFlowz Founder Lifetime Deal Early Bird, Android current availability, future released-platform entitlement, and activation limits before the first paid CTA.
 - [ ] CA 2: Given a visitor opens the English LTD route, when the page loads, then it mirrors the French offer without stronger unsupported claims.
-- [ ] CA 3: Given a paid CTA is rendered, when its href or request payload is inspected, then it targets a WinFlowz Android offer id or an explicitly approved external checkout, never SocialGlowz or Windows training.
-- [ ] CA 4: Given checkout provider env vars are absent, when the checkout route is called for WinFlowz Android, then it returns an honest unavailable error and does not fallback to another offer.
+- [ ] CA 3: Given a paid CTA is rendered, when its href or request payload is inspected, then it targets a WinFlowz App offer id or an explicitly approved external checkout, never SocialGlowz or Windows training.
+- [ ] CA 4: Given checkout provider env vars are absent, when the checkout route is called for WinFlowz App, then it returns an honest unavailable error and does not fallback to another offer.
 - [ ] CA 5: Given the product catalog renders WinFlowz, when a buyer reads it, then the catalog does not describe only Windows training while pointing to an Android app sale.
 - [ ] CA 6: Given site-wide scan runs after implementation, when mentions of Lifetime Deal, Early Bird, Android, checkout, and support are reviewed, then unsupported claims are either removed, downgraded, or backed by documented proof.
 - [ ] CA 7: Given the homepage and navigation are loaded in French and English, when a high-intent visitor looks for the app offer, then a coherent route to the LTD page exists without breaking existing core navigation.
@@ -393,6 +406,7 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 - [ ] CA 11: Given the pricing audit is complete, when Diane reviews the Early Bird recommendation, then it includes a competitor-backed price band, cloud-cost risk, support burden, and a minimum viable price floor.
 - [ ] CA 12: Given the launch plan is opened, when Diane prepares launch day, then she can see the exact proof gates and tasks before sending traffic.
 - [ ] CA 13: Given claim-register is updated, when a future agent edits copy, then it can identify which Lifetime Deal, support, access, language-pack, and platform claims are safe.
+- [ ] CA 14: Given a buyer owns Focus, Power, Control, or Command, when the app requests product access, then the suite entitlement is active only after signed provider fulfillment and device activation limits are enforced by a server-owned activation ledger.
 
 ## Test Strategy
 
@@ -444,15 +458,20 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 - Resolved 2026-06-12: the LTD license model is cross-platform access to present and future released platforms, differentiated by active device activations rather than platform family.
 - Should the activation caps be 1 device for $79, 3 devices for $149, and 5 devices for $249/Everything?
 - What exactly does each "Lifetime Deal" tier include: future Android updates, fair-use cloud sync, local packs, BYO AI features, future desktop/iOS/Linux access, and support tier?
-- After purchase, is access automatic via Lemon Squeezy entitlement, manual, activation-code based, or "APK/download + email" for Early Bird?
+- Resolved 2026-06-18: payment activation should be automatic from signed Lemon Squeezy webhook events into the suite `productEntitlements` ledger; Lemon Squeezy receipt emails are not authorization. Still open: hosted provider smoke and production proof.
 - Resolved 2026-06-11: first launch language is English-first; French can follow or stay secondary unless Diane chooses bilingual launch.
 - Resolved 2026-06-11: no fake hard deadline by default; use beta Early Bird pricing that may change as the product matures. Still open: should there be a real seat cap or founder allocation?
+- Resolved 2026-06-18: public plan names and activation caps are Focus = 1 active device, Power = 2 active devices, Control = 5 active devices, and Command = 10 active devices.
+- Open 2026-06-18: device activation enforcement is not implemented yet; the future system must distinguish entitlement ownership from active-device slot usage.
+- Open 2026-06-18: broad launch readiness still needs hosted checkout, signed webhook, entitlement, replay-idempotency, and refund/revoke proof in the real Lemon Squeezy/Convex environment.
 
 ## Skill Run History
 
 | Date UTC | Skill | Model | Action | Result | Next step |
 |----------|-------|-------|--------|--------|-----------|
-| 2026-06-12 11:11:35 UTC | 601-sf-product-entitlements | GPT-5 Codex | Connected the Founder page to three WinFlowz App Lemon Squeezy checkout offers, added offer-specific env keys, hardened missing `offerId` fallback, routed signed Lemon Squeezy webhooks to generic suite entitlement fulfillment, and documented receipt/email versus entitlement ownership. | partial | Configure Lemon Squeezy test-mode variants/webhook, run hosted checkout + signed webhook + refund smoke, then finalize public pricing/copy. |
+| 2026-06-18 12:00:46 UTC | 005-sf-ship | GPT-5 Codex | Prepared a bounded ship scope for the WinFlowz payment activation chantier: activation docs, spec updates, founder webhook test coverage, and the two Astro typing fixes required for `pnpm build:check` to pass again. | partial | Commit and push the bounded release scope, then confirm the Vercel deployment URL and run live browser proof. |
+| 2026-06-18 11:32:51 UTC | 001-sf-build + 601-sf-product-entitlements | GPT-5 Codex | Updated the chantier spec and Lemon Squeezy platform note, added the reusable payment activation entitlement contract, expanded webhook route tests to cover Focus, Power, Control, and Command, and ran targeted local commerce/doc validation. | partial | Complete hosted Lemon Squeezy checkout/webhook/refund smoke and implement device activation enforcement before broad launch. |
+| 2026-06-12 11:11:35 UTC | 601-sf-product-entitlements | GPT-5 Codex | Connected the Founder page to four WinFlowz App Lemon Squeezy checkout offers, added offer-specific env keys, hardened missing `offerId` fallback, routed signed Lemon Squeezy webhooks to generic suite entitlement fulfillment, and documented receipt/email versus entitlement ownership. | partial | Configure Lemon Squeezy test-mode variants/webhook, run hosted checkout + signed webhook + refund smoke, then finalize public pricing/copy. |
 | 2026-06-12 10:55:34 UTC | 006-sf-design | GPT-5.3 Codex Spark + GPT-5 Codex | Spawned a Spark sub-agent and created the bilingual Founder Access page draft at `/winflowz-founder` and `/fr/winflowz-founder`, focused on premium page architecture, device-activation tiers, Android-now availability, and future released-platform framing. | partial | Review the visual direction, then finalize copy, offer terms, payment routing, and product visuals before public sales launch. |
 | 2026-06-12 10:39:02 UTC | 100-sf-spec | GPT-5 Codex | Recorded Diane's decision that LTD licensing should be cross-platform across present and future released platforms, differentiated by active device activation count rather than by platform family. | partial | Confirm activation caps, cloud tier visibility, support, tax/currency display, and access delivery. |
 | 2026-06-12 10:36:31 UTC | 100-sf-spec | GPT-5 Codex | Recorded Diane's decision that direct-site Early Bird is a pre-AppSumo founder pricing window and should not promise "lowest price ever." | partial | Ask Diane specific offer and fulfillment questions, then rerun readiness. |
@@ -470,11 +489,12 @@ Créer un chantier de lancement en trois blocs: une page de vente Android LTD Ea
 
 | Step | Status | Evidence | Next |
 |------|--------|----------|------|
-| 100-sf-spec | partial | Draft spec created on 2026-06-11, updated with Lemon Squeezy as selected provider, strengthened to require premium sales-page quality, and updated on 2026-06-12 with the pricing-audit recommendation. | Diane validates offer-policy choices. |
+| 100-sf-spec | partial | Draft spec created on 2026-06-11, updated with Lemon Squeezy as selected provider, strengthened to require premium sales-page quality, updated on 2026-06-12 with the pricing-audit recommendation, and refreshed on 2026-06-18 with the four-plan payment activation contract. | Finish hosted provider proof and device activation design/implementation before claiming broad launch readiness. |
 | 006-sf-design | partial | Spark sub-agent created a bilingual Founder Access design draft at `winflowz_site/src/pages/[...lang]/winflowz-founder.astro`; local build, design drift check, forbidden-claim scan, and browser screenshots were collected for the draft page. | Diane reviews the visual direction; unresolved offer/copy/checkout decisions remain outside this design draft. |
-| 601-sf-product-entitlements | partial | WinFlowz App Founder offer ids, checkout CTAs, Lemon Squeezy env keys, signed webhook forwarding, and generic suite entitlement fulfillment are implemented locally; tests cover checkout metadata, webhook parsing, route forwarding, and missing-offer fallback. | Configure Lemon Squeezy test-mode products/variants/webhook and run hosted order/refund smoke before claiming ready to sell. |
+| 601-sf-product-entitlements | partial | WinFlowz App Founder offer ids, checkout CTAs, Lemon Squeezy env keys, signed webhook forwarding, and generic suite entitlement fulfillment are implemented locally; docs now define payment activation versus future device activation; tests cover checkout metadata, webhook parsing, route forwarding, and missing-offer fallback. | Configure Lemon Squeezy test-mode products/variants/webhook, run hosted order/refund smoke, and implement server-owned device activation enforcement before claiming ready to sell with device caps. |
 | 101-sf-ready | not ready | Re-reviewed on 2026-06-12. Structure, user-story fit, task ordering, design constraints, claim safety, and test strategy are strong, but `Open Questions` is not `None` and the remaining decisions materially change payment, access, support, cloud liability, AppSumo parity, and public copy. | Resolve offer-policy decisions, update the spec, then rerun readiness. |
 | 102-sf-start | partial | Bounded implementation started for page, checkout, webhook, and entitlement fulfillment after Diane explicitly requested the page not remain disconnected from checkout. | Finish hosted provider proof and public copy/offer decisions before launch readiness. |
-| 103-sf-verify | pending | Local checks run; hosted provider proof is still missing. | After Lemon Squeezy test-mode config and webhook smoke. |
+| 103-sf-verify | partial | `pnpm test tests/commerce/offers.test.ts tests/commerce/checkoutRoute.test.ts tests/commerce/lemonsqueezy.test.ts tests/commerce/lemonSqueezyWebhookRoute.test.ts` passed on 2026-06-18 with 26 tests; `pnpm build:check` passed after fixing two Astro typing errors in `Pricing.astro` and `HeroSectionAlt.astro`; metadata lint passed for the activation docs/spec; `git diff --check` passed. Hosted provider proof is still missing. | Run Lemon Squeezy test-mode checkout/webhook/refund smoke and implement device activation enforcement before broad launch. |
 | 104-sf-end | pending | Not started. | After verification. |
-| 005-sf-ship | pending | Not started. | After closure and explicit ship scope. |
+| 005-sf-ship | partial | Bounded ship scope selected: `shipflow_data/technical/payment-activation-entitlements.md`, Lemon Squeezy usage note, launch spec, founder webhook route test, and the two Astro typing fixes required for clean site validation. | Push the bounded scope, then route to Vercel deployment truth and live browser proof. |
+| 004-sf-deploy | partial | Release scope identified on 2026-06-18: payment activation docs, Founder webhook test coverage, and the build-fix pair in `Pricing.astro` and `HeroSectionAlt.astro`. Development mode is `hybrid` on Vercel, so live proof requires `005-sf-ship -> 405-sf-prod -> 108-sf-browser`. | Push the bounded scope, confirm the matching deployment URL, then run live founder-page proof. |

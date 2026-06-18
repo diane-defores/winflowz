@@ -4,6 +4,7 @@ import { getLangFromUrl } from '@/utils/i18n'
 
 const lang = getLangFromUrl(Astro.url)
 const windowsMasteryUrl = lang === 'fr' ? '/fr/maitrise-windows' : '/windows-mastery'
+const recommendationsUrl = lang === 'fr' ? '/fr/recommandations' : '/recommendations'
 
 const copy = lang === 'fr'
   ? {
@@ -27,7 +28,7 @@ const copy = lang === 'fr'
         description: 'Les captures actuelles montrent la surface Android à côté du parcours de formation.',
         points: ['Captures réelles', 'Version app', 'Focus sur l’usage concret'],
         cta: 'Voir les recommandations',
-        href: lang === 'fr' ? '/fr/recommandations' : '/recommendations',
+        href: recommendationsUrl,
       },
     }
   : {
@@ -51,7 +52,7 @@ const copy = lang === 'fr'
         description: 'Current Android screenshots show the product surface alongside the course.',
         points: ['Real screenshots', 'App version', 'Focus on practical use'],
         cta: 'See recommendations',
-        href: lang === 'fr' ? '/fr/recommandations' : '/recommendations',
+        href: recommendationsUrl,
       },
     }
 ---

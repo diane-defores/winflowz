@@ -35,61 +35,69 @@ describe('lemon squeezy webhook route', () => {
     process.env.SUITE_BRIDGE_CONVEX_SECRET = 'convex-secret'
   })
 
-  test('forwards signed WinFlowz events to the generic suite commerce processor', async () => {
-    const { POST } = await import('@/pages/api/commerce/webhooks/lemon-squeezy')
-    mockMutation.mockResolvedValueOnce({
-      ok: true,
-      status: 'pending_review',
-      alreadyProcessed: false,
-    })
-
-    const body = JSON.stringify({
-      data: {
-        id: 'ord_wfz',
-        attributes: {
-          customer_id: 'cus_wfz',
-          user_email: 'buyer@example.com',
-          first_order_item: { test_mode: true },
-        },
-      },
-      event_id: 'evt_wfz',
-      event_name: 'order_created',
-      meta: {
-        custom_data: {
-          offer_id: 'winflowz_app/power',
-          product_id: 'winflowz_app',
-          plan: 'power',
-          source: 'direct',
-          source_ref: '/winflowz-founder',
-        },
-      },
-    })
-    const signature = await signWebhook(body, 'webhook-secret')
-
-    const response = await POST({
-      request: new Request('https://winflowz.test/api/commerce/webhooks/lemon-squeezy', {
-        method: 'POST',
-        headers: {
-          'x-signature': signature,
-          'x-event-name': 'order_created',
-          'x-event-id': 'evt_wfz',
-        },
-        body,
-      }),
-    })
-
-    expect(response.status).toBe(200)
-    expect(mockMutation).toHaveBeenCalledWith(
-      'bridge:processCommerceEvent',
-      expect.objectContaining({
-        provider: 'lemonsqueezy',
-        offerId: 'winflowz_app/power',
-        productId: 'winflowz_app',
-        plan: 'power',
-        eventType: 'paid',
-        providerOrderId: 'ord_wfz',
-        bridgeSecret: 'convex-secret',
+  test.each([
+    ['focus', 'winflowz_app/focus'],
+    ['power', 'winflowz_app/power'],
+    ['control', 'winflowz_app/control'],
+    ['command', 'winflowz_app/command'],
+  ])(
+    'forwards signed WinFlowz %s events to the generic suite commerce processor',
+    async (plan, offerId) => {
+      const { POST } = await import('@/pages/api/commerce/webhooks/lemon-squeezy')
+      mockMutation.mockResolvedValueOnce({
+        ok: true,
+        status: 'pending_review',
+        alreadyProcessed: false,
       })
-    )
-  })
+
+      const body = JSON.stringify({
+        data: {
+          id: `ord_wfz_${plan}`,
+          attributes: {
+            customer_id: 'cus_wfz',
+            user_email: 'buyer@example.com',
+            first_order_item: { test_mode: true },
+          },
+        },
+        event_id: `evt_wfz_${plan}`,
+        event_name: 'order_created',
+        meta: {
+          custom_data: {
+            offer_id: offerId,
+            product_id: 'winflowz_app',
+            plan,
+            source: 'direct',
+            source_ref: '/winflowz-founder',
+          },
+        },
+      })
+      const signature = await signWebhook(body, 'webhook-secret')
+
+      const response = await POST({
+        request: new Request('https://winflowz.test/api/commerce/webhooks/lemon-squeezy', {
+          method: 'POST',
+          headers: {
+            'x-signature': signature,
+            'x-event-name': 'order_created',
+            'x-event-id': `evt_wfz_${plan}`,
+          },
+          body,
+        }),
+      })
+
+      expect(response.status).toBe(200)
+      expect(mockMutation).toHaveBeenCalledWith(
+        'bridge:processCommerceEvent',
+        expect.objectContaining({
+          provider: 'lemonsqueezy',
+          offerId,
+          productId: 'winflowz_app',
+          plan,
+          eventType: 'paid',
+          providerOrderId: `ord_wfz_${plan}`,
+          bridgeSecret: 'convex-secret',
+        })
+      )
+    }
+  )
 })

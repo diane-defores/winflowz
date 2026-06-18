@@ -4,7 +4,7 @@ metadata_schema_version: "1.0"
 artifact_version: "0.1.0"
 project: winflowz
 created: "2026-05-30"
-updated: "2026-05-30"
+updated: "2026-06-18"
 status: draft
 source_skill: sf-docs
 scope: platform-usage-lemonsqueezy
@@ -19,6 +19,7 @@ linked_systems:
   - winflowz_site/src/lib/commerce/
   - winflowz_site/src/pages/api/commerce/
   - winflowz_site/convex/bridge.ts
+  - shipflow_data/technical/payment-activation-entitlements.md
 depends_on:
   - artifact: "/home/claude/shipflow/shipflow_data/technical/external-platforms/lemonsqueezy.md"
     artifact_version: "0.1.0"
@@ -27,6 +28,7 @@ supersedes: []
 evidence:
   - "WinFlowz suite owns the processor-agnostic commerce API and SocialGlowz entitlement ledger fulfillment."
   - "Fresh Lemon Squeezy docs checked on 2026-05-30; no official CLI or MCP was identified."
+  - "WinFlowz App founder plans are represented by internal offers `winflowz_app/focus`, `winflowz_app/power`, `winflowz_app/control`, and `winflowz_app/command`."
 next_review: "2026-06-30"
 next_step: "/sf-verify socialglowz-processor-agnostic-ltd-commerce after Lemon Squeezy test-mode and hosted Convex refund/replay smoke"
 ---
@@ -40,6 +42,10 @@ Document how WinFlowz uses Lemon Squeezy for suite-owned direct Lifetime Deal ch
 Use the global provider note for source links and tool availability:
 
 - `/home/claude/shipflow/shipflow_data/technical/external-platforms/lemonsqueezy.md`
+
+Use the payment activation contract for product access, entitlement ownership, and future device activation rules:
+
+- `shipflow_data/technical/payment-activation-entitlements.md`
 
 This file is the local usage contract for architecture, validation, and automation decisions.
 
@@ -57,7 +63,7 @@ This file is the local usage contract for architecture, validation, and automati
 - Environments used: local mocked tests, future Lemon Squeezy test mode, future production.
 - Validation surface: local adapter/route tests, Astro typecheck, hosted Convex fulfillment smoke, Lemon Squeezy test-mode checkout/webhook/refund smoke.
 - Owner: Diane.
-- Last verified: 2026-05-30 by local tests and official docs review; hosted provider smoke not yet executed.
+- Last verified: 2026-06-18 by local tests and local provider-contract review; hosted provider smoke not yet executed.
 
 ## Local Configuration
 
@@ -89,6 +95,7 @@ This file is the local usage contract for architecture, validation, and automati
 - Unsupported or incomplete signed events must be `pending_review`, not an access grant.
 - Fulfillment runs through `bridge:processCommerceEvent` and writes to suite-owned `productEntitlements` / `productAccessEvents`. The legacy SocialGlowz bridge mutation remains for compatibility.
 - Checkout success pages are not payment proof. Access changes come from signed webhooks and idempotent suite fulfillment. Lemon Squeezy owns payment receipt emails; WinFlowz access state must come from the signed webhook and suite ledger.
+- Payment activation and device activation are distinct. The current Lemon Squeezy integration can create a suite product entitlement after a signed paid event, but Focus/Power/Control/Command active-device limits need a separate server-owned activation ledger before they are enforceable.
 - Polar remains a provider adapter/legacy route and must not be deleted as part of Lemon Squeezy adoption.
 
 ## MCP / CLI Policy
@@ -147,6 +154,7 @@ Local checks:
 
 ```bash
 pnpm -C /home/claude/winflowz/winflowz_site test tests/commerce/checkoutRoute.test.ts tests/commerce/offers.test.ts tests/commerce/lemonsqueezy.test.ts tests/api/bridge/socialGlowzCommerceBridge.test.ts
+pnpm -C /home/claude/winflowz/winflowz_site test tests/commerce/lemonSqueezyWebhookRoute.test.ts
 pnpm -C /home/claude/winflowz/winflowz_site build:check
 python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py /home/claude/winflowz/shipflow_data/technical/platforms/lemonsqueezy.md
 ```
@@ -154,7 +162,7 @@ python3 /home/claude/shipflow/tools/shipflow_metadata_lint.py /home/claude/winfl
 Provider smoke, after test-mode setup:
 
 ```text
-Create checkout from SocialGlowz or WinFlowz founder pricing -> complete test order -> receive signed order_created webhook -> verify suite ledger access/code path -> perform/simulate refund -> verify access becomes non-granting.
+Create checkout from SocialGlowz or each WinFlowz founder plan -> complete test order -> receive signed order_created webhook -> verify suite ledger access/code path -> perform/simulate refund -> verify access becomes non-granting. For WinFlowz founder plans, repeat the smoke for Focus, Power, Control, and Command or document why a provider-level variant is intentionally not public yet.
 ```
 
 ## Reader Checklist
