@@ -75,7 +75,8 @@
 .docs-nav__link,
 .docs-nav__label,
 .docs-toc__list a {
-  @apply block py-1.5 text-inherit no-underline;
+  @apply block py-1.5 no-underline;
+  color: inherit;
 }
 
 .docs-nav__link:hover,
@@ -92,7 +93,8 @@
 }
 
 .docs-pager__link {
-  @apply block rounded-2xl bg-neutral-100/80 p-4 text-inherit no-underline dark:bg-neutral-950/50;
+  @apply block rounded-2xl bg-neutral-100/80 p-4 no-underline dark:bg-neutral-950/50;
+  color: inherit;
 }
 
 .docs-pager__link--next {
@@ -146,7 +148,7 @@
 }
 
 .sl-markdown-content blockquote {
-  @apply border-l-4 border-cyan-400 bg-neutral-100 dark:bg-neutral-800;
+  @apply border-l-4 border-cyan bg-neutral-100 dark:bg-neutral-800;
 }
 
 .docs-aside {
@@ -158,20 +160,44 @@
 }
 
 .docs-aside--tip {
-  @apply border-yellow/30 bg-gradient-to-br from-yellow/20 via-emerald/10 to-transparent;
+  border-color: rgb(255 229 0 / 0.3);
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(255 229 0 / 0.2),
+    rgb(16 185 129 / 0.1),
+    transparent
+  );
 }
 
 .docs-aside--note {
-  @apply border-cyan/25 bg-gradient-to-br from-cyan/20 via-emerald/10 to-transparent;
+  border-color: rgb(0 200 255 / 0.25);
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(0 200 255 / 0.2),
+    rgb(16 185 129 / 0.1),
+    transparent
+  );
 }
 
 .docs-aside--caution,
 .docs-aside--danger {
-  @apply border-red/30 bg-gradient-to-br from-red/20 via-orange/10 to-transparent;
+  border-color: rgb(255 0 51 / 0.3);
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(255 0 51 / 0.2),
+    rgb(249 115 22 / 0.1),
+    transparent
+  );
 }
 
 .docs-aside--success {
-  @apply border-emerald/25 bg-gradient-to-br from-emerald/20 via-green/10 to-transparent;
+  border-color: rgb(16 185 129 / 0.25);
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(16 185 129 / 0.2),
+    rgb(0 255 68 / 0.1),
+    transparent
+  );
 }
 
 @screen xl {
