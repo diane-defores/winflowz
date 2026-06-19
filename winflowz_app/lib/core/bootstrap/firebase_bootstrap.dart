@@ -35,12 +35,12 @@ class FirebaseRuntimeConfig {
 
 class FirebaseBootstrap {
   static const projectIdEnvironmentName = 'FIREBASE_PROJECT_ID';
-  static const apiKeyEnvironmentName = 'FIREBASE_DEV_API_KEY';
-  static const appIdEnvironmentName = 'FIREBASE_DEV_APP_ID';
+  static const apiKeyEnvironmentName = 'FIREBASE_API_KEY';
+  static const appIdEnvironmentName = 'FIREBASE_APP_ID';
   static const messagingSenderIdEnvironmentName =
-      'FIREBASE_DEV_MESSAGING_SENDER_ID';
-  static const authDomainEnvironmentName = 'FIREBASE_DEV_AUTH_DOMAIN';
-  static const storageBucketEnvironmentName = 'FIREBASE_DEV_STORAGE_BUCKET';
+      'FIREBASE_MESSAGING_SENDER_ID';
+  static const authDomainEnvironmentName = 'FIREBASE_AUTH_DOMAIN';
+  static const storageBucketEnvironmentName = 'FIREBASE_STORAGE_BUCKET';
 
   static bool _initialized = false;
   static String? _initError;

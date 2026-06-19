@@ -36,29 +36,6 @@ Production: https://winflowz.com
 - account, checkout, and newsletter API surfaces under `src/pages/api/*`
 - supporting Convex workspace for backend logic
 
-## Product Registry
-
-This repo treats each declared product as a first-class documented surface. For every product we keep the canonical public story, the relevant purchase path, and the delivery mode aligned.
-
-Current declared products in this repo:
-
-- `WinFlowz`
-  - Role: Windows-first training product and core flagship offer.
-  - Canonical sales page: `/fr/maitrise-windows`
-  - Canonical product page: `/fr/produits/winflowz`
-  - Delivery: digital access after checkout, with entitlement/state handling through the site backend.
-- `SocialGlowz`
-  - Role: suite product managed through the WinFlowz commerce and bridge surfaces.
-  - Canonical product surface: `winflowz_site` commerce and bridge routes, with product identity handled in the suite entitlement ledger.
-  - Delivery: digital access after payment or entitlement sync, depending on the purchase path.
-
-Rule of record:
-
-- if a product is declared in the repo, it must appear in the product registry and have a clear canonical surface;
-- if the product is publicly marketed or sold, the sales page, product page, and delivery path must be explicit in the repo docs and verified in the site routes.
-
-Claims on product pages, newsletters, landing pages, and checkout surfaces should be treated as verifiable statements, not decorative copy. If a claim cannot be tied to a source, live surface, or proof asset, it should be downgraded or removed.
-
 ## Quick Start
 
 Requirements:

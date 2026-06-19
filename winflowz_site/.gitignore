@@ -30,6 +30,9 @@ pnpm-debug.log*
 # Vercel
 .vercel/
 
+# Local tooling artifacts
+.playwright-mcp/
+
 # Cache
 .cache/
 .aider*

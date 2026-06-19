@@ -1,8 +1,8 @@
 {
   "title": "Products | WinFlowz",
   "description": "Explore WinFlowz's core offer first: Windows Mastery, then companion tools for the workflows you already use.",
-  "siteDescription": "WinFlowz focuses on practical Windows training, Obsidian plugins, and browser tools for note-taking, media, and YouTube workflows, with product claims kept proof-backed.",
-  "subtitle": "Browse the WinFlowz ecosystem, with the flagship Windows Mastery path kept as the primary route and product copy aligned to verifiable surfaces.",
+  "siteDescription": "WinFlowz focuses on practical Windows training, Obsidian plugins, and browser tools for note-taking, media, and YouTube workflows.",
+  "subtitle": "Browse the WinFlowz ecosystem, with Windows Mastery as the flagship path and companion tools built around the same workflow logic.",
   "customerStories": "Customer Stories",
   "features": {
     "title": "Why WinFlowz?",
@@ -10,7 +10,7 @@
     "benefits": [
       "Windows-focused training with practical workflows instead of generic productivity advice",
       "Obsidian plugins for RSS, plugin management, media handling, and knowledge workflows",
-      "Chrome tools for YouTube bookmarking and goal tracking, plus a course-first learning path with claims anchored to proof"
+      "Chrome tools for YouTube bookmarking and goal tracking, plus a course-first learning path"
     ]
   },
   "testimonials": {

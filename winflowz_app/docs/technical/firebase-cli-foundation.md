@@ -120,11 +120,11 @@ local mode instead of crashing.
 ```bash
 flutter run \
   --dart-define=FIREBASE_PROJECT_ID=winflowz-dev \
-  --dart-define=FIREBASE_DEV_API_KEY="$FIREBASE_DEV_API_KEY" \
-  --dart-define=FIREBASE_DEV_APP_ID="$FIREBASE_DEV_APP_ID" \
-  --dart-define=FIREBASE_DEV_MESSAGING_SENDER_ID="$FIREBASE_DEV_MESSAGING_SENDER_ID" \
-  --dart-define=FIREBASE_DEV_AUTH_DOMAIN="$FIREBASE_DEV_AUTH_DOMAIN" \
-  --dart-define=FIREBASE_DEV_STORAGE_BUCKET="$FIREBASE_DEV_STORAGE_BUCKET" \
+  --dart-define=FIREBASE_API_KEY="$FIREBASE_API_KEY" \
+  --dart-define=FIREBASE_APP_ID="$FIREBASE_APP_ID" \
+  --dart-define=FIREBASE_MESSAGING_SENDER_ID="$FIREBASE_MESSAGING_SENDER_ID" \
+  --dart-define=FIREBASE_AUTH_DOMAIN="$FIREBASE_AUTH_DOMAIN" \
+  --dart-define=FIREBASE_STORAGE_BUCKET="$FIREBASE_STORAGE_BUCKET" \
   --dart-define=FIREBASE_WEB_CLIENT_ID="$FIREBASE_WEB_CLIENT_ID"
 ```
 
@@ -145,7 +145,7 @@ other user content.
 
 Keyboard theme image backup specifics:
 
-- Cloud Storage bucket must be configured through `FIREBASE_DEV_STORAGE_BUCKET`.
+- Cloud Storage bucket must be configured through `FIREBASE_STORAGE_BUCKET`.
 - The app stores keyboard theme images under owner-scoped paths `users/{uid}/keyboard_theme_assets/{assetId}`.
 - Firestore remains the manifest source of truth; image bytes and local device paths must never be written to Firestore.
 - Storage rules rely on the default Firestore database and the server-owned `suiteAccess/{uid}` mirror for `winflowz_app`.
@@ -153,23 +153,26 @@ Keyboard theme image backup specifics:
 
 ## GitHub Secrets / Blacksmith list
 
-Use repository secrets (do not introduce Doppler):
+Use repository secrets with explicit environment prefixes. The workflow maps
+them to neutral runtime names based on branch:
 
-- `FIREBASE_PROJECT_ID` — target project alias/id (`winflowz-dev`)
-- `GCP_WIF_PROVIDER` — Workload Identity Provider resource name used by GitHub
-  OIDC, format: `projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL/providers/PROVIDER`
-- `GCP_WIF_SERVICE_ACCOUNT` — service account email impersonated by the GitHub
-  workflow, format: `name@project.iam.gserviceaccount.com`
-- `FIREBASE_DEV_API_KEY` — Android Firebase API key from generated client config
-- `FIREBASE_DEV_APP_ID` — Android app id from generated client config
-- `FIREBASE_DEV_MESSAGING_SENDER_ID` — message sender id for Android client config
-- `FIREBASE_DEV_AUTH_DOMAIN` — auth domain for client config
-- `FIREBASE_DEV_STORAGE_BUCKET` — storage bucket for client config
-- `FIREBASE_WEB_CLIENT_ID` — OAuth 2.0 Web client ID used as Android Google
-  Sign-In `serverClientId`
+- branch `dev` => `DEV_*`
+- branch `main` => `PROD_*`
 
-These secret names are prepared for Blacksmith environment injection with local fallback logic
-enabled in the app when Firebase runtime is missing.
+Required secret families:
+
+- `DEV_FIREBASE_PROJECT_ID` / `PROD_FIREBASE_PROJECT_ID`
+- `DEV_GCP_WIF_PROVIDER` / `PROD_GCP_WIF_PROVIDER`
+- `DEV_GCP_WIF_SERVICE_ACCOUNT` / `PROD_GCP_WIF_SERVICE_ACCOUNT`
+- `DEV_FIREBASE_API_KEY` / `PROD_FIREBASE_API_KEY`
+- `DEV_FIREBASE_APP_ID` / `PROD_FIREBASE_APP_ID`
+- `DEV_FIREBASE_MESSAGING_SENDER_ID` / `PROD_FIREBASE_MESSAGING_SENDER_ID`
+- `DEV_FIREBASE_AUTH_DOMAIN` / `PROD_FIREBASE_AUTH_DOMAIN`
+- `DEV_FIREBASE_STORAGE_BUCKET` / `PROD_FIREBASE_STORAGE_BUCKET`
+- `DEV_FIREBASE_WEB_CLIENT_ID` / `PROD_FIREBASE_WEB_CLIENT_ID`
+
+The app itself only reads neutral runtime names such as `FIREBASE_PROJECT_ID`,
+`FIREBASE_API_KEY`, and `FIREBASE_WEB_CLIENT_ID`.
 
 The APK workflow validates the target Firebase Auth config before building. The
 project in `FIREBASE_PROJECT_ID` must have `identitytoolkit.googleapis.com` and
@@ -221,5 +224,5 @@ The workflow `.github/workflows/android-build.yml` authenticates with
 firebase deploy --only firestore --project "$FIREBASE_PROJECT_ID"
 ```
 
-The deploy job runs only on `main`, `master`, or manual `workflow_dispatch`.
-Pull requests still run analyze/tests/APK build, but do not deploy Firestore.
+The deploy job runs on `dev`, `main`, or manual `workflow_dispatch`.
+Pull requests still run analyze/tests, but do not deploy Firestore.

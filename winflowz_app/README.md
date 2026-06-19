@@ -137,17 +137,32 @@ project auth config enabled before producing an APK.
 
 Add these repository secrets in GitHub: **Settings -> Secrets and variables -> Actions -> Repository secrets**.
 
-Prepare these Firebase names now for the MVP adapter (do not introduce Doppler):
+The app now reads neutral runtime defines. GitHub Actions maps branch-specific
+secrets into those names:
 
-- `FIREBASE_PROJECT_ID` (`winflowz-dev`)
-- `GCP_WIF_PROVIDER`
-- `GCP_WIF_SERVICE_ACCOUNT`
-- `FIREBASE_DEV_API_KEY`
-- `FIREBASE_DEV_APP_ID`
-- `FIREBASE_DEV_MESSAGING_SENDER_ID`
-- `FIREBASE_DEV_AUTH_DOMAIN`
-- `FIREBASE_DEV_STORAGE_BUCKET`
-- `FIREBASE_WEB_CLIENT_ID` (OAuth Web client ID used as Android Google Sign-In `serverClientId`)
+- branch `dev` => dev Firebase/GCP secrets
+- branch `main` => prod Firebase/GCP secrets
+
+Store these repository secrets in GitHub Actions:
+
+- `DEV_FIREBASE_PROJECT_ID`
+- `DEV_FIREBASE_API_KEY`
+- `DEV_FIREBASE_APP_ID`
+- `DEV_FIREBASE_MESSAGING_SENDER_ID`
+- `DEV_FIREBASE_AUTH_DOMAIN`
+- `DEV_FIREBASE_STORAGE_BUCKET`
+- `DEV_FIREBASE_WEB_CLIENT_ID`
+- `DEV_GCP_WIF_PROVIDER`
+- `DEV_GCP_WIF_SERVICE_ACCOUNT`
+- `PROD_FIREBASE_PROJECT_ID`
+- `PROD_FIREBASE_API_KEY`
+- `PROD_FIREBASE_APP_ID`
+- `PROD_FIREBASE_MESSAGING_SENDER_ID`
+- `PROD_FIREBASE_AUTH_DOMAIN`
+- `PROD_FIREBASE_STORAGE_BUCKET`
+- `PROD_FIREBASE_WEB_CLIENT_ID`
+- `PROD_GCP_WIF_PROVIDER`
+- `PROD_GCP_WIF_SERVICE_ACCOUNT`
 - `SENTRY_DSN` (optional crash reporting)
 - `SENTRY_ENVIRONMENT` (optional, for example `debug`, `staging`, `production`)
 
