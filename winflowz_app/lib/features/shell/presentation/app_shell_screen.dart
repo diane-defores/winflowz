@@ -832,7 +832,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       HomeScreen(onOpenSource: _openHomeSource),
       VoiceScreen(),
       ClipboardScreen(),
-      SnippetsScreen(onOpenActions: () => _selectTab(_actionsTabIndex)),
+      const SnippetsScreen(),
       const CustomActionsScreen(),
       DictionaryScreen(),
       SettingsScreen(

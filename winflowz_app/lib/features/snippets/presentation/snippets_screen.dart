@@ -11,17 +11,13 @@ import '../application/snippet_store_provider.dart';
 import '../domain/snippet_store.dart';
 
 class SnippetsScreen extends ConsumerStatefulWidget {
-  const SnippetsScreen({super.key, this.onOpenActions});
-
-  final VoidCallback? onOpenActions;
+  const SnippetsScreen({super.key});
 
   @override
   ConsumerState<SnippetsScreen> createState() => _SnippetsScreenState();
 }
 
 class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
-  static const _snippetSurface = _SnippetLibrarySurface.snippets;
-
   final _triggerController = TextEditingController();
   final _contentController = TextEditingController();
   final _labelController = TextEditingController();
@@ -29,7 +25,6 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   bool _busy = false;
   String? _message;
   List<SnippetRecord> _items = const [];
-  _SnippetLibrarySurface _surface = _snippetSurface;
 
   @override
   void initState() {
@@ -279,55 +274,6 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final surfaceSelector = AppSectionCard(
-      title: 'Bibliothèque',
-      subtitle:
-          'Garde tes snippets texte d’un côté et tes boutons exécutables de l’autre.',
-      child: SegmentedButton<_SnippetLibrarySurface>(
-        segments: const [
-          ButtonSegment(
-            value: _SnippetLibrarySurface.snippets,
-            label: Text('Snippets'),
-            icon: Icon(Icons.text_snippet_outlined),
-          ),
-          ButtonSegment(
-            value: _SnippetLibrarySurface.buttons,
-            label: Text('Boutons'),
-            icon: Icon(Icons.smart_button_outlined),
-          ),
-        ],
-        selected: {_surface},
-        onSelectionChanged: (values) {
-          final next = values.isEmpty ? _surface : values.first;
-          if (next != _surface) {
-            setState(() => _surface = next);
-          }
-        },
-      ),
-    );
-    if (_surface == _SnippetLibrarySurface.buttons) {
-      return ListView(
-        padding: AppInsets.screen,
-        children: [
-          surfaceSelector,
-          AppGaps.x2,
-          AppSectionCard(
-            title: 'Boutons déplacés dans Actions',
-            subtitle:
-                'Les boutons personnalisés pilotent maintenant une barre dédiée, activable dans le clavier Android.',
-            leading: const Icon(Icons.smart_button_outlined),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: FilledButton.icon(
-                onPressed: widget.onOpenActions,
-                icon: const Icon(Icons.arrow_forward_outlined),
-                label: const Text('Ouvrir Actions'),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
     ref.listen<int>(snippetRefreshSignalProvider, (previous, next) {
       if (previous != null && previous != next) {
         Future<void>.microtask(_load);
@@ -342,8 +288,6 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
     return ListView(
       padding: AppInsets.screen,
       children: [
-        surfaceSelector,
-        AppGaps.x2,
         ProductPageScaffold(
           summary: _SnippetsOverviewCard(
             totalCount: _items.length,
@@ -445,8 +389,6 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
     );
   }
 }
-
-enum _SnippetLibrarySurface { snippets, buttons }
 
 class _SnippetsOverviewCard extends StatelessWidget {
   const _SnippetsOverviewCard({

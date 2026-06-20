@@ -39,6 +39,22 @@ next_step: "/sf-docs update"
 
 Identify the public surfaces that carry product promises, educational claims, or conversion risk.
 
+## Canonical Product Sales Surfaces
+
+Use this as the minimum canonical map for product sales copy and checkout authority.
+
+| Product | Canonical marketing site | Canonical sales page | Checkout authority | Post-purchase authority | Notes |
+| --- | --- | --- | --- | --- | --- |
+| SocialGlowz | `socialglowz.com` | `socialglowz.com/lifetime-deal` | shared suite commerce route in `winflowz_site` using `offerId=socialglowz/lifetime_deal` | shared suite success and cancel routes plus suite entitlements | Keep SocialGlowz sales copy on the SocialGlowz domain even if checkout infra is shared |
+| WinFlowz App | `winflowz.com` | `winflowz.com/winflowz-founder` | shared suite commerce route in `winflowz_site` using `offerId=winflowz_app/*` | shared suite success and cancel routes plus suite entitlements | WinFlowz is both product site and commerce host for the current shared checkout layer |
+
+## Canonical Sales Rules
+
+- Each product keeps its own canonical sales page on its own public domain when that domain exists.
+- Shared commerce infrastructure does not make `winflowz.com` the canonical marketing home for every product.
+- `offerId`, `productId`, success route, cancel route, and entitlement target must stay explicit in product copy and checkout wiring.
+- If a product page exists on both the product site and `winflowz.com`, the product site is the marketing authority and the `winflowz.com` page is supporting or transitional unless governance says otherwise.
+
 ## Surface Inventory
 
 | Surface | Paths | Audience | Risk | Notes |
@@ -47,6 +63,8 @@ Identify the public surfaces that carry product promises, educational claims, or
 | Landing page | `/landing`, `/fr/landing` | paid and qualified traffic | high | CTA and proof framing must stay aligned |
 | Flagship offer page | `/windows-mastery`, `/fr/maitrise-windows` | high-intent buyers | high | pricing, support, curriculum, and promise claims |
 | Product catalog and detail pages | `/products`, `/fr/produits`, localized product routes | buyers comparing offers | high | status, CTA destination, availability |
+| WinFlowz founder offer | `/winflowz-founder`, `/fr/winflowz-founder` | high-intent app buyers | high | canonical direct-sale page for WinFlowz App founder tiers |
+| Shared-commerce SocialGlowz founder mirror | `/socialglowz-founder`, `/fr/socialglowz-founder` | buyers entering via suite commerce paths | high | supporting commerce surface only; do not treat as the canonical SocialGlowz marketing home when `socialglowz.com` has the live offer page |
 | Script utility pages | `/termux`, `/fr/termux`, `/dotfiles`, `/fr/dotfiles`, `/shipflow`, `/fr/shipflow` | operators who want one-command installers | medium | must match real bootstrap scope and raw script endpoints |
 | Blog index and articles | localized blog routes | top-of-funnel discovery | medium | claim discipline and internal linking |
 | Docs and training hub | localized docs routes and dashboard docs | learners and paid users | high | access model, curriculum, and lesson framing |
