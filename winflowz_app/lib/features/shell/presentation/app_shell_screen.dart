@@ -34,10 +34,12 @@ class AppShellScreen extends ConsumerStatefulWidget {
     super.key,
     this.initialIndex = 0,
     this.initialOnboardingStep,
+    this.initialSettingsSection,
   });
 
   final int initialIndex;
   final String? initialOnboardingStep;
+  final String? initialSettingsSection;
 
   @override
   ConsumerState<AppShellScreen> createState() => _AppShellScreenState();
@@ -836,6 +838,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
       const CustomActionsScreen(),
       DictionaryScreen(),
       SettingsScreen(
+        initialSectionId: widget.initialSettingsSection,
         highlightOnboardingResume: _showOnboardingResumeHint,
         onResumeOnboarding: () {
           setState(() {
@@ -978,7 +981,8 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
                 ],
               ),
             ),
-            bottomNavigationBar: useRail || _onboardingVisible
+            bottomNavigationBar:
+                useRail || _onboardingVisible || _index == _settingsTabIndex
                 ? null
                 : NavigationBar(
                     selectedIndex: _index,
@@ -1035,13 +1039,6 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
         label: 'Dico',
         motion: _BottomNavIconMotion.spark,
       ),
-      _bottomNavigationDestination(
-        index: _settingsTabIndex,
-        icon: Icons.settings_outlined,
-        selectedIcon: Icons.settings,
-        label: 'Réglages',
-        motion: _BottomNavIconMotion.gear,
-      ),
     ];
   }
 
@@ -1068,7 +1065,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen>
   }
 }
 
-enum _BottomNavIconMotion { lift, pulse, stack, nudge, tap, spark, gear }
+enum _BottomNavIconMotion { lift, pulse, stack, nudge, tap, spark }
 
 class _AnimatedBottomNavIcon extends StatelessWidget {
   const _AnimatedBottomNavIcon({
@@ -1102,9 +1099,7 @@ class _AnimatedBottomNavIcon extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, progress, child) {
         final burst = selected ? math.sin(progress * math.pi) : 0.0;
-        final rotation = motion == _BottomNavIconMotion.gear
-            ? burst * 0.11
-            : 0.0;
+        final rotation = 0.0;
         final offset = _offsetFor(burst);
         final scale = selected ? 1 + burst * _scaleAmplitude : 1.0;
         return SizedBox.square(
@@ -1183,7 +1178,6 @@ class _AnimatedBottomNavIcon extends StatelessWidget {
   double get _scaleAmplitude {
     return switch (motion) {
       _BottomNavIconMotion.pulse => 0.09,
-      _BottomNavIconMotion.gear => 0.04,
       _ => 0.07,
     };
   }

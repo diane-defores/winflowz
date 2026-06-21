@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
+import '../../../core/widgets/app_profile_menu_button.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../send_to/presentation/send_to_actions.dart';
 import '../../settings/application/settings_store_provider.dart';
@@ -330,12 +331,46 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
       padding: AppInsets.screen,
       children: [
         ProductPageScaffold(
-          summary: _ClipboardOverviewCard(
-            totalCount: _items.length,
-            pinnedCount: pinnedCount,
-            pendingCount: pendingCount,
-            latest: latest,
-            status: _pageStatus(pendingCount),
+          summary: AppPageHeroCard(
+            title: 'Fil presse-papiers',
+            subtitle:
+                'Retrouve les dernières captures WinFlowz, filtre ta liste et garde le même repère que sur l’accueil.',
+            leadingIcon: Icons.content_paste_search_outlined,
+            trailing: const AppProfileMenuButton(),
+            metrics: [
+              AppStatusPill(status: _pageStatus(pendingCount), label: 'Statut'),
+              AppMetricPill(
+                icon: Icons.inventory_2_outlined,
+                label: '${_items.length}',
+                value: _items.length == 1 ? 'item' : 'items',
+              ),
+              AppMetricPill(
+                icon: Icons.push_pin_outlined,
+                label: '$pinnedCount',
+                value: pinnedCount == 1 ? 'épinglé' : 'épinglés',
+              ),
+              AppMetricPill(
+                icon: Icons.schedule,
+                label: latest == null
+                    ? 'Aucune capture'
+                    : _formatShortDateTime(latest.lastSeenAt),
+                value: 'dernier vu',
+              ),
+            ],
+            searchField: AppSearchField(
+              controller: _searchController,
+              query: _searchController.text,
+              enabled: _items.isNotEmpty,
+              scopeLabel: 'Clipboard',
+              hintText: 'Rechercher un élément',
+              onChanged: (_) {},
+              onClear: _searchController.clear,
+            ),
+            syncAction: AppSyncStatusAction(
+              status: _pageStatus(pendingCount),
+              scopeLabel: 'Clipboard',
+              onPressed: _busy ? null : _load,
+            ),
           ),
           primaryAction: AppSectionCard(
             title: 'Nouvel élément',
@@ -409,22 +444,7 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
           message: _message,
           messageBuilder: (context, message) =>
               _ClipboardMessage(message: message),
-          listToolbar: AppPageToolbar(
-            searchField: AppSearchField(
-              controller: _searchController,
-              query: _searchController.text,
-              enabled: _items.isNotEmpty,
-              scopeLabel: 'Clipboard',
-              hintText: 'Rechercher un élément',
-              onChanged: (_) {},
-              onClear: _searchController.clear,
-            ),
-            syncAction: AppSyncStatusAction(
-              status: _pageStatus(pendingCount),
-              scopeLabel: 'Clipboard',
-              onPressed: _busy ? null : _load,
-            ),
-          ),
+          listToolbar: const SizedBox.shrink(),
           results: [
             if (_items.isEmpty) const _EmptyClipboardState(),
             if (_items.isNotEmpty && visibleItems.isEmpty)
@@ -489,50 +509,6 @@ class _ClipboardScreenState extends ConsumerState<ClipboardScreen> {
         value.contains('impossible') ||
         value.contains('échec') ||
         value.contains('failed');
-  }
-}
-
-class _ClipboardOverviewCard extends StatelessWidget {
-  const _ClipboardOverviewCard({
-    required this.totalCount,
-    required this.pinnedCount,
-    required this.pendingCount,
-    required this.latest,
-    required this.status,
-  });
-
-  final int totalCount;
-  final int pinnedCount;
-  final int pendingCount;
-  final ClipboardItemRecord? latest;
-  final AppSyncStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final latestLabel = latest == null
-        ? 'Aucune capture'
-        : _formatShortDateTime(latest!.lastSeenAt);
-    return ProductSummaryStrip(
-      children: [
-        const AppLocalModeStatusPill(),
-        AppStatusPill(status: status, label: status.statusLabel('Prêt')),
-        AppMetricPill(
-          icon: Icons.inventory_2_outlined,
-          label: '$totalCount',
-          value: totalCount == 1 ? 'item' : 'items',
-        ),
-        AppMetricPill(
-          icon: Icons.push_pin_outlined,
-          label: '$pinnedCount',
-          value: pinnedCount == 1 ? 'épinglé' : 'épinglés',
-        ),
-        AppMetricPill(
-          icon: Icons.schedule,
-          label: latestLabel,
-          value: 'dernier vu',
-        ),
-      ],
-    );
   }
 }
 

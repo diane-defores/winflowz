@@ -1,10 +1,10 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.2.0"
 project: "WinFlowz"
 created: "2026-06-18"
-updated: "2026-06-18"
+updated: "2026-06-19"
 status: draft
 source_skill: "001-sf-build"
 scope: "payment-activation-entitlements"
@@ -77,6 +77,21 @@ Convex is the durable suite entitlement store:
 
 The app and site may cache or mirror entitlement status for UX and sync eligibility, but protected access must fail closed when the suite entitlement cannot be verified.
 
+## Checkout Authority
+
+Product marketing authority and checkout infrastructure are separate concerns.
+
+- Each product should keep its own canonical sales page on its own public domain when that domain exists.
+- A shared suite checkout route is allowed and preferred when it reduces duplicated provider code and keeps product metadata explicit.
+- Shared checkout infrastructure does not make `winflowz.com` the canonical marketing home for every suite product.
+- The user should start the purchase flow from the product page for the product they are buying, then open the Lemon Squeezy hosted checkout or overlay for that exact offer.
+
+Current application of this rule:
+
+- `socialglowz.com/lifetime-deal` is the canonical SocialGlowz sales page.
+- `winflowz.com/winflowz-founder` is the canonical WinFlowz App sales page.
+- Both sales pages may call the same suite checkout route as long as the route receives an explicit `offerId` and preserves product-specific success, cancel, and entitlement metadata.
+
 ## Checkout Flow
 
 1. The sales page links to `/api/commerce/checkout` with an explicit `offerId`.
@@ -94,6 +109,17 @@ The app and site may cache or mirror entitlement status for UX and sync eligibil
 5. When a launch coupon applies, the route may also send `checkout_data.discount_code`, for example `FOUNDER`.
 
 Checkout success pages are not payment proof. They are UX only.
+
+## Shared Endpoint Rule
+
+One shared checkout endpoint is acceptable for multiple products when all of the following remain true:
+
+- The request contains an explicit allowlisted `offerId`.
+- The backend resolves the matching `productId`, `plan`, provider config, and redirect paths from the offer registry instead of trusting the client.
+- Product analytics can still distinguish the origin surface through fields such as `source` and `source_ref`.
+- Webhook fulfillment writes the canonical suite entitlement for the resolved product instead of a product-local duplicate ledger.
+
+Do not create a separate checkout endpoint per domain unless a product requires materially different provider, auth, risk, or deployment behavior. Domain count alone is not a reason to split the endpoint.
 
 ## Webhook Fulfillment Flow
 

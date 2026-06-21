@@ -419,6 +419,105 @@ class AppPageToolbar extends StatelessWidget {
   }
 }
 
+class AppPageHeroCard extends StatelessWidget {
+  const AppPageHeroCard({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    this.leadingIcon,
+    this.trailing,
+    this.searchField,
+    this.syncAction,
+    this.metrics = const <Widget>[],
+    this.footer,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData? leadingIcon;
+  final Widget? trailing;
+  final Widget? searchField;
+  final Widget? syncAction;
+  final List<Widget> metrics;
+  final Widget? footer;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              colorScheme.surfaceContainerHighest.withValues(alpha: 0.78),
+              colorScheme.surfaceContainer.withValues(alpha: 0.96),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.x4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (leadingIcon != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.x2),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(AppRadii.lg),
+                        border: Border.all(
+                          color: colorScheme.primary.withValues(alpha: 0.16),
+                        ),
+                      ),
+                      child: Icon(leadingIcon, color: colorScheme.primary),
+                    ),
+                    AppGaps.horizontalX3,
+                  ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title, style: theme.textTheme.headlineSmall),
+                        AppGaps.x1,
+                        Text(subtitle, style: theme.textTheme.bodyMedium),
+                      ],
+                    ),
+                  ),
+                  if (trailing != null) ...[AppGaps.horizontalX2, trailing!],
+                ],
+              ),
+              if (searchField != null || syncAction != null) ...[
+                AppGaps.x3,
+                AppPageToolbar(
+                  searchField: searchField,
+                  syncAction: syncAction,
+                ),
+              ],
+              if (metrics.isNotEmpty) ...[
+                AppGaps.x3,
+                Wrap(
+                  spacing: AppSpacing.x2,
+                  runSpacing: AppSpacing.x2,
+                  children: metrics,
+                ),
+              ],
+              if (footer != null) ...[AppGaps.x3, footer!],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class ProductPageScaffold extends StatelessWidget {
   const ProductPageScaffold({
     super.key,

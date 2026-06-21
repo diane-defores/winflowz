@@ -5,6 +5,7 @@ import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
+import '../../../core/widgets/app_profile_menu_button.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../settings/application/settings_store_provider.dart';
 import '../application/dictionary_store_provider.dart';
@@ -295,11 +296,46 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
       padding: AppInsets.screen,
       children: [
         ProductPageScaffold(
-          summary: _DictionaryOverviewCard(
-            totalCount: _items.length,
-            caseSensitiveCount: caseSensitiveCount,
-            latest: latest,
-            status: _pageStatus(),
+          summary: AppPageHeroCard(
+            title: 'Fil dictionnaire',
+            subtitle:
+                'Centralise tes termes personnalisés avec le même point d’entrée que sur l’accueil, puis filtre par mot ou règle.',
+            leadingIcon: Icons.auto_fix_high_outlined,
+            trailing: const AppProfileMenuButton(),
+            metrics: [
+              AppStatusPill(status: _pageStatus(), label: 'Statut'),
+              AppMetricPill(
+                icon: Icons.auto_fix_high_outlined,
+                label: '${_items.length}',
+                value: _items.length == 1 ? 'terme' : 'termes',
+              ),
+              AppMetricPill(
+                icon: Icons.text_fields,
+                label: '$caseSensitiveCount',
+                value: 'casse stricte',
+              ),
+              AppMetricPill(
+                icon: Icons.schedule,
+                label: latest == null
+                    ? 'Aucun ajout'
+                    : _formatShortDateTime(latest.createdAt),
+                value: 'dernier ajout',
+              ),
+            ],
+            searchField: AppSearchField(
+              controller: _searchController,
+              query: _searchController.text,
+              enabled: _items.isNotEmpty,
+              scopeLabel: 'Dictionnaire',
+              hintText: 'Rechercher un terme',
+              onChanged: (_) {},
+              onClear: _searchController.clear,
+            ),
+            syncAction: AppSyncStatusAction(
+              status: _pageStatus(),
+              scopeLabel: 'Dictionnaire',
+              onPressed: _busy ? null : _load,
+            ),
           ),
           primaryAction: AppSectionCard(
             title: 'Nouveau terme',
@@ -338,22 +374,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
           ),
           busy: _busy,
           message: _message,
-          listToolbar: AppPageToolbar(
-            searchField: AppSearchField(
-              controller: _searchController,
-              query: _searchController.text,
-              enabled: _items.isNotEmpty,
-              scopeLabel: 'Dictionnaire',
-              hintText: 'Rechercher un terme',
-              onChanged: (_) {},
-              onClear: _searchController.clear,
-            ),
-            syncAction: AppSyncStatusAction(
-              status: _pageStatus(),
-              scopeLabel: 'Dictionnaire',
-              onPressed: _busy ? null : _load,
-            ),
-          ),
+          listToolbar: const SizedBox.shrink(),
           results: [
             if (_items.isEmpty)
               const AppEmptyStateCard(
@@ -392,48 +413,6 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 ],
               ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class _DictionaryOverviewCard extends StatelessWidget {
-  const _DictionaryOverviewCard({
-    required this.totalCount,
-    required this.caseSensitiveCount,
-    required this.latest,
-    required this.status,
-  });
-
-  final int totalCount;
-  final int caseSensitiveCount;
-  final DictionaryTermRecord? latest;
-  final AppSyncStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final latestLabel = latest == null
-        ? 'Aucun ajout'
-        : _formatShortDateTime(latest!.createdAt);
-    return ProductSummaryStrip(
-      children: [
-        const AppLocalModeStatusPill(),
-        AppStatusPill(status: status, label: status.statusLabel('Prêt')),
-        AppMetricPill(
-          icon: Icons.auto_fix_high_outlined,
-          label: '$totalCount',
-          value: totalCount == 1 ? 'terme' : 'termes',
-        ),
-        AppMetricPill(
-          icon: Icons.text_fields,
-          label: '$caseSensitiveCount',
-          value: 'casse stricte',
-        ),
-        AppMetricPill(
-          icon: Icons.schedule,
-          label: latestLabel,
-          value: 'dernier ajout',
         ),
       ],
     );

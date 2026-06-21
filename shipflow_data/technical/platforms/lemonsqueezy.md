@@ -1,10 +1,10 @@
 ---
 artifact: technical_module_context
 metadata_schema_version: "1.0"
-artifact_version: "0.1.0"
+artifact_version: "0.2.0"
 project: winflowz
 created: "2026-05-30"
-updated: "2026-06-18"
+updated: "2026-06-19"
 status: draft
 source_skill: sf-docs
 scope: platform-usage-lemonsqueezy
@@ -53,6 +53,7 @@ This file is the local usage contract for architecture, validation, and automati
 
 - Provider role: first payment provider adapter for direct suite Lifetime Deal sales.
 - Product access owner: WinFlowz suite entitlement ledger, not Lemon Squeezy.
+- Canonical product sales pages stay product-specific even when the checkout route is shared.
 - Applies to paths:
   - `winflowz_site/src/lib/commerce/**`
   - `winflowz_site/src/pages/api/commerce/**`
@@ -64,6 +65,14 @@ This file is the local usage contract for architecture, validation, and automati
 - Validation surface: local adapter/route tests, Astro typecheck, hosted Convex fulfillment smoke, Lemon Squeezy test-mode checkout/webhook/refund smoke.
 - Owner: Diane.
 - Last verified: 2026-06-18 by local tests and local provider-contract review; hosted provider smoke not yet executed.
+
+## Sales Surface Rule
+
+- `socialglowz.com/lifetime-deal` is the canonical SocialGlowz sales page.
+- `winflowz.com/winflowz-founder` is the canonical WinFlowz App sales page.
+- Both products may call the same `/api/commerce/checkout` route.
+- Shared checkout infrastructure must not imply that `winflowz.com` becomes the canonical marketing home for SocialGlowz.
+- Product source attribution must stay explicit through `offerId`, `productId`, `source`, and `source_ref`.
 
 ## Local Configuration
 

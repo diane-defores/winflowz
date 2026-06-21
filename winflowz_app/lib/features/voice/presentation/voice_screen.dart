@@ -9,6 +9,7 @@ import '../../../core/platform/android_overlay_bridge.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
+import '../../../core/widgets/app_profile_menu_button.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../clipboard/application/clipboard_store_provider.dart';
 import '../../clipboard/domain/clipboard_capture_event.dart';
@@ -690,12 +691,46 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
       padding: AppInsets.screen,
       children: [
         ProductPageScaffold(
-          summary: _VoiceOverviewCard(
-            totalCount: _items.length,
-            latest: latest,
-            overlayStatus: overlayStatus,
-            overlaySupported: PlatformCapabilities.overlaySupported,
-            status: _pageStatus(),
+          summary: AppPageHeroCard(
+            title: 'Fil voix',
+            subtitle:
+                'Consulte les dernières entrées vocales avec le même repère que sur l’accueil, puis affine ta recherche sur l’historique voix.',
+            leadingIcon: Icons.graphic_eq_outlined,
+            trailing: const AppProfileMenuButton(),
+            metrics: [
+              AppStatusPill(status: _pageStatus(), label: 'Statut'),
+              AppMetricPill(
+                icon: Icons.multitrack_audio_outlined,
+                label: '${_items.length}',
+                value: _items.length == 1 ? 'capture' : 'captures',
+              ),
+              AppMetricPill(
+                icon: overlayRecording ? Icons.mic : Icons.mic_none_outlined,
+                label: _overlayStatusLabel(overlayStatus),
+                value: _overlayPermissionLabel(overlayStatus),
+              ),
+              AppMetricPill(
+                icon: Icons.schedule,
+                label: latest == null
+                    ? 'Aucune entrée'
+                    : _formatShortDateTime(latest.createdAt),
+                value: 'dernier ajout',
+              ),
+            ],
+            searchField: AppSearchField(
+              controller: _searchController,
+              query: _searchController.text,
+              enabled: _items.isNotEmpty,
+              scopeLabel: 'Voix',
+              hintText: 'Rechercher une transcription',
+              onChanged: (_) {},
+              onClear: _searchController.clear,
+            ),
+            syncAction: AppSyncStatusAction(
+              status: _pageStatus(),
+              scopeLabel: 'Voix',
+              onPressed: _busy ? null : _load,
+            ),
           ),
           primaryAction: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -762,22 +797,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
           busy: _busy,
           message: _message,
           messageBuilder: (context, message) => _VoiceMessage(message: message),
-          listToolbar: AppPageToolbar(
-            searchField: AppSearchField(
-              controller: _searchController,
-              query: _searchController.text,
-              enabled: _items.isNotEmpty,
-              scopeLabel: 'Voix',
-              hintText: 'Rechercher une transcription',
-              onChanged: (_) {},
-              onClear: _searchController.clear,
-            ),
-            syncAction: AppSyncStatusAction(
-              status: _pageStatus(),
-              scopeLabel: 'Voix',
-              onPressed: _busy ? null : _load,
-            ),
-          ),
+          listToolbar: const SizedBox.shrink(),
           results: [
             if (_items.isEmpty) const _EmptyVoiceState(),
             if (_items.isNotEmpty && visibleItems.isEmpty)
@@ -943,59 +963,6 @@ String _formatShortDateTime(DateTime value) {
   final hour = local.hour.toString().padLeft(2, '0');
   final minute = local.minute.toString().padLeft(2, '0');
   return '$day/$month $hour:$minute';
-}
-
-class _VoiceOverviewCard extends StatelessWidget {
-  const _VoiceOverviewCard({
-    required this.totalCount,
-    required this.latest,
-    required this.overlayStatus,
-    required this.overlaySupported,
-    required this.status,
-  });
-
-  final int totalCount;
-  final TranscriptionRecord? latest;
-  final AndroidOverlayStatus? overlayStatus;
-  final bool overlaySupported;
-  final AppSyncStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final isRecording = overlayStatus?.serviceState == 'recording';
-    final statusLabel = overlaySupported
-        ? _overlayStatusLabel(overlayStatus)
-        : 'Clavier vocal local';
-    final latestLabel = latest == null
-        ? 'Aucune capture'
-        : _formatShortDateTime(latest!.createdAt);
-
-    return ProductSummaryStrip(
-      children: [
-        const AppLocalModeStatusPill(),
-        AppStatusPill(status: status, label: status.statusLabel('Prêt')),
-        AppMetricPill(
-          icon: Icons.history,
-          label: '$totalCount',
-          value: totalCount == 1 ? 'transcription' : 'transcriptions',
-        ),
-        AppMetricPill(
-          icon: Icons.schedule,
-          label: latestLabel,
-          value: 'dernière capture',
-        ),
-        AppMetricPill(
-          icon: isRecording
-              ? Icons.fiber_manual_record
-              : Icons.radio_button_unchecked,
-          label: statusLabel,
-          value: 'overlay',
-          color: isRecording ? AppColors.danger : colorScheme.primary,
-        ),
-      ],
-    );
-  }
 }
 
 class _OverlayControlCard extends StatelessWidget {

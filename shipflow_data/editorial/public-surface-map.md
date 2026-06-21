@@ -1,10 +1,10 @@
 ---
 artifact: editorial_governance
 metadata_schema_version: "1.0"
-artifact_version: "1.0.1"
+artifact_version: "1.1.0"
 project: winflowz
 created: "2026-05-17"
-updated: "2026-05-23"
+updated: "2026-06-19"
 status: reviewed
 source_skill: sf-docs
 scope: public-surface-map
@@ -30,6 +30,10 @@ evidence:
   - src/pages/[...lang]/termux.astro
   - src/pages/[...lang]/dotfiles.astro
   - src/pages/[...lang]/shipflow.astro
+  - src/pages/[...lang]/winflowz-founder.astro
+  - src/pages/[...lang]/socialglowz-founder.astro
+  - src/lib/commerce/offers.ts
+  - src/pages/api/commerce/checkout.ts
 next_review: "2026-06-17"
 next_step: "/sf-docs update"
 ---

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
+import '../../../core/widgets/app_profile_menu_button.dart';
 import '../application/home_feed_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -118,38 +119,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return ListView(
           padding: AppInsets.screen,
           children: [
-            AppSectionCard(
+            AppPageHeroCard(
               title: 'Fil d’accueil',
               subtitle:
                   'Ton fil global des dernières entrées de voix, presse-papiers, snippets et dictionnaire.',
-              child: AppPageToolbar(
-                searchField: AppSearchField(
-                  controller: _searchController,
-                  query: _searchQuery,
-                  onChanged: (query) {
-                    if (query == _searchQuery) {
-                      return;
-                    }
-                    setState(() {
-                      _searchQuery = query.trim();
-                    });
-                  },
-                  onClear: () {
-                    _searchController.clear();
-                  },
-                  onSubmit: (_) => unawaited(_refresh()),
-                  scopeLabel: 'Global',
+              leadingIcon: Icons.dashboard_customize_outlined,
+              trailing: const AppProfileMenuButton(),
+              metrics: [
+                _FeedSourceFilters(
+                  visibleSources: const <HomeFeedSourceType>[
+                    HomeFeedSourceType.voice,
+                    HomeFeedSourceType.clipboard,
+                    HomeFeedSourceType.snippet,
+                  ],
+                  selectedSources: _selectedSources,
+                  onChanged: _toggleSource,
                 ),
-                syncAction: AppSyncStatusAction(
-                  status: status,
-                  onPressed: dataAsync.isLoading ? null : _refresh,
-                ),
+              ],
+              searchField: AppSearchField(
+                controller: _searchController,
+                query: _searchQuery,
+                onChanged: (query) {
+                  if (query == _searchQuery) {
+                    return;
+                  }
+                  setState(() {
+                    _searchQuery = query.trim();
+                  });
+                },
+                onClear: () {
+                  _searchController.clear();
+                },
+                onSubmit: (_) => unawaited(_refresh()),
+                scopeLabel: 'Global',
               ),
-            ),
-            AppGaps.x2,
-            _FeedSourceFilters(
-              selectedSources: _selectedSources,
-              onChanged: _toggleSource,
+              syncAction: AppSyncStatusAction(
+                status: status,
+                onPressed: dataAsync.isLoading ? null : _refresh,
+              ),
             ),
             AppGaps.x2,
             if (hasStatusBanner)
@@ -258,31 +265,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 class _FeedSourceFilters extends StatelessWidget {
   const _FeedSourceFilters({
+    this.visibleSources = const <HomeFeedSourceType>[
+      HomeFeedSourceType.voice,
+      HomeFeedSourceType.clipboard,
+      HomeFeedSourceType.snippet,
+      HomeFeedSourceType.dictionary,
+    ],
     required this.selectedSources,
     required this.onChanged,
   });
 
+  final List<HomeFeedSourceType> visibleSources;
   final Set<HomeFeedSourceType> selectedSources;
   final ValueChanged<HomeFeedSourceType> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final chips = <MapEntry<HomeFeedSourceType, String>>[
-      const MapEntry(HomeFeedSourceType.voice, 'Voix'),
-      const MapEntry(HomeFeedSourceType.clipboard, 'Presse-papiers'),
-      const MapEntry(HomeFeedSourceType.snippet, 'Snippets'),
-      const MapEntry(HomeFeedSourceType.dictionary, 'Dictionnaire'),
-    ];
+    final labels = <HomeFeedSourceType, String>{
+      HomeFeedSourceType.voice: 'Voix',
+      HomeFeedSourceType.clipboard: 'Presse-papiers',
+      HomeFeedSourceType.snippet: 'Snippets',
+      HomeFeedSourceType.dictionary: 'Dictionnaire',
+    };
 
     return Wrap(
       spacing: AppSpacing.x2,
       runSpacing: AppSpacing.x1,
-      children: chips
+      children: visibleSources
           .map(
-            (entry) => ChoiceChip(
-              label: Text(entry.value),
-              selected: selectedSources.contains(entry.key),
-              onSelected: (_) => onChanged(entry.key),
+            (source) => ChoiceChip(
+              label: Text(labels[source]!),
+              selected: selectedSources.contains(source),
+              onSelected: (_) => onChanged(source),
             ),
           )
           .toList(growable: false),

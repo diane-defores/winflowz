@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/winflowz_app.dart';
 import '../../../core/bootstrap/app_build_info.dart';
@@ -85,15 +86,27 @@ typedef _OverlayAppearanceChanged =
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({
     super.key,
+    this.initialSectionId,
     this.onResumeOnboarding,
     this.highlightOnboardingResume = false,
   });
 
+  final String? initialSectionId;
   final VoidCallback? onResumeOnboarding;
   final bool highlightOnboardingResume;
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+enum _SettingsPageMode {
+  hub,
+  account,
+  voice,
+  keyboard,
+  overlay,
+  keys,
+  maintenance,
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
@@ -153,6 +166,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    _applyInitialSectionFocus();
     _openAiController = TextEditingController();
     _anthropicController = TextEditingController();
     _scrollController = ScrollController();
@@ -160,6 +174,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _loadOverlayState();
     _loadKeyboardState();
     _loadOnboardingSettings();
+  }
+
+  void _applyInitialSectionFocus() {
+    final sectionId = widget.initialSectionId?.trim();
+    if (sectionId == null || sectionId.isEmpty) {
+      return;
+    }
+    if (!_expandedSections.containsKey(sectionId)) {
+      return;
+    }
+    for (final key in _expandedSections.keys) {
+      _expandedSections[key] = key == sectionId;
+    }
+  }
+
+  _SettingsPageMode _pageMode() {
+    final sectionId = widget.initialSectionId?.trim();
+    return switch (sectionId) {
+      'account_cloud' => _SettingsPageMode.account,
+      'voice_packs' => _SettingsPageMode.voice,
+      'keyboard' => _SettingsPageMode.keyboard,
+      'overlay' => _SettingsPageMode.overlay,
+      'keys' => _SettingsPageMode.keys,
+      'maintenance' => _SettingsPageMode.maintenance,
+      _ => _SettingsPageMode.hub,
+    };
   }
 
   @override
@@ -1604,37 +1644,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _collapsibleSection({
-    required String id,
-    required String title,
-    required Widget child,
-  }) {
-    final expanded = _expandedSections[id] ?? false;
-    return Card(
-      margin: AppSectionMetrics.collapsibleSectionMargin,
-      child: ExpansionTile(
-        key: ValueKey<String>('settings_section_${id}_$expanded'),
-        initiallyExpanded: expanded,
-        onExpansionChanged: (value) {
-          setState(() => _setExpandedSection(id, value));
-        },
-        tilePadding: AppSectionMetrics.collapsibleTilePadding,
-        childrenPadding: AppSectionMetrics.collapsibleChildrenPadding,
-        title: Text(title, style: Theme.of(context).textTheme.titleSmall),
-        children: [child],
-      ),
-    );
-  }
-
-  void _setExpandedSection(String id, bool expanded) {
-    for (final sectionId in _expandedSections.keys) {
-      _expandedSections[sectionId] = expanded && sectionId == id;
-    }
-    if (!_expandedSections.containsKey(id)) {
-      _expandedSections[id] = expanded;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     AppDiagnostics.record('screen_build', 'Settings');
@@ -1694,133 +1703,220 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final cloudOverview = ref.watch(cloudSyncOverviewProvider);
     final suiteIdentityAsync = ref.watch(suiteIdentityProvider);
     final voiceCatalogState = ref.watch(languagePackCatalogProvider);
+    final pageMode = _pageMode();
+    final accountSection = _AccountCloudSection(
+      authAsync: authAsync,
+      cloudSyncOverview: cloudOverview,
+      postAuthMessage: _postAuthMessage,
+      remoteAuthConfigured: remoteAuthConfigured,
+      onConnectCloudAccount: _connectCloudAccount,
+      onSignOut: _signOut,
+    );
+    final appearanceQuickSection = _AppearanceSection(
+      themeMode: themeMode,
+      confirmDestructiveActions:
+          (_onboardingSettings ?? const UserSettingsSnapshot.defaults())
+              .confirmDestructiveActions,
+      syncStateLabel: _appearanceSyncLabel(authAsync),
+      syncStateDetail: _appearanceSyncDetail(authAsync),
+      syncActionStatus: _appearanceSyncStatus,
+      onSyncOrRefresh: () {
+        _retryAppearanceFromStatus();
+      },
+      onConfirmDestructiveActionsChanged: _setConfirmDestructiveActions,
+      onChanged: _setThemeMode,
+    );
+    final keyboardSection = _KeyboardSettingsSection(
+      status: keyboardStatus,
+      busy: _keyboardBusy,
+      onRefresh: _loadKeyboardState,
+      onOpenInputSettings: _openKeyboardSettings,
+      onShowPicker: _showKeyboardPicker,
+      onOpenCornerShortcuts: _openCornerShortcuts,
+      onOpenNavigationDiagnostics: _openKeyboardNavigationDiagnostics,
+      onOpenKeyboardThemeStudio: _openKeyboardThemeStudio,
+      onThemePresetChanged: _setKeyboardThemePreset,
+      onReliefChanged: _setKeyboardRelief,
+      onPreferenceChanged: _setKeyboardPreferences,
+    );
+    final voiceSection = _OnDeviceSpeechSection(
+      state: voiceCatalogState,
+      keyboardStatus: keyboardStatus,
+      onRefresh: () => ref.read(languagePackCatalogProvider.notifier).refresh(),
+      onAllowCloudFallbackChanged: (value) => ref
+          .read(languagePackCatalogProvider.notifier)
+          .setAllowCloudFallback(value),
+      onInstall: (entry) => _installSpeechPack(entry, keyboardStatus),
+      onRetryInstall: (entry) => _retrySpeechPackInstall(entry, keyboardStatus),
+      onMarkUpdateAvailable: (entry) => ref
+          .read(languagePackCatalogProvider.notifier)
+          .markUpdateAvailable(entry),
+      onMarkCorrupted: (entry) =>
+          ref.read(languagePackCatalogProvider.notifier).markCorrupted(entry),
+      onRemove: _removeSpeechPack,
+    );
+    final secretsSection = _SecretsSection(
+      storageStatusAsync: storageStatusAsync,
+      openAiController: _openAiController,
+      anthropicController: _anthropicController,
+      message: _message,
+      saving: _saving,
+      syncStatus: _secretsSyncStatus,
+      onSave: _saveSecrets,
+      onSignOut: _signOut,
+      onRetrySync: () {
+        _retrySecretsFromStatus();
+      },
+    );
+    final overlaySection = _OverlaySettingsSection(
+      status: overlayStatus,
+      busy: _overlayBusy,
+      onToggle: _toggleOverlay,
+      onAppearanceChanged: _setOverlayAppearance,
+      onOpenOverlaySettings: _openOverlaySettings,
+      onOpenAccessibilitySettings: _openAccessibilitySettings,
+      onStart: _startOverlay,
+      onStop: _stopOverlay,
+      onCancel: _cancelOverlay,
+    );
+    final maintenanceSection = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _BackendProviderSection(
+          summary: FirebaseBootstrap.isConfigured
+              ? 'Firebase est configuré comme adaptateur backend principal.'
+              : 'La synchronisation distante n’est pas configurée. WinFlowz fonctionne en mode local.',
+          detail:
+              '${_appearanceSyncDetail(authAsync)}\nStatut du compte Suite: ${_suiteIdentitySummary(suiteIdentityAsync)}',
+          diagnosticText: _backendDiagnosticText(suiteIdentityAsync),
+          onCopyDiagnostic: _copyBackendDiagnostic,
+          onClearDiagnosticLogs: _clearDiagnosticLogs,
+        ),
+        AppGaps.x3,
+        const _PlatformCapabilitiesSection(),
+      ],
+    );
+
+    if (pageMode != _SettingsPageMode.hub) {
+      final (title, subtitle, icon, section) = switch (pageMode) {
+        _SettingsPageMode.account => (
+          'Mon compte',
+          'Compte, accès et synchronisation cloud.',
+          Icons.cloud_sync_outlined,
+          accountSection,
+        ),
+        _SettingsPageMode.voice => (
+          'Voix',
+          'Dictée locale, packs vocaux et fallback.',
+          Icons.graphic_eq_outlined,
+          voiceSection,
+        ),
+        _SettingsPageMode.keyboard => (
+          'Clavier',
+          'IME Android, thème et préférences.',
+          Icons.keyboard_outlined,
+          keyboardSection,
+        ),
+        _SettingsPageMode.overlay => (
+          'Overlay Android',
+          'Bulle, permissions et comportement d’injection.',
+          Icons.bubble_chart_outlined,
+          overlaySection,
+        ),
+        _SettingsPageMode.keys => (
+          'Clés IA locales',
+          'Secrets stockés sur cet appareil.',
+          Icons.key_outlined,
+          secretsSection,
+        ),
+        _SettingsPageMode.maintenance => (
+          'Maintenance',
+          'Backend, support et diagnostics.',
+          Icons.admin_panel_settings_outlined,
+          maintenanceSection,
+        ),
+        _SettingsPageMode.hub => (
+          '',
+          '',
+          Icons.tune_outlined,
+          const SizedBox.shrink(),
+        ),
+      };
+      return _settingsList(
+        sections: [
+          ?notificationStack,
+          AppPageHeroCard(
+            title: title,
+            subtitle: subtitle,
+            leadingIcon: icon,
+            syncAction: OutlinedButton.icon(
+              onPressed: () => context.go('/settings'),
+              icon: const Icon(Icons.arrow_back_outlined),
+              label: const Text('Retour'),
+            ),
+          ),
+          section,
+          ?bottomOnboardingTile,
+        ],
+      );
+    }
+
     return _settingsList(
       sections: [
         ?notificationStack,
-        _collapsibleSection(
-          id: 'account_cloud',
-          title: 'Compte & cloud',
-          child: _AccountCloudSection(
-            authAsync: authAsync,
-            cloudSyncOverview: cloudOverview,
-            postAuthMessage: _postAuthMessage,
-            remoteAuthConfigured: remoteAuthConfigured,
-            onConnectCloudAccount: _connectCloudAccount,
-            onSignOut: _signOut,
+        AppPageHeroCard(
+          title: 'Paramètres',
+          subtitle:
+              'Choisis une sous-page claire plutôt qu’un bloc unique de réglages.',
+          leadingIcon: Icons.tune_outlined,
+          footer: AppSectionCard(
+            title: 'Apparence rapide',
+            child: appearanceQuickSection,
           ),
         ),
-        _collapsibleSection(
-          id: 'appearance',
-          title: 'Apparence',
-          child: _AppearanceSection(
-            themeMode: themeMode,
-            confirmDestructiveActions:
-                (_onboardingSettings ?? const UserSettingsSnapshot.defaults())
-                    .confirmDestructiveActions,
-            syncStateLabel: _appearanceSyncLabel(authAsync),
-            syncStateDetail: _appearanceSyncDetail(authAsync),
-            syncActionStatus: _appearanceSyncStatus,
-            onSyncOrRefresh: () {
-              _retryAppearanceFromStatus();
-            },
-            onConfirmDestructiveActionsChanged: _setConfirmDestructiveActions,
-            onChanged: _setThemeMode,
-          ),
-        ),
-        if (PlatformCapabilities.keyboardImeSupported)
-          _collapsibleSection(
-            id: 'keyboard',
-            title: 'Clavier WinFlowz',
-            child: _KeyboardSettingsSection(
-              status: keyboardStatus,
-              busy: _keyboardBusy,
-              onRefresh: _loadKeyboardState,
-              onOpenInputSettings: _openKeyboardSettings,
-              onShowPicker: _showKeyboardPicker,
-              onOpenCornerShortcuts: _openCornerShortcuts,
-              onOpenNavigationDiagnostics: _openKeyboardNavigationDiagnostics,
-              onOpenKeyboardThemeStudio: _openKeyboardThemeStudio,
-              onThemePresetChanged: _setKeyboardThemePreset,
-              onReliefChanged: _setKeyboardRelief,
-              onPreferenceChanged: _setKeyboardPreferences,
+        Wrap(
+          spacing: AppSpacing.x2,
+          runSpacing: AppSpacing.x2,
+          children: [
+            _SettingsHubTile(
+              icon: Icons.cloud_sync_outlined,
+              title: 'Mon compte',
+              subtitle: 'Compte, accès et synchronisation',
+              onTap: () => context.go('/settings?section=account_cloud'),
             ),
-          ),
-        _collapsibleSection(
-          id: 'voice_packs',
-          title: 'Reconnaissance vocale locale',
-          child: _OnDeviceSpeechSection(
-            state: voiceCatalogState,
-            keyboardStatus: keyboardStatus,
-            onRefresh: () =>
-                ref.read(languagePackCatalogProvider.notifier).refresh(),
-            onAllowCloudFallbackChanged: (value) => ref
-                .read(languagePackCatalogProvider.notifier)
-                .setAllowCloudFallback(value),
-            onInstall: (entry) => _installSpeechPack(entry, keyboardStatus),
-            onRetryInstall: (entry) =>
-                _retrySpeechPackInstall(entry, keyboardStatus),
-            onMarkUpdateAvailable: (entry) => ref
-                .read(languagePackCatalogProvider.notifier)
-                .markUpdateAvailable(entry),
-            onMarkCorrupted: (entry) => ref
-                .read(languagePackCatalogProvider.notifier)
-                .markCorrupted(entry),
-            onRemove: _removeSpeechPack,
-          ),
-        ),
-        _collapsibleSection(
-          id: 'keys',
-          title: 'Clés IA locales',
-          child: _SecretsSection(
-            storageStatusAsync: storageStatusAsync,
-            openAiController: _openAiController,
-            anthropicController: _anthropicController,
-            message: _message,
-            saving: _saving,
-            syncStatus: _secretsSyncStatus,
-            onSave: _saveSecrets,
-            onSignOut: _signOut,
-            onRetrySync: () {
-              _retrySecretsFromStatus();
-            },
-          ),
-        ),
-        if (PlatformCapabilities.overlaySupported)
-          _collapsibleSection(
-            id: 'overlay',
-            title: 'Overlay Android',
-            child: _OverlaySettingsSection(
-              status: overlayStatus,
-              busy: _overlayBusy,
-              onToggle: _toggleOverlay,
-              onAppearanceChanged: _setOverlayAppearance,
-              onOpenOverlaySettings: _openOverlaySettings,
-              onOpenAccessibilitySettings: _openAccessibilitySettings,
-              onStart: _startOverlay,
-              onStop: _stopOverlay,
-              onCancel: _cancelOverlay,
+            _SettingsHubTile(
+              icon: Icons.graphic_eq_outlined,
+              title: 'Voix',
+              subtitle: 'Dictée locale et packs',
+              onTap: () => context.go('/settings?section=voice_packs'),
             ),
-          ),
-        _collapsibleSection(
-          id: 'maintenance',
-          title: 'Maintenance et diagnostics',
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _BackendProviderSection(
-                summary: FirebaseBootstrap.isConfigured
-                    ? 'Firebase est configuré comme adaptateur backend principal.'
-                    : 'La synchronisation distante n’est pas configurée. WinFlowz fonctionne en mode local.',
-                detail:
-                    '${_appearanceSyncDetail(authAsync)}\nStatut du compte Suite: ${_suiteIdentitySummary(suiteIdentityAsync)}',
-                diagnosticText: _backendDiagnosticText(suiteIdentityAsync),
-                onCopyDiagnostic: _copyBackendDiagnostic,
-                onClearDiagnosticLogs: _clearDiagnosticLogs,
+            if (PlatformCapabilities.keyboardImeSupported)
+              _SettingsHubTile(
+                icon: Icons.keyboard_outlined,
+                title: 'Clavier',
+                subtitle: 'IME, thème et préférences',
+                onTap: () => context.go('/settings?section=keyboard'),
               ),
-              AppGaps.x3,
-              const _PlatformCapabilitiesSection(),
-            ],
-          ),
+            if (PlatformCapabilities.overlaySupported)
+              _SettingsHubTile(
+                icon: Icons.bubble_chart_outlined,
+                title: 'Overlay',
+                subtitle: 'Bulle et permissions',
+                onTap: () => context.go('/settings?section=overlay'),
+              ),
+            _SettingsHubTile(
+              icon: Icons.key_outlined,
+              title: 'Clés IA locales',
+              subtitle: 'Secrets stockés sur l’appareil',
+              onTap: () => context.go('/settings?section=keys'),
+            ),
+            _SettingsHubTile(
+              icon: Icons.admin_panel_settings_outlined,
+              title: 'Maintenance',
+              subtitle: 'Backend et diagnostics',
+              onTap: () => context.go('/settings?section=maintenance'),
+            ),
+          ],
         ),
         ?bottomOnboardingTile,
       ],
@@ -1845,6 +1941,59 @@ class _OnboardingSettingsTile extends StatefulWidget {
   @override
   State<_OnboardingSettingsTile> createState() =>
       _OnboardingSettingsTileState();
+}
+
+class _SettingsHubTile extends StatelessWidget {
+  const _SettingsHubTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 240,
+      child: Card(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadii.lg),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.x3),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, color: Theme.of(context).colorScheme.primary),
+                AppGaps.horizontalX2,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      AppGaps.x1,
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>

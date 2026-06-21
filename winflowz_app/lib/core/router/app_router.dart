@@ -62,6 +62,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => AppShellScreen(
           initialIndex: 6,
           initialOnboardingStep: state.uri.queryParameters['onboarding'],
+          initialSettingsSection: state.uri.queryParameters['section'],
         ),
       ),
       GoRoute(

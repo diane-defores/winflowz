@@ -5,6 +5,7 @@ import '../../../core/diagnostics/app_diagnostics.dart';
 import '../../../core/platform/android_keyboard_bridge.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_components.dart';
+import '../../../core/widgets/app_profile_menu_button.dart';
 import '../../../core/widgets/confirm_action_dialog.dart';
 import '../../settings/application/settings_store_provider.dart';
 import '../application/snippet_store_provider.dart';
@@ -289,11 +290,46 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
       padding: AppInsets.screen,
       children: [
         ProductPageScaffold(
-          summary: _SnippetsOverviewCard(
-            totalCount: _items.length,
-            labeledCount: labeledCount,
-            latest: latest,
-            status: _pageStatus(),
+          summary: AppPageHeroCard(
+            title: 'Fil snippets',
+            subtitle:
+                'Retrouve tes derniers snippets, filtre la liste et garde le même point d’entrée que sur l’accueil.',
+            leadingIcon: Icons.text_snippet_outlined,
+            trailing: const AppProfileMenuButton(),
+            metrics: [
+              AppStatusPill(status: _pageStatus(), label: 'Statut'),
+              AppMetricPill(
+                icon: Icons.text_snippet_outlined,
+                label: '${_items.length}',
+                value: _items.length == 1 ? 'snippet' : 'snippets',
+              ),
+              AppMetricPill(
+                icon: Icons.sell_outlined,
+                label: '$labeledCount',
+                value: labeledCount == 1 ? 'libellé' : 'libellés',
+              ),
+              AppMetricPill(
+                icon: Icons.schedule,
+                label: latest == null
+                    ? 'Aucun ajout'
+                    : _formatShortDateTime(latest.createdAt),
+                value: 'dernier ajout',
+              ),
+            ],
+            searchField: AppSearchField(
+              controller: _searchController,
+              query: _searchController.text,
+              enabled: _items.isNotEmpty,
+              scopeLabel: 'Snippets',
+              hintText: 'Rechercher un snippet',
+              onChanged: (_) {},
+              onClear: _searchController.clear,
+            ),
+            syncAction: AppSyncStatusAction(
+              status: _pageStatus(),
+              scopeLabel: 'Snippets',
+              onPressed: _busy ? null : _load,
+            ),
           ),
           primaryAction: AppSectionCard(
             title: 'Nouveau snippet',
@@ -333,22 +369,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
           ),
           busy: _busy,
           message: _message,
-          listToolbar: AppPageToolbar(
-            searchField: AppSearchField(
-              controller: _searchController,
-              query: _searchController.text,
-              enabled: _items.isNotEmpty,
-              scopeLabel: 'Snippets',
-              hintText: 'Rechercher un snippet',
-              onChanged: (_) {},
-              onClear: _searchController.clear,
-            ),
-            syncAction: AppSyncStatusAction(
-              status: _pageStatus(),
-              scopeLabel: 'Snippets',
-              onPressed: _busy ? null : _load,
-            ),
-          ),
+          listToolbar: const SizedBox.shrink(),
           results: [
             if (_items.isEmpty)
               const AppEmptyStateCard(
@@ -384,48 +405,6 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                 ],
               ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class _SnippetsOverviewCard extends StatelessWidget {
-  const _SnippetsOverviewCard({
-    required this.totalCount,
-    required this.labeledCount,
-    required this.latest,
-    required this.status,
-  });
-
-  final int totalCount;
-  final int labeledCount;
-  final SnippetRecord? latest;
-  final AppSyncStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final latestLabel = latest == null
-        ? 'Aucun ajout'
-        : _formatShortDateTime(latest!.createdAt);
-    return ProductSummaryStrip(
-      children: [
-        const AppLocalModeStatusPill(),
-        AppStatusPill(status: status, label: status.statusLabel('Prêt')),
-        AppMetricPill(
-          icon: Icons.text_snippet_outlined,
-          label: '$totalCount',
-          value: totalCount == 1 ? 'snippet' : 'snippets',
-        ),
-        AppMetricPill(
-          icon: Icons.sell_outlined,
-          label: '$labeledCount',
-          value: labeledCount == 1 ? 'libellé' : 'libellés',
-        ),
-        AppMetricPill(
-          icon: Icons.schedule,
-          label: latestLabel,
-          value: 'dernier ajout',
         ),
       ],
     );

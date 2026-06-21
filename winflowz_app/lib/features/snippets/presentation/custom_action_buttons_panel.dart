@@ -16,10 +16,12 @@ class CustomActionButtonsPanel extends ConsumerStatefulWidget {
   const CustomActionButtonsPanel({
     super.key,
     required this.surfaceSelector,
+    this.searchQuery = '',
     this.onItemsChanged,
   });
 
   final Widget surfaceSelector;
+  final String searchQuery;
   final ValueChanged<List<CustomActionButtonRecord>>? onItemsChanged;
 
   @override
@@ -260,6 +262,7 @@ class _CustomActionButtonsPanelState
   @override
   Widget build(BuildContext context) {
     final isActionBarEnabled = ref.watch(customActionBarEnabledProvider);
+    final visibleItems = _visibleItems(widget.searchQuery);
     return ListView(
       padding: AppInsets.screen,
       children: [
@@ -366,6 +369,11 @@ class _CustomActionButtonsPanelState
             message:
                 'Crée ton premier bouton pour lancer un texte, une expression clavier ou une séquence desktop.',
           )
+        else if (visibleItems.isEmpty)
+          const AppEmptyStateCard(
+            title: 'Aucun résultat',
+            message: 'Aucune action ne correspond à cette recherche.',
+          )
         else
           AppSectionCard(
             title: 'Boutons personnalisés',
@@ -373,7 +381,7 @@ class _CustomActionButtonsPanelState
             stretch: false,
             child: Column(
               children: [
-                for (final item in _items) ...[
+                for (final item in visibleItems) ...[
                   AppEntityCard(
                     leading: Icon(item.icon.iconData),
                     title: Text(item.title),
@@ -420,6 +428,21 @@ class _CustomActionButtonsPanelState
     final valueLabel = _valueLabel(item.action);
     final imeSummary = item.action.imeCompatibilitySummary;
     return 'Rangée ${item.rowIndex + 1} · $actionLabel · $valueLabel · $imeSummary';
+  }
+
+  List<CustomActionButtonRecord> _visibleItems(String rawQuery) {
+    final query = rawQuery.trim().toLowerCase();
+    if (query.isEmpty) {
+      return _items;
+    }
+    return _items
+        .where((item) {
+          final subtitle = _subtitle(item).toLowerCase();
+          return item.title.toLowerCase().contains(query) ||
+              subtitle.contains(query) ||
+              item.action.value.toLowerCase().contains(query);
+        })
+        .toList(growable: false);
   }
 
   String _valueLabel(CustomActionButtonAction action) {
