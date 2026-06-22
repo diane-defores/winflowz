@@ -286,14 +286,17 @@ None.
 | 2026-06-11 19:51:04 UTC | 006-sf-design | GPT-5 Codex | app-field-row-standardization | partial | Continue full token scope or /103-sf-verify after remaining surfaces |
 | 2026-06-12 20:46:04 UTC | 001-sf-build | Codex | implementation | partial | Continue WinFlowz site token migration before /103-sf-verify |
 | 2026-06-18 00:00:00 UTC | 001-sf-build | GPT-5 Codex | implementation | done | WinFlowz app/site drift reduced to zero; ready for /103-sf-verify |
+| 2026-06-22 06:30:00 UTC | 102-sf-start | Claude Code | implementation | partial | Improved token values (spacing, shadows, semantic palette), fixed 5 hardcoded values in Settings, added motion tokens; flutter analyze clean | Complete Tâches 2-4 and 9 before /103-sf-verify |
 
 ## Current Chantier Flow
 
-- 100-sf-spec: done
-- 101-sf-ready: done
-- 102-sf-start: partial
-- 006-sf-design: partial
-- 001-sf-build: done
-- 103-sf-verify: not launched
-- 104-sf-end: not launched
-- 005-sf-ship: not launched
+| Step | Status | Evidence | Next step |
+|------|--------|----------|-----------|
+| 100-sf-spec | done | Spec created and approved 2026-06-11 | Keep spec current |
+| 101-sf-ready | done | Readiness confirmed 2026-06-11 | Continue implementation |
+| 102-sf-start | in_progress | Partial token updates + hardcoded value fixes implemented | Complete Tâches 2-4 and 9 before /103-sf-verify |
+| 006-sf-design | partial | Design direction routed to token hardening chantier | Visual proof pending |
+| 001-sf-build | done | Site/app drift reduced to zero in prior run | Resume only if new site files change |
+| 103-sf-verify | not launched | Pending remaining implementation and visual validation | Launch after Tâches 2-4, 9 complete |
+| 104-sf-end | not launched | — | Launch after /103-sf-verify passes |
+| 005-sf-ship | partial | Prior work shipped; current token work not shipped | Ship only after verification closure |

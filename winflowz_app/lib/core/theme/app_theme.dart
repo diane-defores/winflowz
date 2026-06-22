@@ -141,11 +141,11 @@ class AppInsets {
     horizontal: AppSpacing.x2,
     vertical: AppSpacing.x3,
   );
-  static const card = EdgeInsets.all(AppSpacing.x2 + AppSpacing.x1 / 4);
-  static const compactCard = EdgeInsets.all(AppSpacing.x2);
+  static const card = EdgeInsets.all(AppSpacing.x3);
+  static const compactCard = EdgeInsets.all(AppSpacing.x2 + AppSpacing.x1 / 2);
   static const button = EdgeInsets.symmetric(
     horizontal: AppSpacing.x3,
-    vertical: AppSpacing.x1,
+    vertical: AppSpacing.x2,
   );
   static const textButton = EdgeInsets.symmetric(
     horizontal: AppSpacing.x2,

@@ -237,6 +237,7 @@ class WinFlowzThemeTokens {
   static const Color brandWarning = Color(0xFFD97706);
   static const Color brandDanger = Color(0xFFDC2626);
   static const Color brandDangerLight = Color(0xFFF87171);
+  static const Color brandInfo = Color(0xFF3B82F6);
   static const Color lightGray = appLightMuted;
   static const Color surfaceSunken = appLightBackground;
   static const Color surfaceRaised = appLightCard;
@@ -245,11 +246,11 @@ class WinFlowzThemeTokens {
   static const Color surfaceOverlayDark = siteSecondary;
 
   // Ombres profondes mais neutres pour les surfaces WinFlowz.
-  static const Color shadowSoft = Color(0x18000000);
-  static const Color shadowCard = Color(0x26000000);
-  static const Color shadowCardHover = Color(0x33000000);
-  static const Color shadowCardLarge = Color(0x40000000);
-  static const Color shadowPrimary = Color(0x33000000);
+  static const Color shadowSoft = Color(0x1F000000);
+  static const Color shadowCard = Color(0x33000000);
+  static const Color shadowCardHover = Color(0x40000000);
+  static const Color shadowCardLarge = Color(0x4D000000);
+  static const Color shadowPrimary = Color(0x40000000);
 
   // Surfaces/typographies de rappel de la page clavier (existant app).
   static const Color keyboardPrivateFrame = Color(0xFFF6E8E2);

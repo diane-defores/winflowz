@@ -95,7 +95,6 @@ export default {
     },
   },
   plugins: [
-    require("tailwindcss/nesting"),
     require("preline/plugin"),
     require("@tailwindcss/forms"),
     function({ addBase }) {
