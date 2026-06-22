@@ -101,6 +101,8 @@
 | 🟡 | Add reduced-motion handling for non-trivial motion and interaction feedback instead of relying only on raw duration/curve tokens | 📋 todo |
 | 🟡 | Add a Flutter design playground/storybook screen for token inspection across light/dark modes | 📋 todo |
 | 🟡 | Review wide desktop-biased dialog widths and encoded status strings in keyboard/settings flows for better responsive readability | 📋 todo |
+| 🟡 | Tokenize remaining literal durations in Shell/Voice/Settings motion paths (tokens defined in AppMotion, consumer migration pending analyzer resolution) | 📋 todo |
+| 🟡 | Resolve Flutter analyzer false-positive on new AppMotion getters to enable full motion token consumption | 📋 todo |
 
 ### Audit: Code
 

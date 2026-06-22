@@ -2021,7 +2021,7 @@ class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>
     super.initState();
     _glowController = AnimationController(
       vsync: this,
-      duration: AppMotion.motionOnboardingPulse,
+      duration: const Duration(milliseconds: 550),
     );
     if (widget.highlightResume) {
       _startGlow();
@@ -2100,7 +2100,7 @@ class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>
       builder: (context, child) {
         final glow = widget.highlightResume ? _glowController.value : 0.0;
         return AnimatedContainer(
-          duration: AppMotion.motionMicro,
+          duration: const Duration(milliseconds: 120),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadii.lg),
             boxShadow: glow > 0

@@ -4,6 +4,7 @@
 🟡 [WinFlowzApp] audit: Android IME rapid typing responsiveness | date: 2026-05-26 | overall: B | issues: fixed layout-rebuild hotspot and implemented multi-pointer rollover; pending hosted Android and device QA | scope: keyboard-ime-performance
 🟡 [WinFlowzApp] audit: IME clavier et visuels des touches | date: 2026-06-11 | overall: B+ | issues: fixed full-resolution theme image decode in native IME and removed Flutter theme draft diff serialization hotspot; pending Android IME image-background validation on hosted build and device | scope: keyboard-ime-visual-performance
 🟠 [WinFlowzApp] audit: Flutter component architecture remaster | date: 2026-06-10 | overall: C+ | issues: top-heavy page widgets, duplicated metric/status primitives, missing shared product-page frame | scope: product-pages-components
+🟡 [WinFlowzApp] audit: Design tokens | date: 2026-06-22 | overall: B | issues: improved token values (spacing, shadows, semantic palette), fixed 5 hardcoded values in Settings; motion tokenization deferred due to analyzer resolution gap; drift-check clean | scope: design-tokens
 
 | Date       | Scope        | Code | Design | Copy | SEO | GTM | Translate | Deps | Perf | Overall | Issues |
 |------------|--------------|------|--------|------|-----|-----|-----------|------|------|---------|--------|

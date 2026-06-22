@@ -337,10 +337,12 @@
     @apply px-6 py-2.5 text-lg font-bold text-white;
     @apply bg-gray-900 hover:bg-blue-500 hover:bg-gradient-rainbow;
     @apply transition-all duration-200;
-    @apply focus:outline-none focus:ring-2 focus:ring-magenta focus:ring-offset-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    --tw-ring-color: var(--brand-magenta);
     @apply disabled:pointer-events-none disabled:opacity-50;
     @apply sm:w-auto sm:px-8 sm:py-3 sm:text-xl;
-    @apply dark:ring-magenta dark:focus:outline-none;
+    @apply dark:focus:outline-none;
+    .dark & { --tw-ring-color: var(--brand-magenta); }
   }
 
   /* Secondary CTA Button - Border with hover fill */
@@ -350,18 +352,21 @@
     @apply bg-neutral-100 hover:border-magenta hover:bg-blue-500 hover:text-white;
     @apply transition-all duration-200;
     @apply focus:border-magenta focus:bg-magenta focus:text-white;
-    @apply focus:outline-none focus:ring-2 focus:ring-magenta focus:ring-offset-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    --tw-ring-color: var(--brand-magenta);
     @apply disabled:pointer-events-none disabled:opacity-50;
     @apply sm:px-6 sm:py-3 sm:text-xl;
     @apply dark:border-neutral-700 dark:bg-zinc-700 dark:text-neutral-300;
-    @apply dark:ring-magenta dark:hover:bg-blue-500 dark:focus:outline-none;
+    @apply dark:focus:outline-none;
+    .dark & { --tw-ring-color: var(--brand-magenta); }
   }
 
   /* Rainbow CTA - Full gradient background */
   .btn-rainbow {
     @apply block rounded-lg bg-gradient-rainbow px-6 py-2.5;
     @apply text-center text-sm font-bold text-white;
-    @apply outline-none ring-magenta transition duration-100;
+    @apply outline-none transition duration-100;
+    box-shadow: 0 0 0 2px var(--brand-magenta);
     @apply hover:opacity-90 focus-visible:ring active:opacity-80;
     @apply sm:px-8 sm:py-3 md:text-base;
   }

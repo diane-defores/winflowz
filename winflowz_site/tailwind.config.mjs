@@ -92,6 +92,14 @@ export default {
         'gradient-rainbow': 'var(--gradient-rainbow)',
         'gradient-rainbow-horizontal': 'var(--gradient-rainbow-h)',
       },
+      ringColor: {
+        magenta: 'var(--brand-magenta)',
+        blue: 'var(--brand-cyan)',
+      },
+      borderColor: {
+        magenta: 'var(--brand-magenta)',
+        blue: 'var(--brand-cyan)',
+      },
     },
   },
   plugins: [
