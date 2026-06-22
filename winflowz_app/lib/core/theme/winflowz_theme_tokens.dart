@@ -155,6 +155,9 @@ class WinFlowzThemeTokens {
   static const double navRailExtendedBreakpoint = 980.0;
   static const double keyboardPreviewFrameMaxWidth = 760.0;
   static const double keyboardPreviewDropdownWidth = 220.0;
+  static const double settingsFeatureCardWidth = 240.0;
+  static const double actionRailMinWidthLarge = 230.0;
+  static const double actionRailMinWidthSmall = 130.0;
   static const double customActionChipWidth = 210.0;
   static const double keyboardPreviewStatusHeight = 30.0;
   static const double authFormMaxWidth = 460.0;
@@ -222,10 +225,16 @@ class WinFlowzThemeTokens {
 
   // Motion.
   static const Duration motionInstant = Duration(milliseconds: 120);
+  static const Duration motionMicro = Duration(milliseconds: 80);
   static const Duration motionFast = Duration(milliseconds: 150);
   static const Duration motionBase = Duration(milliseconds: 200);
   static const Duration motionSlow = Duration(milliseconds: 300);
   static const Duration motionLong = Duration(milliseconds: 800);
+  static const Duration motionNavSelected = Duration(milliseconds: 280);
+  static const Duration motionNavUnselected = Duration(milliseconds: 160);
+  static const Duration motionVoiceAction = Duration(milliseconds: 180);
+  static const Duration motionVoiceBar = Duration(milliseconds: 90);
+  static const Duration motionOnboardingPulse = Duration(milliseconds: 550);
   static const Cubic motionStandard = Cubic(0.22, 1, 0.36, 1);
   static const Cubic motionSpring = Cubic(0.34, 1.56, 0.64, 1);
 

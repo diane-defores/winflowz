@@ -1975,7 +1975,7 @@ class _SettingsHubTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 240,
+      width: AppLayoutMetrics.settingsFeatureCardWidth,
       child: Card(
         child: InkWell(
           borderRadius: BorderRadius.circular(AppRadii.lg),
@@ -2021,7 +2021,7 @@ class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>
     super.initState();
     _glowController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 550),
+      duration: AppMotion.motionOnboardingPulse,
     );
     if (widget.highlightResume) {
       _startGlow();
@@ -2100,7 +2100,7 @@ class _OnboardingSettingsTileState extends State<_OnboardingSettingsTile>
       builder: (context, child) {
         final glow = widget.highlightResume ? _glowController.value : 0.0;
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
+          duration: AppMotion.motionMicro,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadii.lg),
             boxShadow: glow > 0

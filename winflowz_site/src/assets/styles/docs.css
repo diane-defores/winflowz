@@ -46,7 +46,7 @@
 .docs-sidebar__eyebrow,
 .docs-toc__title,
 .docs-pager__label {
-  @apply mb-3 text-xs font-extrabold uppercase tracking-widest text-magenta;
+  @apply mb-3 text-xs font-extrabold uppercase tracking-widest text-test;
 }
 
 .docs-main__header h1 {
@@ -84,7 +84,7 @@
 }
 
 .docs-nav__summary.is-current .docs-nav__link {
-  @apply text-magenta;
+  @apply text-test;
 }
 
 .docs-nav__link,
@@ -96,7 +96,7 @@
 
 .docs-nav__link:hover,
 .docs-toc__list a:hover {
-  @apply text-magenta;
+  @apply text-test;
 }
 
 .docs-toc__item.is-nested a {
@@ -154,7 +154,7 @@
 }
 
 .sl-markdown-content a {
-  @apply text-magenta;
+  @apply text-test;
 }
 
 .sl-markdown-content blockquote,
@@ -216,7 +216,9 @@
 }
 
 @screen xl {
-  .docs-shell {
+@import "tailwindcss";
+
+.docs-shell {
     @apply grid-cols-3;
   }
 

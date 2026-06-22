@@ -1069,8 +1069,8 @@ class _AnimatedBottomNavIcon extends StatelessWidget {
       key: ValueKey('$selected-$pulse-$motion'),
       tween: Tween(begin: selected ? 0 : 1, end: 1),
       duration: selected
-          ? const Duration(milliseconds: 280)
-          : const Duration(milliseconds: 160),
+          ? AppMotion.motionNavSelected
+          : AppMotion.motionNavUnselected,
       curve: Curves.easeOutCubic,
       builder: (context, progress, child) {
         final burst = selected ? math.sin(progress * math.pi) : 0.0;

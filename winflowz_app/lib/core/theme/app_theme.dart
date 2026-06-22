@@ -182,7 +182,7 @@ class AppInsets {
 }
 
 class AppSectionMetrics {
-  static const double sectionGap = AppSpacing.x1;
+  static const double sectionGap = AppSpacing.x2;
   static const double sectionRunSpacing = sectionGap;
   static const double sectionColumnGap = AppSpacing.x2;
   static const double headerContentGap = AppSpacing.x1;
@@ -261,6 +261,12 @@ class AppNavigationMetrics {
 class AppLayoutMetrics {
   static const onboardingOverlayMaxWidth = 520.0;
   static const settingsTwoColumnBreakpoint = 1180.0;
+  static const settingsFeatureCardWidth =
+      WinFlowzThemeTokens.settingsFeatureCardWidth;
+  static const actionRailMinWidthLarge =
+      WinFlowzThemeTokens.actionRailMinWidthLarge;
+  static const actionRailMinWidthSmall =
+      WinFlowzThemeTokens.actionRailMinWidthSmall;
   static const authFormMaxWidth = WinFlowzThemeTokens.authFormMaxWidth;
   static const authGateLoadingCardWidth =
       WinFlowzThemeTokens.authGateLoadingCardWidth;
@@ -453,9 +459,16 @@ class AppShadows {
 
 class AppMotion {
   static const instant = WinFlowzThemeTokens.motionInstant;
+  static const micro = WinFlowzThemeTokens.motionMicro;
   static const fast = WinFlowzThemeTokens.motionFast;
   static const base = WinFlowzThemeTokens.motionBase;
   static const slow = WinFlowzThemeTokens.motionSlow;
+  static const long = WinFlowzThemeTokens.motionLong;
+  static const navSelected = WinFlowzThemeTokens.motionNavSelected;
+  static const navUnselected = WinFlowzThemeTokens.motionNavUnselected;
+  static const voiceAction = WinFlowzThemeTokens.motionVoiceAction;
+  static const voiceBar = WinFlowzThemeTokens.motionVoiceBar;
+  static const onboardingPulse = WinFlowzThemeTokens.motionOnboardingPulse;
   static const standardCurve = WinFlowzThemeTokens.motionStandard;
   static const outCurve = Curves.easeOut;
   static const springCurve = WinFlowzThemeTokens.motionSpring;

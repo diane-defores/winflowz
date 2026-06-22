@@ -1376,7 +1376,7 @@ class _RecordingMicActionState extends State<_RecordingMicAction>
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 180),
+                      duration: AppMotion.motionVoiceAction,
                       child: widget.isBusy
                           ? SizedBox(
                               key: const ValueKey('busy'),
@@ -1439,7 +1439,7 @@ class _RecordingBars extends StatelessWidget {
               (Curves.easeInOut.transform(wave) *
                   AppVoiceMetrics.recordingBarHeightRange);
           return AnimatedContainer(
-            duration: const Duration(milliseconds: 90),
+            duration: AppMotion.motionVoiceBar,
             width: AppVoiceMetrics.recordingBarWidth,
             height: height,
             decoration: BoxDecoration(

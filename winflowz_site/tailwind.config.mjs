@@ -14,12 +14,12 @@ export default {
       white: "#ffffff",
       gray: colors.gray,
       neutral: colors.neutral,
-      // Brand colors — reference CSS vars from global.css :root
-      red: "var(--brand-red)",
-      magenta: "var(--brand-magenta)",
-      yellow: "var(--brand-yellow)",
-      green: "var(--brand-green)",
-      cyan: "var(--brand-cyan)",
+      test: "#ff00ff",
+      red: "#ff0033",
+      magenta: "#ff00c8",
+      yellow: "#ffe500",
+      green: "#00ff44",
+      cyan: "#00c8ff",
       // Keep zinc for subtle UI elements
       zinc: colors.zinc,
       emerald: colors.emerald,

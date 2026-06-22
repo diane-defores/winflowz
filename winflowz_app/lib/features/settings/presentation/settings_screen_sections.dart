@@ -1537,7 +1537,7 @@ class _KeyboardThemeSwatch extends StatelessWidget {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Color(config.activeKeyColor),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppRadii.sm),
                       ),
                     ),
                   ),
@@ -1562,7 +1562,7 @@ class _KeyboardThemeMiniKey extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(AppRadii.sm),
         ),
       ),
     );
@@ -1952,7 +1952,7 @@ class _SpeechPill extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadii.pill),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -2130,7 +2130,7 @@ class _OverlaySettingsSection extends StatelessWidget {
             padding: AppInsets.keyboardPrivacy,
             child: AppActionRail(
               spacing: AppSpacing.x1,
-              minActionWidth: 230,
+              minActionWidth: AppLayoutMetrics.actionRailMinWidthLarge,
               children: [
                 OutlinedButton.icon(
                   onPressed: onOpenOverlaySettings,
@@ -2149,7 +2149,7 @@ class _OverlaySettingsSection extends StatelessWidget {
             padding: AppInsets.overlayControls,
             child: AppActionRail(
               spacing: AppSpacing.x1,
-              minActionWidth: 130,
+              minActionWidth: AppLayoutMetrics.actionRailMinWidthSmall,
               children: [
                 FilledButton(
                   onPressed: busy ? null : onStart,
