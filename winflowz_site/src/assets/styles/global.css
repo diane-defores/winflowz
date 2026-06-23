@@ -274,9 +274,7 @@
     --landing-discord-image-offset: -1rem;
     --landing-discord-image-size: 5rem;
     --navbar-slide-down-animation: navbar-slide-down 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    --navbar-hamburger-gap: 3px;
-    --navbar-hamburger-line-width: 14px;
-    --navbar-hamburger-line-height: 1.5px;
+
     --menu-panel-radius: 2rem;
     --mega-menu-radius: 2.25rem;
     --surface-tint-subtle: rgb(250 204 21 / 0.05);
@@ -297,6 +295,53 @@
     --ticker-min-width: 8.75rem;
     --hero-fade-animation-fast: hero-fade-up 0.2s ease-out forwards;
     --hero-fade-animation-medium: hero-fade-up 0.3s ease-out forwards;
+
+    --temu-card-radius-xl: 2rem;
+    --temu-card-radius-lg: 1.5rem;
+    --temu-card-radius-md: 1.25rem;
+    --temu-step-idle: 0 0% 64%;
+    --temu-step-active: 240 10% 12%;
+    --temu-step-active-light: 0 0% 90%;
+    --temu-step-done: 142 71% 39%;
+    --temu-step-indicator-rest: 0 0% 83%;
+    --temu-step-transition: 350ms;
+    --temu-step-gap: 6px;
+    --temu-step-dot-size: 10px;
+    --temu-step-dot-font-size: 7px;
+    --temu-step-dot-line-height: 10px;
+    --temu-step-connector-width: 20px;
+    --temu-step-connector-height: 2px;
+    --temu-step-connector-radius: 1px;
+    --step-dot-circle: 50%;
+    --temu-step-pulse-max-spread: 6px;
+    --temu-step-pulse-duration: 1.2s;
+    --temu-status-ellipsis-duration: 1.5s;
+    --temu-status-fade-duration: 300ms;
+
+    --btn-primary-radius: 0.75rem;
+    --btn-primary-padding-y: 0.625rem;
+    --btn-primary-padding-x: 1.5rem;
+    --btn-primary-font-size: 1.125rem;
+    --btn-primary-text: #fff;
+    --btn-primary-bg: #111827;
+    --btn-primary-border-width: 2px;
+    --btn-primary-transition: 200ms;
+
+    --btn-secondary-radius: 0.75rem;
+    --btn-secondary-padding-y: 0.625rem;
+    --btn-secondary-padding-x: 1rem;
+    --btn-secondary-font-size: 1.125rem;
+    --btn-secondary-text: #111827;
+    --btn-secondary-bg: #f5f5f5;
+    --btn-secondary-border: #9ca3af;
+    --btn-secondary-transition: 200ms;
+    --btn-secondary-dark-border: #525252;
+    --btn-secondary-dark-bg: #3f3f46;
+    --btn-secondary-dark-text: #d4d4d8;
+
+    --navbar-dropdown-min-width: 280px;
+    --btn-full-width: 100%;
+    --breakpoint-sm: 640px;
   }
 
   /* Base font size */
@@ -350,17 +395,17 @@
   /* Primary CTA Button - Rainbow gradient background */
   .btn-primary {
     display: inline-flex;
-    width: 100%;
+    width: var(--btn-full-width);
     align-items: center;
     justify-content: center;
-    border-radius: 0.75rem;
-    border: 2px solid transparent;
-    padding: 0.625rem 1.5rem;
-    font-size: 1.125rem;
+    border-radius: var(--btn-primary-radius);
+    border: var(--btn-primary-border-width) solid transparent;
+    padding: var(--btn-primary-padding-y) var(--btn-primary-padding-x);
+    font-size: var(--btn-primary-font-size);
     font-weight: 700;
-    color: #fff;
-    background-color: #111827;
-    transition: all 0.2s;
+    color: var(--btn-primary-text);
+    background-color: var(--btn-primary-bg);
+    transition: all var(--btn-primary-transition);
     --tw-ring-color: var(--brand-magenta);
   }
   .btn-primary:hover { background: linear-gradient(135deg, var(--brand-cyan), var(--brand-cyan)); }
@@ -372,8 +417,8 @@
     pointer-events: none;
     opacity: 0.5;
   }
-  @media (min-width: 640px) {
-    .btn-primary { width: auto; padding: 0.75rem 2rem; font-size: 1.25rem; }
+  @media (min-width: var(--breakpoint-sm)) {
+    .btn-primary { width: auto; padding: var(--ui-button-padding-y-lg) var(--ui-button-padding-x-lg); font-size: var(--ui-button-font-size-lg); }
   }
   .dark .btn-primary { outline: none; }
   .dark .btn-primary:focus { box-shadow: 0 0 0 2px var(--brand-magenta); }
@@ -381,42 +426,53 @@
   /* Secondary CTA Button - Border with hover fill */
   .btn-secondary {
     display: inline-flex;
-    width: 100%;
+    width: var(--btn-full-width);
     align-items: center;
     justify-content: center;
-    border-radius: 0.75rem;
-    border: 2px solid #9ca3af;
-    padding: 0.625rem 1rem;
-    font-size: 1.125rem;
+    border-radius: var(--btn-secondary-radius);
+    border: var(--btn-primary-border-width) solid var(--btn-secondary-border);
+    padding: var(--btn-secondary-padding-y) var(--btn-secondary-padding-x);
+    font-size: var(--btn-secondary-font-size);
     font-weight: 700;
-    color: #111827;
-    background-color: #f5f5f5;
-    transition: all 0.2s;
-    --tw-ring-color: var(--brand-magenta);
+    color: var(--btn-secondary-text);
+    background-color: var(--btn-secondary-bg);
+    transition: all var(--btn-secondary-transition);
   }
   .btn-secondary:hover {
     border-color: var(--brand-magenta);
     background-color: var(--brand-cyan);
-    color: #fff;
+    color: var(--btn-primary-text);
   }
   .btn-secondary:focus {
     outline: none;
     border-color: var(--brand-magenta);
     background-color: var(--brand-magenta);
-    color: #fff;
+    color: var(--btn-primary-text);
+    box-shadow: 0 0 0 2px var(--brand-magenta);
+  }
+  .btn-secondary:hover {
+    border-color: var(--brand-magenta);
+    background-color: var(--brand-cyan);
+    color: var(--btn-primary-text);
+  }
+  .btn-secondary:focus {
+    outline: none;
+    border-color: var(--brand-magenta);
+    background-color: var(--brand-magenta);
+    color: var(--btn-primary-text);
     box-shadow: 0 0 0 2px var(--brand-magenta);
   }
   .btn-secondary:disabled {
     pointer-events: none;
     opacity: 0.5;
   }
-  @media (min-width: 640px) {
-    .btn-secondary { padding: 0.75rem 1.5rem; font-size: 1.25rem; }
+  @media (min-width: var(--breakpoint-sm)) {
+    .btn-secondary { padding: var(--btn-secondary-padding-y) var(--ui-button-padding-x-lg); font-size: var(--btn-secondary-font-size); }
   }
   .dark .btn-secondary {
-    border-color: #525252;
-    background-color: #3f3f46;
-    color: #d4d4d8;
+    border-color: var(--btn-secondary-dark-border);
+    background-color: var(--btn-secondary-dark-bg);
+    color: var(--btn-secondary-dark-text);
   }
   .dark .btn-secondary:hover {
     border-color: var(--brand-cyan);
@@ -456,7 +512,7 @@
   }
 
   .link-hover {
-    transition: color 0.2s;
+    transition: color var(--temu-step-transition);
   }
   .link-hover:hover {
     color: var(--brand-magenta);

@@ -88,6 +88,14 @@ export default {
         '8xl': ['6rem', { lineHeight: '1' }],           // 96px
         '9xl': ['8rem', { lineHeight: '1' }],           // 128px
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+        temu: "var(--temu-card-radius-xl)",
+        'temu-lg': "var(--temu-card-radius-lg)",
+        'temu-md': "var(--temu-card-radius-md)",
+      },
       backgroundImage: {
         'gradient-rainbow': 'var(--gradient-rainbow)',
         'gradient-rainbow-horizontal': 'var(--gradient-rainbow-h)',

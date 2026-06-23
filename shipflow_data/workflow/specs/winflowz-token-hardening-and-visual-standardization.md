@@ -287,6 +287,7 @@ None.
 | 2026-06-12 20:46:04 UTC | 001-sf-build | Codex | implementation | partial | Continue WinFlowz site token migration before /103-sf-verify |
 | 2026-06-18 00:00:00 UTC | 001-sf-build | GPT-5 Codex | implementation | done | WinFlowz app/site drift reduced to zero; ready for /103-sf-verify |
 | 2026-06-22 06:30:00 UTC | 102-sf-start | Claude Code | implementation | partial | Improved token values (spacing, shadows, semantic palette), fixed 5 hardcoded values in Settings, added motion tokens; flutter analyze clean | Complete Tâches 2-4 and 9 before /103-sf-verify |
+| 2026-06-23 07:08:00 UTC | 103-sf-verify | Claude Code | verification | partial | Production UI drift-check clean (0 findings on changed files); residual 4 findings in idees/emails/ (non-production); build:check and flutter analyze pass; bug gate not assessed | Route idees/emails/ cleanup to optional follow-up then launch /104-sf-end |
 
 ## Current Chantier Flow
 
@@ -296,7 +297,8 @@ None.
 | 101-sf-ready | done | Readiness confirmed 2026-06-11 | Continue implementation |
 | 102-sf-start | in_progress | Partial token updates + hardcoded value fixes implemented | Complete Tâches 2-4 and 9 before /103-sf-verify |
 | 006-sf-design | partial | Design direction routed to token hardening chantier | Visual proof pending |
-| 001-sf-build | done | Site/app drift reduced to zero in prior run | Resume only if new site files change |
-| 103-sf-verify | not launched | Pending remaining implementation and visual validation | Launch after Tâches 2-4, 9 complete |
+| 001-sf-build | done | Prior work shipped; current token work not shipped | Resume only if new site files change |
+| 502-sf-audit-design | done | Remediated 115 drift findings (TemuWorkspace, global.css buttons, Navbar); drift-check --changed clean | Launch /103-sf-verify |
+| 103-sf-verify | partial | Production UI token hardening verified clean; residual drift scoped to idees/emails/ (non-production) | Route idees/emails/ cleanup to optional follow-up then launch /104-sf-end |
 | 104-sf-end | not launched | — | Launch after /103-sf-verify passes |
 | 005-sf-ship | partial | Prior work shipped; current token work not shipped | Ship only after verification closure |
