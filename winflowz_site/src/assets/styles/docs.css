@@ -1,3 +1,25 @@
+@import "tailwindcss";
+
+@utility text-magenta {
+  color: var(--brand-magenta);
+}
+
+@utility bg-magenta {
+  background-color: var(--brand-magenta);
+}
+
+@utility border-magenta {
+  border-color: var(--brand-magenta);
+}
+
+@utility border-cyan {
+  border-color: var(--brand-cyan);
+}
+
+@utility bg-cyan {
+  background-color: var(--brand-cyan);
+}
+
 .docs-shell {
   --docs-aside-tip-border: rgb(255 229 0 / 0.3);
   --docs-aside-tip-start: rgb(255 229 0 / 0.2);
@@ -46,7 +68,7 @@
 .docs-sidebar__eyebrow,
 .docs-toc__title,
 .docs-pager__label {
-  @apply mb-3 text-xs font-extrabold uppercase tracking-widest text-test;
+  @apply mb-3 text-xs font-extrabold uppercase tracking-widest text-magenta;
 }
 
 .docs-main__header h1 {
@@ -84,7 +106,7 @@
 }
 
 .docs-nav__summary.is-current .docs-nav__link {
-  @apply text-test;
+  @apply text-magenta;
 }
 
 .docs-nav__link,
@@ -96,7 +118,7 @@
 
 .docs-nav__link:hover,
 .docs-toc__list a:hover {
-  @apply text-test;
+  @apply text-magenta;
 }
 
 .docs-toc__item.is-nested a {
@@ -154,7 +176,7 @@
 }
 
 .sl-markdown-content a {
-  @apply text-test;
+  @apply text-magenta;
 }
 
 .sl-markdown-content blockquote,

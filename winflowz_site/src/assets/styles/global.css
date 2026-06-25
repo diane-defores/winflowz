@@ -417,7 +417,7 @@
     pointer-events: none;
     opacity: 0.5;
   }
-  @media (min-width: var(--breakpoint-sm)) {
+  @media (min-width: 640px) {
     .btn-primary { width: auto; padding: var(--ui-button-padding-y-lg) var(--ui-button-padding-x-lg); font-size: var(--ui-button-font-size-lg); }
   }
   .dark .btn-primary { outline: none; }
@@ -466,7 +466,7 @@
     pointer-events: none;
     opacity: 0.5;
   }
-  @media (min-width: var(--breakpoint-sm)) {
+  @media (min-width: 640px) {
     .btn-secondary { padding: var(--btn-secondary-padding-y) var(--ui-button-padding-x-lg); font-size: var(--btn-secondary-font-size); }
   }
   .dark .btn-secondary {
